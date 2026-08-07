@@ -1,0 +1,197 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum DesignType {
+  INTERIOR
+  EXTERIOR
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+}
+
+enum ProjectCategory {
+  KITCHEN
+  LIVING_ROOM
+  BEDROOM
+  FULL_HOME
+  VILLA
+  OFFICE
+  BUILDING_EXTERIOR
+  FACADE_ELEVATION
+  BALCONY_TERRACE
+  OUTDOOR_SPACE
+  RENOVATION
+  OTHER
+}
+
+enum LeadSource {
+  QUOTE_CALCULATOR
+  CONTACT_FORM
+  WHATSAPP_CLICK
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  CLOSED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+// ---------- Core content ----------
+
+model Project {
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  designType    DesignType
+  propertyType  PropertyType
+  category      ProjectCategory
+  location      String          // locality only, e.g. "Majiwada, Thane"
+  description   String          @db.Text
+  servicesUsed  String[]        // free-text tags shown on project detail
+  carpetAreaSqFt Int?
+  completionYear Int?
+  isFeatured    Boolean         @default(false)
+  isPublished   Boolean         @default(true)
+  sortOrder     Int             @default(0)
+  images        ProjectImage[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([designType, category])
+  @@index([isFeatured, isPublished])
+}
+
+model ProjectImage {
+  id            String    @id @default(cuid())
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId     String
+  cloudinaryId  String    // public_id for transformations
+  url           String
+  mediaType     MediaType @default(IMAGE)
+  altText       String    // required at input level for accessibility + SEO
+  sortOrder     Int       @default(0)
+  isCoverImage  Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+
+  @@index([projectId])
+}
+
+model Service {
+  id           String     @id @default(cuid())
+  title        String
+  slug         String     @unique
+  designType   DesignType
+  description  String     @db.Text
+  iconKey      String?    // maps to a predefined icon set, not free-text SVG
+  sortOrder    Int        @default(0)
+  isPublished  Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Testimonial {
+  id           String   @id @default(cuid())
+  clientName   String
+  clientRole   String?  // e.g. "Homeowner, Bhandup" — first name + locality only, per privacy norms
+  quote        String   @db.Text
+  projectType  String?
+  rating       Int      @default(5)
+  isPublished  Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String   @db.Text
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------- Quote calculator (admin-configurable pricing) ----------
+
+// A PricingOption is a selectable item in the calculator
+// (e.g. "3 BHK", "Modular Kitchen - Premium", "Extra Bathroom").
+model PricingOption {
+  id           String   @id @default(cuid())
+  groupKey     String   // "bhk_type" | "kitchen" | "hall" | "bedroom" | "wardrobe"
+                         // | "interior_package" | "exterior_service" | "material_tier" | "addon"
+  label        String   // "3 BHK", "Premium Laminate", etc.
+  designType   DesignType?
+  basePrice    Decimal  @db.Decimal(10, 2)
+  perUnitPrice Decimal? @db.Decimal(10, 2) // for quantity-based items (e.g. per bedroom)
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  effectiveFrom DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([groupKey, isActive])
+}
+
+model Lead {
+  id               String     @id @default(cuid())
+  name             String
+  phone            String
+  email            String?
+  location         String?
+  requirements     String?    @db.Text
+  source           LeadSource
+  selections       Json?      // snapshot of quote calculator selections at submission time
+  estimatedBudgetLow  Int?
+  estimatedBudgetHigh Int?
+  status           LeadStatus @default(NEW)
+  notes            String?    @db.Text  // internal admin notes
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([status])
+  @@index([source])
+}
+
+// ---------- Admin & settings ----------
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+}
+
+// Singleton row — enforced at the application layer (always id = "singleton")
+model SiteSettings {
+  id            String   @id @default("singleton")
+  companyName   String   @default("REALSPACE")
+  phone         String
+  whatsapp      String
+  email         String
+  address       String
+  socialLinks   Json?    // { instagram, facebook, youtube }
+  heroHeadline  String
+  heroSubhead   String
+  ctaText       String
+  updatedAt     DateTime @updatedAt
+}

@@ -11,6 +11,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-brand-red: #D32F2F;
+  --color-brand-yellow: #FFB300;
+  --color-brand-bg: #FFFFFF;
+  --color-brand-bgAlt: #F5F5F5;
+  --color-brand-text: #171717;
 }
 
 body {

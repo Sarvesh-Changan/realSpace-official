@@ -52,7 +52,7 @@ export default async function FaqPage() {
     });
 
     if (rawFaqs.length > 0) {
-      fetchedFaqs = rawFaqs.map((f) => ({
+      fetchedFaqs = rawFaqs.map((f: any) => ({
         id: f.id,
         question: f.question,
         answer: f.answer,

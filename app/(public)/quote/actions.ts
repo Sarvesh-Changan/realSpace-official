@@ -1,0 +1,229 @@
+'use server';
+
+import { z } from 'zod';
+import prisma from '@/lib/prisma';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { headers } from 'next/headers';
+import { LeadSource, LeadStatus } from '@prisma/client';
+
+const quoteSelectionSchema = z.object({
+  bhkType: z.string().min(1, 'BHK type is required'),
+  rooms: z.object({
+    kitchens: z.number().min(0),
+    livingRooms: z.number().min(0),
+    bedrooms: z.number().min(0),
+    bathrooms: z.number().min(0),
+    wardrobes: z.number().min(0),
+  }),
+  requirements: z.object({
+    interior: z.boolean(),
+    exterior: z.boolean(),
+  }),
+  packageTier: z.string().min(1, 'Package tier is required'),
+  additionalServices: z.array(z.string()),
+  contact: z.object({
+    name: z.string().min(1, 'Name is required'),
+    phone: z.string().min(5, 'Phone number is required'),
+    email: z.string().optional().or(z.literal('')),
+    location: z.string().optional().or(z.literal('')),
+    requirements: z.string().optional().or(z.literal('')),
+    websiteUrl: z.string().optional(), // Honeypot field
+  }),
+});
+
+type QuoteSelectionInput = z.infer<typeof quoteSelectionSchema>;
+
+type QuoteActionResult = {
+  success: boolean;
+  error?: string;
+  data?: {
+    estimatedBudgetLow: number;
+    estimatedBudgetHigh: number;
+    breakdown: Array<{ label: string; amount: number }>;
+    leadId?: string;
+  };
+};
+
+export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionResult> {
+  try {
+    // 1. Rate Limiting Check
+    const headerList = await headers();
+    const ip =
+      headerList.get('x-forwarded-for')?.split(',')[0].trim() ||
+      headerList.get('x-real-ip') ||
+      '127.0.0.1';
+
+    const rateLimitResult = checkRateLimit(ip, 5, 15 * 60 * 1000);
+    if (!rateLimitResult.allowed) {
+      return {
+        success: false,
+        error: 'Too many requests from this IP. Please try again in a few minutes.',
+      };
+    }
+
+    // 2. Input Validation
+    const validation = quoteSelectionSchema.safeParse(rawInput);
+    if (!validation.success) {
+      const firstError = validation.error.issues[0]?.message || 'Invalid input data.';
+      return {
+        success: false,
+        error: firstError,
+      };
+    }
+
+    const input = validation.data;
+
+    // 3. Honeypot check for bot submissions
+    // If the hidden websiteUrl field is filled, silently discard without erroring
+    if (input.contact.websiteUrl && input.contact.websiteUrl.trim() !== '') {
+      return {
+        success: true,
+        data: {
+          estimatedBudgetLow: 0,
+          estimatedBudgetHigh: 0,
+          breakdown: [],
+        },
+      };
+    }
+
+    // 4. Query PricingOption table for all active options by groupKey
+    const activeOptions = await prisma.pricingOption.findMany({
+      where: { isActive: true },
+    });
+
+    // 5. Calculate estimated price range (low/high) & breakdown
+    let totalBase = 0;
+    const breakdown: Array<{ label: string; amount: number }> = [];
+
+    // (a) BHK Type
+    if (input.bhkType) {
+      const bhkOpt = activeOptions.find(
+        o => o.groupKey === 'bhk_type' && o.label === input.bhkType
+      );
+      if (bhkOpt) {
+        const base = Number(bhkOpt.basePrice);
+        const perUnit = bhkOpt.perUnitPrice ? Number(bhkOpt.perUnitPrice) : 0;
+        const cost = base + perUnit;
+        totalBase += cost;
+        breakdown.push({ label: `${bhkOpt.label} Base`, amount: cost });
+      }
+    }
+
+    // (b) Room Counts
+    const roomConfigs: Array<{
+      key: keyof typeof input.rooms;
+      groupKeys: string[];
+      labelFallback: string;
+    }> = [
+      { key: 'kitchens', groupKeys: ['kitchen'], labelFallback: 'Kitchens' },
+      { key: 'livingRooms', groupKeys: ['hall', 'living_room'], labelFallback: 'Living Rooms / Halls' },
+      { key: 'bedrooms', groupKeys: ['bedroom'], labelFallback: 'Bedrooms' },
+      { key: 'bathrooms', groupKeys: ['bathroom'], labelFallback: 'Bathrooms' },
+      { key: 'wardrobes', groupKeys: ['wardrobe'], labelFallback: 'Wardrobes' },
+    ];
+
+    for (const roomCfg of roomConfigs) {
+      const qty = input.rooms[roomCfg.key];
+      if (qty > 0) {
+        const opt = activeOptions.find(o => roomCfg.groupKeys.includes(o.groupKey));
+        if (opt) {
+          const base = Number(opt.basePrice);
+          const perUnit = opt.perUnitPrice ? Number(opt.perUnitPrice) : base;
+          const cost = opt.perUnitPrice ? base + perUnit * qty : base * qty;
+          totalBase += cost;
+          breakdown.push({
+            label: `${qty}x ${opt.label || roomCfg.labelFallback}`,
+            amount: cost,
+          });
+        }
+      }
+    }
+
+    // (c) Material Package Tier
+    if (input.packageTier) {
+      const pkgOpt = activeOptions.find(
+        o => o.groupKey === 'material_tier' && o.label === input.packageTier
+      );
+      if (pkgOpt) {
+        const base = Number(pkgOpt.basePrice);
+        const perUnit = pkgOpt.perUnitPrice ? Number(pkgOpt.perUnitPrice) : 0;
+        const cost = base + perUnit;
+        totalBase += cost;
+        breakdown.push({ label: `${pkgOpt.label} Material Package`, amount: cost });
+      }
+    }
+
+    // (d) Exterior Service
+    if (input.requirements.exterior) {
+      const extOpt = activeOptions.find(
+        o => o.groupKey === 'exterior_service' || o.groupKey === 'exterior'
+      );
+      if (extOpt) {
+        const base = Number(extOpt.basePrice);
+        const perUnit = extOpt.perUnitPrice ? Number(extOpt.perUnitPrice) : 0;
+        const cost = base + perUnit;
+        totalBase += cost;
+        breakdown.push({ label: extOpt.label || 'Exterior Architecture Base', amount: cost });
+      }
+    }
+
+    // (e) Additional Services / Addons
+    if (input.additionalServices && input.additionalServices.length > 0) {
+      for (const serviceName of input.additionalServices) {
+        const addonOpt = activeOptions.find(
+          o => o.groupKey === 'addon' && o.label === serviceName
+        );
+        if (addonOpt) {
+          const base = Number(addonOpt.basePrice);
+          const perUnit = addonOpt.perUnitPrice ? Number(addonOpt.perUnitPrice) : 0;
+          const cost = base + perUnit;
+          totalBase += cost;
+          breakdown.push({ label: addonOpt.label, amount: cost });
+        }
+      }
+    }
+
+    // Calculate low and high range estimates
+    const estimatedBudgetLow = Math.round(totalBase * 0.9);
+    const estimatedBudgetHigh = Math.round(totalBase * 1.15);
+
+    // 6. Create Lead row in database
+    const lead = await prisma.lead.create({
+      data: {
+        name: input.contact.name,
+        phone: input.contact.phone,
+        email: input.contact.email && input.contact.email.trim() !== '' ? input.contact.email : null,
+        location: input.contact.location && input.contact.location.trim() !== '' ? input.contact.location : null,
+        requirements: input.contact.requirements && input.contact.requirements.trim() !== '' ? input.contact.requirements : null,
+        source: LeadSource.QUOTE_CALCULATOR,
+        selections: {
+          bhkType: input.bhkType,
+          rooms: input.rooms,
+          requirements: input.requirements,
+          packageTier: input.packageTier,
+          additionalServices: input.additionalServices,
+          breakdown,
+        },
+        estimatedBudgetLow,
+        estimatedBudgetHigh,
+        status: LeadStatus.NEW,
+      },
+    });
+
+    return {
+      success: true,
+      data: {
+        estimatedBudgetLow,
+        estimatedBudgetHigh,
+        breakdown,
+        leadId: lead.id,
+      },
+    };
+  } catch (error) {
+    console.error('Error submitting quote action:', error);
+    return {
+      success: false,
+      error: 'An unexpected error occurred while processing your quote request. Please try again.',
+    };
+  }
+}

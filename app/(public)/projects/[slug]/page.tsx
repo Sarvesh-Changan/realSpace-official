@@ -126,7 +126,7 @@ export default async function ProjectDetailPage({
   }
 
   // Map main project images
-  const projectImages: ProjectImage[] = project.images.map((img) => ({
+  const projectImages: ProjectImage[] = project.images.map((img: any) => ({
     id: img.id,
     url: img.url,
     altText: img.altText || project.title,

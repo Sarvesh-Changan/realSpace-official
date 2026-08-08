@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import { Button } from "../ui/Button";
@@ -10,9 +12,15 @@ export interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   logoText = "REALSPACE",
-  isMobileMenuOpen = false,
-  onToggleMobileMenu,
+  isMobileMenuOpen: controlledIsOpen,
+  onToggleMobileMenu: controlledOnToggle,
 }) => {
+  const [internalIsOpen, setInternalIsOpen] = React.useState(false);
+
+  const isMobileMenuOpen = controlledIsOpen ?? internalIsOpen;
+  const handleToggle =
+    controlledOnToggle ?? (() => setInternalIsOpen((prev) => !prev));
+
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Projects", href: "/projects" },
@@ -60,34 +68,36 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Mobile Menu Button */}
-            {onToggleMobileMenu && (
-              <button
-                type="button"
-                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-brand-text hover:bg-brand-bgAlt focus:outline-none focus:ring-2 focus:ring-brand-yellow transition-colors"
-                onClick={onToggleMobileMenu}
-                aria-expanded={isMobileMenuOpen}
+            <button
+              type="button"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-brand-text hover:bg-brand-bgAlt focus:outline-none focus:ring-2 focus:ring-brand-yellow transition-colors"
+              onClick={handleToggle}
+              aria-expanded={isMobileMenuOpen}
+            >
+              <span className="sr-only">Open main menu</span>
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
               >
-                <span className="sr-only">Open main menu</span>
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                    />
-                  )}
-                </svg>
-              </button>
-            )}
+                {isMobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -100,6 +110,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Link
                 key={link.label}
                 href={link.href}
+                onClick={() => {
+                  if (controlledIsOpen === undefined) setInternalIsOpen(false);
+                }}
                 className="block rounded-md px-3 py-3 text-base font-medium text-brand-text hover:bg-brand-bgAlt hover:text-brand-red transition-colors"
               >
                 {link.label}

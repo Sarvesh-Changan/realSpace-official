@@ -10,12 +10,12 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          /* PLACEHOLDER HEX VALUES — Replace with actual REALSPACE logo brand colors */
-          red: "#E53E3E", // placeholder red
-          yellow: "#ECC94B", // placeholder yellow
-          bg: "#FAFAFA", // near-white placeholder background
-          bgAlt: "#F7FAFC", // light grey placeholder secondary background
-          text: "#1A202C", // dark grey / near-black placeholder text
+          /* PLACEHOLDER HEX VALUES — Pending client's actual REALSPACE logo file */
+          red: "#D6342C",
+          yellow: "#F2B705",
+          bg: "#FFFFFF",
+          bgAlt: "#F7F7F5",
+          text: "#1F1F1F",
         },
       },
     },

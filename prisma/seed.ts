@@ -10,8 +10,8 @@ async function main() {
     where: { id: "singleton" },
     update: {
       companyName: "REALSPACE",
-      phone: "+91 90000 00000",
-      whatsapp: "+91 90000 00000",
+      phone: "+91 98692 11777",
+      whatsapp: "+91 98692 11777",
       email: "test@example.com",
       address: "Thane, Maharashtra",
       heroHeadline: "Your Space, Reimagined.",
@@ -21,8 +21,8 @@ async function main() {
     create: {
       id: "singleton",
       companyName: "REALSPACE",
-      phone: "+91 90000 00000",
-      whatsapp: "+91 90000 00000",
+      phone: "+91 98692 11777",
+      whatsapp: "+91 98692 11777",
       email: "test@example.com",
       address: "Thane, Maharashtra",
       heroHeadline: "Your Space, Reimagined.",

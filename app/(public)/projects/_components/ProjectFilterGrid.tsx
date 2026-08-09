@@ -4,10 +4,12 @@ import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export interface ProjectCardData {
   id: string;
@@ -225,16 +227,15 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                   <Link href={`/projects/${project.slug}`} className="block h-full">
                     <Card className="h-full group cursor-pointer border border-brand-bgAlt hover:border-brand-text/20 transition-all">
                       <div className="aspect-[4/3] w-full relative overflow-hidden bg-brand-bgAlt">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                          style={{
-                            backgroundImage: `url(${
-                              project.coverImageUrl ||
-                              "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800"
-                            })`,
-                          }}
+                        <Image
+                          src={getCloudinaryUrl(project.coverImageUrl, { width: 800 })}
+                          alt={project.altText || project.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          unoptimized={!project.coverImageUrl?.includes("res.cloudinary.com")}
                         />
-                        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                        <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                           <Badge
                             variant="default"
                             className="bg-white/95 backdrop-blur shadow-sm text-brand-text font-semibold"

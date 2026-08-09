@@ -1,5 +1,7 @@
 import React from "react";
+import Image from "next/image";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export interface AboutHeroProps {
   headline: string;
@@ -17,11 +19,14 @@ export function AboutHero({ headline, body, imageUrl }: AboutHeroProps) {
             <p className="text-lg text-brand-text/80 leading-relaxed">{body}</p>
           </div>
           {imageUrl && (
-            <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-brand-bgAlt shadow-md">
-              <img
-                src={imageUrl}
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-brand-bgAlt shadow-md">
+              <Image
+                src={getCloudinaryUrl(imageUrl, { width: 800 })}
                 alt="REALSPACE About Studio"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="w-full h-full object-cover"
+                unoptimized={!imageUrl.includes("res.cloudinary.com")}
               />
             </div>
           )}

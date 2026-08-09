@@ -1,4 +1,6 @@
 import React from "react";
+import Image from "next/image";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export interface MeetFounderProps {
   founderName: string;
@@ -16,11 +18,14 @@ export function MeetFounder({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-brand-bg p-8 md:p-12 rounded-3xl border border-brand-bgAlt shadow-sm grid md:grid-cols-3 gap-8 items-center">
           {imageUrl && (
-            <div className="aspect-square rounded-2xl overflow-hidden bg-brand-bgAlt">
-              <img
-                src={imageUrl}
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-brand-bgAlt">
+              <Image
+                src={getCloudinaryUrl(imageUrl, { width: 500 })}
                 alt={founderName}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="w-full h-full object-cover"
+                unoptimized={!imageUrl.includes("res.cloudinary.com")}
               />
             </div>
           )}

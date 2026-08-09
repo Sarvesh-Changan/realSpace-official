@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { X, Save } from "lucide-react";
 import { updateLeadNotes } from "../actions";
 import type { LeadData } from "./LeadTableClient";
@@ -16,35 +16,100 @@ export function LeadDetail({ lead, onClose, onNotesUpdated }: { lead: LeadData, 
     setIsSaving(false);
   };
 
-  const renderSelections = (selections: any) => {
+  /** Format a single selection value into readable JSX */
+  const formatValue = (key: string, value: unknown): React.ReactNode => {
+    // Breakdown: [{label, amount}, ...]
+    if (key === "breakdown" && Array.isArray(value)) {
+      return (
+        <ul className="mt-1 space-y-0.5">
+          {(value as { label: string; amount: number }[]).map((item, i) => (
+            <li key={i} className="flex justify-between text-xs">
+              <span className="text-neutral-700">{item.label}</span>
+              <span className="font-semibold text-neutral-900">
+                ₹{Number(item.amount).toLocaleString("en-IN")}
+              </span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Additional services: string[]
+    if (key === "additionalServices" && Array.isArray(value)) {
+      const list = value as string[];
+      return list.length > 0 ? list.join(", ") : "—";
+    }
+
+    // Rooms / requirements: plain object → key: value pairs
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const entries = Object.entries(value as Record<string, unknown>);
+      return (
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+          {entries.map(([k, v]) => (
+            <span key={k} className="text-xs">
+              <span className="capitalize text-neutral-500">{k}: </span>
+              <span className="font-medium text-neutral-800">
+                {typeof v === "boolean" ? (v ? "Yes" : "No") : String(v)}
+              </span>
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    // Scalar
+    return <span className="font-medium text-neutral-800">{String(value)}</span>;
+  };
+
+  const renderSelections = (selections: unknown) => {
     if (!selections) return null;
 
     try {
-      const parsed = typeof selections === 'string' ? JSON.parse(selections) : selections;
-      
+      const parsed: Record<string, unknown> =
+        typeof selections === "string" ? JSON.parse(selections) : (selections as Record<string, unknown>);
+
+      // Compute total from breakdown if available
+      const breakdown = parsed["breakdown"];
+      const total =
+        Array.isArray(breakdown)
+          ? (breakdown as { amount: number }[]).reduce((sum, item) => sum + Number(item.amount), 0)
+          : null;
+
       return (
         <div className="mt-4 p-4 bg-neutral-50 rounded-md border border-neutral-200">
-          <h4 className="text-sm font-semibold text-neutral-900 mb-3">Quote Calculator Selections</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <h4 className="text-sm font-semibold text-neutral-900 mb-4">Quote Calculator Selections</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
             {Object.entries(parsed).map(([key, value]) => {
-              const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-              let displayValue = String(value);
-              
-              if (typeof value === 'object' && value !== null) {
-                displayValue = JSON.stringify(value);
-              }
-
+              const label = key
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (s) => s.toUpperCase());
               return (
-                <div key={key} className="flex flex-col py-1 border-b border-neutral-100 last:border-0">
-                  <span className="text-neutral-500 text-xs">{label}</span>
-                  <span className="font-medium text-neutral-800">{displayValue}</span>
+                <div
+                  key={key}
+                  className={`flex flex-col py-2 border-b border-neutral-200 last:border-0 ${
+                    key === "breakdown" ? "sm:col-span-2" : ""
+                  }`}
+                >
+                  <span className="text-neutral-400 text-xs font-medium uppercase tracking-wide mb-1">
+                    {label}
+                  </span>
+                  {formatValue(key, value)}
                 </div>
               );
             })}
           </div>
+
+          {total !== null && (
+            <div className="mt-4 pt-3 border-t border-neutral-300 flex justify-between items-center">
+              <span className="text-sm font-semibold text-neutral-700">Estimated Total</span>
+              <span className="text-base font-bold text-red-600">
+                ₹{total.toLocaleString("en-IN")}
+              </span>
+            </div>
+          )}
         </div>
       );
-    } catch (e) {
+    } catch {
       return <div className="text-sm text-red-500 mt-2">Error parsing selections data.</div>;
     }
   };

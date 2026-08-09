@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export interface ProjectType {
   id: string;
@@ -68,16 +70,15 @@ export function Projects({
                 >
                   <Card className="h-full group cursor-pointer border-transparent hover:border-brand-bgAlt">
                     <div className="aspect-[4/3] w-full relative overflow-hidden bg-brand-bgAlt">
-                      <div
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                        style={{
-                          backgroundImage: `url(${
-                            project.imageUrl ||
-                            "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800"
-                          })`,
-                        }}
+                      <Image
+                        src={getCloudinaryUrl(project.imageUrl, { width: 800 })}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized={!project.imageUrl?.includes("res.cloudinary.com")}
                       />
-                      <div className="absolute top-4 left-4">
+                      <div className="absolute top-4 left-4 z-10">
                         <Badge
                           variant="default"
                           className="bg-white/90 backdrop-blur shadow-sm"

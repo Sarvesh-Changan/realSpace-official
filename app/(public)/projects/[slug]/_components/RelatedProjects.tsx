@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { RelatedProjectData } from "../page";
+import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export function RelatedProjects({ projects }: { projects: RelatedProjectData[] }) {
   if (!projects || projects.length === 0) return null;
@@ -22,13 +23,14 @@ export function RelatedProjects({ projects }: { projects: RelatedProjectData[] }
           <Link key={project.id} href={`/projects/${project.slug}`} className="group block">
             <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-neutral-100 mb-4">
               <Image
-                src={project.imageUrl}
+                src={getCloudinaryUrl(project.imageUrl, { width: 600 })}
                 alt={project.title}
                 fill
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
-                referrerPolicy="no-referrer"
+                unoptimized={!project.imageUrl?.includes("res.cloudinary.com")}
               />
-              <div className="absolute top-4 left-4">
+              <div className="absolute top-4 left-4 z-10">
                 <span className="bg-white/90 backdrop-blur-sm text-brand-text text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
                   {project.category}
                 </span>

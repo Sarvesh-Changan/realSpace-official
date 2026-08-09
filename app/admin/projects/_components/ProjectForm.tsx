@@ -54,6 +54,8 @@ export function ProjectForm({
         name: "images",
     });
 
+    const watchedImages = useWatch({ name: "images", control }) || [];
+
     // Service tags management
     const [serviceInput, setServiceInput] = useState("");
     const servicesUsed = useWatch({ name: "servicesUsed", control }) || [];
@@ -406,9 +408,9 @@ export function ProjectForm({
 
                 <div className="space-y-4">
                     {fields.map((field, index) => {
-                        const currentUrl = useWatch({ name: `images.${index}.url`, control }) || field.url;
-                        const currentCloudinaryId = useWatch({ name: `images.${index}.cloudinaryId`, control }) || field.cloudinaryId;
-                        const isCover = useWatch({ name: `images.${index}.isCoverImage`, control });
+                        const currentUrl = watchedImages[index]?.url || field.url;
+                        const currentCloudinaryId = watchedImages[index]?.cloudinaryId || field.cloudinaryId;
+                        const isCover = watchedImages[index]?.isCoverImage ?? field.isCoverImage;
 
                         return (
                             <div key={field.id} className="flex flex-col md:flex-row items-start gap-4 p-4 border border-neutral-200 rounded-md bg-neutral-50/50">

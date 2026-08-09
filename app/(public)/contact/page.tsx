@@ -21,9 +21,9 @@ export default async function ContactPage() {
     console.error("Error fetching SiteSettings in Contact page:", error);
   }
 
-  const phone = siteSettings?.phone || "+91 90000 00000";
-  const whatsapp = siteSettings?.whatsapp || "+91 90000 00000";
-  const email = siteSettings?.email || "hello@realspace.in";
+  const phone = siteSettings?.phone || "+91 98765 43210";
+  const whatsapp = siteSettings?.whatsapp || "+91 98765 43210";
+  const email = siteSettings?.email || "realspaceinteriors@hotmail.com";
   const address = siteSettings?.address || "Thane, Maharashtra";
 
   // Format whatsapp URL clean numbers

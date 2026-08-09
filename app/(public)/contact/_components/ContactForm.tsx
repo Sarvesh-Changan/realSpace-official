@@ -123,7 +123,7 @@ export function ContactForm() {
               type="tel"
               {...register("phone")}
               className="w-full px-4 py-3 rounded-lg border border-neutral-300 bg-white text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-brand-red transition-shadow"
-              placeholder="+91 90000 00000"
+              placeholder="+91 98765 43210"
             />
             {errors.phone && (
               <p className="mt-1.5 text-sm text-brand-red">

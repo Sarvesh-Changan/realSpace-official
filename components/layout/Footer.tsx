@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
     <footer className="bg-brand-bgAlt pt-20 pb-10 border-t border-brand-bgAlt/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          
+
           {/* Company Info */}
           <div className="space-y-6">
             <Link
@@ -103,12 +103,12 @@ export const Footer: React.FC = () => {
                 <svg className="w-5 h-5 text-brand-red shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                 </svg>
-                <span>hello@realspace.in</span>
+                <span>realspaceinteriors@hotmail.com</span>
               </li>
             </ul>
           </div>
         </div>
-        
+
         <div className="mt-16 pt-8 border-t border-brand-text/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-brand-text/50 text-xs md:text-sm text-center md:text-left">
             &copy; {new Date().getFullYear()} REALSPACE Interiors. All rights reserved.

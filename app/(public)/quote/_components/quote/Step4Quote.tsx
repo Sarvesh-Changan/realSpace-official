@@ -1,11 +1,7 @@
 import React, { useMemo } from 'react';
 import { QuoteState } from './types';
-
-interface Props {
-  state: QuoteState;
-  updateState: (updates: Partial<QuoteState>) => void;
-  onSubmit: () => void;
-}
+import { OtpVerification } from './OtpVerification';
+import { sendOtp as sendOtpAction, checkOtp as checkOtpAction } from '@/app/(public)/quote/otp-actions';
 
 interface Props {
   state: QuoteState;
@@ -18,7 +14,38 @@ interface Props {
 export default function Step4Quote({ state, updateState, onSubmit, isSubmitting = false, error }: Props) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    updateState({ contact: { ...state.contact, [name]: value } });
+    if (name === 'email' && value !== state.contact.email) {
+      updateState({ contact: { ...state.contact, email: value, verifiedToken: '' } });
+    } else {
+      updateState({ contact: { ...state.contact, [name]: value } });
+    }
+  };
+
+  const handleSendOtp = async (email: string) => {
+    const res = await sendOtpAction(email);
+    if (!res.success) {
+      throw new Error(res.error || 'Failed to send verification code.');
+    }
+    return true;
+  };
+
+  const handleCheckOtp = async (email: string, code: string) => {
+    const res = await checkOtpAction(email, code);
+    return {
+      success: res.success,
+      token: res.verifiedToken,
+      error: res.error,
+    };
+  };
+
+  const handleOtpVerified = (token: string, verifiedEmail: string) => {
+    updateState({
+      contact: {
+        ...state.contact,
+        email: verifiedEmail,
+        verifiedToken: token,
+      },
+    });
   };
 
   const selectedRoomSummary = Object.entries(state.rooms)
@@ -132,8 +159,9 @@ export default function Step4Quote({ state, updateState, onSubmit, isSubmitting 
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#1C1C1C] mb-1">Email Address</label>
+              <label className="block text-sm font-medium text-[#1C1C1C] mb-1">Email Address *</label>
               <input 
+                required
                 name="email"
                 value={state.contact.email}
                 onChange={handleInputChange}
@@ -165,10 +193,21 @@ export default function Step4Quote({ state, updateState, onSubmit, isSubmitting 
               placeholder="Tell us a bit more about your vision..."
             />
           </div>
+
+          {/* Email OTP Verification Component */}
+          <div className="pt-4 border-t border-[#E8E2DA]">
+            <OtpVerification
+              sendOtp={handleSendOtp}
+              checkOtp={handleCheckOtp}
+              onVerified={handleOtpVerified}
+              initialEmail={state.contact.email}
+            />
+          </div>
+
           <button 
             type="submit"
-            disabled={isSubmitting}
-            className="w-full mt-4 bg-[#C8A96A] hover:bg-[#B78A47] disabled:opacity-50 text-white font-medium py-4 rounded-lg transition-colors flex justify-center items-center gap-2"
+            disabled={isSubmitting || !state.contact.verifiedToken}
+            className="w-full mt-4 bg-[#C8A96A] hover:bg-[#B78A47] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-4 rounded-lg transition-colors flex justify-center items-center gap-2"
           >
             {isSubmitting ? (
               <>

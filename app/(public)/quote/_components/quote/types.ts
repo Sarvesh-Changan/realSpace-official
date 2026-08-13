@@ -19,6 +19,7 @@ export interface QuoteState {
     email: string;
     location: string;
     requirements: string;
+    verifiedToken?: string;
     websiteUrl?: string; // Honeypot field
   };
 }

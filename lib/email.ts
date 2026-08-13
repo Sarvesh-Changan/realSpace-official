@@ -1,12 +1,20 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import type { Lead } from "@prisma/client";
 import prisma from "@/lib/prisma";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+export const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 /**
  * Sends a notification email to admins when a new lead is submitted.
- * Fetches the admin recipient email from SiteSettings.
+ * Fetches the admin recipient email from SiteSettings, with RESEND_TO_EMAIL override option.
  */
 export async function sendLeadNotification(
   lead: Lead
@@ -45,24 +53,20 @@ Requirements:
 ${lead.requirements || "None"}
 `;
 
-    const fromAddress =
-      process.env.RESEND_FROM_EMAIL || "REALSPACE Leads <onboarding@resend.dev>";
+    const fromAddress = process.env.GMAIL_USER
+      ? `REALSPACE Leads <${process.env.GMAIL_USER}>`
+      : "REALSPACE Leads <noreply@gmail.com>";
 
-    const { error } = await resend.emails.send({
+    await transporter.sendMail({
       from: fromAddress,
-      to: [adminEmail],
+      to: adminEmail,
       subject: `New Lead: ${lead.name}`,
       text: bodyText,
     });
 
-    if (error) {
-      console.error("Resend API error sending lead notification:", error);
-      return { success: false, error: error.message };
-    }
-
     return { success: true };
   } catch (error) {
-    console.error("Unexpected error in sendLeadNotification:", error);
+    console.error("Gmail SMTP error sending lead notification:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -72,37 +76,33 @@ ${lead.requirements || "None"}
 
 /**
  * Sends an OTP email to a user for quote submission verification.
+ * Always sends directly to the customer's provided email address.
  */
 export async function sendOtpEmail(
   email: string,
   code: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const fromAddress =
-      process.env.RESEND_FROM_EMAIL || "REALSPACE <onboarding@resend.dev>";
-    const recipient = process.env.RESEND_TO_EMAIL?.trim() || email.trim();
+    const recipient = email.trim();
+    const fromAddress = process.env.GMAIL_USER
+      ? `REALSPACE <${process.env.GMAIL_USER}>`
+      : "REALSPACE <noreply@gmail.com>";
 
     const bodyText = `Your verification code is: ${code}. This code expires in 5 minutes.`;
 
-    const { error } = await resend.emails.send({
+    await transporter.sendMail({
       from: fromAddress,
-      to: [recipient],
+      to: recipient,
       subject: "Your REALSPACE verification code",
       text: bodyText,
     });
 
-    if (error) {
-      console.error("Resend API error sending OTP email:", error);
-      return { success: false, error: error.message };
-    }
-
     return { success: true };
   } catch (error) {
-    console.error("Unexpected error in sendOtpEmail:", error);
+    console.error("Gmail SMTP error sending OTP email:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
-

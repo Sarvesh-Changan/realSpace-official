@@ -24,7 +24,7 @@ const INITIAL_STATE: QuoteState = {
   requirements: { interior: false, exterior: false },
   packageTier: '',
   additionalServices: [],
-  contact: { name: '', phone: '', email: '', location: '', requirements: '', websiteUrl: '' }
+  contact: { name: '', phone: '', email: '', location: '', requirements: '', verifiedToken: '', websiteUrl: '' }
 };
 
 export default function QuoteCalculator() {

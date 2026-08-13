@@ -5,8 +5,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------- Enums ----------
@@ -194,4 +195,39 @@ model SiteSettings {
   heroSubhead   String
   ctaText       String
   updatedAt     DateTime @updatedAt
+}
+
+// ---------- OTP & Verification ----------
+
+model EmailOtp {
+  id            String   @id @default(cuid())
+  email         String
+  otpHash       String
+  expiresAt     DateTime
+  attempts      Int      @default(0)
+  maxAttempts   Int      @default(5)
+  verified      Boolean  @default(false)
+  verifiedToken String?  @unique
+  used          Boolean  @default(false)
+  lastSentAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([email])
+}
+
+// ---------- Offers ----------
+
+model Offer {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  imageUrl    String?
+  ctaLabel    String
+  ctaLink     String
+  isActive    Boolean   @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

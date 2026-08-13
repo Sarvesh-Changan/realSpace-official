@@ -12,7 +12,7 @@ Service
 Testimonial
 FAQ
 Lead
-PricingRule
+PricingRule 
 PricingOption ──< PricingRule (rule belongs to a configurable option group)
 SiteSettings (singleton)
 ```

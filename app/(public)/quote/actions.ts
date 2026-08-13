@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { headers } from 'next/headers';
 import { LeadSource, LeadStatus } from '@prisma/client';
+import { sendLeadNotification } from '@/lib/email';
 
 const quoteSelectionSchema = z.object({
   bhkType: z.string().min(1, 'BHK type is required'),
@@ -209,6 +210,13 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
         status: LeadStatus.NEW,
       },
     });
+
+    // 7. Send lead notification email to admin (non-blocking)
+    try {
+      await sendLeadNotification(lead);
+    } catch (emailErr) {
+      console.error('Failed to send lead notification email for quote submission:', emailErr);
+    }
 
     return {
       success: true,

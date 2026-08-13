@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { headers } from "next/headers";
 import { contactFormSchema } from "./schema";
+import { sendLeadNotification } from "@/lib/email";
 
 export async function submitContactForm(data: unknown) {
   // 1. Zod input validation
@@ -43,7 +44,7 @@ export async function submitContactForm(data: unknown) {
 
   try {
     // 4. Create Lead in Prisma
-    await prisma.lead.create({
+    const lead = await prisma.lead.create({
       data: {
         name: fullName.trim(),
         phone: phone.trim(),
@@ -53,6 +54,16 @@ export async function submitContactForm(data: unknown) {
         status: "NEW",
       },
     });
+
+    // 5. Send lead notification email to admin (non-blocking)
+    try {
+      await sendLeadNotification(lead);
+    } catch (emailErr) {
+      console.error(
+        "Failed to send lead notification email for contact form:",
+        emailErr
+      );
+    }
 
     return { success: true };
   } catch (error) {

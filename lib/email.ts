@@ -72,13 +72,37 @@ ${lead.requirements || "None"}
 
 /**
  * Sends an OTP email to a user for quote submission verification.
- * TODO: Implement OTP email template and delivery in subsequent step.
  */
 export async function sendOtpEmail(
   email: string,
   code: string
 ): Promise<{ success: boolean; error?: string }> {
-  // TODO: Implement OTP email delivery using Resend
-  throw new Error("sendOtpEmail is not yet implemented.");
+  try {
+    const fromAddress =
+      process.env.RESEND_FROM_EMAIL || "REALSPACE <onboarding@resend.dev>";
+    const recipient = process.env.RESEND_TO_EMAIL?.trim() || email.trim();
+
+    const bodyText = `Your verification code is: ${code}. This code expires in 5 minutes.`;
+
+    const { error } = await resend.emails.send({
+      from: fromAddress,
+      to: [recipient],
+      subject: "Your REALSPACE verification code",
+      text: bodyText,
+    });
+
+    if (error) {
+      console.error("Resend API error sending OTP email:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unexpected error in sendOtpEmail:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 }
 

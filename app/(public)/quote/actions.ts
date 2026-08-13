@@ -28,6 +28,7 @@ const quoteSelectionSchema = z.object({
     email: z.string().optional().or(z.literal('')),
     location: z.string().optional().or(z.literal('')),
     requirements: z.string().optional().or(z.literal('')),
+    verifiedToken: z.string().optional().or(z.literal('')),
     websiteUrl: z.string().optional(), // Honeypot field
   }),
 });
@@ -188,30 +189,66 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     const estimatedBudgetLow = Math.round(totalBase * 0.9);
     const estimatedBudgetHigh = Math.round(totalBase * 1.15);
 
-    // 6. Create Lead row in database
-    const lead = await prisma.lead.create({
-      data: {
-        name: input.contact.name,
-        phone: input.contact.phone,
-        email: input.contact.email && input.contact.email.trim() !== '' ? input.contact.email : null,
-        location: input.contact.location && input.contact.location.trim() !== '' ? input.contact.location : null,
-        requirements: input.contact.requirements && input.contact.requirements.trim() !== '' ? input.contact.requirements : null,
-        source: LeadSource.QUOTE_CALCULATOR,
-        selections: {
-          bhkType: input.bhkType,
-          rooms: input.rooms,
-          requirements: input.requirements,
-          packageTier: input.packageTier,
-          additionalServices: input.additionalServices,
-          breakdown,
-        },
-        estimatedBudgetLow,
-        estimatedBudgetHigh,
-        status: LeadStatus.NEW,
+    // 6. Verify Email OTP token before lead creation
+    const submittedEmail = input.contact.email?.trim().toLowerCase();
+    const verifiedToken = input.contact.verifiedToken?.trim();
+
+    if (!submittedEmail || !verifiedToken) {
+      return {
+        success: false,
+        error: 'Email verification is required before submitting your quote request.',
+      };
+    }
+
+    const otpRecord = await prisma.emailOtp.findFirst({
+      where: {
+        email: submittedEmail,
+        verifiedToken,
       },
     });
 
-    // 7. Send lead notification email to admin (non-blocking)
+    if (
+      !otpRecord ||
+      !otpRecord.verified ||
+      otpRecord.used ||
+      Date.now() > otpRecord.expiresAt.getTime()
+    ) {
+      return {
+        success: false,
+        error: 'Invalid, expired, or already used email verification token. Please verify your email before submitting.',
+      };
+    }
+
+    // 7. Create Lead row and mark EmailOtp token as used in a single database transaction
+    const [lead] = await prisma.$transaction([
+      prisma.lead.create({
+        data: {
+          name: input.contact.name,
+          phone: input.contact.phone,
+          email: submittedEmail,
+          location: input.contact.location && input.contact.location.trim() !== '' ? input.contact.location : null,
+          requirements: input.contact.requirements && input.contact.requirements.trim() !== '' ? input.contact.requirements : null,
+          source: LeadSource.QUOTE_CALCULATOR,
+          selections: {
+            bhkType: input.bhkType,
+            rooms: input.rooms,
+            requirements: input.requirements,
+            packageTier: input.packageTier,
+            additionalServices: input.additionalServices,
+            breakdown,
+          },
+          estimatedBudgetLow,
+          estimatedBudgetHigh,
+          status: LeadStatus.NEW,
+        },
+      }),
+      prisma.emailOtp.update({
+        where: { id: otpRecord.id },
+        data: { used: true },
+      }),
+    ]);
+
+    // 8. Send lead notification email to admin (non-blocking)
     try {
       await sendLeadNotification(lead);
     } catch (emailErr) {

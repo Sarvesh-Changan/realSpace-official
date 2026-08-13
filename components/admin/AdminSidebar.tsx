@@ -9,6 +9,7 @@ import {
   MessageSquare,
   HelpCircle,
   Calculator,
+  Tag,
   Users,
   Settings,
 } from "lucide-react";
@@ -21,6 +22,7 @@ const navItems = [
   { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
   { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
   { name: "Pricing", href: "/admin/pricing", icon: Calculator },
+  { name: "Offers", href: "/admin/offers", icon: Tag },
   { name: "Leads", href: "/admin/leads", icon: Users },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
@@ -38,7 +40,10 @@ export function AdminSidebar() {
       </div>
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === "/admin"
+              ? pathname === "/admin"
+              : pathname.startsWith(item.href);
           const Icon = item.icon;
           return (
             <Link

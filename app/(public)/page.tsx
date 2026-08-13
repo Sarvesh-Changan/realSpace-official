@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Hero } from "./_components/home/Hero";
+import { ActiveOffers, type OfferType } from "./_components/home/ActiveOffers";
 import { TrustStats } from "./_components/home/TrustStats";
 import { Positioning } from "./_components/home/Positioning";
 import { Projects, type ProjectType } from "./_components/home/Projects";
@@ -19,6 +20,14 @@ function formatCategory(category: string): string {
 
 export default async function HomePage() {
   let siteSettings = null;
+  let rawOffers: Array<{
+    id: string;
+    title: string;
+    description: string;
+    imageUrl: string | null;
+    ctaLabel: string;
+    ctaLink: string;
+  }> = [];
   let rawInteriorProjects: Array<{
     id: string;
     slug: string;
@@ -50,15 +59,27 @@ export default async function HomePage() {
   }> = [];
 
   try {
+    const now = new Date();
     // Fetch all home page data safely
     const [
       fetchedSettings,
+      fetchedOffers,
       fetchedInterior,
       fetchedExterior,
       fetchedServices,
       fetchedTestimonials,
     ] = await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
+      prisma.offer.findMany({
+        where: {
+          isActive: true,
+          AND: [
+            { OR: [{ startDate: null }, { startDate: { lte: now } }] },
+            { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+          ],
+        },
+        orderBy: { sortOrder: "asc" },
+      }),
       prisma.project.findMany({
         where: {
           designType: "INTERIOR",
@@ -102,6 +123,7 @@ export default async function HomePage() {
     ]);
 
     siteSettings = fetchedSettings;
+    rawOffers = fetchedOffers;
     rawInteriorProjects = fetchedInterior;
     rawExteriorProjects = fetchedExterior;
     services = fetchedServices;
@@ -110,6 +132,16 @@ export default async function HomePage() {
     console.error("Error loading home page data from Prisma:", error);
     // Graceful fallback: empty states will be rendered by subcomponents
   }
+
+  // Map database offer models to OfferType props for subcomponent
+  const offers: OfferType[] = rawOffers.map((o) => ({
+    id: o.id,
+    title: o.title,
+    description: o.description,
+    imageUrl: o.imageUrl,
+    ctaLabel: o.ctaLabel,
+    ctaLink: o.ctaLink,
+  }));
 
   // Map database project models to ProjectType props for subcomponents
   const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => ({
@@ -141,6 +173,7 @@ export default async function HomePage() {
         heroSubhead={siteSettings?.heroSubhead}
         ctaText={siteSettings?.ctaText}
       />
+      <ActiveOffers offers={offers} />
       <TrustStats />
       <Positioning />
       <Projects

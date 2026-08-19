@@ -64,6 +64,8 @@ export async function createProject(data: ProjectInput) {
 
     revalidatePath("/admin/projects");
     revalidatePath("/projects");
+    revalidatePath("/");
+    revalidatePath(`/projects/${project.slug}`);
     return { success: true, id: project.id };
   } catch (error) {
     console.error("Failed to create project:", error);
@@ -137,6 +139,8 @@ export async function updateProject(id: string, data: ProjectInput) {
     revalidatePath("/admin/projects");
     revalidatePath(`/admin/projects/${id}/edit`);
     revalidatePath("/projects");
+    revalidatePath("/");
+    revalidatePath(`/projects/${slug}`);
     return { success: true };
   } catch (error) {
     console.error("Failed to update project:", error);
@@ -151,12 +155,21 @@ export async function deleteProject(id: string) {
   }
 
   try {
+    const existing = await prisma.project.findUnique({
+      where: { id },
+      select: { slug: true },
+    });
+
     await prisma.project.delete({
       where: { id },
     });
 
     revalidatePath("/admin/projects");
     revalidatePath("/projects");
+    revalidatePath("/");
+    if (existing?.slug) {
+      revalidatePath(`/projects/${existing.slug}`);
+    }
     return { success: true };
   } catch (error) {
     console.error("Failed to delete project:", error);
@@ -171,13 +184,18 @@ export async function toggleProjectPublish(id: string, isPublished: boolean) {
   }
 
   try {
-    await prisma.project.update({
+    const project = await prisma.project.update({
       where: { id },
       data: { isPublished },
+      select: { slug: true },
     });
 
     revalidatePath("/admin/projects");
     revalidatePath("/projects");
+    revalidatePath("/");
+    if (project?.slug) {
+      revalidatePath(`/projects/${project.slug}`);
+    }
     return { success: true };
   } catch (error) {
     console.error("Failed to toggle publish:", error);
@@ -192,13 +210,18 @@ export async function toggleProjectFeature(id: string, isFeatured: boolean) {
   }
 
   try {
-    await prisma.project.update({
+    const project = await prisma.project.update({
       where: { id },
       data: { isFeatured },
+      select: { slug: true },
     });
 
     revalidatePath("/admin/projects");
     revalidatePath("/projects");
+    revalidatePath("/");
+    if (project?.slug) {
+      revalidatePath(`/projects/${project.slug}`);
+    }
     return { success: true };
   } catch (error) {
     console.error("Failed to toggle feature:", error);

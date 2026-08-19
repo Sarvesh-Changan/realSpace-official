@@ -60,6 +60,9 @@ export default async function HomePage() {
 
   try {
     const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
     // Fetch all home page data safely
     const [
       fetchedSettings,
@@ -74,8 +77,8 @@ export default async function HomePage() {
         where: {
           isActive: true,
           AND: [
-            { OR: [{ startDate: null }, { startDate: { lte: now } }] },
-            { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+            { OR: [{ startDate: null }, { startDate: { lte: endOfToday } }] },
+            { OR: [{ endDate: null }, { endDate: { gte: startOfToday } }] },
           ],
         },
         orderBy: { sortOrder: "asc" },

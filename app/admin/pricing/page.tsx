@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { PricingConfigTableWrapper } from "./_components/PricingTableClient";
+import { PricingTabsClient } from "./_components/PricingTabsClient";
 
 export default async function AdminPricingPage() {
   const session = await auth();
@@ -9,9 +9,16 @@ export default async function AdminPricingPage() {
     redirect("/admin/login");
   }
 
-  const rawOptions = await prisma.pricingOption.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
+  const [rawOptions, rawBhkOptions, rawDefaults] = await Promise.all([
+    prisma.pricingOption.findMany({
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.pricingOption.findMany({
+      where: { groupKey: "bhk_type" },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.bhkRoomDefault.findMany(),
+  ]);
 
   const options = rawOptions.map((opt) => ({
     id: opt.id,
@@ -23,10 +30,28 @@ export default async function AdminPricingPage() {
     sortOrder: opt.sortOrder,
   }));
 
+  const bhkOptions = rawBhkOptions.map((bhk) => ({
+    id: bhk.id,
+    label: bhk.label,
+  }));
+
+  const initialDefaults = rawDefaults.map((d) => ({
+    id: d.id,
+    bhkOptionId: d.bhkOptionId,
+    roomGroupKey: d.roomGroupKey,
+    defaultQty: d.defaultQty,
+    minQty: d.minQty,
+    maxQty: d.maxQty,
+    isFixedFloor: d.isFixedFloor,
+  }));
+
   return (
     <div className="space-y-6">
-      <PricingConfigTableWrapper options={options} />
+      <PricingTabsClient
+        options={options}
+        bhkOptions={bhkOptions}
+        initialDefaults={initialDefaults}
+      />
     </div>
   );
 }
-

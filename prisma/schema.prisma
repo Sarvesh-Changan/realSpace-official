@@ -169,7 +169,25 @@ model PricingOption {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  bhkRoomDefaults BhkRoomDefault[] @relation("bhkOption")
+
   @@index([groupKey, isActive])
+}
+
+model BhkRoomDefault {
+  id           String        @id @default(cuid())
+  bhkOptionId  String
+  bhkOption    PricingOption @relation("bhkOption", fields: [bhkOptionId], references: [id], onDelete: Cascade)
+  roomGroupKey String        // "kitchen" | "hall" | "bedroom" | "bathroom" | "wardrobe"
+  defaultQty   Int
+  minQty       Int
+  maxQty       Int?
+  isFixedFloor Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([bhkOptionId, roomGroupKey])
+  @@index([bhkOptionId])
 }
 
 model Lead {

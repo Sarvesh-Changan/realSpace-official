@@ -40,6 +40,7 @@ async function main() {
     { label: "3 BHK", basePrice: 350000, sortOrder: 3 },
     { label: "4 BHK", basePrice: 450000, sortOrder: 4 },
     { label: "5 BHK+", basePrice: 600000, sortOrder: 5 },
+    { label: "Commercial & Others", basePrice: 0, sortOrder: 6 },
   ];
 
   for (const option of bhkOptions) {

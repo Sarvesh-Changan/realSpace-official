@@ -1,14 +1,36 @@
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 import { AboutHero } from "../_components/about/AboutHero";
 import { TrustIndicators } from "../_components/about/TrustIndicators";
 import { ProcessTimeline } from "../_components/about/ProcessTimeline";
 import { MeetFounder } from "../_components/about/MeetFounder";
+import { Certifications, type CertificationData } from "./_components/Certifications";
 
-export const metadata = {
+export const revalidate = 60;
+
+export const metadata: Metadata = {
   title: "About REALSPACE | Design That Knows Your Home",
   description: "Learn about the REALSPACE design philosophy and our proven process.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  let certifications: CertificationData[] = [];
+
+  try {
+    certifications = (await prisma.certification.findMany({
+      where: { isPublished: true },
+      orderBy: { sortOrder: "asc" },
+      select: {
+        id: true,
+        badgeLabel: true,
+        issuingBody: true,
+        certificateType: true,
+      },
+    })) as CertificationData[];
+  } catch (error) {
+    console.error("Failed to fetch certifications:", error);
+  }
+
   // TODO: Pending client confirmation for exact stats
   const trustStats = [
     { label: "Years of Experience", value: "8+" },
@@ -61,6 +83,8 @@ export default function AboutPage() {
         bio="As the direct point of contact for every client, I ensure that the vision we agree on is exactly what gets built. By staying personally involved from the first site visit to the final handover, we eliminate the gap between design promise and execution reality."
         imageUrl="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"
       />
+
+      <Certifications certifications={certifications} />
     </div>
   );
 }

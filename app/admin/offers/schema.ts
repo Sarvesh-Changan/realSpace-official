@@ -1,9 +1,27 @@
 import { z } from "zod";
 
+const imagePathOrUrl = z
+  .string()
+  .refine(
+    (val) => {
+      if (!val) return true;
+      if (val.startsWith("/")) return true;
+      try {
+        const parsed = new URL(val);
+        return parsed.protocol === "http:" || parsed.protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    { message: "Must be a valid URL or a site-relative path starting with /" }
+  )
+  .optional()
+  .nullable();
+
 export const offerSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  imageUrl: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  imageUrl: imagePathOrUrl,
   ctaLabel: z.string().min(1, "CTA Label is required"),
   ctaLink: z.string().min(1, "CTA Link is required"),
   isActive: z.boolean().default(true),

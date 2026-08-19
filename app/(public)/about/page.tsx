@@ -17,16 +17,19 @@ export default async function AboutPage() {
   let certifications: CertificationData[] = [];
 
   try {
-    certifications = (await prisma.certification.findMany({
+    const dbCertifications = await prisma.certification.findMany({
       where: { isPublished: true },
       orderBy: { sortOrder: "asc" },
-      select: {
-        id: true,
-        badgeLabel: true,
-        issuingBody: true,
-        certificateType: true,
-      },
-    })) as CertificationData[];
+    });
+
+    certifications = dbCertifications.map((cert) => ({
+      id: cert.id,
+      title: cert.title,
+      badgeLabel: cert.badgeLabel,
+      issuingBody: cert.issuingBody,
+      description: `${cert.badgeLabel} issued by ${cert.issuingBody}.`,
+      imageUrl: cert.imageUrl || "",
+    }));
   } catch (error) {
     console.error("Failed to fetch certifications:", error);
   }

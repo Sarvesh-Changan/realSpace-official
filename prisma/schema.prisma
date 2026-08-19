@@ -55,6 +55,12 @@ enum MediaType {
   VIDEO
 }
 
+enum CertificationType {
+  COURSE
+  MEMBERSHIP
+  REGISTRATION
+}
+
 // ---------- Core content ----------
 
 model Project {
@@ -128,6 +134,21 @@ model FAQ {
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Certification {
+  id              String            @id @default(cuid())
+  title           String
+  issuingBody     String
+  certificateType CertificationType
+  issueDate       DateTime?
+  validUntil      DateTime?
+  badgeLabel      String
+  imageUrl        String?
+  isPublished     Boolean           @default(true)
+  sortOrder       Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 // ---------- Quote calculator (admin-configurable pricing) ----------

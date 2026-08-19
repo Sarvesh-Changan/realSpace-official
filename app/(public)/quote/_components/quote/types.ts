@@ -1,3 +1,10 @@
+export interface RoomConstraint {
+  defaultQty: number;
+  minQty: number;
+  maxQty: number | null;
+  isFixedFloor: boolean;
+}
+
 export interface QuoteState {
   bhkType: string;
   rooms: {
@@ -7,6 +14,8 @@ export interface QuoteState {
     bathrooms: number;
     wardrobes: number;
   };
+  roomConstraints?: Record<string, RoomConstraint>;
+  spaceDescription?: string;
   requirements: {
     interior: boolean;
     exterior: boolean;
@@ -35,4 +44,3 @@ export interface QuoteCalculationResult {
   breakdown: QuoteBreakdownItem[];
   leadId?: string;
 }
-

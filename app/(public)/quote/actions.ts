@@ -7,6 +7,40 @@ import { headers } from 'next/headers';
 import { LeadSource, LeadStatus } from '@prisma/client';
 import { sendLeadNotification } from '@/lib/email';
 
+export async function getBhkRoomDefaultsAction(bhkLabel: string) {
+  try {
+    if (!bhkLabel || bhkLabel === 'Commercial & Others') {
+      return { success: true, defaults: [] };
+    }
+
+    const bhkOpt = await prisma.pricingOption.findFirst({
+      where: { groupKey: 'bhk_type', label: bhkLabel },
+    });
+
+    if (!bhkOpt) {
+      return { success: true, defaults: [] };
+    }
+
+    const defaults = await prisma.bhkRoomDefault.findMany({
+      where: { bhkOptionId: bhkOpt.id },
+    });
+
+    return {
+      success: true,
+      defaults: defaults.map((d) => ({
+        roomGroupKey: d.roomGroupKey,
+        defaultQty: d.defaultQty,
+        minQty: d.minQty,
+        maxQty: d.maxQty,
+        isFixedFloor: d.isFixedFloor,
+      })),
+    };
+  } catch (error) {
+    console.error('Error fetching BHK room defaults:', error);
+    return { success: false, error: 'Failed to load BHK room defaults' };
+  }
+}
+
 const quoteSelectionSchema = z.object({
   bhkType: z.string().min(1, 'BHK type is required'),
   rooms: z.object({
@@ -16,6 +50,7 @@ const quoteSelectionSchema = z.object({
     bathrooms: z.number().min(0),
     wardrobes: z.number().min(0),
   }),
+  spaceDescription: z.string().optional().or(z.literal('')),
   requirements: z.object({
     interior: z.boolean(),
     exterior: z.boolean(),
@@ -76,7 +111,6 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     const input = validation.data;
 
     // 3. Honeypot check for bot submissions
-    // If the hidden websiteUrl field is filled, silently discard without erroring
     if (input.contact.websiteUrl && input.contact.websiteUrl.trim() !== '') {
       return {
         success: true,
@@ -106,8 +140,10 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
         const base = Number(bhkOpt.basePrice);
         const perUnit = bhkOpt.perUnitPrice ? Number(bhkOpt.perUnitPrice) : 0;
         const cost = base + perUnit;
-        totalBase += cost;
-        breakdown.push({ label: `${bhkOpt.label} Base`, amount: cost });
+        if (cost > 0) {
+          totalBase += cost;
+          breakdown.push({ label: `${bhkOpt.label} Base`, amount: cost });
+        }
       }
     }
 
@@ -219,6 +255,13 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       };
     }
 
+    const requirementsText = [
+      input.spaceDescription ? `Space Details: ${input.spaceDescription}` : null,
+      input.contact.requirements ? `Notes: ${input.contact.requirements}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
     // 7. Create Lead row and mark EmailOtp token as used in a single database transaction
     const [lead] = await prisma.$transaction([
       prisma.lead.create({
@@ -227,11 +270,12 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
           phone: input.contact.phone,
           email: submittedEmail,
           location: input.contact.location && input.contact.location.trim() !== '' ? input.contact.location : null,
-          requirements: input.contact.requirements && input.contact.requirements.trim() !== '' ? input.contact.requirements : null,
+          requirements: requirementsText || null,
           source: LeadSource.QUOTE_CALCULATOR,
           selections: {
             bhkType: input.bhkType,
             rooms: input.rooms,
+            spaceDescription: input.spaceDescription,
             requirements: input.requirements,
             packageTier: input.packageTier,
             additionalServices: input.additionalServices,

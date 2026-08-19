@@ -45,7 +45,8 @@ export default function QuoteCalculator() {
     if (step === 2) {
       const hasRooms = Object.values(state.rooms).some(val => val > 0);
       const hasReqs = state.requirements.interior || state.requirements.exterior;
-      return hasRooms || hasReqs;
+      const hasSpaceDesc = !!state.spaceDescription?.trim();
+      return hasRooms || hasReqs || hasSpaceDesc;
     }
     if (step === 3) return !!state.packageTier;
     return true;

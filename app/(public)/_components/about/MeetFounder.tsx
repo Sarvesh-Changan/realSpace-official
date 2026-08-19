@@ -34,7 +34,7 @@ export function MeetFounder({
               Meet {founderName}
             </h3>
             <p className="text-xs uppercase font-bold text-brand-red tracking-wider mb-4">
-              Founder & Direct Point of Contact
+              Founder Since 1989
             </p>
             <p className="text-brand-text/80 leading-relaxed text-sm md:text-base">
               {bio}

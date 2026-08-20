@@ -195,7 +195,7 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4 }}
                   key={item.id}
-                  className="break-inside-avoid relative group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#E8E2DA]"
+                  className="break-inside-avoid relative group cursor-pointer bg-white rounded-2xl overflow-hidden border border-[#E8E2DA] shadow-sm transition-all duration-400 ease-out motion-safe:lg:hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.12)] motion-safe:lg:hover:border-[#E8E2DA]/50"
                   onClick={() => setLightboxItem(item)}
                 >
                   {/* Image/Thumbnail Container */}
@@ -205,17 +205,17 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                       alt={item.title}
                       width={800}
                       height={600}
-                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      className="w-full h-auto object-cover transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-105"
                     />
 
-                    {/* Dark Overlay on Hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                    {/* Dark Overlay on Hover (Gradient) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 transition-opacity duration-400 ease-out motion-safe:lg:group-hover:opacity-100 pointer-events-none" />
 
                     {/* Video Indicator */}
                     {item.mediaType === "VIDEO" && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div
-                          className="w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md bg-white/30 border border-white/50 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                          className="w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md bg-white/30 border border-white/50 shadow-lg transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-110"
                           style={{ color: BRAND_COLORS.haladYellow }}
                         >
                           <Play className="w-6 h-6 fill-current" />
@@ -224,7 +224,7 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                     )}
 
                     {/* Top Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
+                    <div className="absolute top-4 left-4 flex flex-col gap-2 transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
                       <span
                         className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
                         style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
@@ -234,7 +234,7 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                     </div>
 
                     {/* Media Type Icon (Top Right) */}
-                    <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-1.5 rounded-md text-[#1C1C1C]">
+                    <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-1.5 rounded-md text-[#1C1C1C] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
                       {item.mediaType === "VIDEO" ? (
                         <Video className="w-4 h-4" />
                       ) : (
@@ -244,12 +244,12 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                   </div>
 
                   {/* Card Content Footer */}
-                  <div className="p-5 border-t border-[#E8E2DA]">
-                    <h3 className="text-lg font-serif font-bold text-[#1C1C1C] mb-2 group-hover:text-[#990000] transition-colors">
+                  <div className="p-5 border-t border-[#E8E2DA] bg-white relative z-10">
+                    <h3 className="text-lg font-serif font-bold text-[#1C1C1C] mb-2 transition-all duration-400 ease-out group-hover:text-[#990000] motion-safe:lg:group-hover:-translate-y-1">
                       {item.title}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-[#6D6A66]">
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-[#6D6A66] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1">
                       {item.theme && (
                         <span className="flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#E8E2DA]" />

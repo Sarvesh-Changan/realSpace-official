@@ -13,7 +13,7 @@ export default function PublicLayout({
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
-      <WhatsAppButton phoneNumber="919000000000" />
+      <WhatsAppButton phoneNumber="9869211777" />
     </div>
   );
 }

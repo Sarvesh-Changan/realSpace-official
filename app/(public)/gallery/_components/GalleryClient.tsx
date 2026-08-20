@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Play, X, Filter, Image as ImageIcon, Video } from "lucide-react";
 import type { DesignType, MediaType } from "@prisma/client";
 
@@ -64,6 +64,14 @@ function getBudgetRange(label?: string | null): BudgetRange | "ALL" {
 function GalleryContent({ categories, images }: GalleryClientProps) {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
+  
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const systemReducedMotion = useReducedMotion();
+  const shouldReduceMotion = isMounted ? !!systemReducedMotion : false;
 
   const initialCategory = useMemo(() => {
     if (categoryParam && categories.includes(categoryParam)) {
@@ -76,6 +84,18 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
   const [activeDesignType, setActiveDesignType] = useState<"ALL" | DesignType>("ALL");
   const [activeBudget, setActiveBudget] = useState<string>("ALL");
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
+
+  // Close lightbox on Escape key press
+  useEffect(() => {
+    if (!lightboxItem) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setLightboxItem(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxItem]);
 
   // Filter Logic
   const filteredItems = useMemo(() => {
@@ -103,14 +123,19 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
     <div className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C] pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <motion.div
+          className="text-center max-w-3xl mx-auto mb-12"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
+        >
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C] mb-4">
             Our <span style={{ color: BRAND_COLORS.kunkuRed }}>Gallery</span>
           </h1>
           <p className="text-lg text-[#6D6A66]">
             Explore our curated portfolio of premium interior and exterior transformations across Thane and Mumbai.
           </p>
-        </div>
+        </motion.div>
 
         {/* --- Filters Area --- */}
         <div className="mb-10 space-y-6">
@@ -186,14 +211,19 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
         {/* --- Gallery Grid (Masonry using CSS columns) --- */}
         {filteredItems.length > 0 ? (
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-            <AnimatePresence>
-              {filteredItems.map((item) => (
+            <AnimatePresence mode="popLayout">
+              {filteredItems.map((item, index) => (
                 <motion.div
-                  layout
+                  layout={shouldReduceMotion ? false : "position"}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-30px" }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{
+                    duration: shouldReduceMotion ? 0.01 : 0.35,
+                    delay: shouldReduceMotion ? 0 : Math.min(index * 0.04, 0.36),
+                    ease: "easeOut",
+                  }}
                   key={item.id}
                   className="break-inside-avoid relative group cursor-pointer bg-white rounded-2xl overflow-hidden border border-[#E8E2DA] shadow-sm transition-all duration-400 ease-out motion-safe:lg:hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.12)] motion-safe:lg:hover:border-[#E8E2DA]/50"
                   onClick={() => setLightboxItem(item)}
@@ -306,19 +336,27 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0.01 : 0.25 }}
+            onClick={() => setLightboxItem(null)}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 md:p-8 backdrop-blur-sm"
           >
             <button
-              onClick={() => setLightboxItem(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxItem(null);
+              }}
               className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
+              aria-label="Close Lightbox"
             >
               <X className="w-6 h-6" />
             </button>
 
             <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: shouldReduceMotion ? 0.01 : 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-5xl bg-[#1C1C1C] rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
             >
               {/* Left/Top: Image/Video Container */}

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { getVideoThumbnailUrl } from '@/lib/cloudinary';
 
 export interface GalleryTeaserItem {
     id: string;
@@ -107,7 +108,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                                 className="group relative aspect-[4/5] overflow-hidden rounded-2xl block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#990000]"
                             >
                                 <Image
-                                    src={item.imageUrl}
+                                    src={getVideoThumbnailUrl(item.imageUrl)}
                                     alt={item.title}
                                     fill
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"

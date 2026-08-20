@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Play, X, Filter, Image as ImageIcon, Video } from "lucide-react";
 import type { DesignType, MediaType } from "@prisma/client";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 // --- Types ---
 
@@ -124,48 +125,41 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <motion.div
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="text-center max-w-3xl mx-auto mb-8"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
         >
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C] mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C]">
             Our <span style={{ color: BRAND_COLORS.kunkuRed }}>Gallery</span>
           </h1>
-          <p className="text-lg text-[#6D6A66]">
-            Explore our curated portfolio of premium interior and exterior transformations across Thane and Mumbai.
-          </p>
         </motion.div>
 
         {/* --- Filters Area --- */}
         <div className="mb-10 space-y-6">
-          {/* Row 1: Category Pills */}
-          <div className="relative">
-            <div className="flex overflow-x-auto pb-4 scrollbar-hide gap-3 snap-x">
-              {categories.map((category) => {
-                const isActive = activeCategory === category;
-                return (
-                  <button
-                    key={category}
-                    onClick={() => setActiveCategory(category)}
-                    className={`snap-start whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border ${
-                      isActive
-                        ? "border-transparent shadow-md"
-                        : "bg-white border-[#E8E2DA] text-[#6D6A66] hover:border-[#990000] hover:text-[#990000]"
-                    }`}
-                    style={
-                      isActive
-                        ? { backgroundColor: BRAND_COLORS.kunkuRed, color: "#FFFFFF" }
-                        : {}
-                    }
-                  >
-                    {category}
-                  </button>
-                );
-              })}
-            </div>
-            {/* Fade effect for scroll indicator */}
-            <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-[#F8F5F1] to-transparent pointer-events-none md:hidden" />
+          {/* Row 1: Category Pills (Wrapped layout on same screen) */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
+            {categories.map((category) => {
+              const isActive = activeCategory === category;
+              return (
+                <button
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border ${
+                    isActive
+                      ? "border-transparent shadow-sm"
+                      : "bg-white border-[#E8E2DA] text-[#6D6A66] hover:border-[#990000] hover:text-[#990000]"
+                  }`}
+                  style={
+                    isActive
+                      ? { backgroundColor: BRAND_COLORS.kunkuRed, color: "#FFFFFF" }
+                      : {}
+                  }
+                >
+                  {category}
+                </button>
+              );
+            })}
           </div>
 
           {/* Row 2: Secondary Filters (Design Type & Budget) */}
@@ -208,9 +202,9 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
           </div>
         </div>
 
-        {/* --- Gallery Grid (Masonry using CSS columns) --- */}
+        {/* --- Gallery Grid (Uniform CSS Grid) --- */}
         {filteredItems.length > 0 ? (
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
               {filteredItems.map((item, index) => (
                 <motion.div
@@ -225,17 +219,18 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                     ease: "easeOut",
                   }}
                   key={item.id}
-                  className="break-inside-avoid relative group cursor-pointer bg-white rounded-2xl overflow-hidden border border-[#E8E2DA] shadow-sm transition-all duration-400 ease-out motion-safe:lg:hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.12)] motion-safe:lg:hover:border-[#E8E2DA]/50"
+                  className="relative flex flex-col group cursor-pointer bg-white rounded-2xl overflow-hidden border border-[#E8E2DA] shadow-sm transition-all duration-400 ease-out motion-safe:lg:hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.12)] motion-safe:lg:hover:border-[#E8E2DA]/50 h-full"
                   onClick={() => setLightboxItem(item)}
                 >
-                  {/* Image/Thumbnail Container */}
-                  <div className="relative w-full overflow-hidden bg-[#EEE6DD]">
+                  {/* Image/Thumbnail Container (Fixed 4:3 Aspect Ratio) */}
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#EEE6DD]">
                     <Image
-                      src={item.url}
+                      src={getVideoThumbnailUrl(item.url, item.mediaType)}
                       alt={item.title}
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-cover transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-105"
+                      unoptimized={item.mediaType === "VIDEO"}
                     />
 
                     {/* Dark Overlay on Hover (Gradient) */}
@@ -273,13 +268,13 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                     </div>
                   </div>
 
-                  {/* Card Content Footer */}
-                  <div className="p-5 border-t border-[#E8E2DA] bg-white relative z-10">
-                    <h3 className="text-lg font-serif font-bold text-[#1C1C1C] mb-2 transition-all duration-400 ease-out group-hover:text-[#990000] motion-safe:lg:group-hover:-translate-y-1">
+                  {/* Card Content Footer (Consistent Height) */}
+                  <div className="p-5 border-t border-[#E8E2DA] bg-white relative z-10 flex-1 flex flex-col justify-between">
+                    <h3 className="text-lg font-serif font-bold text-[#1C1C1C] mb-2 line-clamp-2 transition-all duration-400 ease-out group-hover:text-[#990000] motion-safe:lg:group-hover:-translate-y-1">
                       {item.title}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-[#6D6A66] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1">
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-[#6D6A66] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1 mt-auto">
                       {item.theme && (
                         <span className="flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#E8E2DA]" />

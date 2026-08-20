@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FolderHeart, Image as ImageIcon, Plus, Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 import { deleteCategory, deleteImage, toggleImageStatus } from "../actions";
 import { CategoryForm } from "./CategoryForm";
 import { ImageForm } from "./ImageForm";
@@ -206,11 +207,7 @@ export function GalleryTabsClient({
                                                 <tr key={img.id} className="hover:bg-neutral-50/50">
                                                     <td className="py-4 px-4">
                                                         <div className="w-16 h-12 rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
-                                                            {img.mediaType === "IMAGE" ? (
-                                                                <Image src={img.url} alt={img.title} fill className="object-cover" />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center text-xs text-neutral-400 font-medium">VIDEO</div>
-                                                            )}
+                                                            <Image src={getVideoThumbnailUrl(img.url, img.mediaType)} alt={img.title} fill className="object-cover" unoptimized={img.mediaType === "VIDEO"} />
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-4">

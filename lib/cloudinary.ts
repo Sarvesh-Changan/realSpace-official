@@ -50,3 +50,39 @@ export function getCloudinaryUrl(
   // Fallback for non-Cloudinary external URLs (e.g. Unsplash)
   return urlOrPublicId;
 }
+
+/**
+ * Helper to get a valid thumbnail image URL for both images and video URLs.
+ * For Cloudinary video URLs, it converts the video path (.mp4/.mov/etc.) to a Cloudinary-generated poster frame (.jpg).
+ */
+export function getVideoThumbnailUrl(
+  url: string | null | undefined,
+  mediaType?: string
+): string {
+  if (!url) {
+    return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800";
+  }
+
+  const isVideo = mediaType === "VIDEO" || url.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i);
+
+  if (isVideo) {
+    if (url.includes("res.cloudinary.com")) {
+      // 1. Replace video file extension with .jpg
+      let thumbUrl = url.replace(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i, ".jpg$2");
+
+      // 2. Insert start offset so_0, f_auto, q_auto parameters into /video/upload/
+      if (thumbUrl.includes("/video/upload/")) {
+        if (!thumbUrl.includes("/so_")) {
+          thumbUrl = thumbUrl.replace("/video/upload/", "/video/upload/so_0,f_auto,q_auto/");
+        }
+      } else if (thumbUrl.includes("/upload/") && !thumbUrl.includes("/so_")) {
+        thumbUrl = thumbUrl.replace("/upload/", "/upload/so_0,f_auto,q_auto/");
+      }
+
+      return thumbUrl;
+    }
+  }
+
+  return url;
+}
+

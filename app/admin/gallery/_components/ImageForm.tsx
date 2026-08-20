@@ -8,6 +8,7 @@ import { Upload, Film, Image as ImageIcon, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { imageSchema, type ImageInput } from "../schema";
 import { createImage, updateImage } from "../actions";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 interface ImageFormProps {
     initialData?: ImageInput;
@@ -277,7 +278,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                                 Preview ({currentMediaType}):
                             </p>
                             {currentMediaType === "VIDEO" ? (
-                                <video src={currentUrl} controls className="w-full max-h-48 rounded object-cover" />
+                                <video src={currentUrl} poster={getVideoThumbnailUrl(currentUrl, "VIDEO")} controls className="w-full max-h-48 rounded object-cover" />
                             ) : (
                                 <div className="relative w-full h-48 rounded overflow-hidden">
                                     <Image src={currentUrl} alt="Gallery Preview" fill className="object-cover" unoptimized={!currentUrl.includes("res.cloudinary.com")} />

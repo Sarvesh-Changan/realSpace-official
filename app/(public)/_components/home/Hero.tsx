@@ -1,8 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { Hero3DFallback } from "@/components/3d/Hero3DScene";
+
+// Lazy-load the R3F Canvas without SSR so it never blocks page hydration or text rendering
+const Hero3DScene = dynamic(() => import("@/components/3d/Hero3DScene"), {
+  ssr: false,
+  loading: () => <Hero3DFallback />,
+});
 
 export interface HeroProps {
   heroHeadline?: string;
@@ -18,40 +26,54 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
   const buttonCta = ctaText || "Get Free Quote";
 
   return (
-    <section className="relative overflow-hidden bg-brand-bg pt-24 pb-16 md:pt-32 md:pb-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="max-w-3xl mx-auto"
-        >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-brand-text mb-6">
-            {headline}
-          </h1>
-          <p className="text-lg md:text-xl text-brand-text/70 mb-10 max-w-2xl mx-auto leading-relaxed">
-            {subhead}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/projects" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full">
-                View Our Work
-              </Button>
-            </Link>
-            <Link href="/quote" className="w-full sm:w-auto">
-              <Button variant="secondary" size="lg" className="w-full">
-                {buttonCta}
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
+    <section className="relative overflow-hidden bg-brand-bg pt-20 pb-16 md:pt-28 md:pb-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Column: Headline, Subheadline, CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-7 text-center lg:text-left space-y-6"
+          >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-brand-text leading-tight">
+              {headline}
+            </h1>
+            <p className="text-lg md:text-xl text-brand-text/75 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              {subhead}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <Link href="/projects" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full shadow-md">
+                  View Our Work
+                </Button>
+              </Link>
+              <Link href="/quote" className="w-full sm:w-auto">
+                <Button variant="secondary" size="lg" className="w-full">
+                  {buttonCta}
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Right Column: 3D Scene Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="lg:col-span-5 w-full max-w-lg mx-auto lg:max-w-none h-[350px] sm:h-[420px] lg:h-[500px]"
+          >
+            <Hero3DScene />
+          </motion.div>
+
+        </div>
       </div>
 
       {/* Subtle Background Accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-full -z-10 opacity-30 pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-full -z-10 opacity-30 pointer-events-none">
+        <div className="absolute top-10 right-10 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
       </div>
     </section>
   );

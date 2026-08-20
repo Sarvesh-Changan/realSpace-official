@@ -215,6 +215,34 @@ async function main() {
     }
   }
 
+  // 7. Seed GalleryCategories
+  const galleryCategories = [
+    "Kitchen",
+    "Master Bedroom",
+    "Children Bedroom",
+    "Living Room",
+    "Bathroom",
+    "False Ceiling",
+    "Painting",
+    "Wall Design",
+    "Artifacts",
+    "Landscaping",
+    "Bungalow",
+    "Commercial",
+    "Real Estate",
+  ];
+
+  for (let i = 0; i < galleryCategories.length; i++) {
+    const name = galleryCategories[i];
+    await prisma.galleryCategory.upsert({
+      where: { name },
+      update: { sortOrder: i },
+      create: { name, sortOrder: i },
+    });
+  }
+
+  console.log(`Seeded ${galleryCategories.length} gallery categories.`);
+
   console.log("Database seeding completed successfully.");
 }
 

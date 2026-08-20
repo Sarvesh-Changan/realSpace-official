@@ -26,9 +26,14 @@ export async function POST(request: Request) {
     const paramsToSign = body.paramsToSign || body;
 
     // Security requirements per SECURITY.md §4 & ARCHITECTURE.md §5:
-    // Restricted folder "realspace-projects", expiring timestamp
+    // Restricted folders ("realspace-projects", "realspace-gallery"), expiring timestamp
+    const allowedFolders = ["realspace-projects", "realspace-gallery"];
+    const requestedFolder = body.folder || paramsToSign?.folder;
+    const folder = allowedFolders.includes(requestedFolder)
+      ? requestedFolder
+      : "realspace-projects";
+
     const timestamp = Math.floor(Date.now() / 1000);
-    const folder = "realspace-projects";
 
     const finalParams: Record<string, unknown> = {
       ...paramsToSign,

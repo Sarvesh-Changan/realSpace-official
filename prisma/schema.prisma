@@ -270,3 +270,37 @@ model Offer {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+// ---------- Gallery ----------
+
+model GalleryCategory {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  sortOrder Int            @default(0)
+  createdAt DateTime       @default(now())
+  images    GalleryImage[]
+}
+
+model GalleryImage {
+  id                String          @id @default(cuid())
+  title             String
+  categoryId        String
+  category          GalleryCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  designType        DesignType
+  mediaType         MediaType       @default(IMAGE)
+  cloudinaryId      String
+  url               String
+  theme             String?
+  approxBudgetLabel String?
+  description       String?         @db.Text
+  isFeatured        Boolean         @default(false)
+  isPublished       Boolean         @default(true)
+  sortOrder         Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([designType, categoryId])
+  @@index([isFeatured, isPublished])
+}
+

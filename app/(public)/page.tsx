@@ -5,6 +5,7 @@ import { TrustStats } from "./_components/home/TrustStats";
 import { Positioning } from "./_components/home/Positioning";
 import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
+import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
 import { WhyChooseUs } from "./_components/home/WhyChooseUs";
 import { Testimonials } from "./_components/home/Testimonials";
 import { FinalCta } from "./_components/home/FinalCta";
@@ -57,6 +58,12 @@ export default async function HomePage() {
     clientRole?: string | null;
     rating?: number;
   }> = [];
+  let rawGalleryImages: Array<{
+    id: string;
+    title: string;
+    url: string;
+    category: { name: string } | null;
+  }> = [];
 
   try {
     const now = new Date();
@@ -71,6 +78,7 @@ export default async function HomePage() {
       fetchedExterior,
       fetchedServices,
       fetchedTestimonials,
+      fetchedGalleryImages,
     ] = await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
       prisma.offer.findMany({
@@ -123,6 +131,12 @@ export default async function HomePage() {
         orderBy: { sortOrder: "asc" },
         take: 3,
       }),
+      prisma.galleryImage.findMany({
+        where: { isPublished: true },
+        include: { category: true },
+        orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+        take: 8,
+      }),
     ]);
 
     siteSettings = fetchedSettings;
@@ -131,6 +145,7 @@ export default async function HomePage() {
     rawExteriorProjects = fetchedExterior;
     services = fetchedServices;
     testimonials = fetchedTestimonials;
+    rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
     console.error("Error loading home page data from Prisma:", error);
     // Graceful fallback: empty states will be rendered by subcomponents
@@ -169,6 +184,14 @@ export default async function HomePage() {
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800",
   }));
 
+  // Map database gallery image models to GalleryTeaserItem props
+  const galleryTeaserItems: GalleryTeaserItem[] = rawGalleryImages.map((img) => ({
+    id: img.id,
+    title: img.title,
+    category: img.category?.name || "Gallery",
+    imageUrl: img.url,
+  }));
+
   return (
     <>
       <Hero
@@ -192,6 +215,7 @@ export default async function HomePage() {
         viewAllLink="/projects?type=exterior"
       />
       <Services services={services} />
+      <GalleryTeaser items={galleryTeaserItems} />
       <WhyChooseUs />
       <Testimonials testimonials={testimonials} />
       <FinalCta ctaText={siteSettings?.ctaText} />

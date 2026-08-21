@@ -7,7 +7,7 @@ import { ProjectImage } from "../page";
 import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 const FALLBACK_IMAGE_URL =
-  "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1600";
+  "/images/placeholder-image.png";
 
 export function ProjectGallery({ images }: { images: ProjectImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);

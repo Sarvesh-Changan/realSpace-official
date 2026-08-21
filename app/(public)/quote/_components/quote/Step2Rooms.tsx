@@ -41,12 +41,6 @@ export default function Step2Rooms({ state, updateState }: Props) {
     });
   };
 
-  const toggleRequirement = (key: keyof QuoteState['requirements']) => {
-    updateState({
-      requirements: { ...state.requirements, [key]: !state.requirements[key] },
-    });
-  };
-
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -56,46 +50,6 @@ export default function Step2Rooms({ state, updateState }: Props) {
             ? 'Configure room counts manually and describe your commercial space requirements below.'
             : 'Adjust room counts for your selected property type.'}
         </p>
-      </div>
-
-      {/* Requirement Toggles */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        <button
-          type="button"
-          onClick={() => toggleRequirement('interior')}
-          className={clsx(
-            'flex-1 p-4 rounded-xl border-2 transition-all flex items-center justify-between cursor-pointer',
-            state.requirements.interior ? 'border-[#C8A96A] bg-[#C8A96A]/5' : 'border-[#E8E2DA] bg-white'
-          )}
-        >
-          <span className="font-medium text-[#1C1C1C]">Interior Design</span>
-          <div
-            className={clsx(
-              'w-5 h-5 rounded border flex items-center justify-center',
-              state.requirements.interior ? 'bg-[#C8A96A] border-[#C8A96A]' : 'border-[#E8E2DA]'
-            )}
-          >
-            {state.requirements.interior && <div className="w-2.5 h-2.5 bg-white rounded-sm" />}
-          </div>
-        </button>
-        <button
-          type="button"
-          onClick={() => toggleRequirement('exterior')}
-          className={clsx(
-            'flex-1 p-4 rounded-xl border-2 transition-all flex items-center justify-between cursor-pointer',
-            state.requirements.exterior ? 'border-[#C8A96A] bg-[#C8A96A]/5' : 'border-[#E8E2DA] bg-white'
-          )}
-        >
-          <span className="font-medium text-[#1C1C1C]">Exterior / Architecture</span>
-          <div
-            className={clsx(
-              'w-5 h-5 rounded border flex items-center justify-center',
-              state.requirements.exterior ? 'bg-[#C8A96A] border-[#C8A96A]' : 'border-[#E8E2DA]'
-            )}
-          >
-            {state.requirements.exterior && <div className="w-2.5 h-2.5 bg-white rounded-sm" />}
-          </div>
-        </button>
       </div>
 
       {/* Room Steppers */}

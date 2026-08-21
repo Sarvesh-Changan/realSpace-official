@@ -155,7 +155,7 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
                   }`}
                 >
                   <Image
-                    src={offer.imageUrl || "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800"}
+                    src={offer.imageUrl || "/images/placeholder-image.png"}
                     alt={offer.title}
                     fill
                     className="object-cover"

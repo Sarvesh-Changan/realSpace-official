@@ -12,7 +12,7 @@ export function getCloudinaryUrl(
   } = {}
 ): string {
   if (!urlOrPublicId) {
-    return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800";
+    return "/images/placeholder-image.png";
   }
 
   // If it's a local relative path (starts with "/")
@@ -65,7 +65,7 @@ export function getVideoThumbnailUrl(
   mediaType?: string
 ): string {
   if (!url) {
-    return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800";
+    return "/images/placeholder-image.png";
   }
 
   if (url.startsWith("/")) {

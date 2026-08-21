@@ -138,7 +138,7 @@ export default async function ProjectDetailPage({
   if (projectImages.length === 0) {
     projectImages.push({
       id: "fallback-cover",
-      url: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=1600",
+      url: "/images/placeholder-image.png",
       altText: project.title,
     });
   }
@@ -166,7 +166,7 @@ export default async function ProjectDetailPage({
       category: formatCategory(p.category),
       imageUrl:
         p.images[0]?.url ||
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800",
+        "/images/placeholder-image.png",
     })
   );
 

@@ -45,7 +45,7 @@ export default async function AboutPage() {
       <AboutHero
         headline="Design That Knows Your Home Before It Begins"
         body="At REALSPACE, every interior project starts with your space — not a mood board. The founder and the REALSPACE team map your room's every constraint — beam positions, window orientation, natural light — before a single design decision is made. The result is a home that feels inevitable, not imposed."
-        imageUrl="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=1200"
+        imageUrl="/images/placeholder-image.png"
       />
 
       <TrustIndicators stats={trustStats} />

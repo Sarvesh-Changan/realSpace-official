@@ -48,7 +48,7 @@ export default async function ProjectsPage() {
       completionYear: project.completionYear,
       coverImageUrl:
         project.images[0]?.url ||
-        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800",
+        "/images/placeholder-image.png",
       altText: project.images[0]?.altText || project.title,
     }));
   } catch (error) {

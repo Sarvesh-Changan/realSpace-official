@@ -11,9 +11,9 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  /* PLACEHOLDER HEX VALUES — Pending client's actual REALSPACE logo file */
-  --color-brand-red: #D6342C;
-  --color-brand-yellow: #F2B705;
+  /* REALSPACE Brand Colors (Kunku Red & Halad Yellow) */
+  --color-brand-red: #990000;
+  --color-brand-yellow: #FECC00;
   --color-brand-bg: #FFFFFF;
   --color-brand-bgAlt: #F7F7F5;
   --color-brand-text: #1F1F1F;

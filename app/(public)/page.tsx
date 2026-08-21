@@ -169,7 +169,7 @@ export default async function HomePage() {
     category: formatCategory(p.category),
     imageUrl:
       p.images[0]?.url ||
-      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800",
+      "/images/placeholder-image.png",
   }));
 
   const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => ({
@@ -180,7 +180,7 @@ export default async function HomePage() {
     category: formatCategory(p.category),
     imageUrl:
       p.images[0]?.url ||
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800",
+      "/images/placeholder-image.png",
   }));
 
   // Map database gallery image models to GalleryTeaserItem props

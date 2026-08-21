@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { ContactForm } from "./_components/ContactForm";
+import { PowderSplashBackground } from "@/components/PowderSplashBackground";
 
 export const revalidate = 60; // Revalidate dynamic contact settings every 60 seconds
 
@@ -33,16 +34,19 @@ export default async function ContactPage() {
     <div className="flex flex-col pt-24 md:pt-32 pb-16 md:pb-24">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
-        <div className="mb-12 md:mb-20 max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
-            Let's discuss your space.
-          </h1>
-          <p className="text-lg text-neutral-600 leading-relaxed">
-            Whether you are looking for a complete home interior overhaul or a
-            striking new building facade, our team is ready to bring your vision
-            to life.
-          </p>
-          <div className="w-20 h-1 bg-brand-yellow rounded-full mt-8"></div>
+        <div className="relative overflow-hidden rounded-3xl p-8 md:p-12 mb-12 md:mb-20 max-w-4xl border border-neutral-100">
+          <PowderSplashBackground compact />
+          <div className="relative z-10">
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+              Let's discuss your space.
+            </h1>
+            <p className="text-lg text-neutral-600 leading-relaxed">
+              Whether you are looking for a complete home interior overhaul or a
+              striking new building facade, our team is ready to bring your vision
+              to life.
+            </p>
+            <div className="w-20 h-1 bg-brand-yellow rounded-full mt-8"></div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8">

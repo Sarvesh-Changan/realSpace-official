@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Play, X, Filter, Image as ImageIcon, Video } from "lucide-react";
 import type { DesignType, MediaType } from "@prisma/client";
 import { getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { PowderSplashBackground } from "@/components/PowderSplashBackground";
 
 // --- Types ---
 
@@ -124,16 +125,19 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
     <div className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C] pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <motion.div
-          className="text-center max-w-3xl mx-auto mb-8"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
-        >
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C]">
-            Our <span style={{ color: BRAND_COLORS.kunkuRed }}>Gallery</span>
-          </h1>
-        </motion.div>
+        <div className="relative overflow-hidden rounded-2xl py-8 mb-8">
+          <PowderSplashBackground compact />
+          <motion.div
+            className="relative z-10 text-center max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C]">
+              Our <span style={{ color: BRAND_COLORS.kunkuRed }}>Gallery</span>
+            </h1>
+          </motion.div>
+        </div>
 
         {/* --- Filters Area --- */}
         <div className="mb-10 space-y-6">

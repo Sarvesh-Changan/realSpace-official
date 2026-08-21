@@ -72,35 +72,41 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
     <div className="flex flex-col gap-4">
       {/* Main Active Media Viewer */}
       <div
-        onClick={() => setIsLightboxOpen(true)}
-        className="group relative w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-neutral-900 cursor-pointer shadow-md border border-neutral-200/60"
+        className="group relative w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-neutral-900 shadow-md border border-neutral-200/60"
       >
-        <Image
-          src={getResolvedSrc(activeMedia, false)}
-          alt={activeMedia?.altText || "Project main media"}
-          fill
-          priority
-          sizes="(max-width: 1280px) 100vw, 1280px"
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          onError={() => handleImageError(activeMedia.id, activeMedia.url)}
-          unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
-        />
-
-        {/* Video Overlay Indicator if active media is video */}
-        {(activeMedia?.mediaType === "VIDEO" ||
-          activeMedia?.url?.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i)) && (
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
-            <div className="w-16 h-16 rounded-full bg-brand-red/90 text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-              <Play className="w-7 h-7 fill-current ml-1" />
+        {activeMedia?.mediaType === "VIDEO" ||
+        activeMedia?.url?.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i) ||
+        activeMedia?.url?.includes("/video/upload/") ? (
+          <video
+            key={activeMedia.id}
+            src={activeMedia.url}
+            controls
+            playsInline
+            poster={getVideoThumbnailUrl(activeMedia.url, activeMedia.mediaType)}
+            className="w-full h-full object-contain bg-black"
+          />
+        ) : (
+          <div
+            onClick={() => setIsLightboxOpen(true)}
+            className="relative w-full h-full cursor-pointer"
+          >
+            <Image
+              src={getResolvedSrc(activeMedia, false)}
+              alt={activeMedia?.altText || "Project main media"}
+              fill
+              priority
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              onError={() => handleImageError(activeMedia.id, activeMedia.url)}
+              unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
+            />
+            {/* Expand Overlay Badge */}
+            <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span>View Fullscreen</span>
             </div>
           </div>
         )}
-
-        {/* Expand Overlay Badge */}
-        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-          <Maximize2 className="w-3.5 h-3.5" />
-          <span>View Fullscreen</span>
-        </div>
 
         {/* Navigation Arrows for Main Viewer if multiple images */}
         {images.length > 1 && (
@@ -108,14 +114,14 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
             <button
               onClick={handlePrev}
               aria-label="Previous slide"
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={handleNext}
               aria-label="Next slide"
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -195,15 +201,29 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
             )}
 
             <div className="relative w-full h-full max-w-5xl max-h-[75vh] flex items-center justify-center">
-              <Image
-                src={getResolvedSrc(activeMedia, false)}
-                alt={activeMedia.altText || "Fullscreen media view"}
-                fill
-                sizes="100vw"
-                className="object-contain"
-                onError={() => handleImageError(activeMedia.id, activeMedia.url)}
-                unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
-              />
+              {activeMedia?.mediaType === "VIDEO" ||
+              activeMedia?.url?.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i) ||
+              activeMedia?.url?.includes("/video/upload/") ? (
+                <video
+                  key={activeMedia.id}
+                  src={activeMedia.url}
+                  controls
+                  autoPlay
+                  playsInline
+                  poster={getVideoThumbnailUrl(activeMedia.url, activeMedia.mediaType)}
+                  className="max-w-full max-h-[75vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
+                />
+              ) : (
+                <Image
+                  src={getResolvedSrc(activeMedia, false)}
+                  alt={activeMedia.altText || "Fullscreen media view"}
+                  fill
+                  sizes="100vw"
+                  className="object-contain"
+                  onError={() => handleImageError(activeMedia.id, activeMedia.url)}
+                  unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
+                />
+              )}
             </div>
 
             {images.length > 1 && (

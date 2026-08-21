@@ -74,6 +74,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
                 width={169}
                 height={32}
                 className="h-8 w-auto"
+                style={{ width: "auto" }}
               />
             </Link>
             <p className="text-brand-text/70 text-sm leading-relaxed max-w-sm">

@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { ServiceGrid, type ServiceItem } from "../_components/ServiceGrid";
 import { ServicesHeader } from "../_components/ServicesHeader";
 import { ServicesCta } from "../_components/ServicesCta";
@@ -16,11 +18,16 @@ import {
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Exterior & Elevation Services | REALSPACE Thane",
-  description:
-    "Striking architectural facades, 3D elevation designs, and balcony transformations for villas and commercial buildings in Thane.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `Exterior & Elevation Services | ${companyName}`,
+    description: `Striking architectural facades, 3D elevation designs, and balcony transformations for villas and commercial buildings in Thane by ${companyName}.`,
+    path: "/services/exterior",
+  });
+}
 
 const defaultExteriorServices: ServiceItem[] = [
   {

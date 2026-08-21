@@ -46,27 +46,45 @@ function formatCategory(category: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+import type { Metadata } from "next";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
+}): Promise<Metadata> {
   const { slug } = await params;
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
   try {
     const project = await prisma.project.findUnique({
       where: { slug },
     });
 
     if (!project) {
-      return { title: "Project Not Found | REALSPACE" };
+      return constructMetadata({
+        title: `Project Not Found`,
+        path: `/projects/${slug}`,
+      });
     }
 
-    return {
-      title: `${project.title} | REALSPACE Projects`,
-      description: project.description.slice(0, 160),
-    };
+    const title = `${project.title} (${project.location})`;
+    const description = project.description
+      ? project.description.slice(0, 160)
+      : `${project.title} - ${project.category} design project in ${project.location} by ${companyName}.`;
+
+    return constructMetadata({
+      title,
+      description,
+      path: `/projects/${slug}`,
+    });
   } catch {
-    return { title: "Project Detail | REALSPACE" };
+    return constructMetadata({
+      title: "Project Detail",
+      path: `/projects/${slug}`,
+    });
   }
 }
 

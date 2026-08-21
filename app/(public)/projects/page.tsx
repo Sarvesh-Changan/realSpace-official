@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import {
   ProjectFilterGrid,
   type ProjectCardData,
@@ -6,11 +8,16 @@ import {
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export const metadata = {
-  title: "Interior & Exterior Projects | REALSPACE Thane",
-  description:
-    "Explore our portfolio of completed residential and commercial interior & exterior design projects in Thane and Mumbai.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `Featured Portfolio & Projects | ${companyName}`,
+    description: "Explore our portfolio of completed residential and commercial interior & exterior design projects in Thane, Mumbai, and Navi Mumbai.",
+    path: "/projects",
+  });
+}
 
 export default async function ProjectsPage() {
   let formattedProjects: ProjectCardData[] = [];

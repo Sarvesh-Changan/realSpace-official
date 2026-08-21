@@ -1,7 +1,20 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { GalleryClient, type GalleryItem } from "./_components/GalleryClient";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `Design Gallery & Inspiration | ${companyName}`,
+    description: `Browse photos and videos of interior and exterior design ideas, modular kitchens, living rooms, and bedrooms by ${companyName}.`,
+    path: "/gallery",
+  });
+}
 
 export default async function GalleryPage() {
   const [dbCategories, dbImages] = await Promise.all([

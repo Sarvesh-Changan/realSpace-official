@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Hero } from "./_components/home/Hero";
 import { ActiveOffers, type OfferType } from "./_components/home/ActiveOffers";
 import { TrustStats } from "./_components/home/TrustStats";
@@ -10,6 +12,19 @@ import { Testimonials } from "./_components/home/Testimonials";
 import { FinalCta } from "./_components/home/FinalCta";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+  const headline = settings?.heroHeadline || "Interior & Exterior Design Studio in Thane";
+  const subhead = settings?.heroSubhead || "Transform your residential or commercial space with REALSPACE, Thane's premier design studio.";
+
+  return constructMetadata({
+    title: `${companyName} — ${headline}`,
+    description: subhead,
+    path: "",
+  });
+}
 
 function formatCategory(category: string): string {
   return category

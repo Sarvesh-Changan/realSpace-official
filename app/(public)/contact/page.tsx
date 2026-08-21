@@ -1,14 +1,23 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { ContactForm } from "./_components/ContactForm";
 
 export const revalidate = 60; // Revalidate dynamic contact settings every 60 seconds
 
-export const metadata = {
-  title: "Contact Us | REALSPACE Thane",
-  description:
-    "Get in touch with REALSPACE for your interior and exterior design requirements in Thane and Mumbai.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+  const phone = settings?.phone || "+91 98692 11777";
+  const address = settings?.address || "Thane, Maharashtra";
+
+  return constructMetadata({
+    title: `Contact Us | ${companyName} Studio Thane`,
+    description: `Get in touch with ${companyName} at ${phone} or visit our studio at ${address} for your interior and exterior design requirements in Thane and Mumbai.`,
+    path: "/contact",
+  });
+}
 
 export default async function ContactPage() {
   let siteSettings = null;

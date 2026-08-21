@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { AboutHero } from "../_components/about/AboutHero";
 import { TrustIndicators } from "../_components/about/TrustIndicators";
 import { MeetFounder } from "../_components/about/MeetFounder";
@@ -8,10 +9,16 @@ import { Certifications, type CertificationData } from "./_components/Certificat
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "About REALSPACE | Design That Knows Your Home",
-  description: "Learn about the REALSPACE design philosophy and our proven process.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `About Us | ${companyName} Studio`,
+    description: `Learn about ${companyName}, Thane's trusted interior and exterior design studio founded by Vijay Chawan. Discover our design philosophy and 6-step execution process.`,
+    path: "/about",
+  });
+}
 
 const defaultProcessSteps = [
   {

@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { ServiceGrid, type ServiceItem } from "./_components/ServiceGrid";
 import { ServicesHeader } from "./_components/ServicesHeader";
 import { ServicesCta } from "./_components/ServicesCta";
@@ -23,11 +25,16 @@ import {
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export const metadata = {
-  title: "Our Services | Interior & Exterior Design | REALSPACE Thane",
-  description:
-    "From a compact 1BHK kitchen redesign to a complete 3BHK turnkey transformation, REALSPACE handles every square foot with the same level of care.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `Interior & Exterior Design Services | ${companyName}`,
+    description: `End-to-end interior design, modular kitchens, living rooms, bedrooms, and exterior elevations in Thane by ${companyName}.`,
+    path: "/services",
+  });
+}
 
 // Default fallback services if DB is empty
 const defaultInteriorServices: ServiceItem[] = [

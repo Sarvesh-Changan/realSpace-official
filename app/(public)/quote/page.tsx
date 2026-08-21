@@ -1,9 +1,17 @@
-import QuoteCalculator from '@/app/(public)/quote/_components/quote/index';
+import type { Metadata } from "next";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
+import QuoteCalculator from "@/app/(public)/quote/_components/quote/index";
 
-export const metadata = {
-  title: 'Get Free Quote | REALSPACE',
-  description: 'Calculate your approximate interior design estimate with our interactive quote calculator.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `Get Instant Quote & Cost Estimator | ${companyName}`,
+    description: `Calculate your approximate interior and exterior design estimate with our interactive quote calculator for homes and offices in Thane.`,
+    path: "/quote",
+  });
+}
 
 export default function QuotePage() {
   return (

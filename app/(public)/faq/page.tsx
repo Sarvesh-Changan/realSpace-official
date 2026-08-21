@@ -1,13 +1,20 @@
+import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { FaqAccordion, type FaqItem } from "./_components/FaqAccordion";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export const metadata = {
-  title: "Frequently Asked Questions | REALSPACE Thane",
-  description:
-    "Answers to common questions about interior design costs, timelines, 3D visualization, and execution at REALSPACE.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings?.companyName || "REALSPACE";
+
+  return constructMetadata({
+    title: `Frequently Asked Questions | ${companyName}`,
+    description: `Answers to common questions about interior design costs, timelines, 3D visualization, materials, and execution process at ${companyName}.`,
+    path: "/faq",
+  });
+}
 
 const defaultFaqs: FaqItem[] = [
   {

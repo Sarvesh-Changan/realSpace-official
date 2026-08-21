@@ -24,7 +24,7 @@ export function MeetFounder({
                 alt={founderName}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
-                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                className="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
                 unoptimized={!imageUrl.includes("res.cloudinary.com")}
               />
             </div>

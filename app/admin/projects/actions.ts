@@ -54,6 +54,7 @@ export async function createProject(data: ProjectInput) {
           create: projectData.images.map((img, idx) => ({
             cloudinaryId: img.cloudinaryId || `img-${Date.now()}-${idx}`,
             url: img.url,
+            mediaType: img.mediaType || (img.url.match(/\.(mp4|mov|webm|ogv|m4v)/i) || img.url.includes("/video/upload/") ? "VIDEO" : "IMAGE"),
             altText: img.altText,
             isCoverImage: img.isCoverImage,
             sortOrder: img.sortOrder ?? idx,
@@ -127,6 +128,7 @@ export async function updateProject(id: string, data: ProjectInput) {
             create: projectData.images.map((img, idx) => ({
               cloudinaryId: img.cloudinaryId || `img-${Date.now()}-${idx}`,
               url: img.url,
+              mediaType: img.mediaType || (img.url.match(/\.(mp4|mov|webm|ogv|m4v)/i) || img.url.includes("/video/upload/") ? "VIDEO" : "IMAGE"),
               altText: img.altText,
               isCoverImage: img.isCoverImage,
               sortOrder: img.sortOrder ?? idx,

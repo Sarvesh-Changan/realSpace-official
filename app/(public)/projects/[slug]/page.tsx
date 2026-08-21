@@ -11,6 +11,7 @@ export interface ProjectImage {
   id: string;
   url: string;
   altText: string;
+  mediaType?: "IMAGE" | "VIDEO";
 }
 
 export interface ProjectData {
@@ -130,6 +131,7 @@ export default async function ProjectDetailPage({
     id: img.id,
     url: img.url,
     altText: img.altText || project.title,
+    mediaType: img.mediaType,
   }));
 
   // Fallback image if project has no image records

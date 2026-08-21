@@ -52,6 +52,7 @@ export default async function EditProjectPage({
       url: img.url,
       cloudinaryId: img.cloudinaryId,
       altText: img.altText,
+      mediaType: img.mediaType,
       isCoverImage: img.isCoverImage,
       sortOrder: img.sortOrder,
     })),

@@ -5,6 +5,7 @@ export const projectImageSchema = z.object({
   url: z.string().url("Must be a valid image URL"),
   cloudinaryId: z.string().min(1, "Cloudinary ID is required"),
   altText: z.string().min(1, "Alt text is required for accessibility"),
+  mediaType: z.enum(["IMAGE", "VIDEO"]).optional(),
   isCoverImage: z.boolean(),
   sortOrder: z.number(),
 });

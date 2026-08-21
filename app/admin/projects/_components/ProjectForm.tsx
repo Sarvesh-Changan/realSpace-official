@@ -9,7 +9,8 @@ import { Plus, Trash2, GripVertical, Image as ImageIcon, Upload, Loader2 } from 
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/Button";
 import { projectSchema, type ProjectInput } from "../schema";
-import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { Play } from "lucide-react";
 
 export function ProjectForm({
     initialData,
@@ -109,9 +110,14 @@ export function ProjectForm({
                 formData.append("signature", signature);
                 formData.append("folder", folder || "realspace-projects");
 
+                const isVideo =
+                  file.type.startsWith("video/") ||
+                  Boolean(file.name.match(/\.(mp4|mov|webm|ogv|m4v)$/i));
+                const resourceType = isVideo ? "video" : "auto";
+
                 const targetCloud = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
                 const uploadRes = await fetch(
-                    `https://api.cloudinary.com/v1_1/${targetCloud}/auto/upload`,
+                    `https://api.cloudinary.com/v1_1/${targetCloud}/${resourceType}/upload`,
                     {
                         method: "POST",
                         body: formData,
@@ -124,11 +130,13 @@ export function ProjectForm({
                 }
 
                 const uploadData = await uploadRes.json();
+                const isVideoResult = isVideo || uploadData.resource_type === "video" || (uploadData.secure_url && uploadData.secure_url.includes("/video/upload/"));
 
                 // 3. Append returned secure_url and public_id to images field array
                 append({
                     url: uploadData.secure_url || uploadData.url,
                     cloudinaryId: uploadData.public_id,
+                    mediaType: isVideoResult ? "VIDEO" : "IMAGE",
                     altText: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
                     isCoverImage: fields.length === 0 && i === 0,
                     sortOrder: fields.length + i,
@@ -380,6 +388,7 @@ export function ProjectForm({
                                     append({
                                         url: result.info.secure_url || result.info.url,
                                         cloudinaryId: result.info.public_id,
+                                        mediaType: (result.info.resource_type === "video" || (result.info.secure_url && result.info.secure_url.includes("/video/upload/"))) ? "VIDEO" : "IMAGE",
                                         altText: result.info.original_filename || "Project media",
                                         isCoverImage: fields.length === 0,
                                         sortOrder: fields.length,
@@ -421,13 +430,26 @@ export function ProjectForm({
                                 {/* Thumbnail Preview */}
                                 <div className="relative w-24 h-24 rounded-md overflow-hidden bg-neutral-200 border border-neutral-300 flex-shrink-0">
                                     {currentUrl ? (
-                                        <Image
-                                            src={getCloudinaryUrl(currentUrl, { width: 200, height: 200, crop: "fill" })}
-                                            alt="Preview"
-                                            fill
-                                            className="object-cover"
-                                            unoptimized={!currentUrl.includes("res.cloudinary.com")}
-                                        />
+                                        <>
+                                            <Image
+                                                src={
+                                                    (watchedImages[index]?.mediaType === "VIDEO" || field.mediaType === "VIDEO" || currentUrl.match(/\.(mp4|mov|webm|ogv|m4v)/i) || currentUrl.includes("/video/upload/"))
+                                                        ? getVideoThumbnailUrl(currentUrl, "VIDEO")
+                                                        : getCloudinaryUrl(currentUrl, { width: 200, height: 200, crop: "fill" })
+                                                }
+                                                alt="Preview"
+                                                fill
+                                                className="object-cover"
+                                                unoptimized={!currentUrl.includes("res.cloudinary.com")}
+                                            />
+                                            {(watchedImages[index]?.mediaType === "VIDEO" || field.mediaType === "VIDEO" || currentUrl.match(/\.(mp4|mov|webm|ogv|m4v)/i) || currentUrl.includes("/video/upload/")) && (
+                                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
+                                                    <div className="w-7 h-7 rounded-full bg-brand-red text-white flex items-center justify-center shadow">
+                                                        <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">
                                             No preview

@@ -88,7 +88,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
               Quick Links
             </h4>
             <ul className="space-y-4">
-              {["Projects", "About", "Contact", "Get Free Quote"].map((link) => {
+              {["Projects", "About", "FAQ", "Contact", "Get Free Quote"].map((link) => {
                 const href = link === "Get Free Quote" ? "/quote" : `/${link.toLowerCase()}`;
                 return (
                   <li key={link}>

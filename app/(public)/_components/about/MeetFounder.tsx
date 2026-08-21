@@ -18,13 +18,13 @@ export function MeetFounder({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-brand-bg p-8 md:p-12 rounded-3xl border border-brand-bgAlt shadow-sm grid md:grid-cols-3 gap-8 items-center">
           {imageUrl && (
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-brand-bgAlt">
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-brand-bgAlt group">
               <Image
                 src={getCloudinaryUrl(imageUrl, { width: 500 })}
                 alt={founderName}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 unoptimized={!imageUrl.includes("res.cloudinary.com")}
               />
             </div>

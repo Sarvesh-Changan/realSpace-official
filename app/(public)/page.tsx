@@ -6,7 +6,6 @@ import { Positioning } from "./_components/home/Positioning";
 import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
-import { WhyChooseUs } from "./_components/home/WhyChooseUs";
 import { Testimonials } from "./_components/home/Testimonials";
 import { FinalCta } from "./_components/home/FinalCta";
 
@@ -216,7 +215,6 @@ export default async function HomePage() {
       />
       <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />
-      <WhyChooseUs />
       <Testimonials testimonials={testimonials} />
       <FinalCta ctaText={siteSettings?.ctaText} />
     </>

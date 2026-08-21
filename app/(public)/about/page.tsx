@@ -54,7 +54,7 @@ export default async function AboutPage() {
         // TODO: Replace placeholder name and bio with actual founder details
         founderName="Vijay Chawan"
         bio="As the direct point of contact for every client, I ensure that the vision we agree on is exactly what gets built. By staying personally involved from the first site visit to the final handover, we eliminate the gap between design promise and execution reality."
-        imageUrl="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"
+        imageUrl="/images/owner_image.jpeg"
       />
 
       <Certifications certifications={certifications} />

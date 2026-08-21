@@ -15,6 +15,11 @@ export function getCloudinaryUrl(
     return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800";
   }
 
+  // If it's a local relative path (starts with "/")
+  if (urlOrPublicId.startsWith("/")) {
+    return urlOrPublicId;
+  }
+
   const { width, height, crop = "limit", quality = "auto", format = "auto" } = options;
 
   // If it's a full Cloudinary URL
@@ -61,6 +66,10 @@ export function getVideoThumbnailUrl(
 ): string {
   if (!url) {
     return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800";
+  }
+
+  if (url.startsWith("/")) {
+    return url;
   }
 
   const isVideo = mediaType === "VIDEO" || url.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i);

@@ -86,11 +86,15 @@ export default function Step1BHK({ state, updateState }: Props) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-serif text-[#1C1C1C] mb-2">What type of property do you have?</h2>
-        <p className="text-[#6D6A66]">Select your property size to help us estimate the scope of work.</p>
+        <h2 className="text-xl sm:text-2xl font-serif text-[#1C1C1C] mb-2">
+          What type of property do you have?
+        </h2>
+        <p className="text-sm sm:text-base text-[#6D6A66]">
+          Select your property size to help us estimate the scope of work.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         {OPTIONS.map((option) => {
           const isSelected = state.bhkType === option;
           const isLoading = loadingBhk === option;
@@ -102,8 +106,8 @@ export default function Step1BHK({ state, updateState }: Props) {
               onClick={() => handleSelectBhk(option)}
               disabled={isLoading}
               className={clsx(
-                "relative p-6 rounded-xl border-2 transition-all duration-200 text-left cursor-pointer",
-                "hover:shadow-md disabled:opacity-80",
+                "relative p-4 sm:p-6 min-h-[56px] rounded-xl border-2 transition-all duration-200 text-left cursor-pointer",
+                "hover:shadow-md disabled:opacity-80 flex items-center justify-between",
                 isSelected
                   ? "border-[#C8A96A] bg-[#C8A96A]/5"
                   : "border-[#E8E2DA] bg-white hover:border-[#C8A96A]/50"

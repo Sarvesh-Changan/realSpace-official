@@ -122,13 +122,13 @@ export function OtpVerification({
   };
 
   return (
-    <div className="w-full bg-white border border-neutral-200 rounded-xl p-6 sm:p-8 shadow-sm">
+    <div className="w-full bg-white border border-neutral-200 rounded-xl p-4 sm:p-6 md:p-8 shadow-sm">
       {/* Header */}
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-neutral-900 mb-2">
+      <div className="mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-bold text-neutral-900 mb-1.5 sm:mb-2">
           Email Verification
         </h3>
-        <p className="text-sm text-neutral-500 leading-relaxed">
+        <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed">
           {step === "input_email"
             ? "To save your estimate and receive a detailed quote, please verify your email address."
             : step === "verify_otp"
@@ -139,22 +139,22 @@ export function OtpVerification({
 
       {/* Error Message */}
       {error && (
-        <div className="mb-6 flex items-start gap-3 p-4 rounded-lg bg-red-50 border border-red-100 text-red-700 text-sm animate-in fade-in">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="mb-4 sm:mb-6 flex items-start gap-2.5 p-3 sm:p-4 rounded-lg bg-red-50 border border-red-100 text-red-700 text-xs sm:text-sm animate-in fade-in">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
           <p>{error}</p>
         </div>
       )}
 
       {/* Content Area */}
-      <div className="space-y-5">
-        {/* Email Field (Always visible, styling changes based on step) */}
+      <div className="space-y-4 sm:space-y-5">
+        {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1.5">
+          <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-neutral-700 mb-1 sm:mb-1.5">
             Email Address
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className={`w-5 h-5 ${step === "verified" ? "text-green-500" : "text-neutral-400"}`} />
+              <Mail className={`w-4 h-4 sm:w-5 sm:h-5 ${step === "verified" ? "text-green-500" : "text-neutral-400"}`} />
             </div>
             <input
               type="email"
@@ -162,7 +162,7 @@ export function OtpVerification({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={step !== "input_email" || isLoading}
-              className={`block w-full pl-10 pr-3 py-2.5 rounded-lg border text-sm transition-colors
+              className={`block w-full pl-9 sm:pl-10 pr-3 py-2.5 rounded-lg border text-base sm:text-sm transition-colors
                 ${
                   step === "verified"
                     ? "bg-green-50 border-green-200 text-green-800"
@@ -176,7 +176,7 @@ export function OtpVerification({
             />
             {step === "verified" && (
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
               </div>
             )}
           </div>
@@ -185,12 +185,13 @@ export function OtpVerification({
         {/* Email Step Actions */}
         {step === "input_email" && (
           <button
+            type="button"
             onClick={handleSendCode}
             disabled={isLoading || !email}
-            className="w-full flex items-center justify-center gap-2 bg-brand-red text-white py-3 px-4 rounded-lg font-medium hover:bg-brand-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-[44px] flex items-center justify-center gap-2 bg-brand-red text-white py-3 px-4 rounded-lg font-medium hover:bg-brand-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm cursor-pointer"
           >
             {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
             ) : (
               <>
                 Send Verification Code
@@ -203,7 +204,7 @@ export function OtpVerification({
         {/* OTP Step Actions */}
         {step === "verify_otp" && (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <label htmlFor="otp" className="block text-sm font-medium text-neutral-700 mb-1.5">
+            <label htmlFor="otp" className="block text-xs sm:text-sm font-medium text-neutral-700 mb-1 sm:mb-1.5">
               6-Digit Verification Code
             </label>
             <input
@@ -212,34 +213,36 @@ export function OtpVerification({
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
               disabled={isLoading || expiresIn === 0 || attempts >= 3}
-              className="block w-full text-center tracking-[0.5em] font-mono text-2xl py-3 rounded-lg border border-neutral-300 bg-white text-neutral-900 focus:ring-2 focus:ring-brand-red focus:border-brand-red disabled:bg-neutral-50 disabled:text-neutral-500 transition-colors"
+              className="block w-full text-center tracking-[0.3em] sm:tracking-[0.5em] font-mono text-lg sm:text-2xl py-2.5 sm:py-3 px-2 rounded-lg border border-neutral-300 bg-white text-neutral-900 focus:ring-2 focus:ring-brand-red focus:border-brand-red disabled:bg-neutral-50 disabled:text-neutral-500 transition-colors max-w-full"
               placeholder="••••••"
             />
 
-            <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <div className="mt-3.5 sm:mt-4 flex flex-col sm:flex-row gap-2.5 sm:gap-3">
               <button
+                type="button"
                 onClick={handleVerifyCode}
                 disabled={isLoading || otp.length !== 6 || expiresIn === 0 || attempts >= 3}
-                className="flex-1 flex items-center justify-center gap-2 bg-brand-red text-white py-3 px-4 rounded-lg font-medium hover:bg-brand-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-brand-red text-white py-2.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-brand-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm cursor-pointer"
               >
                 {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
                 ) : (
                   "Verify Code"
                 )}
               </button>
               <button
+                type="button"
                 onClick={handleResend}
                 disabled={isLoading || resendIn > 0}
-                className="flex-1 flex items-center justify-center gap-2 bg-white border border-neutral-200 text-neutral-700 py-3 px-4 rounded-lg font-medium hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:bg-neutral-50 disabled:cursor-not-allowed"
+                className="w-full sm:flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-white border border-neutral-200 text-neutral-700 py-2.5 sm:py-3 px-4 rounded-lg font-medium hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:bg-neutral-50 disabled:cursor-not-allowed text-xs sm:text-sm cursor-pointer"
               >
-                <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`} />
                 {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend Code"}
               </button>
             </div>
 
-            <div className="mt-4 text-center">
-              <span className={`text-sm font-medium ${expiresIn > 60 ? "text-neutral-500" : "text-brand-yellow"}`}>
+            <div className="mt-3 sm:mt-4 text-center">
+              <span className={`text-xs sm:text-sm font-medium ${expiresIn > 60 ? "text-neutral-500" : "text-brand-yellow"}`}>
                 {expiresIn > 0 ? `Code expires in ${formatTime(expiresIn)}` : "Code expired."}
               </span>
             </div>
@@ -248,10 +251,10 @@ export function OtpVerification({
 
         {/* Verified Step State */}
         {step === "verified" && (
-          <div className="animate-in fade-in zoom-in-95 duration-300 bg-green-50 border border-green-100 rounded-lg p-4 flex flex-col items-center justify-center text-center gap-2 mt-4">
-            <CheckCircle2 className="w-8 h-8 text-green-500" />
-            <p className="text-green-800 font-medium">Email Successfully Verified</p>
-            <p className="text-sm text-green-600">You can now proceed with your estimate.</p>
+          <div className="animate-in fade-in zoom-in-95 duration-300 bg-green-50 border border-green-100 rounded-lg p-3.5 sm:p-4 flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 mt-3.5 sm:mt-4">
+            <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
+            <p className="text-green-800 font-medium text-xs sm:text-sm">Email Successfully Verified</p>
+            <p className="text-xs text-green-600">You can now proceed with your estimate.</p>
           </div>
         )}
       </div>

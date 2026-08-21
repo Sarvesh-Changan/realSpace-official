@@ -23,7 +23,7 @@ export default async function ContactPage() {
 
   const phone = siteSettings?.phone || "+91 98765 43210";
   const whatsapp = siteSettings?.whatsapp || "+91 98765 43210";
-  const email = siteSettings?.email || "realspaceinteriors@hotmail.com";
+  const email = siteSettings?.email || "realspace.org@gmail.com";
   const address = siteSettings?.address || "Thane, Maharashtra";
 
   // Format whatsapp URL clean numbers

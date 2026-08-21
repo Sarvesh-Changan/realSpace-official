@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import type { TestimonialFormValues } from "./_components/TestimonialForm";
 
-export const testimonialSchema = z.object({
+const testimonialSchema = z.object({
   clientName: z.string().min(1, "Client name is required"),
   clientRole: z.string().optional().nullable(),
   quote: z.string().min(1, "Quote is required"),

@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import type { ServiceFormValues } from "./_components/ServiceForm";
 
-export const serviceSchema = z.object({
+const serviceSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
   designType: z.enum(["INTERIOR", "EXTERIOR"]),

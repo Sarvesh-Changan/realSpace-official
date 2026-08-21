@@ -30,39 +30,39 @@ export default async function ContactPage() {
   const waNumberClean = whatsapp.replace(/[^\d]/g, "");
 
   return (
-    <div className="flex flex-col pt-24 md:pt-32 pb-16 md:pb-24">
+    <div className="flex flex-col pt-16 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-24">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
-        <div className="mb-12 md:mb-20 max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">
+        <div className="mb-8 sm:mb-12 md:mb-20 max-w-2xl">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-text mb-4 sm:mb-6 leading-tight">
             Let's discuss your space.
           </h1>
-          <p className="text-lg text-neutral-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-neutral-600 leading-relaxed">
             Whether you are looking for a complete home interior overhaul or a
             striking new building facade, our team is ready to bring your vision
             to life.
           </p>
-          <div className="w-20 h-1 bg-brand-yellow rounded-full mt-8"></div>
+          <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full mt-6 sm:mt-8"></div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8">
           {/* Left Column: Contact Information */}
-          <div className="lg:col-span-2 flex flex-col gap-8 md:pr-8">
+          <div className="lg:col-span-2 flex flex-col gap-6 sm:gap-8 lg:pr-8">
             {/* Phone */}
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-brand-red">
-                <Phone className="w-5 h-5" />
+            <div className="flex items-start gap-3.5 sm:gap-4">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-brand-red">
+                <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-brand-text mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-brand-text mb-0.5 sm:mb-1">
                   Call Us
                 </h3>
-                <p className="text-neutral-600 mb-2">
+                <p className="text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
                   Mon-Sat from 10am to 7pm.
                 </p>
                 <a
                   href={`tel:${phone.replace(/\s+/g, "")}`}
-                  className="text-brand-text font-medium hover:text-brand-red transition-colors"
+                  className="text-brand-text font-medium text-sm sm:text-base hover:text-brand-red transition-colors"
                 >
                   {phone}
                 </a>
@@ -70,22 +70,22 @@ export default async function ContactPage() {
             </div>
 
             {/* WhatsApp */}
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-green-600">
-                <MessageCircle className="w-5 h-5" />
+            <div className="flex items-start gap-3.5 sm:gap-4">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-green-600">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-brand-text mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-brand-text mb-0.5 sm:mb-1">
                   WhatsApp
                 </h3>
-                <p className="text-neutral-600 mb-2">
+                <p className="text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
                   Message us for quick queries.
                 </p>
                 <a
                   href={`https://wa.me/${waNumberClean}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brand-text font-medium hover:text-green-600 transition-colors"
+                  className="text-brand-text font-medium text-sm sm:text-base hover:text-green-600 transition-colors"
                 >
                   Chat on WhatsApp
                 </a>
@@ -93,20 +93,20 @@ export default async function ContactPage() {
             </div>
 
             {/* Email */}
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-brand-yellow">
-                <Mail className="w-5 h-5" />
+            <div className="flex items-start gap-3.5 sm:gap-4">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-brand-yellow">
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-brand-text mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-brand-text mb-0.5 sm:mb-1">
                   Email
                 </h3>
-                <p className="text-neutral-600 mb-2">
+                <p className="text-xs sm:text-sm text-neutral-600 mb-1 sm:mb-2">
                   We typically reply within 24 hours.
                 </p>
                 <a
                   href={`mailto:${email}`}
-                  className="text-brand-text font-medium hover:text-brand-yellow transition-colors"
+                  className="text-brand-text font-medium text-sm sm:text-base hover:text-brand-yellow transition-colors break-all sm:break-normal"
                 >
                   {email}
                 </a>
@@ -114,15 +114,15 @@ export default async function ContactPage() {
             </div>
 
             {/* Address */}
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-neutral-700">
-                <MapPin className="w-5 h-5" />
+            <div className="flex items-start gap-3.5 sm:gap-4">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 bg-brand-bgAlt rounded-full flex items-center justify-center text-neutral-700">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-brand-text mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-brand-text mb-0.5 sm:mb-1">
                   Studio Address
                 </h3>
-                <p className="text-neutral-600 leading-relaxed whitespace-pre-line">
+                <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed whitespace-pre-line">
                   {address}
                 </p>
               </div>

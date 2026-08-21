@@ -54,7 +54,7 @@ function getServiceIcon(iconKey?: string | null, index: number = 0) {
 
 export function Services({ services }: ServicesProps) {
   return (
-    <section className="py-24 bg-brand-bgAlt/30 border-y border-brand-bgAlt">
+    <section className="py-12 sm:py-16 md:py-24 bg-brand-bgAlt/30 border-y border-brand-bgAlt">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Our Services"
@@ -63,13 +63,13 @@ export function Services({ services }: ServicesProps) {
         />
 
         {services.length === 0 ? (
-          <div className="py-16 text-center text-brand-text/50 bg-brand-bg rounded-2xl border border-dashed border-brand-bgAlt max-w-xl mx-auto">
-            <p className="text-base font-medium">
+          <div className="py-12 sm:py-16 text-center text-brand-text/50 bg-brand-bg rounded-2xl border border-dashed border-brand-bgAlt max-w-xl mx-auto px-4">
+            <p className="text-sm sm:text-base font-medium">
               No published services available at the moment.
             </p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
             {services.map((service, index) => (
               <motion.div
                 key={service.id || index}
@@ -77,13 +77,13 @@ export function Services({ services }: ServicesProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="bg-brand-bg p-8 rounded-2xl border border-brand-bgAlt hover:shadow-md transition-shadow"
+                className="bg-brand-bg p-5 sm:p-8 rounded-2xl border border-brand-bgAlt hover:shadow-md transition-shadow"
               >
-                <div className="w-12 h-12 bg-brand-bgAlt rounded-full flex items-center justify-center mb-6">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-brand-bgAlt rounded-full flex items-center justify-center mb-4 sm:mb-6">
                   {getServiceIcon(service.iconKey, index)}
                 </div>
-                <h3 className="text-xl font-bold mb-3">{service.title}</h3>
-                <p className="text-brand-text/70 leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">{service.title}</h3>
+                <p className="text-sm sm:text-base text-brand-text/70 leading-relaxed">
                   {service.description}
                 </p>
               </motion.div>

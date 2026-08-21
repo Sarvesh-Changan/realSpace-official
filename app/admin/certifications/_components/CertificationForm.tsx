@@ -80,7 +80,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="text"
                             {...register("title")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                             placeholder="e.g. Advanced Kitchen Ergonomics"
                         />
                         {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
@@ -94,7 +94,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="text"
                             {...register("issuingBody")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                             placeholder="e.g. Institute of Interior Design"
                         />
                         {errors.issuingBody && <p className="mt-1 text-xs text-red-500">{errors.issuingBody.message}</p>}
@@ -107,7 +107,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         </label>
                         <select
                             {...register("certificateType")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900 cursor-pointer"
                         >
                             <option value="COURSE">Course</option>
                             <option value="MEMBERSHIP">Membership</option>
@@ -124,7 +124,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="date"
                             {...register("issueDate")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         />
                         {errors.issueDate && <p className="mt-1 text-xs text-red-500">{errors.issueDate.message}</p>}
                     </div>
@@ -137,7 +137,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="date"
                             {...register("validUntil")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         />
                         {errors.validUntil && <p className="mt-1 text-xs text-red-500">{errors.validUntil.message}</p>}
                     </div>
@@ -150,7 +150,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="text"
                             {...register("badgeLabel")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                             placeholder="e.g. Certified Professional"
                         />
                         {errors.badgeLabel && <p className="mt-1 text-xs text-red-500">{errors.badgeLabel.message}</p>}
@@ -164,7 +164,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="number"
                             {...register("sortOrder", { valueAsNumber: true })}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900 font-mono"
                         />
                         {errors.sortOrder && <p className="mt-1 text-xs text-red-500">{errors.sortOrder.message}</p>}
                     </div>
@@ -177,7 +177,7 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                         <input
                             type="text"
                             {...register("imageUrl")}
-                            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                            className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                             placeholder="https://res.cloudinary.com/..."
                         />
                         {errors.imageUrl && <p className="mt-1 text-xs text-red-500">{errors.imageUrl.message}</p>}
@@ -187,35 +187,35 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                     </div>
 
                     {/* Is Published */}
-                    <div className="md:col-span-2 flex items-center pt-2">
+                    <div className="md:col-span-2 flex items-center pt-2 min-h-[44px]">
                         <input
                             type="checkbox"
                             id="isPublished"
                             {...register("isPublished")}
-                            className="h-4 w-4 rounded border-neutral-300 text-brand-red focus:ring-brand-red"
+                            className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
                         />
-                        <label htmlFor="isPublished" className="ml-2 block text-sm text-neutral-700 font-medium">
+                        <label htmlFor="isPublished" className="ml-2.5 block text-sm text-neutral-700 font-medium cursor-pointer">
                             Publish this certification publicly
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-6 py-2 bg-brand-red text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors"
-                >
-                    {isSubmitting ? "Saving..." : mode === "create" ? "Create Certification" : "Save Changes"}
-                </button>
+            <div className="flex flex-col-reverse sm:flex-row items-center gap-3">
                 <button
                     type="button"
                     onClick={() => router.push("/admin/certifications")}
                     disabled={isSubmitting}
-                    className="px-6 py-2 bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors"
+                    className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors cursor-pointer"
                 >
                     Cancel
+                </button>
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] bg-brand-red text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                    {isSubmitting ? "Saving..." : mode === "create" ? "Create Certification" : "Save Changes"}
                 </button>
             </div>
         </form>

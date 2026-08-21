@@ -171,15 +171,15 @@ export default async function ProjectDetailPage({
   );
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 mt-16 md:mt-0">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-20 mt-12 sm:mt-16 md:mt-0">
       <article>
         {/* Top Image Gallery */}
         <ProjectGallery images={projectData.images} />
 
         {/* Content Split */}
-        <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-12 lg:gap-20">
+        <div className="mt-8 sm:mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-8 sm:gap-12 lg:gap-20">
           {/* Main Content Column */}
-          <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-8 sm:gap-10">
             <ProjectHeader
               title={projectData.title}
               category={projectData.category}
@@ -192,7 +192,7 @@ export default async function ProjectDetailPage({
 
           {/* Sidebar Column */}
           <div>
-            <div className="sticky top-24">
+            <div className="lg:sticky lg:top-24">
               <ProjectDetails
                 propertyType={projectData.propertyType}
                 carpetAreaSqFt={projectData.carpetAreaSqFt ?? undefined}

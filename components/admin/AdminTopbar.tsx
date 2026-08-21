@@ -3,12 +3,21 @@
 import { LogOut, Menu, User } from "lucide-react";
 import { adminLogoutAction } from "@/app/admin/actions";
 
-export function AdminTopbar() {
+interface AdminTopbarProps {
+  onMenuClick?: () => void;
+}
+
+export function AdminTopbar({ onMenuClick }: AdminTopbarProps) {
     return (
         <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-4 sm:px-6 shrink-0 sticky top-0 z-10">
             <div className="flex items-center">
                 {/* Mobile menu button */}
-                <button className="md:hidden p-2 -ml-2 text-neutral-500 hover:text-neutral-700">
+                <button
+                    type="button"
+                    onClick={onMenuClick}
+                    className="lg:hidden p-2 -ml-2 text-neutral-500 hover:text-neutral-700 rounded-lg focus:outline-none cursor-pointer"
+                    aria-label="Open Mobile Menu"
+                >
                     <Menu className="h-6 w-6" />
                 </button>
             </div>
@@ -27,7 +36,7 @@ export function AdminTopbar() {
                 <form action={adminLogoutAction}>
                     <button
                         type="submit"
-                        className="flex items-center text-sm font-medium text-neutral-600 hover:text-brand-red transition-colors"
+                        className="flex items-center text-sm font-medium text-neutral-600 hover:text-brand-red transition-colors min-h-[38px] px-2 py-1 rounded cursor-pointer"
                     >
                         <LogOut className="h-4 w-4 mr-2" />
                         <span className="hidden sm:inline">Logout</span>

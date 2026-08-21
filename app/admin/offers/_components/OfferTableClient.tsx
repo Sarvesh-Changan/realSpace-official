@@ -55,7 +55,7 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
                 </div>
                 <Link
                     href="/admin/offers/new"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-red text-white font-medium text-sm rounded-md hover:bg-red-700 transition-colors shadow-sm self-start sm:self-auto"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white font-medium text-sm rounded-md hover:bg-red-700 transition-colors shadow-sm self-start sm:self-auto cursor-pointer"
                 >
                     <Plus className="w-4 h-4" /> Add Offer
                 </Link>
@@ -72,7 +72,7 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse min-w-[640px]">
                             <thead>
                                 <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                                     <th className="py-3.5 px-4 w-1/3">Offer Details</th>
@@ -124,17 +124,17 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
                                         </td>
 
                                         <td className="py-4 px-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center justify-end gap-1">
                                                 <Link
                                                     href={`/admin/offers/${offer.id}/edit`}
-                                                    className="p-1.5 text-neutral-400 hover:text-brand-red transition-colors rounded"
+                                                    className="p-2 min-h-[36px] min-w-[36px] inline-flex items-center justify-center text-neutral-400 hover:text-brand-red transition-colors rounded hover:bg-neutral-100 cursor-pointer"
                                                     title="Edit Offer"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <button
                                                     type="button"
-                                                    className="p-1.5 text-neutral-400 hover:text-red-600 transition-colors rounded"
+                                                    className="p-2 min-h-[36px] min-w-[36px] inline-flex items-center justify-center text-neutral-400 hover:text-red-600 transition-colors rounded hover:bg-neutral-100 cursor-pointer"
                                                     title="Delete Offer"
                                                     onClick={() => handleDelete(offer.id)}
                                                 >

@@ -110,12 +110,12 @@ export default async function ExteriorServicesPage() {
         intro="Architectural elevation, modern facade treatments, and outdoor space design engineered for longevity and curb appeal."
       />
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-text mb-4">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-24">
+        <div className="mb-6 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text mb-3 sm:mb-4">
             Exterior Solutions
           </h2>
-          <div className="w-20 h-1 bg-brand-yellow rounded-full"></div>
+          <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full"></div>
         </div>
         <ServiceGrid services={exteriorServices} />
       </div>

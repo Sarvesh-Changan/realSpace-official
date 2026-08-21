@@ -34,7 +34,7 @@ export function FaqAccordion({ faqs }: FaqAccordionProps) {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-4">
+    <div className="w-full max-w-3xl mx-auto space-y-3 sm:space-y-4">
       {faqs.map((faq, index) => {
         const isOpen = openIndex === index;
 
@@ -44,19 +44,20 @@ export function FaqAccordion({ faqs }: FaqAccordionProps) {
             className="border-b border-neutral-200 last:border-0"
           >
             <button
+              type="button"
               onClick={() => toggleItem(index)}
-              className="w-full flex items-center justify-between py-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D6342C] focus-visible:ring-offset-2 rounded-sm group"
+              className="w-full min-h-[48px] flex items-start sm:items-center justify-between py-4 sm:py-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D6342C] focus-visible:ring-offset-2 rounded-sm group cursor-pointer"
               aria-expanded={isOpen}
             >
-              <span className="text-lg font-medium text-neutral-900 group-hover:text-[#D6342C] transition-colors duration-200 pr-6">
+              <span className="text-base sm:text-lg font-medium text-neutral-900 group-hover:text-[#D6342C] transition-colors duration-200 pr-3 sm:pr-6 leading-snug">
                 {faq.question}
               </span>
               <span
-                className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-neutral-50 group-hover:bg-[#F2B705]/20 text-neutral-500 group-hover:text-[#D6342C] transition-all duration-300 ${
+                className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-neutral-50 group-hover:bg-[#F2B705]/20 text-neutral-500 group-hover:text-[#D6342C] transition-all duration-300 mt-0.5 sm:mt-0 ${
                   isOpen ? "rotate-180 bg-[#F2B705]/20 text-[#D6342C]" : ""
                 }`}
               >
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
               </span>
             </button>
             <div
@@ -67,7 +68,7 @@ export function FaqAccordion({ faqs }: FaqAccordionProps) {
               }`}
             >
               <div className="overflow-hidden">
-                <p className="pb-6 text-neutral-600 leading-relaxed pr-12">
+                <p className="pb-4 sm:pb-6 text-xs sm:text-sm md:text-base text-neutral-600 leading-relaxed pr-2 sm:pr-12">
                   {faq.answer}
                 </p>
               </div>

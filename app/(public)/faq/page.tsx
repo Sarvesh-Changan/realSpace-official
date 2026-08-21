@@ -66,14 +66,14 @@ export default async function FaqPage() {
   }
 
   return (
-    <div className="flex flex-col pt-24 md:pt-32 pb-16 md:pb-24 bg-white min-h-screen">
+    <div className="flex flex-col pt-16 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-24 bg-white min-h-screen">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#1F1F1F] mb-6">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1F1F1F] mb-3 sm:mb-6 leading-tight">
             Frequently Asked <span className="text-[#D6342C]">Questions</span>
           </h1>
-          <p className="text-lg text-neutral-600">
+          <p className="text-sm sm:text-base md:text-lg text-neutral-600">
             Everything you need to know about our process, pricing, and how we
             bring your dream space to life.
           </p>

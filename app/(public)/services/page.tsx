@@ -167,23 +167,23 @@ export default async function ServicesPage() {
         intro="From a compact 1BHK kitchen redesign to a complete 3BHK turnkey transformation, REALSPACE handles every square foot with the same level of care."
       />
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 space-y-24 md:space-y-32">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-24 space-y-16 sm:space-y-24 md:space-y-32">
         <section id="interior-services">
-          <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-brand-text mb-4">
+          <div className="mb-6 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text mb-3 sm:mb-4">
               Interior Services
             </h2>
-            <div className="w-20 h-1 bg-brand-red rounded-full"></div>
+            <div className="w-16 sm:w-20 h-1 bg-brand-red rounded-full"></div>
           </div>
           <ServiceGrid services={interiorServices} />
         </section>
 
         <section id="exterior-services">
-          <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-brand-text mb-4">
+          <div className="mb-6 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text mb-3 sm:mb-4">
               Exterior Services
             </h2>
-            <div className="w-20 h-1 bg-brand-yellow rounded-full"></div>
+            <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full"></div>
           </div>
           <ServiceGrid services={exteriorServices} />
         </section>

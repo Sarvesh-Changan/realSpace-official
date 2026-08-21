@@ -121,31 +121,32 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C] pt-24 pb-20">
+    <div className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C] pt-20 sm:pt-24 pb-16 sm:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <motion.div
-          className="text-center max-w-3xl mx-auto mb-8"
+          className="text-center max-w-3xl mx-auto mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
         >
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C]">
             Our <span style={{ color: BRAND_COLORS.kunkuRed }}>Gallery</span>
           </h1>
         </motion.div>
 
         {/* --- Filters Area --- */}
-        <div className="mb-10 space-y-6">
-          {/* Row 1: Category Pills (Wrapped layout on same screen) */}
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
+        <div className="mb-8 sm:mb-10 space-y-4 sm:space-y-6">
+          {/* Row 1: Category Pills (Scrollable on mobile, wrapped on tablet/desktop) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto scrollbar-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
             {categories.map((category) => {
               const isActive = activeCategory === category;
               return (
                 <button
                   key={category}
+                  type="button"
                   onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border shrink-0 min-h-[38px] cursor-pointer ${
                     isActive
                       ? "border-transparent shadow-sm"
                       : "bg-white border-[#E8E2DA] text-[#6D6A66] hover:border-[#990000] hover:text-[#990000]"
@@ -163,7 +164,7 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
           </div>
 
           {/* Row 2: Secondary Filters (Design Type & Budget) */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-[#E8E2DA] shadow-sm">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 bg-white p-3.5 sm:p-4 rounded-xl border border-[#E8E2DA] shadow-sm">
             {/* Interior / Exterior Toggle */}
             <div className="flex items-center bg-[#F8F5F1] p-1 rounded-lg border border-[#E8E2DA] w-full sm:w-auto">
               {(["ALL", "INTERIOR", "EXTERIOR"] as const).map((type) => {
@@ -171,8 +172,9 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                 return (
                   <button
                     key={type}
+                    type="button"
                     onClick={() => setActiveDesignType(type)}
-                    className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex-1 sm:flex-none px-3.5 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors min-h-[38px] cursor-pointer ${
                       isActive
                         ? "bg-white text-[#1C1C1C] shadow-sm"
                         : "text-[#6D6A66] hover:text-[#1C1C1C]"
@@ -185,12 +187,12 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
             </div>
 
             {/* Budget Dropdown */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Filter className="w-4 h-4 text-[#6D6A66]" />
+            <div className="flex items-center gap-2 w-full sm:w-auto bg-[#F8F5F1] sm:bg-transparent px-3 py-2 sm:p-0 rounded-lg sm:rounded-none border sm:border-none border-[#E8E2DA] min-h-[40px]">
+              <Filter className="w-4 h-4 text-[#6D6A66] shrink-0" />
               <select
                 value={activeBudget}
                 onChange={(e) => setActiveBudget(e.target.value)}
-                className="w-full sm:w-auto bg-transparent border-none text-sm font-medium text-[#1C1C1C] focus:ring-0 cursor-pointer outline-none"
+                className="w-full sm:w-auto bg-transparent border-none text-xs sm:text-sm font-medium text-[#1C1C1C] focus:ring-0 cursor-pointer outline-none"
               >
                 {BUDGET_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -204,7 +206,7 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
 
         {/* --- Gallery Grid (Uniform CSS Grid) --- */}
         {filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             <AnimatePresence mode="popLayout">
               {filteredItems.map((item, index) => (
                 <motion.div
@@ -240,18 +242,18 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                     {item.mediaType === "VIDEO" && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div
-                          className="w-14 h-14 rounded-full flex items-center justify-center backdrop-blur-md bg-white/30 border border-white/50 shadow-lg transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-110"
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center backdrop-blur-md bg-white/30 border border-white/50 shadow-lg transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-110"
                           style={{ color: BRAND_COLORS.haladYellow }}
                         >
-                          <Play className="w-6 h-6 fill-current" />
+                          <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5" />
                         </div>
                       </div>
                     )}
 
                     {/* Top Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col gap-2 transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-col gap-1.5 transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
                       <span
-                        className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
+                        className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
                         style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
                       >
                         {item.category}
@@ -259,22 +261,22 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
                     </div>
 
                     {/* Media Type Icon (Top Right) */}
-                    <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-1.5 rounded-md text-[#1C1C1C] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white/80 backdrop-blur-sm p-1.5 rounded-md text-[#1C1C1C] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
                       {item.mediaType === "VIDEO" ? (
-                        <Video className="w-4 h-4" />
+                        <Video className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       ) : (
-                        <ImageIcon className="w-4 h-4" />
+                        <ImageIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       )}
                     </div>
                   </div>
 
-                  {/* Card Content Footer (Consistent Height) */}
-                  <div className="p-5 border-t border-[#E8E2DA] bg-white relative z-10 flex-1 flex flex-col justify-between">
-                    <h3 className="text-lg font-serif font-bold text-[#1C1C1C] mb-2 line-clamp-2 transition-all duration-400 ease-out group-hover:text-[#990000] motion-safe:lg:group-hover:-translate-y-1">
+                  {/* Card Content Footer */}
+                  <div className="p-4 sm:p-5 border-t border-[#E8E2DA] bg-white relative z-10 flex-1 flex flex-col justify-between">
+                    <h3 className="text-base sm:text-lg font-serif font-bold text-[#1C1C1C] mb-2 line-clamp-2 transition-all duration-400 ease-out group-hover:text-[#990000] motion-safe:lg:group-hover:-translate-y-1">
                       {item.title}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-[#6D6A66] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1 mt-auto">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs sm:text-sm text-[#6D6A66] transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1 mt-auto">
                       {item.theme && (
                         <span className="flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#E8E2DA]" />
@@ -304,18 +306,19 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-32 px-4 text-center bg-white rounded-2xl border border-[#E8E2DA] border-dashed"
+            className="flex flex-col items-center justify-center py-20 sm:py-32 px-4 text-center bg-white rounded-2xl border border-[#E8E2DA] border-dashed"
           >
-            <div className="w-16 h-16 bg-[#EEE6DD] rounded-full flex items-center justify-center mb-4">
-              <Filter className="w-8 h-8 text-[#6D6A66]" />
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#EEE6DD] rounded-full flex items-center justify-center mb-4">
+              <Filter className="w-7 h-7 sm:w-8 sm:h-8 text-[#6D6A66]" />
             </div>
-            <h3 className="text-xl font-bold text-[#1C1C1C] mb-2">No projects found</h3>
-            <p className="text-[#6D6A66] max-w-md mx-auto mb-6">
+            <h3 className="text-lg sm:text-xl font-bold text-[#1C1C1C] mb-2">No projects found</h3>
+            <p className="text-xs sm:text-sm text-[#6D6A66] max-w-md mx-auto mb-6">
               We couldn't find any gallery items matching your current filters. Try adjusting your category or budget range.
             </p>
             <button
+              type="button"
               onClick={clearFilters}
-              className="px-6 py-3 rounded-md font-medium text-white transition-colors hover:opacity-90"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 min-h-[44px] text-xs sm:text-sm rounded-md font-medium text-white transition-colors hover:opacity-90 cursor-pointer"
               style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
             >
               Clear All Filters
@@ -333,34 +336,36 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: shouldReduceMotion ? 0.01 : 0.25 }}
             onClick={() => setLightboxItem(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 md:p-8 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-3 sm:p-4 md:p-8 backdrop-blur-sm"
           >
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 setLightboxItem(null);
               }}
-              className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
+              className="absolute top-3 right-3 sm:top-6 sm:right-6 w-10 h-10 flex items-center justify-center bg-black/60 sm:bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50 cursor-pointer"
               aria-label="Close Lightbox"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 16 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.3, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-5xl bg-[#1C1C1C] rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
+              className="relative w-full max-w-5xl bg-[#1C1C1C] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[88vh] sm:max-h-[90vh]"
             >
               {/* Left/Top: Image/Video Container */}
-              <div className="relative w-full md:w-2/3 h-[40vh] md:h-auto min-h-[300px] bg-black flex items-center justify-center">
+              <div className="relative w-full md:w-2/3 h-[32vh] sm:h-[45vh] md:h-auto min-h-[220px] bg-black flex items-center justify-center shrink-0">
                 {lightboxItem.mediaType === "VIDEO" ? (
                   <video
                     src={lightboxItem.url}
                     controls
                     autoPlay
+                    playsInline
                     className="w-full h-full object-contain max-h-[75vh]"
                   />
                 ) : (
@@ -374,41 +379,41 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
               </div>
 
               {/* Right/Bottom: Content Details */}
-              <div className="w-full md:w-1/3 bg-white p-6 md:p-8 flex flex-col overflow-y-auto">
-                <div className="mb-6 flex gap-2">
+              <div className="w-full md:w-1/3 bg-white p-5 sm:p-6 md:p-8 flex flex-col overflow-y-auto flex-1">
+                <div className="mb-4 sm:mb-6 flex flex-wrap gap-2">
                   <span
-                    className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white rounded-md"
+                    className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white rounded-md"
                     style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
                   >
                     {lightboxItem.category}
                   </span>
-                  <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-[#F8F5F1] text-[#6D6A66] rounded-md border border-[#E8E2DA]">
+                  <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider bg-[#F8F5F1] text-[#6D6A66] rounded-md border border-[#E8E2DA]">
                     {lightboxItem.designType}
                   </span>
                 </div>
 
-                <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1C1C1C] mb-4">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1C1C1C] mb-3 sm:mb-4">
                   {lightboxItem.title}
                 </h2>
 
                 {lightboxItem.description && (
-                  <p className="text-[#6D6A66] leading-relaxed mb-8">
+                  <p className="text-xs sm:text-sm text-[#6D6A66] leading-relaxed mb-6 sm:mb-8">
                     {lightboxItem.description}
                   </p>
                 )}
 
-                <div className="mt-auto pt-6 border-t border-[#E8E2DA] space-y-4">
+                <div className="mt-auto pt-4 sm:pt-6 border-t border-[#E8E2DA] space-y-3 sm:space-y-4">
                   {lightboxItem.theme && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-[#6D6A66]">Design Theme</span>
+                    <div className="flex justify-between items-center text-xs sm:text-sm">
+                      <span className="text-[#6D6A66]">Design Theme</span>
                       <span className="font-medium text-[#1C1C1C]">{lightboxItem.theme}</span>
                     </div>
                   )}
                   {lightboxItem.approxBudgetLabel && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-[#6D6A66]">Est. Budget</span>
+                    <div className="flex justify-between items-center text-xs sm:text-sm">
+                      <span className="text-[#6D6A66]">Est. Budget</span>
                       <span
-                        className="font-bold text-lg"
+                        className="font-bold text-base sm:text-lg"
                         style={{ color: BRAND_COLORS.kunkuRed }}
                       >
                         {lightboxItem.approxBudgetLabel}
@@ -419,7 +424,8 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
 
                 {/* CTA inside Modal */}
                 <button
-                  className="w-full mt-8 py-4 rounded-lg font-bold text-white transition-opacity hover:opacity-90 shadow-md"
+                  type="button"
+                  className="w-full mt-6 sm:mt-8 py-3 sm:py-4 min-h-[44px] rounded-lg font-bold text-xs sm:text-sm text-white transition-opacity hover:opacity-90 shadow-md cursor-pointer"
                   style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
                   onClick={() => (window.location.href = "/quote")}
                 >

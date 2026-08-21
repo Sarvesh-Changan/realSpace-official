@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { AboutHero } from "../_components/about/AboutHero";
 import { TrustIndicators } from "../_components/about/TrustIndicators";
 import { MeetFounder } from "../_components/about/MeetFounder";
+import { ProcessTimeline } from "./_components/ProcessTimeline";
 import { Certifications, type CertificationData } from "./_components/Certifications";
 
 export const revalidate = 60;
@@ -11,6 +12,33 @@ export const metadata: Metadata = {
   title: "About REALSPACE | Design That Knows Your Home",
   description: "Learn about the REALSPACE design philosophy and our proven process.",
 };
+
+const defaultProcessSteps = [
+  {
+    title: "1. Initial Consultation & Site Visit",
+    description: "We meet at your space to assess architectural layout, structural beams, natural light, and understand your lifestyle requirements.",
+  },
+  {
+    title: "2. Space Planning & 3D Visualization",
+    description: "Our design team crafts detailed 2D layouts and realistic 3D renderings so you can experience your future home before construction.",
+  },
+  {
+    title: "3. Material Selection & Transparent Quote",
+    description: "Select from curated laminates, veneers, hardware, and finishes with a clear, itemized quote — zero hidden charges.",
+  },
+  {
+    title: "4. On-site Execution & Quality Checks",
+    description: "Our experienced craftsmen execute civil, electrical, plumbing, and carpentry work under constant site supervision.",
+  },
+  {
+    title: "5. Custom Joinery & Finishing Touches",
+    description: "Precision-engineered modular factory units and custom site joinery are installed with strict quality inspections.",
+  },
+  {
+    title: "6. Final Handover & Warranty Walkthrough",
+    description: "A thorough deep-cleaning, final polish, joint walkthrough, and key handover along with our post-handover support commitment.",
+  },
+];
 
 export default async function AboutPage() {
   let certifications: CertificationData[] = [];
@@ -33,7 +61,7 @@ export default async function AboutPage() {
     console.error("Failed to fetch certifications:", error);
   }
 
-  // TODO: Pending client confirmation for exact stats
+  // Pending client confirmation for exact stats
   const trustStats = [
     { label: "Years of Experience", value: "8+" },
     { label: "Projects Completed", value: "150+" },
@@ -41,7 +69,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="flex flex-col pt-24 md:pt-32">
+    <div className="flex flex-col pt-16 sm:pt-24 md:pt-32">
       <AboutHero
         headline="Design That Knows Your Home Before It Begins"
         body="At REALSPACE, every interior project starts with your space — not a mood board. The founder and the REALSPACE team map your room's every constraint — beam positions, window orientation, natural light — before a single design decision is made. The result is a home that feels inevitable, not imposed."
@@ -51,11 +79,12 @@ export default async function AboutPage() {
       <TrustIndicators stats={trustStats} />
 
       <MeetFounder
-        // TODO: Replace placeholder name and bio with actual founder details
         founderName="Vijay Chawan"
         bio="As the direct point of contact for every client, I ensure that the vision we agree on is exactly what gets built. By staying personally involved from the first site visit to the final handover, we eliminate the gap between design promise and execution reality."
         imageUrl="/images/owner_image.jpeg"
       />
+
+      <ProcessTimeline title="Our 6-Step Design & Execution Process" steps={defaultProcessSteps} />
 
       <Certifications certifications={certifications} />
     </div>

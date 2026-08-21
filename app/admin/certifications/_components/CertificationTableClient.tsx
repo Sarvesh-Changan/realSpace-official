@@ -55,7 +55,7 @@ export function CertificationTableClient({ certifications }: CertificationTableC
                 </div>
                 <Link
                     href="/admin/certifications/new"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-red text-white font-medium text-sm rounded-md hover:bg-red-700 transition-colors shadow-sm self-start sm:self-auto"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white font-medium text-sm rounded-md hover:bg-red-700 transition-colors shadow-sm self-start sm:self-auto cursor-pointer"
                 >
                     <Plus className="w-4 h-4" /> Add Certification
                 </Link>
@@ -72,7 +72,7 @@ export function CertificationTableClient({ certifications }: CertificationTableC
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse min-w-[640px]">
                             <thead>
                                 <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                                     <th className="py-3.5 px-4 w-1/3">Title & Issuing Body</th>

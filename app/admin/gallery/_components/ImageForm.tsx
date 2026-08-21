@@ -140,7 +140,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-neutral-700 mb-1">
                         Title <span className="text-red-500">*</span>
@@ -148,7 +148,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     <input
                         type="text"
                         {...register("title")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         placeholder="e.g. Minimalist Master Bedroom"
                     />
                     {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
@@ -160,7 +160,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     </label>
                     <select
                         {...register("categoryId")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900 cursor-pointer"
                     >
                         <option value="">Select a category</option>
                         {categories.map((c) => (
@@ -176,7 +176,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     </label>
                     <select
                         {...register("designType")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900 cursor-pointer"
                     >
                         <option value="INTERIOR">Interior</option>
                         <option value="EXTERIOR">Exterior</option>
@@ -190,7 +190,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     </label>
                     <select
                         {...register("mediaType")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900 cursor-pointer"
                     >
                         <option value="IMAGE">Image</option>
                         <option value="VIDEO">Video</option>
@@ -205,7 +205,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     <input
                         type="number"
                         {...register("sortOrder", { valueAsNumber: true })}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900 font-mono"
                     />
                     {errors.sortOrder && <p className="mt-1 text-xs text-red-500">{errors.sortOrder.message}</p>}
                 </div>
@@ -216,8 +216,8 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                         Media File / URL <span className="text-red-500">*</span>
                     </label>
 
-                    <div className="flex flex-wrap items-center gap-3">
-                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50">
                             {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                             {isUploading ? "Uploading..." : "Upload File (Image/Video)"}
                             <input
@@ -253,7 +253,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                                 <button
                                     type="button"
                                     onClick={() => open()}
-                                    className="px-4 py-2 bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 transition-colors"
+                                    className="px-4 py-2.5 min-h-[44px] bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 transition-colors cursor-pointer"
                                 >
                                     Cloudinary Widget
                                 </button>
@@ -264,7 +264,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     <input
                         type="text"
                         {...register("url")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         placeholder="https://res.cloudinary.com/... or paste URL directly"
                     />
                     <input type="hidden" {...register("cloudinaryId")} />
@@ -295,7 +295,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     <input
                         type="text"
                         {...register("theme")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         placeholder="e.g. Modern, Japandi, Classic"
                     />
                 </div>
@@ -307,7 +307,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     <input
                         type="text"
                         {...register("approxBudgetLabel")}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         placeholder="e.g. ₹5 Lakhs - ₹8 Lakhs"
                     />
                 </div>
@@ -319,53 +319,53 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                     <textarea
                         {...register("description")}
                         rows={3}
-                        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
+                        className="w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-base sm:text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red text-neutral-900"
                         placeholder="Brief description of the space..."
                     />
                     {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
                 </div>
 
-                <div className="md:col-span-2 flex gap-6">
-                    <div className="flex items-center">
+                <div className="md:col-span-2 flex flex-wrap gap-6 pt-2">
+                    <div className="flex items-center min-h-[44px]">
                         <input
                             type="checkbox"
                             id="isFeatured"
                             {...register("isFeatured")}
-                            className="h-4 w-4 rounded border-neutral-300 text-brand-red focus:ring-brand-red"
+                            className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
                         />
-                        <label htmlFor="isFeatured" className="ml-2 block text-sm text-neutral-700 font-medium">
+                        <label htmlFor="isFeatured" className="ml-2.5 block text-sm text-neutral-700 font-medium cursor-pointer">
                             Featured
                         </label>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center min-h-[44px]">
                         <input
                             type="checkbox"
                             id="isPublished"
                             {...register("isPublished")}
-                            className="h-4 w-4 rounded border-neutral-300 text-brand-red focus:ring-brand-red"
+                            className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
                         />
-                        <label htmlFor="isPublished" className="ml-2 block text-sm text-neutral-700 font-medium">
+                        <label htmlFor="isPublished" className="ml-2.5 block text-sm text-neutral-700 font-medium cursor-pointer">
                             Published
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
-                <button
-                    type="submit"
-                    disabled={isSubmitting || isUploading}
-                    className="px-4 py-2 bg-brand-red text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors"
-                >
-                    {isSubmitting ? "Saving..." : isUpdate ? "Save Changes" : "Create Image"}
-                </button>
+            <div className="flex flex-col-reverse sm:flex-row items-center gap-3 pt-4 border-t border-neutral-100">
                 <button
                     type="button"
                     onClick={onCancel}
                     disabled={isSubmitting || isUploading}
-                    className="px-4 py-2 bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors"
+                    className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors cursor-pointer"
                 >
                     Cancel
+                </button>
+                <button
+                    type="submit"
+                    disabled={isSubmitting || isUploading}
+                    className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] bg-brand-red text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-red disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                    {isSubmitting ? "Saving..." : isUpdate ? "Save Changes" : "Create Image"}
                 </button>
             </div>
         </form>

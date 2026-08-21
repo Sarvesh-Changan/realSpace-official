@@ -127,7 +127,7 @@ export function FaqFormModal({
                             type="text"
                             {...register("question")}
                             placeholder="e.g. What is the approximate cost of a 2BHK interior in Thane?"
-                            className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 placeholder:text-neutral-400"
+                            className="w-full px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 placeholder:text-neutral-400"
                         />
                         {errors.question && (
                             <p className="mt-1 text-xs text-brand-red font-medium">
@@ -143,10 +143,10 @@ export function FaqFormModal({
                         </label>
                         <textarea
                             id="faq-answer"
-                            rows={5}
+                            rows={4}
                             {...register("answer")}
                             placeholder="e.g. The cost varies based on material selection and scope of work..."
-                            className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 placeholder:text-neutral-400 leading-relaxed"
+                            className="w-full px-3.5 py-2.5 text-base sm:text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 placeholder:text-neutral-400 leading-relaxed"
                         />
                         {errors.answer && (
                             <p className="mt-1 text-xs text-brand-red font-medium">
@@ -165,7 +165,7 @@ export function FaqFormModal({
                                 id="faq-sortOrder"
                                 type="number"
                                 {...register("sortOrder")}
-                                className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 font-mono"
+                                className="w-full px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 font-mono"
                             />
                             <p className="mt-1 text-[11px] text-neutral-400">
                                 Lower numbers appear first on the FAQ page.
@@ -177,18 +177,18 @@ export function FaqFormModal({
                             )}
                         </div>
 
-                        <div className="flex flex-col justify-center">
+                        <div className="flex flex-col justify-center min-h-[44px]">
                             <span className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-2">
                                 Visibility Status
                             </span>
-                            <label className="inline-flex items-center gap-3 cursor-pointer">
+                            <label className="inline-flex items-center gap-3 cursor-pointer min-h-[38px]">
                                 <input
                                     type="checkbox"
                                     {...register("isPublished")}
                                     className="sr-only peer"
                                 />
                                 <div className="w-10 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative"></div>
-                                <span className="text-xs font-medium text-neutral-800">
+                                <span className="text-xs sm:text-sm font-medium text-neutral-800">
                                     Published on website
                                 </span>
                             </label>
@@ -196,21 +196,21 @@ export function FaqFormModal({
                     </div>
 
                     {/* Modal Footer Actions */}
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200">
+                    <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t border-neutral-200">
                         <button
                             type="button"
                             onClick={onClose}
                             disabled={isSubmitting}
-                            className="px-4 py-2 text-xs font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md transition-colors disabled:opacity-50"
+                            className="w-full sm:w-auto px-4 py-2.5 min-h-[44px] text-xs sm:text-sm font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md transition-colors disabled:opacity-50 cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="inline-flex items-center justify-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-brand-red hover:bg-brand-red/90 rounded-md transition-colors shadow-xs disabled:opacity-50"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] text-xs sm:text-sm font-semibold text-white bg-brand-red hover:bg-brand-red/90 rounded-md transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
                         >
-                            {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                            {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                             {initialData ? "Save Changes" : "Create FAQ"}
                         </button>
                     </div>

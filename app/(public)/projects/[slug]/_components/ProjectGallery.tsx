@@ -69,10 +69,10 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3 sm:gap-4">
       {/* Main Active Media Viewer */}
       <div
-        className="group relative w-full aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-neutral-900 shadow-md border border-neutral-200/60"
+        className="group relative w-full aspect-[4/3] sm:aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-neutral-900 shadow-md border border-neutral-200/60"
       >
         {activeMedia?.mediaType === "VIDEO" ||
         activeMedia?.url?.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i) ||
@@ -101,9 +101,9 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
               unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
             />
             {/* Expand Overlay Badge */}
-            <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-black/60 backdrop-blur-md text-white text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full flex items-center gap-1.5 opacity-90 sm:opacity-80 sm:group-hover:opacity-100 transition-opacity">
               <Maximize2 className="w-3.5 h-3.5" />
-              <span>View Fullscreen</span>
+              <span>Fullscreen</span>
             </div>
           </div>
         )}
@@ -114,16 +114,16 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
             <button
               onClick={handlePrev}
               aria-label="Previous slide"
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-sm text-white flex items-center justify-center sm:opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
             <button
               onClick={handleNext}
               aria-label="Next slide"
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-sm text-white flex items-center justify-center sm:opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </>
         )}

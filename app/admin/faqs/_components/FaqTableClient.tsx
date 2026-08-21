@@ -197,7 +197,7 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
     return (
         <div className="space-y-6">
             {/* Header Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-lg border border-neutral-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 sm:p-5 rounded-lg border border-neutral-200 shadow-sm">
                 <div>
                     <h1 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
                         <HelpCircle className="w-5 h-5 text-brand-red" /> FAQ Management
@@ -208,25 +208,25 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
                 </div>
                 <button
                     onClick={handleOpenAddModal}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-brand-red text-white text-xs font-semibold rounded-md hover:bg-brand-red/90 transition-colors shadow-xs w-full sm:w-auto"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white text-xs sm:text-sm font-semibold rounded-md hover:bg-brand-red/90 transition-colors shadow-xs w-full sm:w-auto cursor-pointer"
                 >
                     <Plus className="w-4 h-4" /> Add FAQ
                 </button>
             </div>
 
             {/* Filter / Search Bar */}
-            <div className="bg-white p-4 rounded-lg border border-neutral-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="bg-white p-4 rounded-lg border border-neutral-200 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <div className="relative w-full sm:w-80">
-                    <Search className="w-4 h-4 absolute left-3 top-2.5 text-neutral-400" />
+                    <Search className="w-4 h-4 absolute left-3 top-3 text-neutral-400" />
                     <input
                         type="text"
                         placeholder="Search questions or answers..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 pr-3 py-1.5 text-xs border border-neutral-300 rounded-md focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 placeholder:text-neutral-400"
+                        className="w-full pl-9 pr-3 py-2 min-h-[40px] text-xs sm:text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 placeholder:text-neutral-400"
                     />
                 </div>
-                <div className="text-xs text-neutral-500 font-medium self-end sm:self-center">
+                <div className="text-xs text-neutral-500 font-medium self-start sm:self-center">
                     Total: <strong className="text-neutral-900">{faqsList.length}</strong> FAQs
                 </div>
             </div>
@@ -237,14 +237,14 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
                     }`}
             >
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse min-w-[640px]">
                         <thead>
                             <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                                <th className="py-3 px-4 w-16 text-center">Order</th>
-                                <th className="py-3 px-4 w-2/5">Question</th>
-                                <th className="py-3 px-4 w-2/5">Answer Preview</th>
-                                <th className="py-3 px-4 text-center w-24">Status</th>
-                                <th className="py-3 px-4 text-right w-28">Actions</th>
+                                <th className="py-3.5 px-4 w-16 text-center">Order</th>
+                                <th className="py-3.5 px-4 w-2/5">Question</th>
+                                <th className="py-3.5 px-4 w-2/5">Answer Preview</th>
+                                <th className="py-3.5 px-4 text-center w-24">Status</th>
+                                <th className="py-3.5 px-4 text-right w-28">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-200 text-sm">

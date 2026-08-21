@@ -119,18 +119,18 @@ export function LeadDetail({ lead, onClose, onNotesUpdated }: { lead: LeadData, 
       <div className="absolute inset-0 bg-neutral-900/40 backdrop-blur-sm" onClick={onClose}></div>
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 bg-neutral-50">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-neutral-200 bg-neutral-50">
           <div>
             <h2 className="text-lg font-bold text-neutral-900">Lead Details</h2>
-            <p className="text-sm text-neutral-500">Submitted on {new Date(lead.createdAt).toLocaleString("en-IN")}</p>
+            <p className="text-xs sm:text-sm text-neutral-500">Submitted on {new Date(lead.createdAt).toLocaleString("en-IN")}</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-md hover:bg-neutral-200 text-neutral-500 transition-colors">
+          <button onClick={onClose} className="p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-md hover:bg-neutral-200 text-neutral-500 transition-colors cursor-pointer" aria-label="Close modal">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             
             <div className="space-y-6">
               <div>
@@ -192,12 +192,12 @@ export function LeadDetail({ lead, onClose, onNotesUpdated }: { lead: LeadData, 
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add private notes about this lead..."
-                  className="w-full h-32 p-3 text-sm rounded-md border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 resize-none"
+                  className="w-full h-32 p-3 text-base sm:text-sm rounded-md border border-neutral-300 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 resize-none"
                 />
                 <button
                   onClick={handleSaveNotes}
                   disabled={isSaving}
-                  className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                  className="mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 transition-colors disabled:opacity-50 cursor-pointer w-full sm:w-auto"
                 >
                   <Save className="w-4 h-4" /> {isSaving ? "Saving..." : "Save Notes"}
                 </button>

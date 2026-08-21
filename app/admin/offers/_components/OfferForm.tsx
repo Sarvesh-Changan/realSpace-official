@@ -82,7 +82,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="title"
             type="text"
             {...register("title")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
             placeholder="e.g., Free Modular Kitchen Consultation"
           />
           {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
@@ -97,7 +97,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="description"
             rows={3}
             {...register("description")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm resize-y"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm resize-y"
             placeholder="Detailed description of the offer and its benefits..."
           />
           {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
@@ -112,7 +112,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="imageUrl"
             type="text"
             {...register("imageUrl")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
             placeholder="https://..."
           />
           {errors.imageUrl && <p className="mt-1 text-xs text-red-500">{errors.imageUrl.message}</p>}
@@ -127,7 +127,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="ctaLabel"
             type="text"
             {...register("ctaLabel")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
             placeholder="e.g., Claim Offer"
           />
           {errors.ctaLabel && <p className="mt-1 text-xs text-red-500">{errors.ctaLabel.message}</p>}
@@ -142,7 +142,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="ctaLink"
             type="text"
             {...register("ctaLink")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
             placeholder="/contact or https://..."
           />
           {errors.ctaLink && <p className="mt-1 text-xs text-red-500">{errors.ctaLink.message}</p>}
@@ -157,7 +157,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="startDate"
             type="date"
             {...register("startDate")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
           />
           {errors.startDate && <p className="mt-1 text-xs text-red-500">{errors.startDate.message}</p>}
         </div>
@@ -171,7 +171,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="endDate"
             type="date"
             {...register("endDate")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
           />
           {errors.endDate && <p className="mt-1 text-xs text-red-500">{errors.endDate.message}</p>}
         </div>
@@ -185,23 +185,23 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             id="sortOrder"
             type="number"
             {...register("sortOrder")}
-            className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none sm:text-sm"
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm font-mono"
           />
           <p className="mt-1 text-xs text-neutral-500">Lower numbers appear first.</p>
         </div>
         
         {/* Is Active Toggle */}
-        <div className="flex items-center pt-6">
+        <div className="flex items-center pt-2 sm:pt-6 min-h-[44px]">
           <div className="flex items-center h-5">
             <input
               id="isActive"
               type="checkbox"
               {...register("isActive")}
-              className="h-4 w-4 rounded border-neutral-300 text-brand-red focus:ring-brand-red"
+              className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
             />
           </div>
           <div className="ml-3 text-sm">
-            <label htmlFor="isActive" className="font-medium text-neutral-900">
+            <label htmlFor="isActive" className="font-medium text-neutral-900 cursor-pointer">
               Active Status
             </label>
             <p className="text-neutral-500 text-xs">If unchecked, this offer is hidden from the public site.</p>
@@ -209,17 +209,17 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
         </div>
       </div>
 
-      <div className="mt-8 flex items-center justify-end gap-3 pt-6 border-t border-neutral-100">
+      <div className="mt-8 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-6 border-t border-neutral-100">
         <Link
           href="/admin/offers"
-          className="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 transition-colors shadow-sm"
+          className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 min-h-[44px] text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 transition-colors shadow-sm cursor-pointer"
         >
           Cancel
         </Link>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-4 py-2 text-sm font-medium text-white bg-brand-red border border-transparent rounded-md hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 min-h-[44px] text-sm font-medium text-white bg-brand-red border border-transparent rounded-md hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isSubmitting ? "Saving..." : mode === "create" ? "Create Offer" : "Save Changes"}
         </button>

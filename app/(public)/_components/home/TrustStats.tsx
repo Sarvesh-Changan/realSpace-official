@@ -22,12 +22,12 @@ export function TrustStats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="py-8 text-center flex flex-col items-center justify-center"
+              className="py-5 sm:py-8 text-center flex flex-col items-center justify-center p-2"
             >
-              <div className="text-3xl md:text-4xl font-bold text-brand-red mb-2">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-red mb-1 sm:mb-2">
                 {stat.value}
               </div>
-              <div className="text-sm md:text-base font-medium text-brand-text/70 uppercase tracking-wider">
+              <div className="text-xs sm:text-sm md:text-base font-medium text-brand-text/70 uppercase tracking-wider">
                 {stat.label}
               </div>
             </motion.div>

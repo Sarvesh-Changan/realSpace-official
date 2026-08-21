@@ -45,31 +45,31 @@ export function SiteSettingsForm({ initialData }: { initialData: SiteSettingsInp
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">Company Name</label>
-                    <input type="text" {...register("companyName")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <input type="text" {...register("companyName")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.companyName && <p className="mt-1 text-xs text-red-500">{errors.companyName.message}</p>}
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">Email Address</label>
-                    <input type="email" {...register("email")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <input type="email" {...register("email")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">Phone Number</label>
-                    <input type="text" {...register("phone")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <input type="text" {...register("phone")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">WhatsApp Number</label>
-                    <input type="text" {...register("whatsapp")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <input type="text" {...register("whatsapp")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.whatsapp && <p className="mt-1 text-xs text-red-500">{errors.whatsapp.message}</p>}
                 </div>
 
                 <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-neutral-700">Studio Address</label>
-                    <textarea {...register("address")} rows={3} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <textarea {...register("address")} rows={3} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address.message}</p>}
                 </div>
 
@@ -79,19 +79,19 @@ export function SiteSettingsForm({ initialData }: { initialData: SiteSettingsInp
 
                 <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-neutral-700">Hero Headline</label>
-                    <input type="text" {...register("heroHeadline")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <input type="text" {...register("heroHeadline")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.heroHeadline && <p className="mt-1 text-xs text-red-500">{errors.heroHeadline.message}</p>}
                 </div>
 
                 <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-neutral-700">Hero Subhead</label>
-                    <textarea {...register("heroSubhead")} rows={3} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <textarea {...register("heroSubhead")} rows={3} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.heroSubhead && <p className="mt-1 text-xs text-red-500">{errors.heroSubhead.message}</p>}
                 </div>
 
                 <div className="sm:col-span-2">
                     <label className="block text-sm font-medium text-neutral-700">Primary CTA Text</label>
-                    <input type="text" {...register("ctaText")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
+                    <input type="text" {...register("ctaText")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" />
                     {errors.ctaText && <p className="mt-1 text-xs text-red-500">{errors.ctaText.message}</p>}
                 </div>
 
@@ -101,19 +101,19 @@ export function SiteSettingsForm({ initialData }: { initialData: SiteSettingsInp
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">Instagram URL</label>
-                    <input type="text" {...register("instagram")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://instagram.com/..." />
+                    <input type="text" {...register("instagram")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://instagram.com/..." />
                     {errors.instagram && <p className="mt-1 text-xs text-red-500">{errors.instagram.message}</p>}
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">Facebook URL</label>
-                    <input type="text" {...register("facebook")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://facebook.com/..." />
+                    <input type="text" {...register("facebook")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://facebook.com/..." />
                     {errors.facebook && <p className="mt-1 text-xs text-red-500">{errors.facebook.message}</p>}
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-neutral-700">YouTube URL</label>
-                    <input type="text" {...register("youtube")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://youtube.com/..." />
+                    <input type="text" {...register("youtube")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://youtube.com/..." />
                     {errors.youtube && <p className="mt-1 text-xs text-red-500">{errors.youtube.message}</p>}
                 </div>
             </div>
@@ -122,7 +122,7 @@ export function SiteSettingsForm({ initialData }: { initialData: SiteSettingsInp
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-2 bg-red-600 text-white font-medium text-sm rounded-md hover:bg-red-500 transition-colors shadow-sm disabled:opacity-50"
+                    className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-red-600 text-white font-medium text-sm rounded-md hover:bg-red-500 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
                 >
                     {isSubmitting ? "Saving..." : "Save Changes"}
                 </button>

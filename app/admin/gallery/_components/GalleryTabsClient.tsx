@@ -58,7 +58,7 @@ export function GalleryTabsClient({
                                 setEditingCategory(null);
                                 setCategoryFormOpen(true);
                             }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-red text-white font-medium text-sm rounded-md hover:bg-brand-red/90 transition-colors shadow-sm"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white font-medium text-sm rounded-md hover:bg-brand-red/90 transition-colors shadow-sm cursor-pointer w-full sm:w-auto"
                         >
                             <Plus className="w-4 h-4" /> Add Category
                         </button>
@@ -68,7 +68,7 @@ export function GalleryTabsClient({
                                 setEditingImage(null);
                                 setImageFormOpen(true);
                             }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-red text-white font-medium text-sm rounded-md hover:bg-brand-red/90 transition-colors shadow-sm"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white font-medium text-sm rounded-md hover:bg-brand-red/90 transition-colors shadow-sm cursor-pointer w-full sm:w-auto"
                         >
                             <Plus className="w-4 h-4" /> Add Image
                         </button>
@@ -82,7 +82,7 @@ export function GalleryTabsClient({
                         setActiveTab("categories");
                         setImageFormOpen(false);
                     }}
-                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors cursor-pointer ${activeTab === "categories"
+                    className={`flex items-center gap-2 px-4 py-3 min-h-[44px] text-sm font-medium border-b-2 transition-colors cursor-pointer ${activeTab === "categories"
                             ? "border-brand-red text-neutral-900"
                             : "border-transparent text-neutral-500 hover:text-neutral-900"
                         }`}
@@ -95,7 +95,7 @@ export function GalleryTabsClient({
                         setActiveTab("images");
                         setCategoryFormOpen(false);
                     }}
-                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors cursor-pointer ${activeTab === "images"
+                    className={`flex items-center gap-2 px-4 py-3 min-h-[44px] text-sm font-medium border-b-2 transition-colors cursor-pointer ${activeTab === "images"
                             ? "border-brand-red text-neutral-900"
                             : "border-transparent text-neutral-500 hover:text-neutral-900"
                         }`}
@@ -126,42 +126,44 @@ export function GalleryTabsClient({
                             {categories.length === 0 ? (
                                 <div className="text-center py-12 px-4 text-neutral-500">No categories found.</div>
                             ) : (
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                                            <th className="py-3.5 px-4">Name</th>
-                                            <th className="py-3.5 px-4">Sort Order</th>
-                                            <th className="py-3.5 px-4 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-neutral-200 text-sm">
-                                        {categories.map((c) => (
-                                            <tr key={c.id} className="hover:bg-neutral-50/50">
-                                                <td className="py-4 px-4 font-medium text-neutral-900">{c.name}</td>
-                                                <td className="py-4 px-4 text-neutral-500">{c.sortOrder}</td>
-                                                <td className="py-4 px-4 text-right space-x-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditingCategory(c);
-                                                            setCategoryFormOpen(true);
-                                                        }}
-                                                        className="inline-flex p-1.5 text-neutral-500 hover:text-brand-red bg-white border border-neutral-200 rounded shadow-sm hover:border-brand-red/50 transition-colors"
-                                                        title="Edit"
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteCategory(c.id)}
-                                                        className="inline-flex p-1.5 text-neutral-500 hover:text-red-600 bg-white border border-neutral-200 rounded shadow-sm hover:border-red-200 hover:bg-red-50 transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </td>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse min-w-[480px]">
+                                        <thead>
+                                            <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                                                <th className="py-3.5 px-4">Name</th>
+                                                <th className="py-3.5 px-4">Sort Order</th>
+                                                <th className="py-3.5 px-4 text-right">Actions</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody className="divide-y divide-neutral-200 text-sm">
+                                            {categories.map((c) => (
+                                                <tr key={c.id} className="hover:bg-neutral-50/50">
+                                                    <td className="py-4 px-4 font-medium text-neutral-900">{c.name}</td>
+                                                    <td className="py-4 px-4 text-neutral-500">{c.sortOrder}</td>
+                                                    <td className="py-4 px-4 text-right space-x-1">
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingCategory(c);
+                                                                setCategoryFormOpen(true);
+                                                            }}
+                                                            className="inline-flex items-center justify-center p-2 min-h-[36px] min-w-[36px] text-neutral-500 hover:text-brand-red bg-white border border-neutral-200 rounded shadow-xs hover:border-brand-red/50 transition-colors cursor-pointer"
+                                                            title="Edit"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteCategory(c.id)}
+                                                            className="inline-flex items-center justify-center p-2 min-h-[36px] min-w-[36px] text-neutral-500 hover:text-red-600 bg-white border border-neutral-200 rounded shadow-xs hover:border-red-200 hover:bg-red-50 transition-colors cursor-pointer"
+                                                            title="Delete"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
                         </div>
                     )}
@@ -191,7 +193,7 @@ export function GalleryTabsClient({
                                 <div className="text-center py-12 px-4 text-neutral-500">No images found.</div>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-left border-collapse">
+                                    <table className="w-full text-left border-collapse min-w-[640px]">
                                         <thead>
                                             <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                                                 <th className="py-3.5 px-4">Image</th>
@@ -228,7 +230,7 @@ export function GalleryTabsClient({
                                                     </td>
                                                     <td className="py-4 px-4">
                                                         <div className="flex flex-col gap-2">
-                                                            <label className="flex items-center cursor-pointer group">
+                                                            <label className="flex items-center cursor-pointer group min-h-[32px]">
                                                                 <div className="relative">
                                                                     <input
                                                                         type="checkbox"
@@ -241,7 +243,7 @@ export function GalleryTabsClient({
                                                                 </div>
                                                                 <span className="ml-2 text-xs font-medium text-neutral-600 group-hover:text-neutral-900">Featured</span>
                                                             </label>
-                                                            <label className="flex items-center cursor-pointer group">
+                                                            <label className="flex items-center cursor-pointer group min-h-[32px]">
                                                                 <div className="relative">
                                                                     <input
                                                                         type="checkbox"
@@ -256,8 +258,8 @@ export function GalleryTabsClient({
                                                             </label>
                                                         </div>
                                                     </td>
-                                                    <td className="py-4 px-4 text-neutral-500">{img.sortOrder}</td>
-                                                    <td className="py-4 px-4 text-right space-x-2">
+                                                    <td className="py-4 px-4 text-neutral-500 font-mono">{img.sortOrder}</td>
+                                                    <td className="py-4 px-4 text-right space-x-1">
                                                         <button
                                                             onClick={() => {
                                                                 setEditingImage({
@@ -266,14 +268,14 @@ export function GalleryTabsClient({
                                                                 });
                                                                 setImageFormOpen(true);
                                                             }}
-                                                            className="inline-flex p-1.5 text-neutral-500 hover:text-brand-red bg-white border border-neutral-200 rounded shadow-sm hover:border-brand-red/50 transition-colors"
+                                                            className="inline-flex items-center justify-center p-2 min-h-[36px] min-w-[36px] text-neutral-500 hover:text-brand-red bg-white border border-neutral-200 rounded shadow-xs hover:border-brand-red/50 transition-colors cursor-pointer"
                                                             title="Edit"
                                                         >
                                                             <Edit className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteImage(img.id)}
-                                                            className="inline-flex p-1.5 text-neutral-500 hover:text-red-600 bg-white border border-neutral-200 rounded shadow-sm hover:border-red-200 hover:bg-red-50 transition-colors"
+                                                            className="inline-flex items-center justify-center p-2 min-h-[36px] min-w-[36px] text-neutral-500 hover:text-red-600 bg-white border border-neutral-200 rounded shadow-xs hover:border-red-200 hover:bg-red-50 transition-colors cursor-pointer"
                                                             title="Delete"
                                                         >
                                                             <Trash2 className="w-4 h-4" />

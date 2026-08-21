@@ -32,30 +32,30 @@ export function Projects({
   viewAllLink,
 }: ProjectsProps) {
   return (
-    <section className="py-20 bg-brand-bg">
+    <section className="py-12 sm:py-16 md:py-20 bg-brand-bg">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12">
           <SectionHeading
             title={title}
             subtitle={subtitle}
             className="mb-0 md:mb-0"
           />
           <Link href={viewAllLink} className="hidden md:block">
-            <Button variant="ghost">View All Projects</Button>
+            <Button variant="ghost" className="cursor-pointer">View All Projects</Button>
           </Link>
         </div>
 
         {projects.length === 0 ? (
-          <div className="py-16 text-center text-brand-text/50 bg-brand-bgAlt/30 rounded-2xl border border-dashed border-brand-bgAlt">
-            <p className="text-base font-medium">
+          <div className="py-12 sm:py-16 text-center text-brand-text/50 bg-brand-bgAlt/30 rounded-2xl border border-dashed border-brand-bgAlt px-4">
+            <p className="text-sm sm:text-base font-medium">
               No featured projects available at the moment.
             </p>
-            <p className="text-sm text-brand-text/40 mt-1">
+            <p className="text-xs sm:text-sm text-brand-text/40 mt-1">
               Check back soon to explore our latest showcase.
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {projects.map((project, index) => (
               <motion.div
                 key={project.id}
@@ -78,20 +78,20 @@ export function Projects({
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                         unoptimized={!project.imageUrl?.includes("res.cloudinary.com")}
                       />
-                      <div className="absolute top-4 left-4 z-10">
+                      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
                         <Badge
                           variant="default"
-                          className="bg-white/90 backdrop-blur shadow-sm"
+                          className="bg-white/90 backdrop-blur shadow-sm text-xs"
                         >
                           {project.category}
                         </Badge>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold mb-2 group-hover:text-brand-red transition-colors">
+                    <div className="p-4 sm:p-6">
+                      <h3 className="text-lg sm:text-xl font-bold mb-1.5 sm:mb-2 group-hover:text-brand-red transition-colors">
                         {project.title}
                       </h3>
-                      <p className="text-brand-text/60 text-sm">
+                      <p className="text-brand-text/60 text-xs sm:text-sm">
                         {project.location}
                       </p>
                     </div>
@@ -102,9 +102,9 @@ export function Projects({
           </div>
         )}
 
-        <div className="mt-10 text-center md:hidden">
+        <div className="mt-8 text-center md:hidden">
           <Link href={viewAllLink}>
-            <Button variant="secondary" className="w-full">
+            <Button variant="secondary" className="w-full min-h-[44px] cursor-pointer">
               View All Projects
             </Button>
           </Link>

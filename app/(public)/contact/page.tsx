@@ -34,7 +34,7 @@ export default async function ContactPage() {
     <div className="flex flex-col pt-24 md:pt-32 pb-16 md:pb-24">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
-        <div className="relative overflow-hidden rounded-3xl p-8 md:p-12 mb-12 md:mb-20 max-w-4xl border border-neutral-100">
+        <div className="relative isolate overflow-hidden rounded-3xl p-8 md:p-12 mb-12 md:mb-20 max-w-4xl border border-neutral-100">
           <PowderSplashBackground compact />
           <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold text-brand-text mb-6">

@@ -20,7 +20,7 @@ export function ServicesHeader({ title, intro }: ServicesHeaderProps) {
   };
 
   return (
-    <section className="relative w-full py-16 md:py-24 border-b border-neutral-200 overflow-hidden">
+    <section className="relative isolate w-full py-16 md:py-24 border-b border-neutral-200 overflow-hidden bg-[#FDFCFA]">
       {/* Exact Kunku Red & Halad Yellow powder splash background */}
       <PowderSplashBackground />
 

@@ -61,7 +61,7 @@ export function PowderSplashBackground({
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none select-none absolute inset-0 -z-10 overflow-hidden ${className}`}
+      className={`pointer-events-none select-none absolute inset-0 z-0 overflow-hidden ${className}`}
     >
       <svg
         className="w-full h-full"

@@ -125,7 +125,7 @@ function GalleryContent({ categories, images }: GalleryClientProps) {
     <div className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C] pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="relative overflow-hidden rounded-2xl py-8 mb-8">
+        <div className="relative isolate overflow-hidden rounded-2xl py-8 mb-8">
           <PowderSplashBackground compact />
           <motion.div
             className="relative z-10 text-center max-w-3xl mx-auto"

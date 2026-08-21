@@ -92,7 +92,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
   return (
     <div className="pb-24">
       {/* Header Section */}
-      <section className="relative bg-brand-bg pt-28 pb-12 border-b border-brand-bgAlt/60 overflow-hidden">
+      <section className="relative isolate bg-brand-bg pt-28 pb-12 border-b border-brand-bgAlt/60 overflow-hidden">
         <PowderSplashBackground compact />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading

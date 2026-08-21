@@ -71,9 +71,9 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
               <Image
                 src="/images/realspace_logo.png"
                 alt="REALSPACE logo"
-                width={169}
-                height={32}
-                className="h-8 w-auto"
+                width={250}
+                height={50}
+                className="h-12 sm:h-14 w-auto"
                 style={{ width: "auto" }}
               />
             </Link>

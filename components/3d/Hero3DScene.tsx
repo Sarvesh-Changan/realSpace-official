@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, Component, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
+import { PerspectiveCamera, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
 /**
@@ -65,17 +65,8 @@ class SceneErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryStat
 // ----------------------------------------------------------------------
 
 function RoomDiorama() {
-  const dioramaGroupRef = useRef<THREE.Group>(null);
-
-  // Gentle, slow oscillation of the entire room to show depth (±7 degrees)
-  useFrame((state) => {
-    if (!dioramaGroupRef.current) return;
-    const t = state.clock.elapsedTime;
-    dioramaGroupRef.current.rotation.y = Math.sin(t * 0.15) * 0.12;
-  });
-
   return (
-    <group ref={dioramaGroupRef} position={[0, -0.2, 0]}>
+    <group position={[0, -0.2, 0]}>
       {/* 1. ROOM SHELL (Open-Corner Dollhouse: Floor + Back Wall + Left Wall) */}
       
       {/* Parquet/Tile Floor (1 mesh) */}
@@ -300,15 +291,30 @@ export default function Hero3DScene() {
   }
 
   return (
-    <div ref={containerRef} className="w-full h-full relative rounded-3xl overflow-hidden border border-[#E8E2DA] bg-[#F8F5F1]">
+    <div ref={containerRef} className="w-full h-full relative rounded-3xl overflow-hidden border border-[#E8E2DA] bg-[#F8F5F1] group cursor-grab active:cursor-grabbing select-none">
       <SceneErrorBoundary fallback={<Hero3DFallback />}>
         <Canvas
           dpr={[1, 1.5]}
           frameloop={shouldAnimate ? "always" : "never"}
           gl={{ powerPreference: "high-performance", antialias: true, alpha: true }}
         >
-          {/* Isometric Camera Angle (Fixed 45-degree angle looking down into the room corner) */}
-          <PerspectiveCamera makeDefault position={[5.2, 4.2, 5.2]} fov={38} onUpdate={(c) => c.lookAt(0, 0, 0)} />
+          {/* Camera */}
+          <PerspectiveCamera makeDefault position={[5.2, 4.2, 5.2]} fov={38} />
+
+          {/* Mouse / Pointer Interactive Orbit Controls */}
+          <OrbitControls
+            makeDefault
+            enableZoom={true}
+            enablePan={true}
+            enableRotate={true}
+            autoRotate={true}
+            autoRotateSpeed={0.6}
+            minDistance={3}
+            maxDistance={14}
+            maxPolarAngle={Math.PI / 2 - 0.05}
+            minPolarAngle={0.1}
+            target={[0, 0, 0]}
+          />
 
           {/* Cozy Room Lighting: Ambient + Warm Directional + Warm Lamp Point Light */}
           <ambientLight intensity={0.85} color="#FFF9F2" />
@@ -319,6 +325,7 @@ export default function Hero3DScene() {
           <RoomDiorama />
         </Canvas>
       </SceneErrorBoundary>
+
     </div>
   );
 }

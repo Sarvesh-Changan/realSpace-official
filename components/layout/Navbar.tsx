@@ -41,9 +41,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Image
                 src="/images/realspace_logo.png"
                 alt="REALSPACE logo"
-                width={211}
-                height={40}
-                className="h-10 w-auto"
+                width={300}
+                height={60}
+                className="h-14 sm:h-16 w-auto max-h-16"
                 style={{ width: "auto" }}
                 priority
               />

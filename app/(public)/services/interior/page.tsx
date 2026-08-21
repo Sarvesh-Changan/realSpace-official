@@ -104,7 +104,7 @@ export default async function InteriorServicesPage() {
       : defaultInteriorServices;
 
   return (
-    <div className="flex flex-col pt-24 md:pt-32">
+    <div className="flex flex-col pt-0">
       <ServicesHeader
         title="Interior Design Services"
         intro="Transforming apartments and villas into elegant, highly functional living environments tailored to your personal aesthetic and budget."

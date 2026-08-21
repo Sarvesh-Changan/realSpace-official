@@ -161,7 +161,7 @@ export default async function ServicesPage() {
   }
 
   return (
-    <div className="flex flex-col pt-24 md:pt-32">
+    <div className="flex flex-col pt-0">
       <ServicesHeader
         title="Our Services"
         intro="From a compact 1BHK kitchen redesign to a complete 3BHK turnkey transformation, REALSPACE handles every square foot with the same level of care."

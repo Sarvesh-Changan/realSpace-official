@@ -104,7 +104,7 @@ export default async function ExteriorServicesPage() {
       : defaultExteriorServices;
 
   return (
-    <div className="flex flex-col pt-24 md:pt-32">
+    <div className="flex flex-col pt-0">
       <ServicesHeader
         title="Exterior & Elevation Services"
         intro="Architectural elevation, modern facade treatments, and outdoor space design engineered for longevity and curb appeal."

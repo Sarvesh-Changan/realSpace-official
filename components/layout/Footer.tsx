@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import prisma from "@/lib/prisma";
 
 const InstagramIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -66,12 +67,14 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
 
           {/* Company Info */}
           <div className="space-y-6">
-            <Link
-              href="/"
-              className="text-2xl font-bold tracking-tighter text-brand-text uppercase flex items-center gap-2"
-            >
-              <span className="w-5 h-5 bg-brand-red rounded-sm inline-block" />
-              REALSPACE
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/images/realspace_logo.png"
+                alt="REALSPACE logo"
+                width={169}
+                height={32}
+                className="h-8 w-auto"
+              />
             </Link>
             <p className="text-brand-text/70 text-sm leading-relaxed max-w-sm">
               A premium interior and exterior design studio based in Thane. We create elegant, highly functional spaces tailored to your modern lifestyle.

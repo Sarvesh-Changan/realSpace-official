@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "../ui/Button";
 
 export interface NavbarProps {
@@ -36,12 +37,15 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link
-              href="/"
-              className="text-2xl font-bold tracking-tighter text-brand-text uppercase flex items-center gap-2 group"
-            >
-              <span className="w-5 h-5 bg-brand-red rounded-sm inline-block group-hover:bg-brand-yellow transition-colors" />
-              {logoText}
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/images/realspace_logo.png"
+                alt="REALSPACE logo"
+                width={211}
+                height={40}
+                className="h-10 w-auto"
+                priority
+              />
             </Link>
           </div>
 

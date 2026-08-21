@@ -19,19 +19,19 @@ export function FinalCta({ ctaText }: FinalCtaProps) {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-neutral-900 rounded-3xl p-10 md:p-16 text-neutral-100"
+          className="bg-brand-bgAlt/70 border border-neutral-200/80 rounded-3xl p-10 md:p-16 text-brand-text shadow-sm backdrop-blur-sm"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-brand-text">
             Ready to reimagine your space?
           </h2>
-          <p className="text-lg text-neutral-400 mb-10 max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             Get an instant, transparent estimate for your interior or exterior
             project. No hidden costs.
           </p>
           <Link href="/quote">
             <Button
               size="lg"
-              className="bg-brand-red hover:bg-brand-red/90 text-white border-0"
+              className="bg-brand-red hover:bg-brand-red/90 text-white border-0 shadow-md hover:shadow-lg transition-all"
             >
               {buttonText}
             </Button>

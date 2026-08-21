@@ -1,5 +1,6 @@
 import React from "react";
 import { type LucideIcon } from "lucide-react";
+import { TiltCard } from "./TiltCard";
 
 export interface ServiceItem {
   id?: string;
@@ -24,9 +25,9 @@ export function ServiceGrid({ services }: { services: ServiceItem[] }) {
       {services.map((service, index) => {
         const Icon = service.icon;
         return (
-          <div
+          <TiltCard
             key={service.id || index}
-            className="flex flex-col p-6 lg:p-8 bg-brand-bg border border-neutral-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group hover:-translate-y-1"
+            className="flex flex-col p-6 lg:p-8 bg-brand-bg border border-neutral-100 group"
           >
             <div className="w-14 h-14 bg-red-50 text-brand-red flex items-center justify-center rounded-xl mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors duration-300">
               <Icon className="w-7 h-7" strokeWidth={1.5} />
@@ -37,7 +38,7 @@ export function ServiceGrid({ services }: { services: ServiceItem[] }) {
             <p className="text-neutral-600 text-sm leading-relaxed flex-1">
               {service.description}
             </p>
-          </div>
+          </TiltCard>
         );
       })}
     </div>

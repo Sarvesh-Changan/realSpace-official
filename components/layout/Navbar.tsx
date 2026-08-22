@@ -3,7 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Button } from "../ui/Button";
+import { useIdleAttention } from "@/hooks/useIdleAttention";
 
 export interface NavbarProps {
   logoText?: string;
@@ -17,6 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleMobileMenu: controlledOnToggle,
 }) => {
   const [internalIsOpen, setInternalIsOpen] = React.useState(false);
+  const isIdle = useIdleAttention(5000);
 
   const isMobileMenuOpen = controlledIsOpen ?? internalIsOpen;
   const handleToggle =
@@ -66,8 +69,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* CTA & Mobile Toggle */}
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
-              <Link href="/quote" tabIndex={-1}>
-                <Button variant="primary" size="sm">
+              <Link href="/quote" tabIndex={-1} className="relative inline-block">
+                {isIdle && (
+                  <motion.span
+                    initial={{ scale: 1, opacity: 0.75 }}
+                    animate={{ scale: 1.15, opacity: 0 }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeOut",
+                    }}
+                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
+                  />
+                )}
+                <Button variant="primary" size="sm" className="relative z-10">
                   Get Free Quote
                 </Button>
               </Link>
@@ -125,8 +140,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               </Link>
             ))}
             <div className="pt-4 pb-2">
-              <Link href="/quote" tabIndex={-1}>
-                <Button variant="primary" size="md" className="w-full">
+              <Link href="/quote" tabIndex={-1} className="relative block w-full">
+                {isIdle && (
+                  <motion.span
+                    initial={{ scale: 1, opacity: 0.75 }}
+                    animate={{ scale: 1.08, opacity: 0 }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeOut",
+                    }}
+                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
+                  />
+                )}
+                <Button variant="primary" size="md" className="w-full relative z-10">
                   Get Free Quote
                 </Button>
               </Link>

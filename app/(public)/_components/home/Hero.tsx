@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { Hero3DFallback } from "@/components/3d/Hero3DScene";
+import { useIdleAttention } from "@/hooks/useIdleAttention";
 
 // Lazy-load the R3F Canvas without SSR so it never blocks page hydration or text rendering
 const Hero3DScene = dynamic(() => import("@/components/3d/Hero3DScene"), {
@@ -19,6 +20,7 @@ export interface HeroProps {
 }
 
 export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
+  const isIdle = useIdleAttention(5000);
   const headline = heroHeadline || "Your Space, Reimagined.";
   const subhead =
     heroSubhead ||
@@ -49,8 +51,20 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
                   View Our Work
                 </Button>
               </Link>
-              <Link href="/quote" className="w-full sm:w-auto">
-                <Button variant="secondary" size="lg" className="w-full min-h-[48px] cursor-pointer">
+              <Link href="/quote" className="w-full sm:w-auto relative inline-block">
+                {isIdle && (
+                  <motion.span
+                    initial={{ scale: 1, opacity: 0.75 }}
+                    animate={{ scale: 1.12, opacity: 0 }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeOut",
+                    }}
+                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
+                  />
+                )}
+                <Button variant="secondary" size="lg" className="w-full min-h-[48px] cursor-pointer relative z-10">
                   {buttonCta}
                 </Button>
               </Link>

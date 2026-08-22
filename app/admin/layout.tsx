@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { AdminInactivityTracker } from "@/components/admin/AdminInactivityTracker";
 
 export default async function AdminLayout({
   children,
@@ -24,5 +25,10 @@ export default async function AdminLayout({
     redirect("/admin/login");
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <AdminShell>
+      <AdminInactivityTracker />
+      {children}
+    </AdminShell>
+  );
 }

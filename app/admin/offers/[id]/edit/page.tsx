@@ -29,6 +29,7 @@ export default async function EditOfferPage({ params }: Props) {
     title: offer.title,
     description: offer.description,
     imageUrl: offer.imageUrl || "",
+    imagePublicId: offer.imagePublicId || "",
     ctaLabel: offer.ctaLabel,
     ctaLink: offer.ctaLink,
     isActive: offer.isActive,

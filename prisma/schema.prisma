@@ -255,18 +255,19 @@ model EmailOtp {
 // ---------- Offers ----------
 
 model Offer {
-  id          String    @id @default(cuid())
-  title       String
-  description String    @db.Text
-  imageUrl    String?
-  ctaLabel    String
-  ctaLink     String
-  isActive    Boolean   @default(true)
-  startDate   DateTime?
-  endDate     DateTime?
-  sortOrder   Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  title         String
+  description   String    @db.Text
+  imageUrl      String?
+  imagePublicId String?
+  ctaLabel      String
+  ctaLink       String
+  isActive      Boolean   @default(true)
+  startDate     DateTime?
+  endDate       DateTime?
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // ---------- Gallery ----------

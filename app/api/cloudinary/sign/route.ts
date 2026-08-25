@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 
     // Security requirements per SECURITY.md §4 & ARCHITECTURE.md §5:
     // Restricted folders ("realspace-projects", "realspace-gallery"), expiring timestamp
-    const allowedFolders = ["realspace-projects", "realspace-gallery"];
+    const allowedFolders = ["realspace-projects", "realspace-gallery", "realspace-offers", "offers"];
     const requestedFolder = body.folder || paramsToSign?.folder;
     const folder = allowedFolders.includes(requestedFolder)
       ? requestedFolder

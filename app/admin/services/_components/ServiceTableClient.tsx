@@ -60,7 +60,7 @@ export function ServiceTable({ services, onAdd, onEdit, onDelete, onTogglePublis
                                     <td className="px-4 py-3.5 text-center">
                                         <label className="relative inline-flex items-center cursor-pointer min-h-[36px] min-w-[36px] justify-center">
                                             <input type="checkbox" className="sr-only peer" checked={service.isPublished} onChange={(e) => onTogglePublish(service.id, e.target.checked)} />
-                                            <div className="w-9 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
+                                            <div className="relative w-9 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
                                         </label>
                                     </td>
                                     <td className="px-4 py-3.5 text-right space-x-1">

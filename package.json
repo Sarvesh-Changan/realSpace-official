@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^7.10.0",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@types/nodemailer": "^8.0.1",
@@ -40,7 +40,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
-    "prisma": "^5.22.0",
+    "prisma": "^8.0.0-rc.10",
     "tailwindcss": "^4",
     "tsx": "^4.23.11",
     "typescript": "^5"

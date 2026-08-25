@@ -31,7 +31,7 @@ export function MeetFounder({
           )}
           <div className="md:col-span-2">
             <h3 className="text-2xl font-bold text-brand-text mb-2">
-              Meet {founderName}
+              {founderName}
             </h3>
             <p className="text-xs uppercase font-bold text-brand-red tracking-wider mb-4">
               Founder Since 1989

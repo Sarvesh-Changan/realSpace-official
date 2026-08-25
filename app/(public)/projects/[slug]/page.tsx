@@ -5,7 +5,6 @@ import { ProjectHeader } from "./_components/ProjectHeader";
 import { ProjectDescription } from "./_components/ProjectDescription";
 import { ProjectDetails } from "./_components/ProjectDetails";
 import { RelatedProjects } from "./_components/RelatedProjects";
-import { ProjectCta } from "./_components/ProjectCta";
 
 export interface ProjectImage {
   id: string;
@@ -223,7 +222,6 @@ export default async function ProjectDetailPage({
 
       {/* Bottom Sections */}
       <RelatedProjects projects={relatedProjects} />
-      <ProjectCta />
     </div>
   );
 }

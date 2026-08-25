@@ -18,19 +18,19 @@ export async function updateSiteSettings(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { instagram, facebook, youtube, ...core } = parsed.data;
+  const { instagram, facebook, youtube, linkedin, ...core } = parsed.data;
 
   try {
     await prisma.siteSettings.upsert({
       where: { id: "singleton" },
       update: {
         ...core,
-        socialLinks: { instagram: instagram ?? "", facebook: facebook ?? "", youtube: youtube ?? "" },
+        socialLinks: { instagram: instagram ?? "", facebook: facebook ?? "", youtube: youtube ?? "", linkedin: linkedin ?? "" },
       },
       create: {
         id: "singleton",
         ...core,
-        socialLinks: { instagram: instagram ?? "", facebook: facebook ?? "", youtube: youtube ?? "" },
+        socialLinks: { instagram: instagram ?? "", facebook: facebook ?? "", youtube: youtube ?? "", linkedin: linkedin ?? "" },
       },
     });
   } catch (err) {

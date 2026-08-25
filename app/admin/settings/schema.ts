@@ -12,6 +12,7 @@ export const siteSettingsSchema = z.object({
   instagram: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
   facebook: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
   youtube: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  linkedin: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 });
 
 export type SiteSettingsInput = z.infer<typeof siteSettingsSchema>;

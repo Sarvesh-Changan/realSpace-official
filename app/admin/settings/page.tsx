@@ -16,6 +16,7 @@ export default async function AdminSettingsPage() {
     instagram?: string;
     facebook?: string;
     youtube?: string;
+    linkedin?: string;
   };
 
   const initialData: SiteSettingsInput = {
@@ -30,6 +31,7 @@ export default async function AdminSettingsPage() {
     instagram: socialLinks.instagram ?? "",
     facebook: socialLinks.facebook ?? "",
     youtube: socialLinks.youtube ?? "",
+    linkedin: socialLinks.linkedin ?? "",
   };
 
   return (

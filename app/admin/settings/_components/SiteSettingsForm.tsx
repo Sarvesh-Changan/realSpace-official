@@ -116,6 +116,12 @@ export function SiteSettingsForm({ initialData }: { initialData: SiteSettingsInp
                     <input type="text" {...register("youtube")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://youtube.com/..." />
                     {errors.youtube && <p className="mt-1 text-xs text-red-500">{errors.youtube.message}</p>}
                 </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-neutral-700">LinkedIn Profile URL</label>
+                    <input type="text" {...register("linkedin")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500" placeholder="https://linkedin.com/in/..." />
+                    {errors.linkedin && <p className="mt-1 text-xs text-red-500">{errors.linkedin.message}</p>}
+                </div>
             </div>
 
             <div className="pt-6 border-t border-neutral-200">

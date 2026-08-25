@@ -295,6 +295,7 @@ model GalleryImage {
   theme             String?
   approxBudgetLabel String?
   description       String?         @db.Text
+  isCategoryCover   Boolean         @default(false)
   isFeatured        Boolean         @default(false)
   isPublished       Boolean         @default(true)
   sortOrder         Int             @default(0)

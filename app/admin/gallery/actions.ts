@@ -28,7 +28,9 @@ export async function createCategory(data: CategoryInput) {
     });
 
     revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true, id: category.id };
   } catch (error: any) {
     console.error("Failed to create category:", error);
@@ -61,7 +63,9 @@ export async function updateCategory(id: string, data: CategoryInput) {
     });
 
     revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error: any) {
     console.error("Failed to update category:", error);
@@ -84,7 +88,9 @@ export async function deleteCategory(id: string) {
     });
 
     revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to delete category:", error);
@@ -108,6 +114,15 @@ export async function createImage(data: ImageInput) {
 
   try {
     const imgData = parsed.data;
+
+    if (imgData.isCategoryCover) {
+      // Unset isCategoryCover on all other images in this category
+      await prisma.galleryImage.updateMany({
+        where: { categoryId: imgData.categoryId },
+        data: { isCategoryCover: false },
+      });
+    }
+
     const image = await prisma.galleryImage.create({
       data: {
         title: imgData.title,
@@ -116,9 +131,7 @@ export async function createImage(data: ImageInput) {
         mediaType: imgData.mediaType,
         url: imgData.url,
         cloudinaryId: imgData.cloudinaryId || imgData.url,
-        theme: imgData.theme || null,
-        approxBudgetLabel: imgData.approxBudgetLabel || null,
-        description: imgData.description || null,
+        isCategoryCover: imgData.isCategoryCover,
         isFeatured: imgData.isFeatured,
         isPublished: imgData.isPublished,
         sortOrder: imgData.sortOrder,
@@ -126,7 +139,9 @@ export async function createImage(data: ImageInput) {
     });
 
     revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true, id: image.id };
   } catch (error) {
     console.error("Failed to create gallery image:", error);
@@ -148,6 +163,18 @@ export async function updateImage(id: string, data: ImageInput) {
 
   try {
     const imgData = parsed.data;
+
+    if (imgData.isCategoryCover) {
+      // Automatically set isCategoryCover to false on every OTHER row in the category
+      await prisma.galleryImage.updateMany({
+        where: {
+          categoryId: imgData.categoryId,
+          id: { not: id },
+        },
+        data: { isCategoryCover: false },
+      });
+    }
+
     await prisma.galleryImage.update({
       where: { id },
       data: {
@@ -157,9 +184,7 @@ export async function updateImage(id: string, data: ImageInput) {
         mediaType: imgData.mediaType,
         url: imgData.url,
         cloudinaryId: imgData.cloudinaryId || imgData.url,
-        theme: imgData.theme || null,
-        approxBudgetLabel: imgData.approxBudgetLabel || null,
-        description: imgData.description || null,
+        isCategoryCover: imgData.isCategoryCover,
         isFeatured: imgData.isFeatured,
         isPublished: imgData.isPublished,
         sortOrder: imgData.sortOrder,
@@ -168,7 +193,9 @@ export async function updateImage(id: string, data: ImageInput) {
 
     revalidatePath("/admin/gallery");
     revalidatePath(`/admin/gallery/${id}`);
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to update gallery image:", error);
@@ -188,7 +215,9 @@ export async function deleteImage(id: string) {
     });
 
     revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to delete gallery image:", error);
@@ -198,7 +227,7 @@ export async function deleteImage(id: string) {
 
 export async function toggleImageStatus(
   id: string,
-  field: "isFeatured" | "isPublished",
+  field: "isFeatured" | "isPublished" | "isCategoryCover",
   value: boolean
 ) {
   const session = await auth();
@@ -207,6 +236,18 @@ export async function toggleImageStatus(
   }
 
   try {
+    const existing = await prisma.galleryImage.findUnique({ where: { id } });
+    if (!existing) {
+      return { success: false, error: "Image not found." };
+    }
+
+    if (field === "isCategoryCover" && value === true) {
+      await prisma.galleryImage.updateMany({
+        where: { categoryId: existing.categoryId, id: { not: id } },
+        data: { isCategoryCover: false },
+      });
+    }
+
     await prisma.galleryImage.update({
       where: { id },
       data: {
@@ -215,7 +256,9 @@ export async function toggleImageStatus(
     });
 
     revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error(`Failed to toggle ${field} for gallery image:`, error);

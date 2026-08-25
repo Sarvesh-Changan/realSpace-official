@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
-import { GalleryClient, type GalleryItem } from "./_components/GalleryClient";
+import { GalleryClient, type CategoryFolder, type GalleryItem } from "./_components/GalleryClient";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
 
@@ -20,11 +20,29 @@ export default async function GalleryPage() {
   const [dbCategories, dbImages] = await Promise.all([
     prisma.galleryCategory.findMany({
       orderBy: { sortOrder: "asc" },
+      include: {
+        images: {
+          where: { isPublished: true },
+          orderBy: [
+            { isCategoryCover: "desc" },
+            { sortOrder: "asc" },
+            { createdAt: "desc" },
+          ],
+          take: 1,
+          select: { url: true, mediaType: true },
+        },
+        _count: {
+          select: {
+            images: { where: { isPublished: true } },
+          },
+        },
+      },
     }),
     prisma.galleryImage.findMany({
       where: { isPublished: true },
       include: { category: true },
       orderBy: [
+        { isCategoryCover: "desc" },
         { isFeatured: "desc" },
         { sortOrder: "asc" },
         { createdAt: "desc" },
@@ -32,22 +50,27 @@ export default async function GalleryPage() {
     }),
   ]);
 
-  const categories = [
-    "All",
-    ...dbCategories.map((c) => c.name),
-  ];
+  const categoryFolders: CategoryFolder[] = dbCategories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    count: c._count.images,
+    coverUrl: c.images[0]?.url || "/images/placeholder-image.png",
+    coverMediaType: c.images[0]?.mediaType || "IMAGE",
+  }));
 
-  const images: GalleryItem[] = dbImages.map((img) => ({
+  const items: GalleryItem[] = dbImages.map((img) => ({
     id: img.id,
     title: img.title,
     url: img.url,
     mediaType: img.mediaType,
-    category: img.category?.name || "Other",
+    categoryId: img.categoryId,
+    category: img.category?.name || "Uncategorized",
     designType: img.designType,
     theme: img.theme,
     approxBudgetLabel: img.approxBudgetLabel,
     description: img.description,
+    isCategoryCover: img.isCategoryCover,
   }));
 
-  return <GalleryClient categories={categories} images={images} />;
+  return <GalleryClient categoryFolders={categoryFolders} images={items} />;
 }

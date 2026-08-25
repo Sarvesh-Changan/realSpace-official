@@ -23,26 +23,40 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const paramsToSign = body.paramsToSign || body;
+    console.log("Cloudinary Sign Request Body:", JSON.stringify(body, null, 2));
 
-    // Security requirements per SECURITY.md §4 & ARCHITECTURE.md §5:
-    // Restricted folders ("realspace-projects", "realspace-gallery"), expiring timestamp
-    const allowedFolders = ["realspace-projects", "realspace-gallery", "realspace-offers", "offers", "realspace-certifications", "certifications"];
-    const requestedFolder = body.folder || paramsToSign?.folder;
+    // If request comes from next-cloudinary CldUploadWidget (contains paramsToSign)
+    if (body.paramsToSign) {
+      const signature = cloudinary.utils.api_sign_request(
+        body.paramsToSign,
+        process.env.CLOUDINARY_API_SECRET || ""
+      );
+      return NextResponse.json({ signature });
+    }
+
+    // Direct file upload fallback (from custom <input type="file" />)
+    const allowedFolders = [
+      "realspace-projects",
+      "realspace-gallery",
+      "realspace-offers",
+      "offers",
+      "realspace-certifications",
+      "certifications",
+    ];
+    const requestedFolder = body.folder;
     const folder = allowedFolders.includes(requestedFolder)
       ? requestedFolder
       : "realspace-projects";
 
     const timestamp = Math.floor(Date.now() / 1000);
 
-    const finalParams: Record<string, unknown> = {
-      ...paramsToSign,
+    const paramsToSign = {
       timestamp,
       folder,
     };
 
     const signature = cloudinary.utils.api_sign_request(
-      finalParams,
+      paramsToSign,
       process.env.CLOUDINARY_API_SECRET || ""
     );
 

@@ -17,12 +17,10 @@ export const imageSchema = z.object({
   mediaType: z.nativeEnum(MediaType),
   url: z.string().min(1, "Media URL is required"),
   cloudinaryId: z.string(),
-  theme: z.string().optional().nullable(),
-  approxBudgetLabel: z.string().optional().nullable(),
-  description: z.string().optional().nullable(),
-  isFeatured: z.boolean(),
-  isPublished: z.boolean(),
-  sortOrder: z.number().int().min(0),
+  isCategoryCover: z.boolean().default(false),
+  isFeatured: z.boolean().default(false),
+  isPublished: z.boolean().default(true),
+  sortOrder: z.number().int().min(0).default(0),
 });
 
 export type ImageInput = z.infer<typeof imageSchema>;

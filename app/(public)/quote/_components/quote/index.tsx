@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { clsx } from 'clsx';
-import { QuoteState, QuoteCalculationResult } from './types';
+import { QuoteState, QuoteCalculationResult, ActiveRoomType } from './types';
 import Step1BHK from './Step1BHK';
 import Step2Rooms from './Step2Rooms';
 import Step3Package from './Step3Package';
 import Step4Quote from './Step4Quote';
-import { submitQuoteAction } from '@/app/(public)/quote/actions';
+import { submitQuoteAction, getActiveRoomTypesAction } from '@/app/(public)/quote/actions';
 
 const STEPS = [
   'BHK TYPE',
@@ -20,10 +20,9 @@ const STEPS = [
 
 const INITIAL_STATE: QuoteState = {
   bhkType: '',
-  rooms: { kitchens: 0, livingRooms: 0, bedrooms: 0, bathrooms: 0, wardrobes: 0 },
+  rooms: {},
   requirements: { interior: false, exterior: false },
   packageTier: '',
-  additionalServices: [],
   contact: { name: '', phone: '', email: '', location: '', requirements: '', verifiedToken: '', websiteUrl: '' }
 };
 
@@ -31,10 +30,21 @@ export default function QuoteCalculator() {
   const [currentStep, setCurrentStep] = useState(1);
   const [direction, setDirection] = useState(0);
   const [state, setState] = useState<QuoteState>(INITIAL_STATE);
+  const [activeRoomTypes, setActiveRoomTypes] = useState<ActiveRoomType[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calculationResult, setCalculationResult] = useState<QuoteCalculationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadActiveRooms() {
+      const res = await getActiveRoomTypesAction();
+      if (res.success && res.activeRoomTypes) {
+        setActiveRoomTypes(res.activeRoomTypes);
+      }
+    }
+    loadActiveRooms();
+  }, []);
 
   const updateState = (updates: Partial<QuoteState>) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -224,8 +234,20 @@ export default function QuoteCalculator() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="w-full"
             >
-              {currentStep === 1 && <Step1BHK state={state} updateState={updateState} />}
-              {currentStep === 2 && <Step2Rooms state={state} updateState={updateState} />}
+              {currentStep === 1 && (
+                <Step1BHK
+                  state={state}
+                  updateState={updateState}
+                  activeRoomTypes={activeRoomTypes}
+                />
+              )}
+              {currentStep === 2 && (
+                <Step2Rooms
+                  state={state}
+                  updateState={updateState}
+                  activeRoomTypes={activeRoomTypes}
+                />
+              )}
               {currentStep === 3 && <Step3Package state={state} updateState={updateState} />}
               {currentStep === 4 && (
                 <Step4Quote 

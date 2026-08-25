@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { QuoteState, RoomConstraint } from './types';
+import { QuoteState, RoomConstraint, ActiveRoomType } from './types';
 import { clsx } from 'clsx';
 import { Check, Loader2 } from 'lucide-react';
 import { getBhkRoomDefaultsAction } from '@/app/(public)/quote/actions';
@@ -7,69 +7,75 @@ import { getBhkRoomDefaultsAction } from '@/app/(public)/quote/actions';
 interface Props {
   state: QuoteState;
   updateState: (updates: Partial<QuoteState>) => void;
+  activeRoomTypes?: ActiveRoomType[];
 }
 
 const OPTIONS = ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5 BHK+', 'Commercial & Others'];
 
-const ROOM_KEY_MAP: Record<string, keyof QuoteState['rooms']> = {
-  kitchen: 'kitchens',
-  hall: 'livingRooms',
-  bedroom: 'bedrooms',
-  bathroom: 'bathrooms',
-  wardrobe: 'wardrobes',
-};
+function getDefaultRoomConfig(key: string, numBhk: number): RoomConstraint {
+  switch (key) {
+    case 'kitchens':
+      return { defaultQty: 1, minQty: 1, maxQty: 1, isFixedFloor: true };
+    case 'livingRooms':
+      return { defaultQty: 1, minQty: 1, maxQty: 2, isFixedFloor: true };
+    case 'bedrooms':
+      return { defaultQty: numBhk, minQty: numBhk, maxQty: null, isFixedFloor: false };
+    case 'bathrooms':
+      return { defaultQty: numBhk, minQty: numBhk, maxQty: null, isFixedFloor: false };
+    case 'wardrobes':
+      return { defaultQty: 1, minQty: 0, maxQty: null, isFixedFloor: false };
+    default:
+      return { defaultQty: 1, minQty: 0, maxQty: null, isFixedFloor: false };
+  }
+}
 
-export default function Step1BHK({ state, updateState }: Props) {
+export default function Step1BHK({ state, updateState, activeRoomTypes = [] }: Props) {
   const [loadingBhk, setLoadingBhk] = useState<string | null>(null);
 
   const handleSelectBhk = async (option: string) => {
     updateState({ bhkType: option });
 
-    if (option === 'Commercial & Others') {
-      updateState({
-        bhkType: option,
-        rooms: { kitchens: 0, livingRooms: 0, bedrooms: 0, bathrooms: 0, wardrobes: 0 },
-        roomConstraints: {},
-      });
-      return;
-    }
-
     setLoadingBhk(option);
 
     try {
       const res = await getBhkRoomDefaultsAction(option);
+      const effectiveActiveRooms = res.activeRoomTypes || activeRoomTypes;
+
+      if (option === 'Commercial & Others') {
+        const commercialRooms: Record<string, number> = {};
+        effectiveActiveRooms.forEach((r) => {
+          commercialRooms[r.key] = 0;
+        });
+        updateState({
+          bhkType: option,
+          rooms: commercialRooms,
+          roomConstraints: {},
+        });
+        return;
+      }
 
       const numBhk = parseInt(option.charAt(0)) || 1;
-      const newRooms: QuoteState['rooms'] = {
-        kitchens: 1,
-        livingRooms: 1,
-        bedrooms: numBhk,
-        bathrooms: numBhk,
-        wardrobes: 1,
-      };
+      const newRooms: Record<string, number> = {};
+      const newConstraints: Record<string, RoomConstraint> = {};
 
-      const newConstraints: Record<string, RoomConstraint> = {
-        kitchens: { defaultQty: 1, minQty: 1, maxQty: 1, isFixedFloor: true },
-        livingRooms: { defaultQty: 1, minQty: 1, maxQty: 2, isFixedFloor: true },
-        bedrooms: { defaultQty: numBhk, minQty: numBhk, maxQty: null, isFixedFloor: false },
-        bathrooms: { defaultQty: numBhk, minQty: numBhk, maxQty: null, isFixedFloor: false },
-        wardrobes: { defaultQty: 1, minQty: 0, maxQty: null, isFixedFloor: false },
-      };
+      effectiveActiveRooms.forEach((roomDef) => {
+        const baseConfig = getDefaultRoomConfig(roomDef.key, numBhk);
+        newRooms[roomDef.key] = baseConfig.defaultQty;
+        newConstraints[roomDef.key] = baseConfig;
 
-      if (res.success && res.defaults && res.defaults.length > 0) {
-        res.defaults.forEach((d) => {
-          const roomKey = ROOM_KEY_MAP[d.roomGroupKey];
-          if (roomKey) {
-            newRooms[roomKey] = d.defaultQty;
-            newConstraints[roomKey] = {
-              defaultQty: d.defaultQty,
-              minQty: d.minQty,
-              maxQty: d.maxQty,
-              isFixedFloor: d.isFixedFloor,
+        if (res.success && res.defaults && res.defaults.length > 0) {
+          const dbMatch = res.defaults.find((d: { roomGroupKey: string; defaultQty: number; minQty: number; maxQty: number | null; isFixedFloor: boolean }) => roomDef.groupKeys.includes(d.roomGroupKey));
+          if (dbMatch) {
+            newRooms[roomDef.key] = dbMatch.defaultQty;
+            newConstraints[roomDef.key] = {
+              defaultQty: dbMatch.defaultQty,
+              minQty: dbMatch.minQty,
+              maxQty: dbMatch.maxQty,
+              isFixedFloor: dbMatch.isFixedFloor,
             };
           }
-        });
-      }
+        }
+      });
 
       updateState({
         bhkType: option,
@@ -136,3 +142,4 @@ export default function Step1BHK({ state, updateState }: Props) {
     </div>
   );
 }
+

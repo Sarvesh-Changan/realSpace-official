@@ -83,15 +83,9 @@ export default function Step4Quote({ state, updateState, onSubmit, isSubmitting 
                 </div>
               )}
               {selectedRoomSummary.length > 0 && (
-                <div className="border-b border-[#E8E2DA] pb-2">
+                <div className="pt-1">
                   <span className="text-[#6D6A66] block mb-1">Rooms to Design</span>
                   <span className="font-medium">{selectedRoomSummary.join(', ')}</span>
-                </div>
-              )}
-              {state.additionalServices.length > 0 && (
-                <div className="pt-1">
-                  <span className="text-[#6D6A66] block mb-1">Additional Services</span>
-                  <span className="font-medium">{state.additionalServices.join(', ')}</span>
                 </div>
               )}
             </div>

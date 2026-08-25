@@ -7,10 +7,67 @@ import { headers } from 'next/headers';
 import { LeadSource, LeadStatus } from '@prisma/client';
 import { sendLeadNotification } from '@/lib/email';
 
+const ROOM_MAP = [
+  { key: 'kitchens', groupKeys: ['kitchen'], fallbackLabel: 'Kitchens' },
+  { key: 'livingRooms', groupKeys: ['hall', 'living_room'], fallbackLabel: 'Living Rooms / Halls' },
+  { key: 'bedrooms', groupKeys: ['bedroom'], fallbackLabel: 'Bedrooms' },
+  { key: 'bathrooms', groupKeys: ['bathroom'], fallbackLabel: 'Bathrooms' },
+  { key: 'wardrobes', groupKeys: ['wardrobe'], fallbackLabel: 'Wardrobes' },
+];
+
+export async function getActiveRoomTypesAction() {
+  try {
+    const activePricingOptions = await prisma.pricingOption.findMany({
+      where: {
+        isActive: true,
+        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom', 'wardrobe'] },
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    const activeRoomTypes = ROOM_MAP.filter((roomDef) =>
+      activePricingOptions.some((opt: { groupKey: string }) => roomDef.groupKeys.includes(opt.groupKey))
+    ).map((roomDef) => {
+      const matchingOpt = activePricingOptions.find((opt: { groupKey: string; label: string | null }) => roomDef.groupKeys.includes(opt.groupKey));
+      return {
+        key: roomDef.key,
+        groupKeys: roomDef.groupKeys,
+        label: matchingOpt?.label || roomDef.fallbackLabel,
+      };
+    });
+
+    return { success: true, activeRoomTypes };
+  } catch (error) {
+    console.error('Error fetching active room types:', error);
+    return { success: false, activeRoomTypes: [] };
+  }
+}
+
 export async function getBhkRoomDefaultsAction(bhkLabel: string) {
   try {
+    const activePricingOptions = await prisma.pricingOption.findMany({
+      where: {
+        isActive: true,
+        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom', 'wardrobe'] },
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    const activeGroupKeys = new Set(activePricingOptions.map((o: { groupKey: string }) => o.groupKey));
+
+    const activeRoomTypes = ROOM_MAP.filter((roomDef) =>
+      activePricingOptions.some((opt: { groupKey: string }) => roomDef.groupKeys.includes(opt.groupKey))
+    ).map((roomDef) => {
+      const matchingOpt = activePricingOptions.find((opt: { groupKey: string; label: string | null }) => roomDef.groupKeys.includes(opt.groupKey));
+      return {
+        key: roomDef.key,
+        groupKeys: roomDef.groupKeys,
+        label: matchingOpt?.label || roomDef.fallbackLabel,
+      };
+    });
+
     if (!bhkLabel || bhkLabel === 'Commercial & Others') {
-      return { success: true, defaults: [] };
+      return { success: true, activeRoomTypes, defaults: [] };
     }
 
     const bhkOpt = await prisma.pricingOption.findFirst({
@@ -18,16 +75,19 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
     });
 
     if (!bhkOpt) {
-      return { success: true, defaults: [] };
+      return { success: true, activeRoomTypes, defaults: [] };
     }
 
     const defaults = await prisma.bhkRoomDefault.findMany({
       where: { bhkOptionId: bhkOpt.id },
     });
 
+    const filteredDefaults = defaults.filter((d: { roomGroupKey: string }) => activeGroupKeys.has(d.roomGroupKey));
+
     return {
       success: true,
-      defaults: defaults.map((d) => ({
+      activeRoomTypes,
+      defaults: filteredDefaults.map((d: { roomGroupKey: string; defaultQty: number; minQty: number; maxQty: number | null; isFixedFloor: boolean }) => ({
         roomGroupKey: d.roomGroupKey,
         defaultQty: d.defaultQty,
         minQty: d.minQty,
@@ -43,20 +103,13 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
 
 const quoteSelectionSchema = z.object({
   bhkType: z.string().min(1, 'BHK type is required'),
-  rooms: z.object({
-    kitchens: z.number().min(0),
-    livingRooms: z.number().min(0),
-    bedrooms: z.number().min(0),
-    bathrooms: z.number().min(0),
-    wardrobes: z.number().min(0),
-  }),
+  rooms: z.record(z.string(), z.number().min(0)),
   spaceDescription: z.string().optional().or(z.literal('')),
   requirements: z.object({
     interior: z.boolean(),
     exterior: z.boolean(),
   }),
   packageTier: z.string().min(1, 'Package tier is required'),
-  additionalServices: z.array(z.string()),
   contact: z.object({
     name: z.string().min(1, 'Name is required'),
     phone: z.string().min(5, 'Phone number is required'),
@@ -134,7 +187,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     // (a) BHK Type
     if (input.bhkType) {
       const bhkOpt = activeOptions.find(
-        o => o.groupKey === 'bhk_type' && o.label === input.bhkType
+        (o: { groupKey: string; label: string }) => o.groupKey === 'bhk_type' && o.label === input.bhkType
       );
       if (bhkOpt) {
         const base = Number(bhkOpt.basePrice);
@@ -148,29 +201,17 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     }
 
     // (b) Room Counts
-    const roomConfigs: Array<{
-      key: keyof typeof input.rooms;
-      groupKeys: string[];
-      labelFallback: string;
-    }> = [
-      { key: 'kitchens', groupKeys: ['kitchen'], labelFallback: 'Kitchens' },
-      { key: 'livingRooms', groupKeys: ['hall', 'living_room'], labelFallback: 'Living Rooms / Halls' },
-      { key: 'bedrooms', groupKeys: ['bedroom'], labelFallback: 'Bedrooms' },
-      { key: 'bathrooms', groupKeys: ['bathroom'], labelFallback: 'Bathrooms' },
-      { key: 'wardrobes', groupKeys: ['wardrobe'], labelFallback: 'Wardrobes' },
-    ];
-
-    for (const roomCfg of roomConfigs) {
-      const qty = input.rooms[roomCfg.key];
+    for (const roomCfg of ROOM_MAP) {
+      const qty = input.rooms[roomCfg.key] || 0;
       if (qty > 0) {
-        const opt = activeOptions.find(o => roomCfg.groupKeys.includes(o.groupKey));
+        const opt = activeOptions.find((o: { groupKey: string }) => roomCfg.groupKeys.includes(o.groupKey));
         if (opt) {
           const base = Number(opt.basePrice);
           const perUnit = opt.perUnitPrice ? Number(opt.perUnitPrice) : base;
           const cost = opt.perUnitPrice ? base + perUnit * qty : base * qty;
           totalBase += cost;
           breakdown.push({
-            label: `${qty}x ${opt.label || roomCfg.labelFallback}`,
+            label: `${qty}x ${opt.label || roomCfg.fallbackLabel}`,
             amount: cost,
           });
         }
@@ -180,7 +221,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     // (c) Material Package Tier
     if (input.packageTier) {
       const pkgOpt = activeOptions.find(
-        o => o.groupKey === 'material_tier' && o.label === input.packageTier
+        (o: { groupKey: string; label: string }) => o.groupKey === 'material_tier' && o.label === input.packageTier
       );
       if (pkgOpt) {
         const base = Number(pkgOpt.basePrice);
@@ -194,7 +235,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     // (d) Exterior Service
     if (input.requirements.exterior) {
       const extOpt = activeOptions.find(
-        o => o.groupKey === 'exterior_service' || o.groupKey === 'exterior'
+        (o: { groupKey: string }) => o.groupKey === 'exterior_service' || o.groupKey === 'exterior'
       );
       if (extOpt) {
         const base = Number(extOpt.basePrice);
@@ -202,22 +243,6 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
         const cost = base + perUnit;
         totalBase += cost;
         breakdown.push({ label: extOpt.label || 'Exterior Architecture Base', amount: cost });
-      }
-    }
-
-    // (e) Additional Services / Addons
-    if (input.additionalServices && input.additionalServices.length > 0) {
-      for (const serviceName of input.additionalServices) {
-        const addonOpt = activeOptions.find(
-          o => o.groupKey === 'addon' && o.label === serviceName
-        );
-        if (addonOpt) {
-          const base = Number(addonOpt.basePrice);
-          const perUnit = addonOpt.perUnitPrice ? Number(addonOpt.perUnitPrice) : 0;
-          const cost = base + perUnit;
-          totalBase += cost;
-          breakdown.push({ label: addonOpt.label, amount: cost });
-        }
       }
     }
 
@@ -278,7 +303,6 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
             spaceDescription: input.spaceDescription,
             requirements: input.requirements,
             packageTier: input.packageTier,
-            additionalServices: input.additionalServices,
             breakdown,
           },
           estimatedBudgetLow,

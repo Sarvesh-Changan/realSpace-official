@@ -20,7 +20,7 @@ export default async function AdminPricingPage() {
     prisma.bhkRoomDefault.findMany(),
   ]);
 
-  const options = rawOptions.map((opt) => ({
+  const options = rawOptions.map((opt: any) => ({
     id: opt.id,
     groupKey: opt.groupKey,
     label: opt.label,
@@ -30,12 +30,12 @@ export default async function AdminPricingPage() {
     sortOrder: opt.sortOrder,
   }));
 
-  const bhkOptions = rawBhkOptions.map((bhk) => ({
+  const bhkOptions = rawBhkOptions.map((bhk: any) => ({
     id: bhk.id,
     label: bhk.label,
   }));
 
-  const initialDefaults = rawDefaults.map((d) => ({
+  const initialDefaults = rawDefaults.map((d: any) => ({
     id: d.id,
     bhkOptionId: d.bhkOptionId,
     roomGroupKey: d.roomGroupKey,

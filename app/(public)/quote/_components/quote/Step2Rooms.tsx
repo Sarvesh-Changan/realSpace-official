@@ -1,26 +1,18 @@
 import React from 'react';
-import { QuoteState } from './types';
+import { QuoteState, ActiveRoomType } from './types';
 import { Minus, Plus, Info } from 'lucide-react';
-import { clsx } from 'clsx';
 
 interface Props {
   state: QuoteState;
   updateState: (updates: Partial<QuoteState>) => void;
+  activeRoomTypes?: ActiveRoomType[];
 }
 
-const ROOM_TYPES = [
-  { key: 'kitchens', label: 'Kitchens' },
-  { key: 'livingRooms', label: 'Living Rooms / Halls' },
-  { key: 'bedrooms', label: 'Bedrooms' },
-  { key: 'bathrooms', label: 'Bathrooms' },
-  { key: 'wardrobes', label: 'Wardrobes' },
-] as const;
-
-export default function Step2Rooms({ state, updateState }: Props) {
+export default function Step2Rooms({ state, updateState, activeRoomTypes = [] }: Props) {
   const isCommercial = state.bhkType === 'Commercial & Others';
 
-  const updateRoom = (key: keyof QuoteState['rooms'], increment: number) => {
-    const current = state.rooms[key];
+  const updateRoom = (key: string, increment: number) => {
+    const current = state.rooms[key] ?? 0;
     const constraint = state.roomConstraints?.[key];
 
     const minQty = isCommercial ? 0 : constraint?.minQty ?? 0;
@@ -41,6 +33,11 @@ export default function Step2Rooms({ state, updateState }: Props) {
     });
   };
 
+  // If activeRoomTypes wasn't passed or is empty, fall back to keys in state.rooms
+  const displayedRooms = activeRoomTypes.length > 0
+    ? activeRoomTypes
+    : Object.keys(state.rooms).map((k) => ({ key: k, groupKeys: [k], label: k }));
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
@@ -54,8 +51,8 @@ export default function Step2Rooms({ state, updateState }: Props) {
 
       {/* Room Steppers */}
       <div className="space-y-3.5 sm:space-y-4 max-w-2xl mx-auto">
-        {ROOM_TYPES.map(({ key, label }) => {
-          const current = state.rooms[key];
+        {displayedRooms.map(({ key, label }) => {
+          const current = state.rooms[key] ?? 0;
           const constraint = state.roomConstraints?.[key];
 
           const minQty = isCommercial ? 0 : constraint?.minQty ?? 0;
@@ -134,3 +131,4 @@ export default function Step2Rooms({ state, updateState }: Props) {
     </div>
   );
 }
+

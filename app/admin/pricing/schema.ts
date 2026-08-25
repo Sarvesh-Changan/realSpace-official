@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const pricingOptionSchema = z.object({
-  groupKey: z.string().min(1, "Group key is required"),
+  groupKey: z.string().min(1, "Group key is required").refine((val) => val !== "addon", { message: "Additional Services ('addon') are no longer supported." }),
   label: z.string().min(1, "Label is required"),
   designType: z.enum(["INTERIOR", "EXTERIOR"]).optional().nullable(),
   basePrice: z.coerce.number().min(0, "Must be positive"),

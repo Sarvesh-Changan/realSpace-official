@@ -32,7 +32,6 @@ const GROUP_LABELS: Record<string, string> = {
   interior_package: "Interior Packages",
   exterior_service: "Exterior Services",
   material_tier: "Material Tiers",
-  addon: "Additional Services",
 };
 
 export function PricingConfigTable({ options, onAdd, onEdit, onDelete, onToggleActive }: PricingConfigTableProps) {

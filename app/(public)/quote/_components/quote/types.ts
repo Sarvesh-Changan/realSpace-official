@@ -5,15 +5,15 @@ export interface RoomConstraint {
   isFixedFloor: boolean;
 }
 
+export interface ActiveRoomType {
+  key: string;
+  groupKeys: string[];
+  label: string;
+}
+
 export interface QuoteState {
   bhkType: string;
-  rooms: {
-    kitchens: number;
-    livingRooms: number;
-    bedrooms: number;
-    bathrooms: number;
-    wardrobes: number;
-  };
+  rooms: Record<string, number>;
   roomConstraints?: Record<string, RoomConstraint>;
   spaceDescription?: string;
   requirements: {
@@ -21,7 +21,6 @@ export interface QuoteState {
     exterior: boolean;
   };
   packageTier: string;
-  additionalServices: string[];
   contact: {
     name: string;
     phone: string;
@@ -44,3 +43,4 @@ export interface QuoteCalculationResult {
   breakdown: QuoteBreakdownItem[];
   leadId?: string;
 }
+

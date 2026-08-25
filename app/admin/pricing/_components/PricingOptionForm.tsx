@@ -52,7 +52,6 @@ export function PricingConfigForm({ initialData, onSubmit, onCancel, isSubmittin
             <option value="interior_package">Interior Package</option>
             <option value="exterior_service">Exterior Service</option>
             <option value="material_tier">Material Tier</option>
-            <option value="addon">Additional Service</option>
           </select>
           {errors.groupKey && <p className="mt-1 text-xs text-red-600">{errors.groupKey.message}</p>}
         </div>

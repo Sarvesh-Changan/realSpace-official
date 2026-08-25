@@ -408,13 +408,13 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                         {/* Top Badges */}
                         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-1.5 transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
                           <span
-                            className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
+                           className="px-3.5 sm:px-4 py-0.5 sm:py-1.5 text-[15px] sm:text-sm font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
                             style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
                           >
                             {item.category}
                           </span>
                           {item.isCategoryCover && (
-                            <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#1C1C1C] bg-[#FECC00] rounded-full shadow-sm">
+                            <span className="px-3.5 sm:px-4 py-0.5 sm:py-1.5 text-[15px] sm:text-sm font-bold uppercase tracking-wider text-[#1C1C1C] bg-[#FECC00] rounded-full shadow-sm">
                               Cover
                             </span>
                           )}
@@ -498,10 +498,10 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
               exit={{ scale: 0.95, opacity: 0, y: 16 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.3, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-5xl bg-[#1C1C1C] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[88vh] sm:max-h-[90vh]"
+              className="relative w-full max-w-6xl bg-[#1C1C1C] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row md:h-[min(72vh,560px)] max-h-[88vh] sm:max-h-[90vh]"
             >
               {/* Media Container */}
-              <div className="relative w-full md:w-2/3 h-[32vh] sm:h-[45vh] md:h-auto min-h-[220px] bg-black flex items-center justify-center shrink-0">
+              <div className="relative w-full md:w-[58%] h-[32vh] sm:h-[45vh] md:h-full min-h-[220px] bg-black flex items-center justify-center shrink-0">
                 {lightboxItem.mediaType === "VIDEO" ? (
                   <video
                     src={lightboxItem.url}
@@ -515,13 +515,13 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                     src={lightboxItem.url}
                     alt={lightboxItem.title}
                     fill
-                    className="object-contain"
+                    className="object-cover"
                   />
                 )}
               </div>
 
               {/* Content Details */}
-              <div className="w-full md:w-1/3 bg-white p-5 sm:p-6 md:p-8 flex flex-col justify-center overflow-y-auto flex-1">
+              <div className="w-full md:w-[42%] bg-white p-5 sm:p-6 md:p-9 flex flex-col justify-center overflow-y-auto flex-1">
                 <div className="mb-3 sm:mb-4 flex flex-wrap gap-2">
                   <span
                     className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white rounded-md"
@@ -534,7 +534,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                   </span>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1C1C1C]">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl leading-[1.08] font-serif font-bold text-[#1C1C1C]">
                   {lightboxItem.title}
                 </h2>
               </div>

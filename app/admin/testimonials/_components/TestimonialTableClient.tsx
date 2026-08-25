@@ -53,7 +53,7 @@ export function TestimonialTable({ testimonials, onAdd, onEdit, onDelete, onTogg
                                     </td>
                                     <td className="px-4 py-3.5">
                                         <p className="text-neutral-600 line-clamp-2 text-xs" title={testimonial.quote}>
-                                            "{testimonial.quote}"
+                                            &quot;{testimonial.quote}&quot;
                                         </p>
                                     </td>
                                     <td className="px-4 py-3.5">
@@ -138,4 +138,4 @@ export function TestimonialTableWrapper({ testimonials }: { testimonials: Testim
             />
         </div>
     );
-}
+}

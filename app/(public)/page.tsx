@@ -9,6 +9,7 @@ import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
 import { Testimonials } from "./_components/home/Testimonials";
+import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
 import { FinalCta } from "./_components/home/FinalCta";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
@@ -72,6 +73,15 @@ export default async function HomePage() {
     clientRole?: string | null;
     rating?: number;
   }> = [];
+  let rawVideoTestimonials: Array<{
+    id: string;
+    clientName: string;
+    projectType: string | null;
+    location: string | null;
+    slug: string | null;
+    videoUrl: string | null;
+    thumbnailUrl: string | null;
+  }> = [];
   let rawGalleryImages: Array<{
     id: string;
     title: string;
@@ -92,6 +102,7 @@ export default async function HomePage() {
       fetchedExterior,
       fetchedServices,
       fetchedTestimonials,
+      fetchedVideoTestimonials,
       fetchedGalleryImages,
     ] = await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
@@ -145,6 +156,23 @@ export default async function HomePage() {
         orderBy: { sortOrder: "asc" },
         take: 3,
       }),
+      prisma.testimonial.findMany({
+        where: {
+          isPublished: true,
+          videoUrl: { not: null },
+        },
+        select: {
+          id: true,
+          clientName: true,
+          projectType: true,
+          location: true,
+          slug: true,
+          videoUrl: true,
+          thumbnailUrl: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
       prisma.galleryImage.findMany({
         where: { isPublished: true },
         include: { category: true },
@@ -159,6 +187,7 @@ export default async function HomePage() {
     rawExteriorProjects = fetchedExterior;
     services = fetchedServices;
     testimonials = fetchedTestimonials;
+    rawVideoTestimonials = fetchedVideoTestimonials;
     rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
     console.error("Error loading home page data from Prisma:", error);
@@ -206,6 +235,19 @@ export default async function HomePage() {
     imageUrl: img.url,
   }));
 
+  const videoTestimonialItems: VideoTestimonialItem[] = rawVideoTestimonials.flatMap((item) => {
+    if (!item.videoUrl) return [];
+    return [{
+      id: item.id,
+      title: item.projectType || "A REALSPACE design story",
+      clientName: item.clientName,
+      location: item.location,
+      slug: item.slug,
+      videoUrl: item.videoUrl,
+      thumbnailUrl: item.thumbnailUrl,
+    }];
+  });
+
   return (
     <>
       <Hero
@@ -231,6 +273,7 @@ export default async function HomePage() {
       <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />
       <Testimonials testimonials={testimonials} />
+      <VideoTestimonials testimonials={videoTestimonialItems} />
       <FinalCta ctaText={siteSettings?.ctaText} />
     </>
   );

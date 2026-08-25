@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       "offers",
       "realspace-certifications",
       "certifications",
+      "testimonials",
     ];
     const requestedFolder = body.folder;
     const folder = allowedFolders.includes(requestedFolder)
@@ -55,6 +56,9 @@ export async function POST(request: Request) {
       folder,
     };
 
+    const isTestimonialUpload = folder === "testimonials";
+    const resourceType = isTestimonialUpload && body.resourceType === "image" ? "image" : isTestimonialUpload ? "video" : "image";
+
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
       process.env.CLOUDINARY_API_SECRET || ""
@@ -64,6 +68,11 @@ export async function POST(request: Request) {
       signature,
       timestamp,
       folder,
+      resourceType,
+      allowedFormats: isTestimonialUpload
+        ? resourceType === "video" ? ["mp4", "webm", "mov"] : ["jpg", "jpeg", "png", "webp"]
+        : undefined,
+      maxFileSize: isTestimonialUpload ? 100 * 1024 * 1024 : undefined,
       cloudName:
         process.env.CLOUDINARY_CLOUD_NAME ||
         process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,

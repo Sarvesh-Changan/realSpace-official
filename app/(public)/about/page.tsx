@@ -61,8 +61,9 @@ export default async function AboutPage() {
       title: cert.title,
       badgeLabel: cert.badgeLabel,
       issuingBody: cert.issuingBody,
-      description: `${cert.badgeLabel} issued by ${cert.issuingBody}.`,
-      imageUrl: cert.imageUrl || "",
+      imageUrl: cert.imageUrl || "/images/certifications/cadpro.png",
+      certificateUrl: cert.certificateUrl,
+      showCertificateButton: cert.showCertificateButton,
     }));
   } catch (error) {
     console.error("Failed to fetch certifications:", error);

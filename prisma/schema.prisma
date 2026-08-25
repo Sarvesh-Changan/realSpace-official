@@ -135,18 +135,21 @@ model FAQ {
 }
 
 model Certification {
-  id              String            @id @default(cuid())
-  title           String
-  issuingBody     String
-  certificateType CertificationType
-  issueDate       DateTime?
-  validUntil      DateTime?
-  badgeLabel      String
-  imageUrl        String?
-  isPublished     Boolean           @default(true)
-  sortOrder       Int               @default(0)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id                    String            @id @default(cuid())
+  title                 String
+  issuingBody           String
+  certificateType       CertificationType
+  issueDate             DateTime?
+  validUntil            DateTime?
+  badgeLabel            String
+  imageUrl              String?
+  imagePublicId         String?
+  certificateUrl        String?
+  showCertificateButton Boolean           @default(false)
+  isPublished           Boolean           @default(true)
+  sortOrder             Int               @default(0)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 }
 
 // ---------- Quote calculator (admin-configurable pricing) ----------

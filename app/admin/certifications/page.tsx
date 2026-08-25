@@ -19,6 +19,9 @@ export default async function AdminCertificationsPage() {
     issuingBody: cert.issuingBody,
     certificateType: cert.certificateType,
     badgeLabel: cert.badgeLabel,
+    imageUrl: cert.imageUrl,
+    certificateUrl: cert.certificateUrl,
+    showCertificateButton: cert.showCertificateButton,
     isPublished: cert.isPublished,
     sortOrder: cert.sortOrder,
   }));

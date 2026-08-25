@@ -26,7 +26,10 @@ export const certificationSchema = z.object({
   validUntil: z.string().optional().nullable().or(z.literal("")),
   badgeLabel: z.string().min(1, "Badge label is required"),
   imageUrl: imagePathOrUrl,
-  isPublished: z.boolean(),
+  imagePublicId: z.string().optional().nullable(),
+  certificateUrl: imagePathOrUrl,
+  showCertificateButton: z.boolean().default(false),
+  isPublished: z.boolean().default(true),
   sortOrder: z.number(),
 });
 

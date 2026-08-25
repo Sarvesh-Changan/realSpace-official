@@ -50,6 +50,9 @@ export default async function EditCertificationPage({ params }: EditCertificatio
           validUntil: cert.validUntil ? cert.validUntil.toISOString().split("T")[0] : "",
           badgeLabel: cert.badgeLabel,
           imageUrl: cert.imageUrl || "",
+          imagePublicId: cert.imagePublicId || "",
+          certificateUrl: cert.certificateUrl || "",
+          showCertificateButton: cert.showCertificateButton ?? false,
           isPublished: cert.isPublished,
           sortOrder: cert.sortOrder,
         }}

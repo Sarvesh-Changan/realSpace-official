@@ -4,6 +4,26 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { certificationSchema, type CertificationInput } from "./schema";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name:
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key:
+    process.env.CLOUDINARY_API_KEY ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function deleteCloudinaryAsset(publicId: string | null | undefined) {
+  if (!publicId) return;
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    console.error("Failed to delete Cloudinary asset:", publicId, err);
+  }
+}
 
 export async function createCertification(data: CertificationInput) {
   const session = await auth();
@@ -29,6 +49,9 @@ export async function createCertification(data: CertificationInput) {
         validUntil: certData.validUntil ? new Date(certData.validUntil) : null,
         badgeLabel: certData.badgeLabel,
         imageUrl: certData.imageUrl || null,
+        imagePublicId: certData.imagePublicId || null,
+        certificateUrl: certData.certificateUrl || null,
+        showCertificateButton: certData.showCertificateButton ?? false,
         isPublished: certData.isPublished,
         sortOrder: certData.sortOrder,
       },
@@ -36,7 +59,7 @@ export async function createCertification(data: CertificationInput) {
 
     revalidatePath("/admin/certifications");
     revalidatePath("/about");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return { success: true, id: cert.id };
   } catch (error) {
     console.error("Failed to create certification:", error);
@@ -59,6 +82,13 @@ export async function updateCertification(id: string, data: CertificationInput) 
   const certData = parsed.data;
 
   try {
+    const existing = await prisma.certification.findUnique({ where: { id } });
+
+    const newPublicId = certData.imagePublicId || null;
+    if (existing?.imagePublicId && existing.imagePublicId !== newPublicId) {
+      await deleteCloudinaryAsset(existing.imagePublicId);
+    }
+
     await prisma.certification.update({
       where: { id },
       data: {
@@ -69,6 +99,9 @@ export async function updateCertification(id: string, data: CertificationInput) 
         validUntil: certData.validUntil ? new Date(certData.validUntil) : null,
         badgeLabel: certData.badgeLabel,
         imageUrl: certData.imageUrl || null,
+        imagePublicId: newPublicId,
+        certificateUrl: certData.certificateUrl || null,
+        showCertificateButton: certData.showCertificateButton ?? false,
         isPublished: certData.isPublished,
         sortOrder: certData.sortOrder,
       },
@@ -77,7 +110,7 @@ export async function updateCertification(id: string, data: CertificationInput) 
     revalidatePath("/admin/certifications");
     revalidatePath(`/admin/certifications/${id}`);
     revalidatePath("/about");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to update certification:", error);
@@ -92,13 +125,18 @@ export async function deleteCertification(id: string) {
   }
 
   try {
+    const existing = await prisma.certification.findUnique({ where: { id } });
+    if (existing?.imagePublicId) {
+      await deleteCloudinaryAsset(existing.imagePublicId);
+    }
+
     await prisma.certification.delete({
       where: { id },
     });
 
     revalidatePath("/admin/certifications");
     revalidatePath("/about");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to delete certification:", error);
@@ -120,7 +158,7 @@ export async function toggleCertificationStatus(id: string, isPublished: boolean
 
     revalidatePath("/admin/certifications");
     revalidatePath("/about");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to toggle certification publish status:", error);

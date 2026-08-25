@@ -15,11 +15,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <div className="flex min-h-screen bg-neutral-50 text-neutral-900">
+    <div className="flex h-screen overflow-hidden bg-neutral-50 text-neutral-900">
       {/* Sidebar for Desktop + Off-canvas Drawer for Mobile */}
       <AdminSidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Topbar */}
         <AdminTopbar onMenuClick={() => setMobileOpen(true)} />
 

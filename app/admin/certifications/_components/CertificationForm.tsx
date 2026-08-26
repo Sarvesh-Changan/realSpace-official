@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { CldUploadWidget } from "next-cloudinary";
-import { Upload, Trash2, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Upload, Trash2, Loader2 } from "lucide-react";
 import { certificationSchema, type CertificationInput } from "../schema";
 import { createCertification, updateCertification } from "../actions";
 
@@ -260,34 +259,6 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <CldUploadWidget
-                    signatureEndpoint="/api/cloudinary/sign"
-                    options={{
-                      sources: ["local", "url"],
-                      folder: "realspace-certifications",
-                      clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "avif"],
-                    }}
-                    onSuccess={(result: any) => {
-                      if (result?.info) {
-                        const secureUrl = result.info.secure_url || result.info.url;
-                        const publicId = result.info.public_id;
-                        setValue("imageUrl", secureUrl);
-                        setValue("imagePublicId", publicId);
-                      }
-                    }}
-                  >
-                    {({ open }) => (
-                      <button
-                        type="button"
-                        onClick={() => open()}
-                        disabled={isUploading || isSubmitting}
-                        className="inline-flex items-center gap-2 px-3.5 py-2 min-h-[40px] bg-white border border-neutral-300 text-neutral-700 text-sm font-medium rounded-md hover:bg-neutral-50 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
-                      >
-                        <Upload className="w-4 h-4" /> Change Image
-                      </button>
-                    )}
-                  </CldUploadWidget>
-
                   <button
                     type="button"
                     onClick={handleRemoveImage}
@@ -312,33 +283,6 @@ export function CertificationForm({ mode, certId, initialData }: CertificationFo
                   />
                 </label>
 
-                <CldUploadWidget
-                  signatureEndpoint="/api/cloudinary/sign"
-                  options={{
-                    sources: ["local", "url"],
-                    folder: "realspace-certifications",
-                    clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "avif"],
-                  }}
-                  onSuccess={(result: any) => {
-                    if (result?.info) {
-                      const secureUrl = result.info.secure_url || result.info.url;
-                      const publicId = result.info.public_id;
-                      setValue("imageUrl", secureUrl);
-                      setValue("imagePublicId", publicId);
-                    }
-                  }}
-                >
-                  {({ open }) => (
-                    <button
-                      type="button"
-                      onClick={() => open()}
-                      disabled={isUploading || isSubmitting}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 transition-colors disabled:opacity-50 cursor-pointer"
-                    >
-                      <ImageIcon className="w-4 h-4" /> Cloudinary Widget
-                    </button>
-                  )}
-                </CldUploadWidget>
               </div>
             )}
 

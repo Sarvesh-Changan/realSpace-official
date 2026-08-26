@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CldUploadWidget } from "next-cloudinary";
 import { Upload, Film, Image as ImageIcon, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { imageSchema, type ImageInput } from "../schema";
@@ -228,36 +227,6 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
               />
             </label>
 
-            <CldUploadWidget
-              signatureEndpoint="/api/cloudinary/sign"
-              options={{
-                sources: ["local", "url"],
-                folder: "realspace-gallery",
-                clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "avif", "mp4", "mov", "webm"],
-              }}
-              onSuccess={(result: any) => {
-                if (result?.info) {
-                  const secureUrl = result.info.secure_url || result.info.url;
-                  const publicId = result.info.public_id;
-                  const isVideo = result.info.resource_type === "video" ||
-                    ["mp4", "mov", "webm"].includes(result.info.format?.toLowerCase());
-
-                  setValue("url", secureUrl);
-                  setValue("cloudinaryId", publicId);
-                  setValue("mediaType", isVideo ? "VIDEO" : "IMAGE");
-                }
-              }}
-            >
-              {({ open }) => (
-                <button
-                  type="button"
-                  onClick={() => open()}
-                  className="px-4 py-2.5 min-h-[44px] bg-white text-neutral-700 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50 transition-colors cursor-pointer"
-                >
-                  Cloudinary Widget
-                </button>
-              )}
-            </CldUploadWidget>
           </div>
 
           <input

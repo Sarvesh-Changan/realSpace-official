@@ -1,22 +1,64 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { Hero3DFallback } from "@/components/3d/Hero3DScene";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { useIdleAttention } from "@/hooks/useIdleAttention";
-
-// Lazy-load the R3F Canvas without SSR so it never blocks page hydration or text rendering
-const Hero3DScene = dynamic(() => import("@/components/3d/Hero3DScene"), {
-  ssr: false,
-  loading: () => <Hero3DFallback />,
-});
 
 export interface HeroProps {
   heroHeadline?: string;
   heroSubhead?: string;
   ctaText?: string;
+}
+
+function HeroImage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canHover, setCanHover] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const updateHoverCapability = () => setCanHover(mediaQuery.matches && shouldReduceMotion !== true);
+    updateHoverCapability();
+    mediaQuery.addEventListener("change", updateHoverCapability);
+
+    return () => mediaQuery.removeEventListener("change", updateHoverCapability);
+  }, [shouldReduceMotion]);
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!canHover || shouldReduceMotion) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    setOffset({ x: -x * 7, y: -y * 7 });
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={() => setOffset({ x: 0, y: 0 })}
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-bgAlt shadow-lg"
+    >
+      <Image
+        src="/images/hero-living-room.png"
+        alt="Elegant REALSPACE living room interior"
+        fill
+        priority
+        sizes="(max-width: 1024px) 100vw, 42vw"
+        className="object-cover"
+        style={{
+          transform: `translate(${offset.x}px, ${offset.y}px) scale(${canHover ? 1.06 : 1})`,
+          transition: shouldReduceMotion ? "none" : "transform 450ms ease-out",
+        }}
+      />
+    </div>
+  );
 }
 
 export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
@@ -71,14 +113,14 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
             </div>
           </motion.div>
 
-          {/* Right Column: 3D Scene Container */}
+          {/* Right Column: Static Hero Image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="lg:col-span-5 w-full max-w-lg mx-auto lg:max-w-none h-[300px] sm:h-[400px] lg:h-[480px]"
+            className="lg:col-span-5 w-full max-w-lg mx-auto lg:max-w-none"
           >
-            <Hero3DScene />
+            <HeroImage />
           </motion.div>
 
         </div>

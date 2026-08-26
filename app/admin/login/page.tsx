@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { loginSchema, type LoginInput } from "./schema";
 import { loginServerAction } from "./actions";
+import { ResetPasswordFlow } from "./reset-password/page";
 
 export default function AdminLoginPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResetFlow, setShowResetFlow] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+
+  useEffect(() => {
+    setResetSuccess(new URLSearchParams(window.location.search).get("reset") === "success");
+  }, []);
 
   const {
     register,
@@ -58,6 +65,17 @@ export default function AdminLoginPage() {
     }
   };
 
+  if (showResetFlow) {
+    return (
+      <ResetPasswordFlow
+        onCancel={() => setShowResetFlow(false)}
+        onSuccess={() => {
+          window.location.href = "/admin/login?reset=success";
+        }}
+      />
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8 bg-neutral-950 text-neutral-100">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -74,6 +92,11 @@ export default function AdminLoginPage() {
           {serverError && (
             <div className="mb-6 rounded-md bg-red-950/80 p-4 border border-red-800 text-red-200 text-sm">
               {serverError}
+            </div>
+          )}
+          {resetSuccess && (
+            <div className="mb-6 rounded-md border border-green-800 bg-green-950/80 p-4 text-sm text-green-200">
+              Your password was reset successfully. Please sign in with your new password.
             </div>
           )}
 
@@ -133,6 +156,11 @@ export default function AdminLoginPage() {
                 className="flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:opacity-50 transition-colors"
               >
                 {isSubmitting ? "Signing in..." : "Sign in"}
+              </button>
+            </div>
+            <div className="text-center">
+              <button type="button" onClick={() => setShowResetFlow(true)} className="text-sm text-neutral-400 hover:text-white">
+                Forgot password?
               </button>
             </div>
           </form>

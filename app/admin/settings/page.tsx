@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { SiteSettingsForm } from "./_components/SiteSettingsForm";
+import { ChangePasswordForm } from "./_components/ChangePasswordForm";
 import type { SiteSettingsInput } from "./schema";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,7 @@ export default async function AdminSettingsPage() {
         </p>
       </div>
       <SiteSettingsForm initialData={initialData} />
+      <ChangePasswordForm />
     </div>
   );
 }

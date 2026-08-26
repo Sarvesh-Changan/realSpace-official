@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { DesignType, MediaType } from "@prisma/client";
+import type { DesignType, MediaType } from "@prisma/client";
+
+const DESIGN_TYPE_VALUES = ["INTERIOR", "EXTERIOR"] as const satisfies readonly DesignType[];
+const MEDIA_TYPE_VALUES = ["IMAGE", "VIDEO"] as const satisfies readonly MediaType[];
 
 export const categorySchema = z.object({
   id: z.string().optional(),
@@ -13,8 +16,8 @@ export const imageSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, "Title is required").max(200, "Title too long"),
   categoryId: z.string().min(1, "Category is required"),
-  designType: z.nativeEnum(DesignType),
-  mediaType: z.nativeEnum(MediaType),
+  designType: z.enum(DESIGN_TYPE_VALUES),
+  mediaType: z.enum(MEDIA_TYPE_VALUES),
   url: z.string().min(1, "Media URL is required"),
   cloudinaryId: z.string(),
   isCategoryCover: z.boolean().default(false),

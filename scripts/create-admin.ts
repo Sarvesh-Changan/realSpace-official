@@ -1,8 +1,51 @@
+import "dotenv/config";
 import readline from "readline";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
+import pg from "pg";
 
-const prisma = new PrismaClient();
+const getConnectionString = () => {
+  const url = process.env.DATABASE_URL;
+  if (!url) return url;
+  return url.replace(/sslmode=(require|prefer|verify-ca)/g, "sslmode=verify-full");
+};
+
+const connectionString = getConnectionString();
+const pool = new pg.Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+function isTransientDatabaseError(error: unknown): boolean {
+  if (error instanceof Error && /ECONNREFUSED|ETIMEDOUT|ECONNRESET/.test(error.message)) {
+    return true;
+  }
+
+  if (typeof error === "object" && error !== null && "code" in error) {
+    const code = String(error.code);
+    return code === "P1001" || code === "P2028";
+  }
+
+  return false;
+}
+
+async function withDatabaseRetry<T>(operation: () => Promise<T>): Promise<T> {
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (!isTransientDatabaseError(error) || attempt === maxAttempts) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, attempt * 2000));
+    }
+  }
+
+  throw new Error("Database operation failed after retries.");
+}
 
 function prompt(query: string, hideInput = false): Promise<string> {
   const rl = readline.createInterface({
@@ -62,18 +105,20 @@ async function main() {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const admin = await prisma.adminUser.upsert({
-    where: { email: email.toLowerCase() },
-    update: {
-      name: adminName,
-      passwordHash: passwordHash,
-    },
-    create: {
-      email: email.toLowerCase(),
-      name: adminName,
-      passwordHash: passwordHash,
-    },
-  });
+  const admin = await withDatabaseRetry(() =>
+    prisma.adminUser.upsert({
+      where: { email: email.toLowerCase() },
+      update: {
+        name: adminName,
+        passwordHash: passwordHash,
+      },
+      create: {
+        email: email.toLowerCase(),
+        name: adminName,
+        passwordHash: passwordHash,
+      },
+    })
+  );
 
   console.log("\nSuccess! Admin user created or updated:");
   console.log(`- ID: ${admin.id}`);

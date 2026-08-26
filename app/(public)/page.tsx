@@ -8,7 +8,6 @@ import { Positioning } from "./_components/home/Positioning";
 import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
-import { Testimonials } from "./_components/home/Testimonials";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
 import { FinalCta } from "./_components/home/FinalCta";
 
@@ -66,13 +65,6 @@ export default async function HomePage() {
     description: string;
     iconKey?: string | null;
   }> = [];
-  let testimonials: Array<{
-    id: string;
-    quote: string;
-    clientName: string;
-    clientRole?: string | null;
-    rating?: number;
-  }> = [];
   let rawVideoTestimonials: Array<{
     id: string;
     clientName: string;
@@ -101,7 +93,6 @@ export default async function HomePage() {
       fetchedInterior,
       fetchedExterior,
       fetchedServices,
-      fetchedTestimonials,
       fetchedVideoTestimonials,
       fetchedGalleryImages,
     ] = await Promise.all([
@@ -152,11 +143,6 @@ export default async function HomePage() {
         take: 6,
       }),
       prisma.testimonial.findMany({
-        where: { isPublished: true },
-        orderBy: { sortOrder: "asc" },
-        take: 3,
-      }),
-      prisma.testimonial.findMany({
         where: {
           isPublished: true,
           videoUrl: { not: null },
@@ -186,7 +172,6 @@ export default async function HomePage() {
     rawInteriorProjects = fetchedInterior;
     rawExteriorProjects = fetchedExterior;
     services = fetchedServices;
-    testimonials = fetchedTestimonials;
     rawVideoTestimonials = fetchedVideoTestimonials;
     rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
@@ -272,7 +257,6 @@ export default async function HomePage() {
       />
       <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />
-      <Testimonials testimonials={testimonials} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
       <FinalCta ctaText={siteSettings?.ctaText} />
     </>

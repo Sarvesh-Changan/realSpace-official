@@ -30,7 +30,7 @@ function SwastikIntroMark() {
       path.style.strokeDashoffset = shouldReduceMotion ? "0" : `${length}`;
       path.style.transition = shouldReduceMotion
         ? "none"
-        : "stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1)";
+        : "stroke-dashoffset 1400ms cubic-bezier(0.22, 1, 0.36, 1)";
     });
 
     if (shouldReduceMotion) return;
@@ -42,7 +42,7 @@ function SwastikIntroMark() {
       arms.forEach((path, index) => {
         window.setTimeout(() => {
           path.style.strokeDashoffset = "0";
-        }, index * 110);
+        }, index * 170);
       });
     };
 

@@ -1,0 +1,68 @@
+<svg width="580" height="350" viewBox="0 0 1160 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Swastik symbol flanked by traditional vertical strokes, an auspicious Hindu emblem, in kunku red over halad yellow">
+  <defs>
+    <!-- Rough hand-painted brush texture: displaces the clean path edges with noise -->
+    <filter id="brushTexture" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045 0.06" numOctaves="3" seed="7" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="brushTextureFine" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08 0.09" numOctaves="2" seed="3" result="noise2" />
+      <feDisplacementMap in="SourceGraphic" in2="noise2" scale="8" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </defs>
+
+  <!--
+    Layering technique: every stroke is painted TWICE.
+    1) A wider halad-yellow pass underneath (the "base coat" peeking out at the rough edges).
+    2) A narrower kunku-red pass on top (the visible main stroke).
+    Both passes go through the brush-texture filter so the edges look irregular/hand-painted
+    rather than clean vector lines, matching a rangoli/tilak painting style.
+  -->
+
+  <!-- ===================== LEFT FLANKING BARS ===================== -->
+  <g filter="url(#brushTexture)">
+    <line x1="70" y1="30" x2="70" y2="670" stroke="#FECC00" stroke-width="70" stroke-linecap="round" />
+    <line x1="185" y1="30" x2="185" y2="670" stroke="#FECC00" stroke-width="70" stroke-linecap="round" />
+  </g>
+  <g filter="url(#brushTextureFine)">
+    <line x1="70" y1="35" x2="70" y2="665" stroke="#8B0000" stroke-width="46" stroke-linecap="round" />
+    <line x1="185" y1="35" x2="185" y2="665" stroke="#8B0000" stroke-width="46" stroke-linecap="round" />
+  </g>
+
+  <!-- ===================== RIGHT FLANKING BARS ===================== -->
+  <g filter="url(#brushTexture)">
+    <line x1="975" y1="30" x2="975" y2="670" stroke="#FECC00" stroke-width="70" stroke-linecap="round" />
+    <line x1="1090" y1="30" x2="1090" y2="670" stroke="#FECC00" stroke-width="70" stroke-linecap="round" />
+  </g>
+  <g filter="url(#brushTextureFine)">
+    <line x1="975" y1="35" x2="975" y2="665" stroke="#8B0000" stroke-width="46" stroke-linecap="round" />
+    <line x1="1090" y1="35" x2="1090" y2="665" stroke="#8B0000" stroke-width="46" stroke-linecap="round" />
+  </g>
+
+  <!-- ===================== CENTER SWASTIK — YELLOW BASE PASS ===================== -->
+  <!-- Center point: (580, 350). Each arm starts here and ends at its outer tip —
+       kept this way (same structure as the previous version) so a middle-to-end
+       stroke-draw animation still works correctly on the RED pass below. -->
+  <g fill="none" stroke="#FECC00" stroke-width="78" stroke-linecap="round" stroke-linejoin="round" filter="url(#brushTexture)">
+    <path d="M 580 350 L 580 145 L 830 145" />
+    <path d="M 580 350 L 785 350 L 785 555" />
+    <path d="M 580 350 L 580 555 L 330 555" />
+    <path d="M 580 350 L 375 350 L 375 145" />
+  </g>
+
+  <!-- ===================== CENTER SWASTIK — RED MAIN PASS (animatable) ===================== -->
+  <g fill="none" stroke="#8B0000" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" filter="url(#brushTextureFine)">
+    <path id="arm-north" data-length="440" d="M 580 350 L 580 145 L 830 145" />
+    <path id="arm-east"  data-length="440" d="M 580 350 L 785 350 L 785 555" />
+    <path id="arm-south" data-length="440" d="M 580 350 L 580 555 L 330 555" />
+    <path id="arm-west"  data-length="440" d="M 580 350 L 375 350 L 375 145" />
+  </g>
+
+  <!-- Small dot accents at each arm's outer corner bend, matching the reference's textured detail -->
+  <g filter="url(#brushTextureFine)">
+    <circle cx="580" cy="145" r="10" fill="#8B0000" />
+    <circle cx="785" cy="350" r="10" fill="#8B0000" />
+    <circle cx="580" cy="555" r="10" fill="#8B0000" />
+    <circle cx="375" cy="350" r="10" fill="#8B0000" />
+  </g>
+</svg>

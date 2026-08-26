@@ -48,7 +48,7 @@ export function PricingConfigForm({ initialData, onSubmit, onCancel, isSubmittin
             <option value="kitchen">Kitchen</option>
             <option value="hall">Hall / Living</option>
             <option value="bedroom">Bedroom</option>
-            <option value="wardrobe">Wardrobe</option>
+            <option value="bathroom">Bathroom</option>
             <option value="interior_package">Interior Package</option>
             <option value="exterior_service">Exterior Service</option>
             <option value="material_tier">Material Tier</option>

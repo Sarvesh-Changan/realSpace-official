@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Info, Save, Check, AlertCircle } from "lucide-react";
 import { upsertBhkRoomDefaults } from "../actions";
 
-export type RoomType = "Kitchen" | "Hall" | "Bedroom" | "Bathroom" | "Wardrobe";
+export type RoomType = "Kitchen" | "Hall" | "Bedroom" | "Bathroom";
 
 export interface RoomConfig {
   defaultQty: number;
@@ -41,17 +41,15 @@ const DEFAULT_ROOM_CONFIG: Record<RoomType, RoomConfig> = {
   Hall: { defaultQty: 1, minQty: 1, maxQty: 2, isFixedFloor: true },
   Bedroom: { defaultQty: 1, minQty: 1, maxQty: null, isFixedFloor: false },
   Bathroom: { defaultQty: 1, minQty: 1, maxQty: null, isFixedFloor: false },
-  Wardrobe: { defaultQty: 1, minQty: 0, maxQty: null, isFixedFloor: false },
 };
 
-const ROOM_TYPES: RoomType[] = ["Kitchen", "Hall", "Bedroom", "Bathroom", "Wardrobe"];
+const ROOM_TYPES: RoomType[] = ["Kitchen", "Hall", "Bedroom", "Bathroom"];
 
 const ROOM_MAP: Record<RoomType, string> = {
   Kitchen: "kitchen",
   Hall: "hall",
   Bedroom: "bedroom",
   Bathroom: "bathroom",
-  Wardrobe: "wardrobe",
 };
 
 export default function BhkRoomDefaultsEditor({
@@ -94,7 +92,6 @@ export default function BhkRoomDefaultsEditor({
             Hall: { ...DEFAULT_ROOM_CONFIG.Hall },
             Bedroom: { ...DEFAULT_ROOM_CONFIG.Bedroom, defaultQty: bedrooms, minQty: bedrooms },
             Bathroom: { ...DEFAULT_ROOM_CONFIG.Bathroom, defaultQty: bedrooms, minQty: bedrooms },
-            Wardrobe: { ...DEFAULT_ROOM_CONFIG.Wardrobe, defaultQty: bedrooms },
           }[room];
         }
       });
@@ -109,7 +106,6 @@ export default function BhkRoomDefaultsEditor({
     Hall: { ...DEFAULT_ROOM_CONFIG.Hall },
     Bedroom: { ...DEFAULT_ROOM_CONFIG.Bedroom },
     Bathroom: { ...DEFAULT_ROOM_CONFIG.Bathroom },
-    Wardrobe: { ...DEFAULT_ROOM_CONFIG.Wardrobe },
   };
 
   const handleConfigChange = <K extends keyof RoomConfig>(

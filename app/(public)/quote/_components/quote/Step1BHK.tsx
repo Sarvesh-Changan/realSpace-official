@@ -22,8 +22,6 @@ function getDefaultRoomConfig(key: string, numBhk: number): RoomConstraint {
       return { defaultQty: numBhk, minQty: numBhk, maxQty: null, isFixedFloor: false };
     case 'bathrooms':
       return { defaultQty: numBhk, minQty: numBhk, maxQty: null, isFixedFloor: false };
-    case 'wardrobes':
-      return { defaultQty: 1, minQty: 0, maxQty: null, isFixedFloor: false };
     default:
       return { defaultQty: 1, minQty: 0, maxQty: null, isFixedFloor: false };
   }
@@ -142,4 +140,3 @@ export default function Step1BHK({ state, updateState, activeRoomTypes = [] }: P
     </div>
   );
 }
-

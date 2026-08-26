@@ -12,7 +12,6 @@ const ROOM_MAP = [
   { key: 'livingRooms', groupKeys: ['hall', 'living_room'], fallbackLabel: 'Living Rooms / Halls' },
   { key: 'bedrooms', groupKeys: ['bedroom'], fallbackLabel: 'Bedrooms' },
   { key: 'bathrooms', groupKeys: ['bathroom'], fallbackLabel: 'Bathrooms' },
-  { key: 'wardrobes', groupKeys: ['wardrobe'], fallbackLabel: 'Wardrobes' },
 ];
 
 export async function getActiveRoomTypesAction() {
@@ -20,7 +19,7 @@ export async function getActiveRoomTypesAction() {
     const activePricingOptions = await prisma.pricingOption.findMany({
       where: {
         isActive: true,
-        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom', 'wardrobe'] },
+        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom'] },
       },
       orderBy: { sortOrder: 'asc' },
     });
@@ -48,7 +47,7 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
     const activePricingOptions = await prisma.pricingOption.findMany({
       where: {
         isActive: true,
-        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom', 'wardrobe'] },
+        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom'] },
       },
       orderBy: { sortOrder: 'asc' },
     });

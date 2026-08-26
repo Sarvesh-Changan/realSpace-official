@@ -28,7 +28,7 @@ const GROUP_LABELS: Record<string, string> = {
   kitchen: "Kitchen Layouts",
   hall: "Hall & Living",
   bedroom: "Bedrooms",
-  wardrobe: "Wardrobes",
+  bathroom: "Bathrooms",
   interior_package: "Interior Packages",
   exterior_service: "Exterior Services",
   material_tier: "Material Tiers",
@@ -68,13 +68,13 @@ export function PricingConfigTable({ options, onAdd, onEdit, onDelete, onToggleA
       </div>
 
       <div className="space-y-4">
-        {Object.entries(GROUP_LABELS).map(([groupKey, groupLabel]) => {
+        {Object.entries(GROUP_LABELS).filter(([groupKey]) => (groupedOptions[groupKey] || []).length > 0).map(([groupKey, groupLabel]) => {
           const groupItems = (groupedOptions[groupKey] || []).sort((a, b) => a.sortOrder - b.sortOrder);
           const isExpanded = expandedGroups[groupKey];
 
           return (
             <div key={groupKey} className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-              <div 
+              <div
                 className="flex items-center justify-between px-4 py-3 bg-neutral-50 border-b border-neutral-200 cursor-pointer select-none hover:bg-neutral-100 transition-colors min-h-[44px]"
                 onClick={() => toggleGroup(groupKey)}
               >
@@ -85,9 +85,9 @@ export function PricingConfigTable({ options, onAdd, onEdit, onDelete, onToggleA
                     {groupItems.length}
                   </span>
                 </div>
-                <button 
+                <button
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); onAdd(groupKey); }} 
+                  onClick={(e) => { e.stopPropagation(); onAdd(groupKey); }}
                   className="text-xs font-medium text-brand-red hover:text-brand-red/80 flex items-center gap-1 p-1 min-h-[36px] cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> Add New
@@ -199,4 +199,4 @@ export function PricingConfigTableWrapper({ options }: { options: PricingOption[
       />
     </div>
   );
-}
+}

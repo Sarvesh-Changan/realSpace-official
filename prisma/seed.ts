@@ -114,7 +114,6 @@ async function main() {
     { groupKey: "hall", label: "Living Room / Hall", basePrice: 0, perUnitPrice: 100000, sortOrder: 2 },
     { groupKey: "bedroom", label: "Bedroom", basePrice: 0, perUnitPrice: 120000, sortOrder: 3 },
     { groupKey: "bathroom", label: "Bathroom", basePrice: 0, perUnitPrice: 80000, sortOrder: 4 },
-    { groupKey: "wardrobe", label: "Wardrobe", basePrice: 0, perUnitPrice: 50000, sortOrder: 5 },
   ];
 
   for (const option of roomOptions) {

@@ -164,7 +164,7 @@ model Certification {
 // (e.g. "3 BHK", "Modular Kitchen - Premium", "Extra Bathroom").
 model PricingOption {
   id            String      @id @default(cuid())
-  groupKey      String // "bhk_type" | "kitchen" | "hall" | "bedroom" | "wardrobe"
+  groupKey      String // "bhk_type" | "kitchen" | "hall" | "bedroom" | "bathroom"
   // | "interior_package" | "exterior_service" | "material_tier" | "addon"
   label         String // "3 BHK", "Premium Laminate", etc.
   designType    DesignType?
@@ -185,7 +185,7 @@ model BhkRoomDefault {
   id           String        @id @default(cuid())
   bhkOptionId  String
   bhkOption    PricingOption @relation("bhkOption", fields: [bhkOptionId], references: [id], onDelete: Cascade)
-  roomGroupKey String // "kitchen" | "hall" | "bedroom" | "bathroom" | "wardrobe"
+  roomGroupKey String // "kitchen" | "hall" | "bedroom" | "bathroom"
   defaultQty   Int
   minQty       Int
   maxQty       Int?

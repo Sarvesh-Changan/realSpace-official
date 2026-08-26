@@ -132,7 +132,7 @@ export async function sendOtp(rawEmail: unknown): Promise<OtpActionResult> {
     // 10. Send the raw OTP code via email
     const emailResult = await sendOtpEmail(normalizedEmail, rawCode);
     if (!emailResult.success) {
-      console.error("Failed to send OTP email via Resend:", emailResult.error);
+      console.error("Failed to send OTP email via Gmail SMTP:", emailResult.error);
       return {
         success: false,
         error: "Failed to deliver verification email. Please try again.",

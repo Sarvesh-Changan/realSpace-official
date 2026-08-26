@@ -23,8 +23,6 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    console.log("Cloudinary Sign Request Body:", JSON.stringify(body, null, 2));
-
     // If request comes from next-cloudinary CldUploadWidget (contains paramsToSign)
     if (body.paramsToSign) {
       const signature = cloudinary.utils.api_sign_request(

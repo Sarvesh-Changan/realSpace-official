@@ -1,6 +1,17 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
-const prisma = new PrismaClient();
+const getConnectionString = () => {
+  const url = process.env.DATABASE_URL;
+  if (!url) return url;
+  return url.replace(/sslmode=(require|prefer|verify-ca)/g, "sslmode=verify-full");
+};
+
+const connectionString = getConnectionString();
+const pool = new pg.Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("Seeding database...");

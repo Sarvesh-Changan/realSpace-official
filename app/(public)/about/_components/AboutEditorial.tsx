@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { Certifications, type CertificationData } from "./Certifications";
 
 const founderCopy = [
   "Vijay Chawan is the founder and CEO of REALSPACE. An interior designer by profession and a Mumbai University graduate, he started REALSPACE in 1989. He grew up in a middle-class family in rural Konkan, Maharashtra, which shaped his practical understanding of people, spaces and value.",
@@ -19,7 +20,7 @@ const foundationCopy = [
 
 const reveal = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } };
 
-export function AboutEditorial() {
+export function AboutEditorial({ certifications }: { certifications: CertificationData[] }) {
   const reduceMotion = usePrefersReducedMotion();
   const transition = reduceMotion ? { duration: 0.01 } : { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const };
   const initial = reduceMotion ? false : "hidden";
@@ -71,6 +72,8 @@ export function AboutEditorial() {
           <p className="mx-auto mt-8 max-w-3xl text-lg leading-[1.85] text-brand-text/75 sm:text-xl">“Our team consists of highly skilled and experienced interior designers, architects, engineers and artisans who share our passion for creating exceptional living spaces. Every project is a collaboration, where client preferences guide personalized design and precise execution.”</p>
         </motion.div>
       </section>
+
+      <Certifications certifications={certifications} />
     </div>
   );
 }

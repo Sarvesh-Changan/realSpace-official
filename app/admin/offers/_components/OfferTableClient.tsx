@@ -7,8 +7,10 @@ import { deleteOffer } from "../actions";
 
 export type OfferData = {
     id: string;
-    title: string;
-    description: string;
+    title?: string | null;
+    description?: string | null;
+    ctaLabel: string;
+    ctaLink: string;
     startDate: string | null;
     endDate: string | null;
     isActive: boolean;
@@ -86,9 +88,11 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
                                 {offers.map((offer) => (
                                     <tr key={offer.id} className="hover:bg-neutral-50/50 transition-colors">
                                         <td className="py-4 px-4">
-                                            <div className="font-semibold text-neutral-900 mb-1">{offer.title}</div>
-                                            <div className="text-xs text-neutral-500 line-clamp-2 pr-4 leading-relaxed">
-                                                {offer.description}
+                                            <div className="font-semibold text-neutral-900 mb-1">
+                                                {offer.title || offer.ctaLabel || "Promotional Banner"}
+                                            </div>
+                                            <div className="text-xs text-neutral-500 line-clamp-1">
+                                                Link: {offer.ctaLink}
                                             </div>
                                         </td>
 

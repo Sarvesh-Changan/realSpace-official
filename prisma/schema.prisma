@@ -265,8 +265,8 @@ model EmailOtp {
 
 model Offer {
   id            String    @id @default(cuid())
-  title         String
-  description   String    @db.Text
+  title         String?
+  description   String?   @db.Text
   imageUrl      String?
   imagePublicId String?
   ctaLabel      String

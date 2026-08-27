@@ -4,7 +4,6 @@ import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Hero } from "./_components/home/Hero";
 import { ActiveOffers, type OfferType } from "./_components/home/ActiveOffers";
 import { TrustStats } from "./_components/home/TrustStats";
-import { Positioning } from "./_components/home/Positioning";
 import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
@@ -37,8 +36,8 @@ export default async function HomePage() {
   let siteSettings = null;
   let rawOffers: Array<{
     id: string;
-    title: string;
-    description: string;
+    title: string | null;
+    description: string | null;
     imageUrl: string | null;
     ctaLabel: string;
     ctaLink: string;
@@ -242,7 +241,6 @@ export default async function HomePage() {
       />
       <ActiveOffers offers={offers} />
       <TrustStats />
-      <Positioning />
       <Projects
         title="Selected Interior Projects"
         subtitle="Explore our curated portfolio of bespoke interior transformations."

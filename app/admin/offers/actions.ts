@@ -42,8 +42,8 @@ export async function createOffer(data: OfferInput) {
   try {
     const offer = await prisma.offer.create({
       data: {
-        title: offerData.title.trim(),
-        description: offerData.description.trim(),
+        title: offerData.title ? offerData.title.trim() : null,
+        description: offerData.description ? offerData.description.trim() : null,
         imageUrl: offerData.imageUrl && offerData.imageUrl.trim() !== "" ? offerData.imageUrl.trim() : null,
         imagePublicId: offerData.imagePublicId && offerData.imagePublicId.trim() !== "" ? offerData.imagePublicId.trim() : null,
         ctaLabel: offerData.ctaLabel.trim(),
@@ -91,8 +91,8 @@ export async function updateOffer(id: string, data: OfferInput) {
     await prisma.offer.update({
       where: { id },
       data: {
-        title: offerData.title.trim(),
-        description: offerData.description.trim(),
+        title: offerData.title ? offerData.title.trim() : null,
+        description: offerData.description ? offerData.description.trim() : null,
         imageUrl: newImageUrl,
         imagePublicId: newPublicId,
         ctaLabel: offerData.ctaLabel.trim(),

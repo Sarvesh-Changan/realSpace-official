@@ -16,7 +16,6 @@ const FRAME_PATHS = Array.from(
   { length: FRAME_COUNT },
   (_, index) => `/images/swastik/frames/frame-${String(index + 1).padStart(2, "0")}.webp`,
 );
-const FALLBACK_FRAME_PATH = "/images/swastik-kunku-halad-traditional.svg";
 
 function SwastikIntroMark() {
   const markRef = useRef<HTMLDivElement>(null);
@@ -25,7 +24,7 @@ function SwastikIntroMark() {
   const animationFrameRef = useRef<number | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [frameIndex, setFrameIndex] = useState(FRAME_COUNT - 1);
-  const [hasFrameAssets, setHasFrameAssets] = useState(true);
+  const [hasFrameAssets, setHasFrameAssets] = useState<boolean | null>(null);
 
   const play = useCallback(() => {
     if (!readyRef.current || shouldReduceMotion) return;
@@ -123,15 +122,17 @@ function SwastikIntroMark() {
 
   return (
     <div ref={markRef} className="relative w-full max-w-[580px] aspect-[580/350]" aria-hidden="true">
-      <Image
-        src={hasFrameAssets ? FRAME_PATHS[frameIndex] : FALLBACK_FRAME_PATH}
-        alt=""
-        fill
-        sizes="(max-width: 767px) 100vw, 580px"
-        className="object-contain"
-        priority
-        onError={() => setHasFrameAssets(false)}
-      />
+      {hasFrameAssets && (
+        <Image
+          src={FRAME_PATHS[frameIndex]}
+          alt=""
+          fill
+          sizes="(max-width: 767px) 100vw, 580px"
+          className="object-contain"
+          priority
+          onError={() => setHasFrameAssets(false)}
+        />
+      )}
     </div>
   );
 }

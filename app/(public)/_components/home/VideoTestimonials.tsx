@@ -13,7 +13,8 @@ export interface VideoTestimonialItem {
   clientName: string;
   location?: string | null;
   slug?: string | null;
-  videoUrl: string;
+  videoUrl?: string | null;
+  imageUrl?: string | null;
   thumbnailUrl?: string | null;
 }
 
@@ -36,7 +37,10 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-14">
           {testimonials.map((item, index) => {
             const videoSlug = item.slug || item.id;
-            const thumbnail = item.thumbnailUrl || getVideoThumbnailUrl(item.videoUrl, "VIDEO");
+            const thumbnail = item.imageUrl || item.thumbnailUrl || (item.videoUrl ? getVideoThumbnailUrl(item.videoUrl, "VIDEO") : "/images/placeholder-image.png");
+            const testimonialHref = item.videoUrl
+              ? `/testimonials?video=${encodeURIComponent(videoSlug)}`
+              : "/testimonials";
 
             return (
               <motion.div
@@ -47,7 +51,7 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
                 transition={{ duration: 0.4, delay: index * 0.08 }}
               >
                 <Link
-                  href={`/testimonials?video=${encodeURIComponent(videoSlug)}`}
+                  href={testimonialHref}
                   className="group block overflow-hidden rounded-2xl border border-brand-bgAlt bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-offset-2"
                 >
                   <div className="relative aspect-video overflow-hidden bg-brand-bgAlt">
@@ -60,11 +64,13 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
                       unoptimized={thumbnail.includes("res.cloudinary.com") || thumbnail.startsWith("http")}
                     />
                     <div className="absolute inset-0 bg-black/15 transition-colors group-hover:bg-black/30" />
-                    <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
-                        <Play className="ml-1 h-6 w-6 fill-current" />
+                    {item.videoUrl && (
+                      <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
+                          <Play className="ml-1 h-6 w-6 fill-current" />
+                        </span>
                       </span>
-                    </span>
+                    )}
                   </div>
 
                   <div className="p-5 sm:p-6">

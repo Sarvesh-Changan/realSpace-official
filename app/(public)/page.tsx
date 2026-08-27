@@ -71,6 +71,7 @@ export default async function HomePage() {
     location: string | null;
     slug: string | null;
     videoUrl: string | null;
+    imageUrl: string | null;
     thumbnailUrl: string | null;
   }> = [];
   let rawGalleryImages: Array<{
@@ -144,7 +145,6 @@ export default async function HomePage() {
       prisma.testimonial.findMany({
         where: {
           isPublished: true,
-          videoUrl: { not: null },
         },
         select: {
           id: true,
@@ -153,6 +153,7 @@ export default async function HomePage() {
           location: true,
           slug: true,
           videoUrl: true,
+          imageUrl: true,
           thumbnailUrl: true,
         },
         orderBy: { createdAt: "desc" },
@@ -228,6 +229,7 @@ export default async function HomePage() {
       location: item.location,
       slug: item.slug,
       videoUrl: item.videoUrl,
+      imageUrl: item.imageUrl,
       thumbnailUrl: item.thumbnailUrl,
     }];
   });

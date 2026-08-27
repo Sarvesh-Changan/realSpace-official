@@ -14,9 +14,12 @@ export interface PublicVideoTestimonial {
   projectType: string | null;
   location: string | null;
   slug: string;
-  videoUrl: string;
+  quote: string;
+  videoUrl: string | null;
   videoPublicId: string | null;
+  imageUrl: string | null;
   thumbnailUrl: string | null;
+  rating: number;
   createdAt: string;
 }
 
@@ -112,7 +115,9 @@ function isWithinDateFilter(dateValue: string, filter: DateFilter, startDate: st
 }
 
 function getThumbnail(item: PublicVideoTestimonial) {
+  if (item.imageUrl) return item.imageUrl;
   if (item.thumbnailUrl) return item.thumbnailUrl;
+  if (!item.videoUrl) return "/images/placeholder-image.png";
   return getEmbedUrl(item.videoUrl)
     ? "/images/placeholder-image.png"
     : getVideoThumbnailUrl(item.videoUrl, "VIDEO");
@@ -150,11 +155,12 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   const querySelectedVideo = useMemo(() => {
     const videoSlug = searchParams.get("video");
     if (!videoSlug) return null;
-    return testimonials.find((testimonial) => testimonial.slug === videoSlug || testimonial.id === videoSlug) || null;
+    return testimonials.find((testimonial) => testimonial.videoUrl && (testimonial.slug === videoSlug || testimonial.id === videoSlug)) || null;
   }, [searchParams, testimonials]);
   const selectedVideo = manualSelectedVideo || querySelectedVideo;
 
   const openVideo = (item: PublicVideoTestimonial) => {
+    if (!item.videoUrl) return;
     setManualSelectedVideo(item);
     const params = new URLSearchParams(window.location.search);
     params.set("video", item.slug);
@@ -226,7 +232,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-red">Real stories</p>
-          <h1 className="font-serif text-3xl font-bold text-brand-text sm:text-5xl">Video Testimonials</h1>
+          <h1 className="font-serif text-3xl font-bold text-brand-text sm:text-5xl">Client Testimonials</h1>
           <p className="mt-4 text-sm leading-relaxed text-neutral-600 sm:text-base">
             Hear directly from clients who trusted REALSPACE to transform their homes and workspaces.
           </p>
@@ -275,49 +281,54 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
           </div>
         </div>
 
-        <p className="mt-5 text-sm text-neutral-500">Showing {filteredTestimonials.length} of {testimonials.length} video testimonials</p>
+        <p className="mt-5 text-sm text-neutral-500">Showing {filteredTestimonials.length} of {testimonials.length} client testimonials</p>
 
         {filteredTestimonials.length > 0 ? (
           <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {filteredTestimonials.map((item, index) => {
               const thumbnail = getThumbnail(item);
-              return (
-                <motion.button
-                  key={item.id}
-                  type="button"
-                  onClick={() => openVideo(item)}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-30px" }}
-                  transition={{ duration: 0.35, delay: index * 0.06 }}
-                  className="group overflow-hidden rounded-2xl border border-brand-bgAlt bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-offset-2"
-                >
+              const cardContent = (
+                <>
                   <div className="relative aspect-video overflow-hidden bg-brand-bgAlt">
                     <Image src={thumbnail} alt={`${item.title} testimonial from ${item.clientName}`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" unoptimized={thumbnail.startsWith("http")} />
                     <div className="absolute inset-0 bg-black/15 transition-colors group-hover:bg-black/30" />
-                    <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform group-hover:scale-110"><Play className="ml-1 h-6 w-6 fill-current" /></span></span>
+                    {item.videoUrl && <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform group-hover:scale-110"><Play className="ml-1 h-6 w-6 fill-current" /></span></span>}
                   </div>
                   <div className="p-5 sm:p-6">
                     <h2 className="line-clamp-2 font-serif text-xl font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red">{item.title}</h2>
+                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-600">&quot;{item.quote}&quot;</p>
                     <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600">
                       <span className="font-semibold text-brand-text">{item.clientName}</span>
                       {item.location && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-brand-red" />{item.location}</span>}
                     </div>
                   </div>
-                </motion.button>
+                </>
+              );
+
+              return (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.35, delay: index * 0.06 }}
+                  className="group overflow-hidden rounded-2xl border border-brand-bgAlt bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl"
+                >
+                  {item.videoUrl ? <button type="button" onClick={() => openVideo(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">{cardContent}</button> : <article>{cardContent}</article>}
+                </motion.div>
               );
             })}
           </div>
         ) : (
           <div className="mt-8 rounded-2xl border border-dashed border-brand-bgAlt bg-white px-6 py-16 text-center">
-            <p className="font-serif text-xl font-bold text-brand-text">No video testimonials found</p>
+            <p className="font-serif text-xl font-bold text-brand-text">No client testimonials found</p>
             <p className="mt-2 text-sm text-neutral-500">Try clearing one of the filters to see more client stories.</p>
           </div>
         )}
       </div>
 
       <AnimatePresence>
-        {selectedVideo && (
+        {selectedVideo && selectedVideo.videoUrl && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeVideo} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`${selectedVideo.title} video testimonial`}>
             <button type="button" onClick={closeVideo} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Close video testimonial"><X className="h-5 w-5" /></button>
             <motion.div initial={{ scale: 0.96, y: 14 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 14 }} onClick={(event) => event.stopPropagation()} className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">

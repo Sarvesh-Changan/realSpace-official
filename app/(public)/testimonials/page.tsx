@@ -10,8 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const companyName = settings?.companyName || "REALSPACE";
 
   return constructMetadata({
-    title: `Video Testimonials | ${companyName}`,
-    description: `Watch video testimonials from REALSPACE clients about their interior and exterior design projects.`,
+    title: `Client Testimonials | ${companyName}`,
+    description: `Read and watch testimonials from REALSPACE clients about their interior and exterior design projects.`,
     path: "/testimonials",
   });
 }
@@ -30,9 +30,12 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     projectType: true,
     location: true,
     slug: true,
+    quote: true,
     videoUrl: true,
     videoPublicId: true,
+    imageUrl: true,
     thumbnailUrl: true,
+    rating: true,
     createdAt: true,
   } as const;
 
@@ -40,7 +43,6 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     prisma.testimonial.findMany({
       where: {
         isPublished: true,
-        videoUrl: { not: null },
       },
       select: testimonialSelect,
       orderBy: { createdAt: "desc" },
@@ -60,22 +62,21 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     ? [directTestimonial, ...testimonials]
     : testimonials;
 
-  const items: PublicVideoTestimonial[] = allTestimonials.flatMap((testimonial) => {
-    if (!testimonial.videoUrl) return [];
-
-    return [{
+  const items: PublicVideoTestimonial[] = allTestimonials.map((testimonial) => ({
       id: testimonial.id,
       title: testimonial.projectType || "A REALSPACE design story",
       clientName: testimonial.clientName,
       projectType: testimonial.projectType,
       location: testimonial.location,
       slug: testimonial.slug || testimonial.id,
+      quote: testimonial.quote,
       videoUrl: testimonial.videoUrl,
       videoPublicId: testimonial.videoPublicId,
+      imageUrl: testimonial.imageUrl,
       thumbnailUrl: testimonial.thumbnailUrl,
+      rating: testimonial.rating,
       createdAt: testimonial.createdAt.toISOString(),
-    }];
-  });
+    }));
 
   return <TestimonialsClient testimonials={items} />;
 }

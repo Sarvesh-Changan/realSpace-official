@@ -42,7 +42,12 @@ export default async function ProjectsPage() {
       ],
     });
 
-    formattedProjects = rawProjects.map((project) => ({
+    formattedProjects = rawProjects.map((project) => {
+      const coverImage =
+        project.images.find((image) => image.isCoverImage) ||
+        project.images[0];
+
+      return {
       id: project.id,
       title: project.title,
       slug: project.slug,
@@ -54,10 +59,11 @@ export default async function ProjectsPage() {
       carpetAreaSqFt: project.carpetAreaSqFt,
       completionYear: project.completionYear,
       coverImageUrl:
-        project.images[0]?.url ||
+        coverImage?.url ||
         "/images/placeholder-image.png",
-      altText: project.images[0]?.altText || project.title,
-    }));
+      altText: coverImage?.altText || project.title,
+      };
+    });
   } catch (error) {
     console.error("Error fetching projects from Prisma:", error);
     // Graceful fallback to empty array if query fails

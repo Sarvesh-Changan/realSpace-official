@@ -48,7 +48,7 @@ export default async function HomePage() {
     title: string;
     location: string;
     category: string;
-    images: Array<{ url: string }>;
+    images: Array<{ url: string; isCoverImage: boolean }>;
   }> = [];
   let rawExteriorProjects: Array<{
     id: string;
@@ -56,7 +56,7 @@ export default async function HomePage() {
     title: string;
     location: string;
     category: string;
-    images: Array<{ url: string }>;
+    images: Array<{ url: string; isCoverImage: boolean }>;
   }> = [];
   let services: Array<{
     id: string;
@@ -115,7 +115,10 @@ export default async function HomePage() {
         },
         include: {
           images: {
-            orderBy: { sortOrder: "asc" },
+            orderBy: [
+              { isCoverImage: "desc" },
+              { sortOrder: "asc" },
+            ],
             take: 1,
           },
         },
@@ -130,7 +133,10 @@ export default async function HomePage() {
         },
         include: {
           images: {
-            orderBy: { sortOrder: "asc" },
+            orderBy: [
+              { isCoverImage: "desc" },
+              { sortOrder: "asc" },
+            ],
             take: 1,
           },
         },
@@ -190,27 +196,35 @@ export default async function HomePage() {
   }));
 
   // Map database project models to ProjectType props for subcomponents
-  const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    category: formatCategory(p.category),
-    imageUrl:
-      p.images[0]?.url ||
-      "/images/placeholder-image.png",
-  }));
+  const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => {
+    const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
 
-  const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    category: formatCategory(p.category),
-    imageUrl:
-      p.images[0]?.url ||
-      "/images/placeholder-image.png",
-  }));
+    return {
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      location: p.location,
+      category: formatCategory(p.category),
+      imageUrl:
+        coverImage?.url ||
+        "/images/placeholder-image.png",
+    };
+  });
+
+  const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => {
+    const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
+
+    return {
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      location: p.location,
+      category: formatCategory(p.category),
+      imageUrl:
+        coverImage?.url ||
+        "/images/placeholder-image.png",
+    };
+  });
 
   // Map database gallery image models to GalleryTeaserItem props
   const galleryTeaserItems: GalleryTeaserItem[] = rawGalleryImages.map((img) => ({

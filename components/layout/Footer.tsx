@@ -71,40 +71,40 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
   );
 
   return (
-    <footer className="bg-brand-bgAlt border-t border-brand-bgAlt/50 px-0 pt-12 pb-8 sm:pt-16 sm:pb-10 lg:pt-20">
+    <footer className="bg-brand-dark text-neutral-300 border-t border-white/10 pt-16 pb-10 sm:pt-20 sm:pb-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-12 lg:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
 
           {/* Company Info */}
-          <div className="space-y-5 text-center sm:space-y-6 sm:text-left">
-            <Link href="/" className="flex items-center justify-center">
+          <div className="space-y-6 text-center sm:text-left">
+            <Link href="/" className="inline-block">
               <Image
                 src="/images/realspace_logo.png"
                 alt="REALSPACE logo"
                 width={300}
                 height={60}
-                className="h-16 sm:h-20 w-auto"
+                className="h-16 sm:h-20 w-auto filter brightness-110"
                 style={{ width: "auto" }}
               />
             </Link>
-            <p className="mx-auto max-w-sm text-sm leading-relaxed text-brand-text/70 sm:mx-0">
+            <p className="text-sm leading-relaxed text-neutral-400 max-w-sm mx-auto sm:mx-0">
               A premium interior and exterior design studio based in Thane. We create elegant, highly functional spaces tailored to your modern lifestyle.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="text-center sm:text-left">
-            <h4 className="mb-5 text-sm font-bold uppercase tracking-wider text-brand-text sm:mb-6">
+            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-yellow">
               Quick Links
             </h4>
-            <ul className="space-y-3 sm:space-y-4">
+            <ul className="space-y-3.5">
               {["Projects", "About", "FAQ", "Contact", "Get Free Quote"].map((link) => {
                 const href = link === "Get Free Quote" ? "/quote" : `/${link.toLowerCase()}`;
                 return (
                   <li key={link}>
                     <Link
                       href={href}
-                      className="text-brand-text/70 hover:text-brand-red text-sm transition-colors"
+                      className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
                     >
                       {link}
                     </Link>
@@ -116,14 +116,14 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
 
           {/* Services */}
           <div className="text-center sm:text-left">
-            <h4 className="mb-5 text-sm font-bold uppercase tracking-wider text-brand-text sm:mb-6">
+            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-yellow">
               Services
             </h4>
-            <ul className="space-y-3 sm:space-y-4">
+            <ul className="space-y-3.5">
               <li>
                 <Link
                   href="/services/interior"
-                  className="text-brand-text/70 hover:text-brand-red text-sm transition-colors"
+                  className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
                 >
                   Interior Design
                 </Link>
@@ -131,7 +131,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
               <li>
                 <Link
                   href="/services/exterior"
-                  className="text-brand-text/70 hover:text-brand-red text-sm transition-colors"
+                  className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
                 >
                   Exterior & Elevation
                 </Link>
@@ -139,7 +139,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
               <li>
                 <Link
                   href="/services"
-                  className="text-brand-text/70 hover:text-brand-red text-sm transition-colors"
+                  className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
                 >
                   View All Services
                 </Link>
@@ -149,50 +149,56 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
 
           {/* Contact Info */}
           <div className="text-center sm:text-left">
-            <h4 className="mb-5 text-sm font-bold uppercase tracking-wider text-brand-text sm:mb-6">
+            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-yellow">
               Contact Us
             </h4>
-            <ul className="mx-auto max-w-sm space-y-5 text-left text-sm text-brand-text/70 sm:mx-0">
+            <ul className="space-y-4 text-sm text-neutral-300 max-w-sm mx-auto sm:mx-0">
               <li className="flex items-start justify-center gap-3 sm:justify-start">
-                <svg className="w-5 h-5 text-brand-red shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                </svg>
-                <span className="min-w-0 break-words">
+                <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-brand-red shrink-0 mt-0.5">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                </div>
+                <span className="leading-relaxed text-neutral-400 text-left">
                   Raymond Realty Jekegram<br />
-                  Pokhran Road No 1 <br />
+                  Pokhran Road No 1<br />
                   Thane (w), Maharashtra, India - 400606
                 </span>
               </li>
               <li className="flex items-center justify-center gap-3 sm:justify-start">
-                <svg className="w-5 h-5 text-brand-red shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.25-3.95-6.847-6.847l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                </svg>
-                <span>+91 98692 11777</span>
+                <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-brand-red shrink-0">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.25-3.95-6.847-6.847l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                </div>
+                <span className="text-neutral-300 font-medium">+91 98692 11777</span>
               </li>
               <li className="flex items-center justify-center gap-3 sm:justify-start">
-                <svg className="w-5 h-5 text-brand-red shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </svg>
-                <span>realspace.org@gmail.com</span>
+                <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-brand-red shrink-0">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                </div>
+                <span className="text-neutral-300 font-medium">realspace.org@gmail.com</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-5 border-t border-brand-text/10 pt-6 sm:mt-16 sm:gap-4 sm:pt-8 md:flex-row">
-          <p className="text-brand-text/50 text-xs md:text-sm text-center md:text-left">
+        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col items-center justify-between gap-6 md:flex-row">
+          <p className="text-xs text-neutral-400 text-center md:text-left">
             &copy; {new Date().getFullYear()} REALSPACE Interiors. All rights reserved.
           </p>
           {socialPlatforms.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-5 sm:gap-6">
+            <div className="flex flex-wrap justify-center gap-4">
               {socialPlatforms.map(({ name, url, Icon }) => (
                 <a
                   key={name}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brand-text/40 hover:text-brand-red transition-colors"
+                  className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-neutral-400 hover:text-brand-yellow hover:bg-white/10 transition-all duration-200 hover:scale-105"
                   aria-label={name}
                 >
                   <span className="sr-only">{name}</span>
@@ -206,4 +212,3 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
     </footer>
   );
 }
-

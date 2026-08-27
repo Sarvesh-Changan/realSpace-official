@@ -23,7 +23,7 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
 
   return (
     <section className="relative isolate w-full overflow-hidden border-t border-brand-border px-4 py-10 sm:px-6 sm:py-14 md:py-16">
-      <Image src="/images/hero-living-room.png" alt="" fill sizes="100vw" className="-z-20 object-cover object-center" />
+      <Image src="https://images.unsplash.com/photo-1768332572728-2fff6ecbd6b6?auto=format&fit=crop&fm=jpg&q=80&w=2400" alt="Warm modern living room interior" fill sizes="100vw" className="-z-20 object-cover object-center" />
       <div className="absolute inset-0 -z-10 bg-brand-dark/45" />
       <div className="relative mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
         {certifications.map((cert, idx) => {

@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -213,7 +212,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
         ) : (
           <motion.div
             layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            className="grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-20"
           >
             <AnimatePresence>
               {filteredProjects.map((project) => (
@@ -226,43 +225,35 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                   transition={{ duration: 0.3 }}
                 >
                   <Link href={`/projects/${project.slug}`} className="block h-full">
-                    <Card className="h-full group cursor-pointer border border-brand-bgAlt hover:border-brand-text/20 transition-all">
-                      <div className="aspect-[4/3] w-full relative overflow-hidden bg-brand-bgAlt">
+                    <article className="group h-full cursor-pointer">
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-brand-bgAlt">
                         <Image
                           src={getCloudinaryUrl(project.coverImageUrl, { width: 800 })}
                           alt={project.altText || project.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                           unoptimized={!project.coverImageUrl?.includes("res.cloudinary.com")}
                         />
-                        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-1.5 z-10">
-                          <Badge
-                            variant="default"
-                            className="bg-white/95 backdrop-blur shadow-sm text-brand-text font-semibold text-xs"
-                          >
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/35 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-100" />
+                      </div>
+                      <div className="pt-5 sm:pt-6">
+                        <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-text/50 sm:text-[11px]">
+                          <Badge variant="default" className="rounded-none border-0 bg-brand-yellow/20 px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] text-brand-text sm:text-[11px]">
                             {formatCategoryLabel(project.category)}
                           </Badge>
+                          <span>{project.designType} · {project.propertyType}</span>
                         </div>
-                      </div>
-                      <div className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between text-[11px] sm:text-xs text-brand-text/50 font-medium mb-1.5 uppercase tracking-wider">
-                          <span>{project.designType}</span>
-                          <span>{project.propertyType}</span>
-                        </div>
-                        <h3 className="text-lg sm:text-xl font-bold mb-1.5 sm:mb-2 group-hover:text-brand-red transition-colors text-brand-text line-clamp-2">
+                        <h3 className="mt-4 line-clamp-2 font-serif text-2xl font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red sm:text-3xl">
                           {project.title}
                         </h3>
-                        <p className="text-brand-text/60 text-xs sm:text-sm mb-3">
-                          {project.location}
-                        </p>
-                        {project.carpetAreaSqFt && (
-                          <div className="text-xs font-semibold text-brand-text/70 pt-2.5 border-t border-brand-bgAlt">
-                            Area: {project.carpetAreaSqFt.toLocaleString()} sq.ft
-                          </div>
-                        )}
+                        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-brand-border pt-3 text-xs font-medium text-brand-text/60 sm:text-sm">
+                          <span>{project.location}</span>
+                          {project.completionYear && <span>{project.completionYear}</span>}
+                          {project.carpetAreaSqFt && <span>{project.carpetAreaSqFt.toLocaleString()} sq.ft</span>}
+                        </div>
                       </div>
-                    </Card>
+                    </article>
                   </Link>
                 </motion.div>
               ))}

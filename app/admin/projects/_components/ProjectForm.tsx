@@ -436,7 +436,7 @@ export function ProjectForm({
                     {fields.map((field, index) => {
                         const currentUrl = watchedImages[index]?.url || field.url;
                         const currentCloudinaryId = watchedImages[index]?.cloudinaryId || field.cloudinaryId;
-                        const isCover = watchedImages[index]?.isCoverImage ?? field.isCoverImage;
+                        const isCover = coverImageIndex === index;
 
                         return (
                             <div key={field.id} className="flex flex-col md:flex-row items-start gap-4 p-4 border border-neutral-200 rounded-md bg-neutral-50/50">
@@ -511,14 +511,19 @@ export function ProjectForm({
                                             <input
                                                 type="radio"
                                                 name="coverImageRadio"
-                                                checked={Boolean(isCover)}
+                                                checked={coverImageIndex === index}
                                                 onChange={() => {
                                                     setCoverImageIndex(index);
-                                                    fields.forEach((_, i) =>
-                                                        setValue(`images.${i}.isCoverImage`, i === index, {
+                                                    setValue(
+                                                        "images",
+                                                        watchedImages.map((image, i) => ({
+                                                            ...image,
+                                                            isCoverImage: i === index,
+                                                        })),
+                                                        {
                                                             shouldDirty: true,
                                                             shouldValidate: true,
-                                                        })
+                                                        }
                                                     );
                                                 }}
                                                 className="text-brand-red focus:ring-brand-red"

@@ -35,6 +35,7 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     videoPublicId: true,
     imageUrl: true,
     thumbnailUrl: true,
+    imageUrls: true,
     rating: true,
     createdAt: true,
   } as const;
@@ -73,6 +74,7 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
       videoUrl: testimonial.videoUrl,
       videoPublicId: testimonial.videoPublicId,
       imageUrl: testimonial.imageUrl,
+      imageUrls: testimonial.imageUrls.length ? testimonial.imageUrls : testimonial.imageUrl ? [testimonial.imageUrl] : [],
       thumbnailUrl: testimonial.thumbnailUrl,
       rating: testimonial.rating,
       createdAt: testimonial.createdAt.toISOString(),

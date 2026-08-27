@@ -119,6 +119,8 @@ model Testimonial {
   quote             String   @db.Text
   imageUrl          String?
   imagePublicId     String?
+  imageUrls         String[] @default([])
+  imagePublicIds    String[] @default([])
   videoUrl          String?
   videoPublicId     String?
   thumbnailUrl      String?

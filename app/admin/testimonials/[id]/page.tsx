@@ -48,6 +48,8 @@ export default async function EditTestimonialPage({ params }: EditTestimonialPag
           quote: testimonial.quote,
           imageUrl: testimonial.imageUrl || "",
           imagePublicId: testimonial.imagePublicId || "",
+          imageUrls: testimonial.imageUrls,
+          imagePublicIds: testimonial.imagePublicIds,
           videoUrl: testimonial.videoUrl || "",
           videoPublicId: testimonial.videoPublicId || "",
           thumbnailUrl: testimonial.thumbnailUrl || "",

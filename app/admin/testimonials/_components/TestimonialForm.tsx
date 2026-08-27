@@ -17,6 +17,8 @@ const testimonialSchema = z.object({
   quote: z.string().min(1, "Quote is required"),
   imageUrl: z.string().optional(),
   imagePublicId: z.string().optional(),
+  imageUrls: z.array(z.string()).default([]),
+  imagePublicIds: z.array(z.string()).default([]),
   videoUrl: z.string().optional(),
   videoPublicId: z.string().optional(),
   thumbnailUrl: z.string().optional(),
@@ -48,7 +50,7 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
   const [isUploading, setIsUploading] = useState<UploadKind | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<TestimonialFormValues>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<z.input<typeof testimonialSchema>, unknown, TestimonialFormValues>({
     resolver: zodResolver(testimonialSchema),
     defaultValues: {
       clientName: initialData?.clientName || "",
@@ -56,6 +58,8 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
       quote: initialData?.quote || "",
       imageUrl: initialData?.imageUrl || "",
       imagePublicId: initialData?.imagePublicId || "",
+      imageUrls: initialData?.imageUrls || [],
+      imagePublicIds: initialData?.imagePublicIds || [],
       videoUrl: initialData?.videoUrl || "",
       videoPublicId: initialData?.videoPublicId || "",
       thumbnailUrl: initialData?.thumbnailUrl || "",
@@ -71,6 +75,7 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
 
   const currentRating = watch("rating");
   const currentImageUrl = watch("imageUrl");
+  const currentImageUrls = watch("imageUrls");
   const currentVideoUrl = watch("videoUrl");
   const currentThumbnailUrl = watch("thumbnailUrl");
 
@@ -127,6 +132,8 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
       } else if (kind === "testimonial-image") {
         setValue("imageUrl", uploadData.secure_url, { shouldValidate: true });
         setValue("imagePublicId", uploadData.public_id);
+        setValue("imageUrls", [...(currentImageUrls || []), uploadData.secure_url], { shouldValidate: true });
+        setValue("imagePublicIds", [...(watch("imagePublicIds") || []), uploadData.public_id]);
       } else {
         setValue("thumbnailUrl", uploadData.secure_url, { shouldValidate: true });
         setValue("thumbnailPublicId", uploadData.public_id);
@@ -193,7 +200,7 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
               folder: "testimonials",
               resourceType: "image",
               clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-              maxFiles: 1,
+              maxFiles: 20,
             }}
             onSuccess={(result) => {
               if (!result.info || typeof result.info === "string") return;
@@ -201,8 +208,12 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
                 setUploadError("Only image uploads are allowed for testimonial images.");
                 return;
               }
-              setValue("imageUrl", result.info.secure_url, { shouldValidate: true });
-              setValue("imagePublicId", result.info.public_id);
+              const nextUrls = [...(watch("imageUrls") || []), result.info.secure_url];
+              const nextPublicIds = [...(watch("imagePublicIds") || []), result.info.public_id];
+              setValue("imageUrl", nextUrls[0], { shouldValidate: true });
+              setValue("imagePublicId", nextPublicIds[0]);
+              setValue("imageUrls", nextUrls, { shouldValidate: true });
+              setValue("imagePublicIds", nextPublicIds);
               setUploadError(null);
             }}
             onError={() => setUploadError("Testimonial image upload failed.")}
@@ -224,10 +235,10 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
               </div>
             )}
           </CldUploadWidget>
-          {currentImageUrl && (
+          {(currentImageUrls?.length || currentImageUrl) && (
             <div className="mt-3 flex items-center justify-between gap-2 text-xs text-green-700 bg-green-50 p-2 rounded">
-              <span className="truncate">Image attached</span>
-              <button type="button" onClick={() => { setValue("imageUrl", ""); setValue("imagePublicId", ""); }} className="p-1 text-neutral-500 hover:text-red-600" aria-label="Remove testimonial image">
+              <span className="truncate">{currentImageUrls?.length || 1} image{(currentImageUrls?.length || 1) === 1 ? "" : "s"} attached</span>
+              <button type="button" onClick={() => { setValue("imageUrl", ""); setValue("imagePublicId", ""); setValue("imageUrls", []); setValue("imagePublicIds", []); }} className="p-1 text-neutral-500 hover:text-red-600" aria-label="Remove testimonial images">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -262,7 +273,9 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
 
       <input type="hidden" {...register("videoPublicId")} />
       <input type="hidden" {...register("imageUrl")} />
-      <input type="hidden" {...register("imagePublicId")} />
+  <input type="hidden" {...register("imagePublicId")} />
+      <input type="hidden" {...register("imageUrls")} />
+      <input type="hidden" {...register("imagePublicIds")} />
       <input type="hidden" {...register("thumbnailUrl")} />
       <input type="hidden" {...register("thumbnailPublicId")} />
 

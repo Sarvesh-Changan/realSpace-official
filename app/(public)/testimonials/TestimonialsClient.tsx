@@ -18,6 +18,7 @@ export interface PublicVideoTestimonial {
   videoUrl: string | null;
   videoPublicId: string | null;
   imageUrl: string | null;
+  imageUrls: string[];
   thumbnailUrl: string | null;
   rating: number;
   createdAt: string;
@@ -115,7 +116,8 @@ function isWithinDateFilter(dateValue: string, filter: DateFilter, startDate: st
 }
 
 function getThumbnail(item: PublicVideoTestimonial) {
-  if (item.imageUrl) return item.imageUrl;
+  const imageUrl = item.imageUrls[0] || item.imageUrl;
+  if (imageUrl) return imageUrl;
   if (item.thumbnailUrl) return item.thumbnailUrl;
   if (!item.videoUrl) return "/images/placeholder-image.png";
   return getEmbedUrl(item.videoUrl)
@@ -153,6 +155,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   const [endDate, setEndDate] = useState("");
   const [manualSelectedVideo, setManualSelectedVideo] = useState<PublicVideoTestimonial | null>(null);
   const [manualSelectedImage, setManualSelectedImage] = useState<PublicVideoTestimonial | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const querySelectedVideo = useMemo(() => {
     const videoSlug = searchParams.get("video");
     if (!videoSlug) return null;
@@ -160,15 +163,12 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   }, [searchParams, testimonials]);
   const selectedVideo = manualSelectedVideo || querySelectedVideo;
   const selectedTestimonial = manualSelectedImage || selectedVideo;
-  const imageTestimonials = useMemo(
-    () => testimonials.filter((testimonial) => testimonial.imageUrl && !testimonial.videoUrl),
-    [testimonials]
-  );
 
   const openVideo = (item: PublicVideoTestimonial) => {
     if (!item.videoUrl) return;
     setManualSelectedImage(null);
     setManualSelectedVideo(item);
+    setSelectedImageIndex(0);
     const params = new URLSearchParams(window.location.search);
     params.set("video", item.slug);
     window.history.pushState(null, "", `/testimonials?${params.toString()}`);
@@ -178,15 +178,15 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
     if (!item.imageUrl) return;
     setManualSelectedVideo(null);
     setManualSelectedImage(item);
+    setSelectedImageIndex(0);
   };
 
   const moveImage = (direction: "next" | "previous") => {
-    if (!manualSelectedImage || imageTestimonials.length < 2) return;
-    const currentIndex = imageTestimonials.findIndex((item) => item.id === manualSelectedImage.id);
-    if (currentIndex < 0) return;
+    if (!manualSelectedImage) return;
+    const imageUrls = manualSelectedImage.imageUrls.length ? manualSelectedImage.imageUrls : manualSelectedImage.imageUrl ? [manualSelectedImage.imageUrl] : [];
+    if (imageUrls.length < 2) return;
     const offset = direction === "next" ? 1 : -1;
-    const nextIndex = (currentIndex + offset + imageTestimonials.length) % imageTestimonials.length;
-    setManualSelectedImage(imageTestimonials[nextIndex]);
+    setSelectedImageIndex((currentIndex) => (currentIndex + offset + imageUrls.length) % imageUrls.length);
   };
 
   const closeTestimonial = () => {
@@ -363,10 +363,10 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                     <iframe src={getEmbedUrl(selectedTestimonial.videoUrl) || undefined} title={`${selectedTestimonial.title} video testimonial`} className="h-full w-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
                   ) : (
                     <video src={getPlayableVideoUrl(selectedTestimonial.videoUrl, selectedTestimonial.videoPublicId)} controls autoPlay playsInline preload="metadata" className="h-full w-full object-contain" />
-                  ) : selectedTestimonial.imageUrl ? (
-                    <Image src={selectedTestimonial.imageUrl} alt={`${selectedTestimonial.title} testimonial from ${selectedTestimonial.clientName}`} width={1600} height={900} className="h-full w-full object-contain" unoptimized />
+                  ) : selectedTestimonial.imageUrls[selectedImageIndex] || selectedTestimonial.imageUrl ? (
+                    <Image src={selectedTestimonial.imageUrls[selectedImageIndex] || selectedTestimonial.imageUrl || ""} alt={`${selectedTestimonial.title} testimonial from ${selectedTestimonial.clientName}`} width={1600} height={900} className="h-full w-full object-contain" unoptimized />
                   ) : null}
-                  {!selectedTestimonial.videoUrl && imageTestimonials.length > 1 && (
+                  {!selectedTestimonial.videoUrl && selectedTestimonial.imageUrls.length > 1 && (
                     <>
                       <button type="button" onClick={() => moveImage("previous")} className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Previous image testimonial">
                         <ChevronLeft className="h-5 w-5" />

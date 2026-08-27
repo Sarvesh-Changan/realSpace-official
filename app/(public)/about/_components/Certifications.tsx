@@ -47,7 +47,7 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
               </div>
               <div className="absolute inset-x-2 bottom-4 text-center sm:inset-x-3 sm:bottom-5">
                 <h3 className="sr-only">{cert.title}</h3>
-                <span className="inline-flex max-w-full rounded-full border border-white/85 bg-brand-dark/30 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-white shadow-[0_2px_8px_rgba(0,0,0,0.24)] sm:px-4 sm:text-[9px]">{cert.badgeLabel}</span>
+                <span className="inline-flex max-w-full rounded-full border border-brand-yellow bg-brand-yellow/90 px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.1em] text-brand-dark shadow-[0_3px_10px_rgba(0,0,0,0.25)] transition-transform duration-300 group-hover:scale-105 sm:px-5 sm:text-[11px]">{cert.badgeLabel}</span>
               </div>
 
             </div>

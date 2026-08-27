@@ -89,15 +89,15 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
   return (
     <div className="pb-16 sm:pb-24">
       {/* Editorial portfolio masthead */}
-      <section className="relative overflow-hidden bg-brand-cream pt-24 pb-10 sm:pt-32 sm:pb-14 lg:pt-40">
+      <section className="relative overflow-hidden bg-brand-cream pt-16 pb-6 sm:pt-20 sm:pb-8 lg:pt-24">
         <div className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full border border-brand-yellow/30 sm:h-96 sm:w-96" />
         <div className="pointer-events-none absolute -right-8 top-28 h-40 w-40 rounded-full border border-brand-red/10 sm:h-60 sm:w-60" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative max-w-4xl">
-            <h1 className="max-w-3xl font-serif text-4xl font-bold leading-[0.98] tracking-tight text-brand-text sm:text-6xl lg:text-7xl">
-              Spaces with a point of view.
+            <h1 className="max-w-3xl font-serif text-3xl font-bold leading-[0.98] tracking-tight text-brand-text sm:text-5xl lg:text-6xl">
+              OUR PORTFOLIO
             </h1>
-            <div className="mt-7 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <Link
                 href="/contact"
                 className="group inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-text transition-colors hover:text-brand-red"
@@ -109,10 +109,10 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
           </div>
 
           {/* Filter Controls */}
-          <div className="mt-12 flex flex-col gap-5 rounded-2xl border border-brand-text/10 bg-white/65 p-4 shadow-sm backdrop-blur-sm sm:mt-16 sm:gap-6 sm:p-5">
+          <div className="mt-7 flex flex-col gap-3 rounded-xl border border-brand-text/10 bg-white/65 p-3 shadow-sm backdrop-blur-sm sm:mt-9 sm:gap-4 sm:p-4">
             {/* Design Type Tabs - Scrollable on small screens */}
             <div className="flex items-center gap-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-              <span className="mr-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-text/45">
+              <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-brand-text/45">
                 Type:
               </span>
               {[
@@ -124,7 +124,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                   key={tab.value}
                   type="button"
                   onClick={() => setSelectedDesignType(tab.value)}
-                    className={`relative shrink-0 min-h-[38px] px-0 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] transition-colors cursor-pointer ${
+                    className={`relative shrink-0 min-h-[30px] px-0 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors cursor-pointer ${
                       selectedDesignType === tab.value
                         ? "text-brand-red after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:bg-brand-red"
                         : "text-brand-text/60 hover:text-brand-text"
@@ -150,7 +150,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     id="propertyType"
                     value={selectedPropertyType}
                     onChange={(e) => setSelectedPropertyType(e.target.value)}
-                    className="w-full sm:w-auto min-h-[44px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-2 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
+                    className="w-full sm:w-auto min-h-[34px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-1 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
                   >
                     <option value="ALL">All Properties</option>
                     <option value="RESIDENTIAL">Residential</option>
@@ -170,7 +170,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     id="category"
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full sm:w-auto min-h-[44px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-2 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
+                    className="w-full sm:w-auto min-h-[34px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-1 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
                   >
                     <option value="ALL">All Categories</option>
                     {availableCategories.map((cat) => (
@@ -183,7 +183,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
               </div>
 
               {/* Reset & Active Filter Count */}
-              <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t border-brand-bgAlt sm:border-t-0">
+              <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0 border-t border-brand-bgAlt sm:border-t-0">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-text/50">
                   Showing {filteredProjects.length} of {projects.length}
                 </span>
@@ -206,7 +206,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
       </section>
 
       {/* Projects Grid */}
-      <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 sm:pt-16 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-10 lg:px-8">
         {filteredProjects.length === 0 ? (
           <div className="py-12 sm:py-20 text-center bg-brand-bgAlt/30 rounded-2xl sm:rounded-3xl border border-dashed border-brand-bgAlt max-w-2xl mx-auto px-4 sm:px-6">
             <h3 className="text-lg sm:text-xl font-bold text-brand-text mb-2">
@@ -236,7 +236,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                 >
                   <Link href={`/projects/${project.slug}`} className="block h-full">
                     <article className="group h-full cursor-pointer">
-                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-brand-bgAlt">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-bgAlt">
                         <Image
                           src={getCloudinaryUrl(project.coverImageUrl, { width: 800 })}
                           alt={project.altText || project.title}
@@ -253,15 +253,15 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                           </span>
                         </div>
                       </div>
-                      <div className="pt-5 sm:pt-6">
+                      <div className="pt-3 sm:pt-4">
                         <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-text/50 sm:text-[11px]">
                           <span className="text-brand-red">{formatCategoryLabel(project.category)}</span>
                           <span>{project.designType} · {project.propertyType}</span>
                         </div>
-                        <h3 className="mt-4 line-clamp-2 font-serif text-2xl font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red sm:text-3xl">
+                        <h3 className="mt-2 line-clamp-2 font-serif text-xl font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red sm:text-2xl">
                           {project.title}
                         </h3>
-                        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-brand-border pt-3 text-xs font-medium text-brand-text/60 sm:text-sm">
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-brand-border pt-2 text-xs font-medium text-brand-text/60 sm:text-sm">
                           <span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-brand-red" />{project.location}</span>
                           {project.completionYear && <span>{project.completionYear}</span>}
                           {project.carpetAreaSqFt && <span>{project.carpetAreaSqFt.toLocaleString()} sq.ft</span>}

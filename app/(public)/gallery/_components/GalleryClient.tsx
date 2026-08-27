@@ -200,7 +200,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C] pt-20 sm:pt-24 pb-16 sm:pb-20">
+    <div className="min-h-screen bg-brand-cream text-brand-text pt-16 sm:pt-20 pb-16 sm:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ========================================================================= */}
@@ -210,16 +210,19 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
           <div>
             {/* Header Section */}
             <motion.div
-              className="text-center max-w-3xl mx-auto mb-10 sm:mb-14"
+              className="text-center max-w-4xl mx-auto mb-10 sm:mb-14"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1C1C] mb-3 sm:mb-4">
-                Design <span style={{ color: BRAND_COLORS.kunkuRed }}>Gallery</span>
+              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.32em] text-brand-red sm:text-xs">
+                Spaces · Materials · Details
+              </p>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold leading-[0.98] tracking-tight text-brand-text mb-4">
+                Design <span className="text-brand-red">Gallery</span>
               </h1>
-              <p className="text-sm sm:text-base text-[#6D6A66] max-w-xl mx-auto">
-                Explore our curated portfolio categories of interior & exterior design inspirations. Click any category to view full project photos and videos.
+              <p className="text-sm sm:text-base leading-7 text-brand-muted max-w-xl mx-auto">
+                A considered collection of spaces, materials, and details from the REALSPACE portfolio.
               </p>
             </motion.div>
 
@@ -230,7 +233,8 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                   const coverSrc = folder.coverUrl && folder.coverUrl.trim() !== "" ? folder.coverUrl : "/images/placeholder-image.png";
 
                   return (
-                    <motion.div
+                    <motion.button
+                      type="button"
                       key={folder.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -239,10 +243,11 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                         delay: shouldReduceMotion ? 0 : Math.min(index * 0.05, 0.4),
                       }}
                       onClick={() => handleSelectFolder(folder)}
-                      className="group relative flex flex-col cursor-pointer bg-white rounded-2xl overflow-hidden border border-[#E8E2DA] shadow-sm hover:shadow-xl transition-all duration-300 ease-out"
+                      aria-label={`Browse ${folder.name} gallery`}
+                      className="group relative flex w-full flex-col cursor-pointer overflow-hidden rounded-xl border border-brand-border bg-brand-bg text-left shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_45px_-18px_rgba(0,0,0,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-offset-4"
                     >
                       {/* Thumbnail Container (4:3 Aspect Ratio) */}
-                      <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#EEE6DD]">
+                      <div className="relative w-full aspect-[4/3] overflow-hidden bg-brand-bgAlt">
                         <Image
                           src={getVideoThumbnailUrl(coverSrc, folder.coverMediaType)}
                           alt={folder.name}
@@ -253,28 +258,28 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                         />
 
                         {/* Dark Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-brand-dark/25 to-transparent" />
 
                         {/* Top Right: Photo Count Badge */}
                         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
-                          <span className="px-3 py-1 text-xs font-semibold text-white bg-black/50 backdrop-blur-md rounded-full border border-white/20 shadow-sm flex items-center gap-1.5">
-                            <Folder className="w-3.5 h-3.5 text-[#FECC00]" />
+                          <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white bg-brand-dark/45 backdrop-blur-md rounded-full border border-white/25 shadow-sm flex items-center gap-1.5">
+                            <Folder className="w-3.5 h-3.5 text-brand-yellow" />
                             {folder.count} {folder.count === 1 ? "photo" : "photos"}
                           </span>
                         </div>
 
                         {/* Bottom Overlay Text: Category Name & Explore Link */}
                         <div className="absolute bottom-0 inset-x-0 p-5 text-white z-10 flex flex-col justify-end">
-                          <h3 className="text-xl sm:text-2xl font-serif font-bold group-hover:text-[#FECC00] transition-colors leading-tight">
+                          <h3 className="text-xl sm:text-2xl font-serif font-bold group-hover:text-brand-yellow transition-colors leading-tight">
                             {folder.name}
                           </h3>
                           <div className="flex items-center gap-1.5 text-xs sm:text-sm text-white/80 font-medium mt-1.5 group-hover:translate-x-1 transition-transform">
                             <span>Browse Collection</span>
-                            <ArrowRight className="w-4 h-4 text-[#FECC00]" />
+                            <ArrowRight className="w-4 h-4 text-brand-yellow" />
                           </div>
                         </div>
                       </div>
-                    </motion.div>
+                    </motion.button>
                   );
                 })}
               </div>

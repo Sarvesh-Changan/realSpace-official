@@ -80,9 +80,6 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
     });
   }, [projects, selectedDesignType, selectedPropertyType, selectedCategory]);
 
-  const interiorCount = projects.filter((project) => project.designType === "INTERIOR").length;
-  const exteriorCount = projects.filter((project) => project.designType === "EXTERIOR").length;
-
   const resetFilters = () => {
     setSelectedDesignType("ALL");
     setSelectedPropertyType("ALL");
@@ -97,16 +94,10 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
         <div className="pointer-events-none absolute -right-8 top-28 h-40 w-40 rounded-full border border-brand-red/10 sm:h-60 sm:w-60" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative max-w-4xl">
-            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.32em] text-brand-red sm:text-xs">
-              Selected work · Est. 1989
-            </p>
             <h1 className="max-w-3xl font-serif text-4xl font-bold leading-[0.98] tracking-tight text-brand-text sm:text-6xl lg:text-7xl">
               Spaces with a point of view.
             </h1>
             <div className="mt-7 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-              <p className="max-w-xl text-sm leading-7 text-brand-muted sm:text-base">
-                Explore our curated interior and exterior design projects across Thane, Mumbai, and Navi Mumbai—each shaped around the people who live and work there.
-              </p>
               <Link
                 href="/contact"
                 className="group inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-text transition-colors hover:text-brand-red"
@@ -115,16 +106,10 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
-            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 border-t border-brand-text/15 pt-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-text/55 sm:mt-12">
-              <span>{projects.length} projects</span>
-              <span>{interiorCount} interiors</span>
-              <span>{exteriorCount} exteriors</span>
-              <span>Residential · Commercial · Turnkey</span>
-            </div>
           </div>
 
           {/* Filter Controls */}
-          <div className="mt-12 flex flex-col gap-5 border-t border-brand-text/15 pt-5 sm:mt-16 sm:gap-6">
+          <div className="mt-12 flex flex-col gap-5 rounded-2xl border border-brand-text/10 bg-white/65 p-4 shadow-sm backdrop-blur-sm sm:mt-16 sm:gap-6 sm:p-5">
             {/* Design Type Tabs - Scrollable on small screens */}
             <div className="flex items-center gap-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
               <span className="mr-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-text/45">

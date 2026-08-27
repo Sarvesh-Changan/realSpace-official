@@ -42,7 +42,7 @@ interface TestimonialFormProps {
   isSubmitting?: boolean;
 }
 
-type UploadKind = "video" | "image";
+type UploadKind = "video" | "image" | "testimonial-image";
 
 export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting }: TestimonialFormProps) {
   const [isUploading, setIsUploading] = useState<UploadKind | null>(null);
@@ -80,8 +80,8 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
       setUploadError("Video must be MP4, WebM or MOV and no larger than 100MB.");
       return;
     }
-    if (kind === "image" && !IMAGE_TYPES.includes(file.type)) {
-      setUploadError("Thumbnail must be a JPG, PNG or WebP image.");
+    if ((kind === "image" || kind === "testimonial-image") && !IMAGE_TYPES.includes(file.type)) {
+      setUploadError("Image must be a JPG, PNG or WebP image.");
       return;
     }
 
@@ -124,6 +124,9 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
       if (kind === "video") {
         setValue("videoUrl", uploadData.secure_url, { shouldValidate: true });
         setValue("videoPublicId", uploadData.public_id);
+      } else if (kind === "testimonial-image") {
+        setValue("imageUrl", uploadData.secure_url, { shouldValidate: true });
+        setValue("imagePublicId", uploadData.public_id);
       } else {
         setValue("thumbnailUrl", uploadData.secure_url, { shouldValidate: true });
         setValue("thumbnailPublicId", uploadData.public_id);
@@ -205,13 +208,20 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
             onError={() => setUploadError("Testimonial image upload failed.")}
           >
             {({ open }) => (
-              <button
-                type="button"
-                onClick={() => open()}
-                className="inline-flex items-center gap-2 px-3 py-2.5 min-h-[44px] border border-neutral-300 rounded-md text-sm font-medium hover:bg-neutral-50"
-              >
-                <Upload className="w-4 h-4" /> Upload image
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => open()}
+                  className="inline-flex items-center gap-2 px-3 py-2.5 min-h-[44px] border border-neutral-300 rounded-md text-sm font-medium hover:bg-neutral-50"
+                >
+                  <Upload className="w-4 h-4" /> Cloudinary widget
+                </button>
+                <label className="inline-flex items-center gap-2 px-3 py-2.5 min-h-[44px] border border-neutral-300 rounded-md text-sm font-medium cursor-pointer hover:bg-neutral-50">
+                  {isUploading === "testimonial-image" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  {isUploading === "testimonial-image" ? `Uploading ${uploadProgress}%` : "Upload image"}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={!!isUploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFile(file, "testimonial-image"); event.target.value = ""; }} />
+                </label>
+              </div>
             )}
           </CldUploadWidget>
           {currentImageUrl && (

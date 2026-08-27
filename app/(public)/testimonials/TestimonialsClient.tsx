@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarDays, MapPin, Play, X } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, MapPin, Play, X } from "lucide-react";
 import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 export interface PublicVideoTestimonial {
@@ -160,6 +160,10 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   }, [searchParams, testimonials]);
   const selectedVideo = manualSelectedVideo || querySelectedVideo;
   const selectedTestimonial = manualSelectedImage || selectedVideo;
+  const imageTestimonials = useMemo(
+    () => testimonials.filter((testimonial) => testimonial.imageUrl && !testimonial.videoUrl),
+    [testimonials]
+  );
 
   const openVideo = (item: PublicVideoTestimonial) => {
     if (!item.videoUrl) return;
@@ -174,6 +178,15 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
     if (!item.imageUrl) return;
     setManualSelectedVideo(null);
     setManualSelectedImage(item);
+  };
+
+  const moveImage = (direction: "next" | "previous") => {
+    if (!manualSelectedImage || imageTestimonials.length < 2) return;
+    const currentIndex = imageTestimonials.findIndex((item) => item.id === manualSelectedImage.id);
+    if (currentIndex < 0) return;
+    const offset = direction === "next" ? 1 : -1;
+    const nextIndex = (currentIndex + offset + imageTestimonials.length) % imageTestimonials.length;
+    setManualSelectedImage(imageTestimonials[nextIndex]);
   };
 
   const closeTestimonial = () => {
@@ -345,7 +358,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
             <button type="button" onClick={closeTestimonial} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Close testimonial"><X className="h-5 w-5" /></button>
             <motion.div initial={{ scale: 0.96, y: 14 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 14 }} onClick={(event) => event.stopPropagation()} className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
               <div className="grid md:grid-cols-[1.55fr_1fr]">
-                <div className="aspect-video min-h-[220px] bg-black">
+                <div className="relative aspect-video min-h-[220px] bg-black">
                   {selectedTestimonial.videoUrl ? getEmbedUrl(selectedTestimonial.videoUrl) ? (
                     <iframe src={getEmbedUrl(selectedTestimonial.videoUrl) || undefined} title={`${selectedTestimonial.title} video testimonial`} className="h-full w-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
                   ) : (
@@ -353,6 +366,16 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                   ) : selectedTestimonial.imageUrl ? (
                     <Image src={selectedTestimonial.imageUrl} alt={`${selectedTestimonial.title} testimonial from ${selectedTestimonial.clientName}`} width={1600} height={900} className="h-full w-full object-contain" unoptimized />
                   ) : null}
+                  {!selectedTestimonial.videoUrl && imageTestimonials.length > 1 && (
+                    <>
+                      <button type="button" onClick={() => moveImage("previous")} className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Previous image testimonial">
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button type="button" onClick={() => moveImage("next")} className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Next image testimonial">
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    </>
+                  )}
                 </div>
                 <div className="flex flex-col justify-center p-6 sm:p-8">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-red">Client story</p>

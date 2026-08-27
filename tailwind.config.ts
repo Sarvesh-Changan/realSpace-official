@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "Arial", "Helvetica", "sans-serif"],
+      },
       colors: {
         brand: {
           /* REALSPACE Brand Colors */

@@ -152,23 +152,33 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [manualSelectedVideo, setManualSelectedVideo] = useState<PublicVideoTestimonial | null>(null);
+  const [manualSelectedImage, setManualSelectedImage] = useState<PublicVideoTestimonial | null>(null);
   const querySelectedVideo = useMemo(() => {
     const videoSlug = searchParams.get("video");
     if (!videoSlug) return null;
     return testimonials.find((testimonial) => testimonial.videoUrl && (testimonial.slug === videoSlug || testimonial.id === videoSlug)) || null;
   }, [searchParams, testimonials]);
   const selectedVideo = manualSelectedVideo || querySelectedVideo;
+  const selectedTestimonial = manualSelectedImage || selectedVideo;
 
   const openVideo = (item: PublicVideoTestimonial) => {
     if (!item.videoUrl) return;
+    setManualSelectedImage(null);
     setManualSelectedVideo(item);
     const params = new URLSearchParams(window.location.search);
     params.set("video", item.slug);
     window.history.pushState(null, "", `/testimonials?${params.toString()}`);
   };
 
-  const closeVideo = () => {
+  const openImage = (item: PublicVideoTestimonial) => {
+    if (!item.imageUrl) return;
     setManualSelectedVideo(null);
+    setManualSelectedImage(item);
+  };
+
+  const closeTestimonial = () => {
+    setManualSelectedVideo(null);
+    setManualSelectedImage(null);
     const params = new URLSearchParams(window.location.search);
     params.delete("video");
     const query = params.toString();
@@ -199,25 +209,27 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       setSelectedProjectType(projectType);
       setSelectedMonth(month);
       setManualSelectedVideo(null);
+      setManualSelectedImage(null);
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [locations, months, projectTypes]);
 
   useEffect(() => {
-    if (!selectedVideo) return;
+    if (!selectedTestimonial) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         const params = new URLSearchParams(window.location.search);
         params.delete("video");
         const query = params.toString();
         setManualSelectedVideo(null);
+        setManualSelectedImage(null);
         window.history.pushState(null, "", query ? `/testimonials?${query}` : "/testimonials");
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedVideo]);
+  }, [selectedTestimonial]);
 
   const filteredTestimonials = useMemo(() => testimonials.filter((item) => {
     const matchesLocation = selectedLocation === "ALL" || item.location === selectedLocation;
@@ -314,7 +326,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                   transition={{ duration: 0.35, delay: index * 0.06 }}
                   className="group overflow-hidden rounded-2xl border border-brand-bgAlt bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl"
                 >
-                  {item.videoUrl ? <button type="button" onClick={() => openVideo(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">{cardContent}</button> : <article>{cardContent}</article>}
+                  {item.videoUrl ? <button type="button" onClick={() => openVideo(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">{cardContent}</button> : item.imageUrl ? <button type="button" onClick={() => openImage(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">{cardContent}</button> : <article>{cardContent}</article>}
                 </motion.div>
               );
             })}
@@ -328,26 +340,28 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       </div>
 
       <AnimatePresence>
-        {selectedVideo && selectedVideo.videoUrl && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeVideo} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`${selectedVideo.title} video testimonial`}>
-            <button type="button" onClick={closeVideo} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Close video testimonial"><X className="h-5 w-5" /></button>
+        {selectedTestimonial && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeTestimonial} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`${selectedTestimonial.title} testimonial`}>
+            <button type="button" onClick={closeTestimonial} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Close testimonial"><X className="h-5 w-5" /></button>
             <motion.div initial={{ scale: 0.96, y: 14 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 14 }} onClick={(event) => event.stopPropagation()} className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
               <div className="grid md:grid-cols-[1.55fr_1fr]">
                 <div className="aspect-video min-h-[220px] bg-black">
-                  {getEmbedUrl(selectedVideo.videoUrl) ? (
-                    <iframe src={getEmbedUrl(selectedVideo.videoUrl) || undefined} title={`${selectedVideo.title} video testimonial`} className="h-full w-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+                  {selectedTestimonial.videoUrl ? getEmbedUrl(selectedTestimonial.videoUrl) ? (
+                    <iframe src={getEmbedUrl(selectedTestimonial.videoUrl) || undefined} title={`${selectedTestimonial.title} video testimonial`} className="h-full w-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
                   ) : (
-                    <video src={getPlayableVideoUrl(selectedVideo.videoUrl, selectedVideo.videoPublicId)} controls autoPlay playsInline preload="metadata" className="h-full w-full object-contain" />
-                  )}
+                    <video src={getPlayableVideoUrl(selectedTestimonial.videoUrl, selectedTestimonial.videoPublicId)} controls autoPlay playsInline preload="metadata" className="h-full w-full object-contain" />
+                  ) : selectedTestimonial.imageUrl ? (
+                    <Image src={selectedTestimonial.imageUrl} alt={`${selectedTestimonial.title} testimonial from ${selectedTestimonial.clientName}`} width={1600} height={900} className="h-full w-full object-contain" unoptimized />
+                  ) : null}
                 </div>
                 <div className="flex flex-col justify-center p-6 sm:p-8">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-red">Client story</p>
-                  <h2 className="mt-3 font-serif text-2xl font-bold leading-tight text-brand-text sm:text-3xl">{selectedVideo.title}</h2>
+                  <h2 className="mt-3 font-serif text-2xl font-bold leading-tight text-brand-text sm:text-3xl">{selectedTestimonial.title}</h2>
                   <dl className="mt-6 space-y-4 text-sm">
-                    <div><dt className="font-semibold text-neutral-500">Client</dt><dd className="mt-0.5 text-brand-text">{selectedVideo.clientName}</dd></div>
-                    {selectedVideo.projectType && <div><dt className="font-semibold text-neutral-500">Project Type</dt><dd className="mt-0.5 text-brand-text">{selectedVideo.projectType}</dd></div>}
-                    {selectedVideo.location && <div><dt className="font-semibold text-neutral-500">Location</dt><dd className="mt-0.5 text-brand-text">{selectedVideo.location}</dd></div>}
-                    <div><dt className="font-semibold text-neutral-500">Date</dt><dd className="mt-0.5 text-brand-text">{formatDate(selectedVideo.createdAt)}</dd></div>
+                    <div><dt className="font-semibold text-neutral-500">Client</dt><dd className="mt-0.5 text-brand-text">{selectedTestimonial.clientName}</dd></div>
+                    {selectedTestimonial.projectType && <div><dt className="font-semibold text-neutral-500">Project Type</dt><dd className="mt-0.5 text-brand-text">{selectedTestimonial.projectType}</dd></div>}
+                    {selectedTestimonial.location && <div><dt className="font-semibold text-neutral-500">Location</dt><dd className="mt-0.5 text-brand-text">{selectedTestimonial.location}</dd></div>}
+                    <div><dt className="font-semibold text-neutral-500">Date</dt><dd className="mt-0.5 text-brand-text">{formatDate(selectedTestimonial.createdAt)}</dd></div>
                   </dl>
                 </div>
               </div>

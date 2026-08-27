@@ -256,11 +256,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
     <main className="min-h-screen bg-brand-bgAlt/30 pb-16 pt-24 sm:pb-20 sm:pt-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-red">Real stories</p>
-          <h1 className="font-serif text-3xl font-bold text-brand-text sm:text-5xl">Client Testimonials</h1>
-          <p className="mt-4 text-sm leading-relaxed text-neutral-600 sm:text-base">
-            Hear directly from clients who trusted REALSPACE to transform their homes and workspaces.
-          </p>
+          <h1 className="font-serif text-3xl font-bold text-brand-text sm:text-5xl">Testimonials</h1>
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-3 rounded-2xl border border-brand-bgAlt bg-white p-3 shadow-sm sm:mt-12 sm:grid-cols-2 lg:grid-cols-5">

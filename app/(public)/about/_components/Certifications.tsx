@@ -25,27 +25,29 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
     <section className="relative isolate w-full overflow-hidden border-t border-brand-border px-4 py-10 sm:px-6 sm:py-14 md:py-16">
       <Image src="https://images.unsplash.com/photo-1768332572728-2fff6ecbd6b6?auto=format&fit=crop&fm=jpg&q=80&w=2400" alt="Warm modern living room interior" fill sizes="100vw" className="-z-20 object-cover object-center" />
       <div className="absolute inset-0 -z-10 bg-brand-dark/45" />
-      <div className="relative mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
+      <div className="relative mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
         {certifications.map((cert, idx) => {
           const displayImage = cert.imageUrl && cert.imageUrl.trim() !== "" ? cert.imageUrl : "/images/certifications/cadpro.png";
 
           return (
             <div
               key={cert.id}
-              className="group relative aspect-[1.45/1] overflow-hidden rounded-xl border border-white/45 bg-white/20 shadow-lg backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-white/30 hover:shadow-xl sm:rounded-2xl"
+              className="group relative aspect-[1.1/1] overflow-hidden rounded-xl border border-white/65 bg-gradient-to-br from-white/35 via-white/15 to-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-1 hover:from-white/45 hover:shadow-[0_16px_36px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.9)] sm:rounded-2xl"
             >
+              <div className="pointer-events-none absolute inset-2 rounded-lg border border-white/30 shadow-[inset_0_0_18px_rgba(255,255,255,0.14)] sm:inset-3 sm:rounded-xl" />
               {cert.textureUrl && (
                 <Image src={cert.textureUrl} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" unoptimized={!cert.textureUrl.includes("res.cloudinary.com")} />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-brand-dark/5 to-brand-dark/65" />
-              <div className="absolute inset-x-0 top-[24%] flex justify-center px-6">
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/80 bg-brand-warmWhite/95 p-2 shadow-xl sm:h-20 sm:w-20 sm:p-2.5">
-                  <Image src={displayImage} alt={`${cert.title} certification logo`} fill sizes="80px" className="object-contain p-2.5 sm:p-3.5" unoptimized={!displayImage.includes("res.cloudinary.com")} />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-brand-dark/10 to-brand-dark/55" />
+              <div className="absolute inset-x-0 top-[19%] flex justify-center px-4">
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/80 bg-brand-warmWhite/95 p-2 shadow-[0_5px_15px_rgba(0,0,0,0.22)] sm:h-24 sm:w-24 sm:p-2.5">
+                  <div className="pointer-events-none absolute inset-1 rounded-full border border-brand-text/15" />
+                  <Image src={displayImage} alt={`${cert.title} certification logo`} fill sizes="96px" className="object-contain p-3 sm:p-3.5" unoptimized={!displayImage.includes("res.cloudinary.com")} />
                 </div>
               </div>
-              <div className="absolute inset-x-2 bottom-2 text-center sm:inset-x-3 sm:bottom-3">
+              <div className="absolute inset-x-2 bottom-4 text-center sm:inset-x-3 sm:bottom-5">
                 <h3 className="sr-only">{cert.title}</h3>
-                <span className="inline-flex max-w-full rounded-full border border-white/75 bg-brand-dark/25 px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.08em] text-white shadow-sm sm:px-3 sm:text-[9px]">{cert.badgeLabel}</span>
+                <span className="inline-flex max-w-full rounded-full border border-white/85 bg-brand-dark/30 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-white shadow-[0_2px_8px_rgba(0,0,0,0.24)] sm:px-4 sm:text-[9px]">{cert.badgeLabel}</span>
               </div>
 
             </div>

@@ -92,7 +92,7 @@ export function ProjectForm({
                 const signRes = await fetch("/api/cloudinary/sign", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ paramsToSign: {} }),
+                    body: JSON.stringify({ folder: "realspace-projects" }),
                 });
 
                 if (!signRes.ok) {
@@ -100,13 +100,21 @@ export function ProjectForm({
                     throw new Error(errJson.error || "Failed to get upload signature from server.");
                 }
 
-                const { signature, timestamp, folder, cloudName, apiKey } = await signRes.json();
+                const signData = await signRes.json();
+                const { signature, timestamp, folder, cloudName, apiKey } = signData;
+
+                if (!signature || !timestamp) {
+                    throw new Error(
+                        signData.error ||
+                        "Cloudinary signing failed: the server did not return a signature and timestamp."
+                    );
+                }
 
                 // 2. Upload file directly from browser to Cloudinary
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("api_key", apiKey || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "");
-                formData.append("timestamp", timestamp.toString());
+                formData.append("timestamp", String(timestamp));
                 formData.append("signature", signature);
                 formData.append("folder", folder || "realspace-projects");
 

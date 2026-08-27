@@ -23,8 +23,14 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    // If request comes from next-cloudinary CldUploadWidget (contains paramsToSign)
-    if (body.paramsToSign) {
+    // If request comes from next-cloudinary CldUploadWidget (contains paramsToSign).
+    // An empty object is used by the direct-upload form and must use the full
+    // response below, including the timestamp required by Cloudinary.
+    if (
+      body.paramsToSign &&
+      typeof body.paramsToSign === "object" &&
+      Object.keys(body.paramsToSign).length > 0
+    ) {
       const signature = cloudinary.utils.api_sign_request(
         body.paramsToSign,
         process.env.CLOUDINARY_API_SECRET || ""

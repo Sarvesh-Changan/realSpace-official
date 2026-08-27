@@ -185,9 +185,6 @@ export default async function ServicesPage() {
                 Interior Services
               </h2>
             </div>
-            <p className="max-w-sm text-xs leading-6 text-brand-muted sm:text-right sm:text-sm">
-              Personal spaces shaped around how you live, work, and gather.
-            </p>
           </div>
           <ServiceGrid services={interiorServices} />
         </section>
@@ -202,9 +199,6 @@ export default async function ServicesPage() {
                 Exterior Services
               </h2>
             </div>
-            <p className="max-w-sm text-xs leading-6 text-brand-muted sm:text-right sm:text-sm">
-              Confident elevations and outdoor spaces designed to last.
-            </p>
           </div>
           <ServiceGrid services={exteriorServices} />
         </section>

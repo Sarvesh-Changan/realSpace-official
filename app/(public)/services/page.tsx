@@ -176,21 +176,35 @@ export default async function ServicesPage() {
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-24 space-y-16 sm:space-y-24 md:space-y-32">
         <section id="interior-services">
-          <div className="mb-6 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text mb-3 sm:mb-4">
-              Interior Services
-            </h2>
-            <div className="w-16 sm:w-20 h-1 bg-brand-red rounded-full"></div>
+          <div className="mb-7 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-brand-red sm:text-xs">
+                01 / The foundation
+              </p>
+              <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-4xl md:text-5xl">
+                Interior Services
+              </h2>
+            </div>
+            <p className="max-w-sm text-xs leading-6 text-brand-muted sm:text-right sm:text-sm">
+              Personal spaces shaped around how you live, work, and gather.
+            </p>
           </div>
           <ServiceGrid services={interiorServices} />
         </section>
 
         <section id="exterior-services">
-          <div className="mb-6 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text mb-3 sm:mb-4">
-              Exterior Services
-            </h2>
-            <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full"></div>
+          <div className="mb-7 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-brand-red sm:text-xs">
+                02 / First impression
+              </p>
+              <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-4xl md:text-5xl">
+                Exterior Services
+              </h2>
+            </div>
+            <p className="max-w-sm text-xs leading-6 text-brand-muted sm:text-right sm:text-sm">
+              Confident elevations and outdoor spaces designed to last.
+            </p>
           </div>
           <ServiceGrid services={exteriorServices} />
         </section>

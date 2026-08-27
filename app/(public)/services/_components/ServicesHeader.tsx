@@ -16,6 +16,7 @@ const FRAME_PATHS = Array.from(
   { length: FRAME_COUNT },
   (_, index) => `/images/swastik/frames/frame-${String(index + 1).padStart(2, "0")}.webp`,
 );
+const FALLBACK_FRAME_PATH = "/images/swastik-kunku-halad-traditional.svg";
 
 function SwastikIntroMark() {
   const markRef = useRef<HTMLDivElement>(null);
@@ -24,7 +25,7 @@ function SwastikIntroMark() {
   const animationFrameRef = useRef<number | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [frameIndex, setFrameIndex] = useState(FRAME_COUNT - 1);
-  const [hasFrameAssets, setHasFrameAssets] = useState<boolean | null>(null);
+  const [hasFrameAssets, setHasFrameAssets] = useState(true);
 
   const play = useCallback(() => {
     if (!readyRef.current || shouldReduceMotion) return;
@@ -122,17 +123,15 @@ function SwastikIntroMark() {
 
   return (
     <div ref={markRef} className="relative w-full max-w-[580px] aspect-[580/350]" aria-hidden="true">
-      {hasFrameAssets && (
-        <Image
-          src={FRAME_PATHS[frameIndex]}
-          alt=""
-          fill
-          sizes="(max-width: 767px) 100vw, 580px"
-          className="object-contain"
-          priority
-          onError={() => setHasFrameAssets(false)}
-        />
-      )}
+      <Image
+        src={hasFrameAssets ? FRAME_PATHS[frameIndex] : FALLBACK_FRAME_PATH}
+        alt=""
+        fill
+        sizes="(max-width: 767px) 100vw, 580px"
+        className="object-contain"
+        priority
+        onError={() => setHasFrameAssets(false)}
+      />
     </div>
   );
 }
@@ -147,7 +146,17 @@ export function ServicesHeader({ title, intro }: ServicesHeaderProps) {
   };
 
   return (
-    <section className="relative isolate w-full py-12 sm:py-16 md:py-24 border-b border-neutral-200 overflow-hidden bg-[#FDFCFA]">
+    <section className="relative isolate w-full overflow-hidden border-b border-brand-border bg-brand-cream py-12 sm:py-16 md:py-24">
+      <Image
+        src="/images/hero-living-room.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover opacity-[0.14]"
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-brand-cream/75" aria-hidden="true" />
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] gap-8 sm:gap-12 md:gap-16 items-center">
         <motion.div
           initial={{ opacity: shouldReduceMotion ? 1 : 0, x: shouldReduceMotion ? 0 : -8 }}

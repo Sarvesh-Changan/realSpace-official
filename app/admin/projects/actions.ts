@@ -26,6 +26,7 @@ export async function createProject(data: ProjectInput) {
   }
 
   const projectData = parsed.data;
+  const coverImageIndex = projectData.images.findIndex((image) => image.isCoverImage);
   let slug = projectData.slug ? generateSlug(projectData.slug) : generateSlug(projectData.title);
 
   // Ensure slug uniqueness
@@ -56,7 +57,7 @@ export async function createProject(data: ProjectInput) {
             url: img.url,
             mediaType: img.mediaType || (img.url.match(/\.(mp4|mov|webm|ogv|m4v)/i) || img.url.includes("/video/upload/") ? "VIDEO" : "IMAGE"),
             altText: img.altText,
-            isCoverImage: img.isCoverImage,
+            isCoverImage: idx === coverImageIndex,
             sortOrder: img.sortOrder ?? idx,
           })),
         },
@@ -87,6 +88,7 @@ export async function updateProject(id: string, data: ProjectInput) {
   }
 
   const projectData = parsed.data;
+  const coverImageIndex = projectData.images.findIndex((image) => image.isCoverImage);
   let slug = projectData.slug ? generateSlug(projectData.slug) : generateSlug(projectData.title);
 
   // Ensure slug uniqueness (excluding current project)
@@ -130,7 +132,7 @@ export async function updateProject(id: string, data: ProjectInput) {
               url: img.url,
               mediaType: img.mediaType || (img.url.match(/\.(mp4|mov|webm|ogv|m4v)/i) || img.url.includes("/video/upload/") ? "VIDEO" : "IMAGE"),
               altText: img.altText,
-              isCoverImage: img.isCoverImage,
+              isCoverImage: idx === coverImageIndex,
               sortOrder: img.sortOrder ?? idx,
             })),
           },

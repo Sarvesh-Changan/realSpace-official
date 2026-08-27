@@ -23,6 +23,10 @@ export function ProjectForm({
     const [serverError, setServerError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [coverImageIndex, setCoverImageIndex] = useState(() => {
+        const initialCoverIndex = initialData?.images.findIndex((image) => image.isCoverImage) ?? -1;
+        return initialCoverIndex >= 0 ? initialCoverIndex : 0;
+    });
 
     const {
         register,
@@ -163,12 +167,17 @@ export function ProjectForm({
         setServerError(null);
         setIsSubmitting(true);
 
+        const normalizedImages = data.images.map((image, index) => ({
+            ...image,
+            isCoverImage: index === coverImageIndex,
+        }));
+
         if (!data.slug) {
             data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         }
 
         try {
-            const result = await onSubmitAction(data);
+            const result = await onSubmitAction({ ...data, images: normalizedImages });
             if (!result.success) {
                 setServerError(result.error || "Failed to save project.");
             } else {
@@ -504,6 +513,7 @@ export function ProjectForm({
                                                 name="coverImageRadio"
                                                 checked={Boolean(isCover)}
                                                 onChange={() => {
+                                                    setCoverImageIndex(index);
                                                     fields.forEach((_, i) =>
                                                         setValue(`images.${i}.isCoverImage`, i === index, {
                                                             shouldDirty: true,
@@ -517,14 +527,19 @@ export function ProjectForm({
                                                 {isCover ? "★ Main Cover Image" : "Set as Cover Image"}
                                             </span>
                                         </label>
-                                        <input
-                                            type="hidden"
-                                            {...register(`images.${index}.isCoverImage`)}
-                                        />
 
                                         <button
                                             type="button"
-                                            onClick={() => remove(index)}
+                                            onClick={() => {
+                                                remove(index);
+                                                setCoverImageIndex((currentIndex) =>
+                                                    currentIndex === index
+                                                        ? Math.max(0, index - 1)
+                                                        : currentIndex > index
+                                                            ? currentIndex - 1
+                                                            : currentIndex
+                                                );
+                                            }}
                                             className="text-neutral-500 hover:text-red-600 flex items-center gap-1 text-xs font-medium transition-colors"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" /> Remove Image

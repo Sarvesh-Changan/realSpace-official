@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Star, Upload, Video, X } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
 
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
 const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
@@ -14,6 +15,8 @@ const testimonialSchema = z.object({
   clientName: z.string().min(1, "Client name is required"),
   clientRole: z.string().optional(),
   quote: z.string().min(1, "Quote is required"),
+  imageUrl: z.string().optional(),
+  imagePublicId: z.string().optional(),
   videoUrl: z.string().optional(),
   videoPublicId: z.string().optional(),
   thumbnailUrl: z.string().optional(),
@@ -51,6 +54,8 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
       clientName: initialData?.clientName || "",
       clientRole: initialData?.clientRole || "",
       quote: initialData?.quote || "",
+      imageUrl: initialData?.imageUrl || "",
+      imagePublicId: initialData?.imagePublicId || "",
       videoUrl: initialData?.videoUrl || "",
       videoPublicId: initialData?.videoPublicId || "",
       thumbnailUrl: initialData?.thumbnailUrl || "",
@@ -65,6 +70,7 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
   });
 
   const currentRating = watch("rating");
+  const currentImageUrl = watch("imageUrl");
   const currentVideoUrl = watch("videoUrl");
   const currentThumbnailUrl = watch("thumbnailUrl");
 
@@ -175,6 +181,50 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-md border border-neutral-200 p-4">
+          <label className="block text-sm font-medium text-neutral-700 mb-2">Testimonial Image</label>
+          <p className="text-xs text-neutral-500 mb-3">Upload an optional client or project image. JPG, PNG or WebP only.</p>
+          <CldUploadWidget
+            signatureEndpoint="/api/cloudinary/sign"
+            options={{
+              sources: ["local"],
+              folder: "testimonials",
+              resourceType: "image",
+              clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+              maxFiles: 1,
+            }}
+            onSuccess={(result) => {
+              if (!result.info || typeof result.info === "string") return;
+              if (result.info.resource_type !== "image") {
+                setUploadError("Only image uploads are allowed for testimonial images.");
+                return;
+              }
+              setValue("imageUrl", result.info.secure_url, { shouldValidate: true });
+              setValue("imagePublicId", result.info.public_id);
+              setUploadError(null);
+            }}
+            onError={() => setUploadError("Testimonial image upload failed.")}
+          >
+            {({ open }) => (
+              <button
+                type="button"
+                onClick={() => open()}
+                className="inline-flex items-center gap-2 px-3 py-2.5 min-h-[44px] border border-neutral-300 rounded-md text-sm font-medium hover:bg-neutral-50"
+              >
+                <Upload className="w-4 h-4" /> Upload image
+              </button>
+            )}
+          </CldUploadWidget>
+          {currentImageUrl && (
+            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-green-700 bg-green-50 p-2 rounded">
+              <span className="truncate">Image attached</span>
+              <button type="button" onClick={() => { setValue("imageUrl", ""); setValue("imagePublicId", ""); }} className="p-1 text-neutral-500 hover:text-red-600" aria-label="Remove testimonial image">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-md border border-neutral-200 p-4">
           <label className="block text-sm font-medium text-neutral-700 mb-2">Video Testimonial</label>
           <input type="url" {...register("videoUrl", { onChange: () => setValue("videoPublicId", "") })} className="w-full px-3 py-2.5 min-h-[44px] border border-neutral-300 rounded-md mb-3" placeholder="YouTube or Vimeo URL" />
           <p className="text-xs text-neutral-500 mb-3">Paste an external YouTube/Vimeo URL, or upload a video below.</p>
@@ -201,6 +251,8 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
       {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
 
       <input type="hidden" {...register("videoPublicId")} />
+      <input type="hidden" {...register("imageUrl")} />
+      <input type="hidden" {...register("imagePublicId")} />
       <input type="hidden" {...register("thumbnailUrl")} />
       <input type="hidden" {...register("thumbnailPublicId")} />
 

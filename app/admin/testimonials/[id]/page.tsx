@@ -46,6 +46,8 @@ export default async function EditTestimonialPage({ params }: EditTestimonialPag
           clientName: testimonial.clientName,
           clientRole: testimonial.clientRole || "",
           quote: testimonial.quote,
+          imageUrl: testimonial.imageUrl || "",
+          imagePublicId: testimonial.imagePublicId || "",
           videoUrl: testimonial.videoUrl || "",
           videoPublicId: testimonial.videoPublicId || "",
           thumbnailUrl: testimonial.thumbnailUrl || "",

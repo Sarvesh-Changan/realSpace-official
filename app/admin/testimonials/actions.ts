@@ -17,6 +17,8 @@ const testimonialSchema = z.object({
   clientName: z.string().trim().min(1, "Client name is required").max(200),
   clientRole: z.string().trim().max(200).optional().nullable(),
   quote: z.string().trim().min(1, "Quote is required").max(5000),
+  imageUrl: z.string().trim().url("Image URL must be valid").optional().or(z.literal("")),
+  imagePublicId: z.string().trim().max(500).optional().or(z.literal("")),
   videoUrl: z.string().trim().url("Video URL must be valid").optional().or(z.literal("")),
   videoPublicId: z.string().trim().max(500).optional().or(z.literal("")),
   thumbnailUrl: z.string().trim().url("Thumbnail URL must be valid").optional().or(z.literal("")),
@@ -94,6 +96,8 @@ export async function createTestimonial(data: TestimonialFormValues) {
         clientName: testimonialData.clientName,
         clientRole: testimonialData.clientRole || null,
         quote: testimonialData.quote,
+        imageUrl: testimonialData.imageUrl || null,
+        imagePublicId: testimonialData.imagePublicId || null,
         videoUrl: testimonialData.videoUrl || null,
         videoPublicId: testimonialData.videoPublicId || null,
         thumbnailUrl: testimonialData.thumbnailUrl || null,
@@ -139,6 +143,8 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
         clientName: testimonialData.clientName,
         clientRole: testimonialData.clientRole || null,
         quote: testimonialData.quote,
+        imageUrl: testimonialData.imageUrl || null,
+        imagePublicId: testimonialData.imagePublicId || null,
         videoUrl: testimonialData.videoUrl || null,
         videoPublicId: testimonialData.videoPublicId || null,
         thumbnailUrl: testimonialData.thumbnailUrl || null,
@@ -157,6 +163,9 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
     }
     if (existing.thumbnailPublicId !== (testimonialData.thumbnailPublicId || null)) {
       await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
+    }
+    if (existing.imagePublicId !== (testimonialData.imagePublicId || null)) {
+      await destroyCloudinaryAsset(existing.imagePublicId, "image");
     }
 
     revalidatePath("/admin/testimonials");
@@ -182,6 +191,7 @@ export async function deleteTestimonial(id: string) {
     await prisma.testimonial.delete({ where: { id } });
     await destroyCloudinaryAsset(existing.videoPublicId, "video");
     await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
+    await destroyCloudinaryAsset(existing.imagePublicId, "image");
 
     revalidatePath("/admin/testimonials");
     revalidatePath("/");

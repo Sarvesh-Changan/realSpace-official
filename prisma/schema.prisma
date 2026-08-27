@@ -117,6 +117,8 @@ model Testimonial {
   clientName        String
   clientRole        String? // e.g. "Homeowner, Bhandup" — first name + locality only, per privacy norms
   quote             String   @db.Text
+  imageUrl          String?
+  imagePublicId     String?
   videoUrl          String?
   videoPublicId     String?
   thumbnailUrl      String?

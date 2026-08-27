@@ -71,9 +71,9 @@ export default async function AboutPage() {
 
   // Pending client confirmation for exact stats
   const trustStats = [
-    { label: "Years of Experience", value: "8+" },
-    { label: "Projects Completed", value: "150+" },
-    { label: "Client Rating", value: "4.5★" },
+    { label: "Years of Experience", value: "27+" },
+    { label: "Client Rating", value: "5★" },
+    { value: "Thane, Navi Mumbai", label: "& Mumbai Regions" },
   ];
 
   return (

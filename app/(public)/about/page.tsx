@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
-import { AboutHero } from "../_components/about/AboutHero";
-import { TrustIndicators } from "../_components/about/TrustIndicators";
-import { MeetFounder } from "../_components/about/MeetFounder";
-import { ProcessTimeline } from "./_components/ProcessTimeline";
-import { Certifications, type CertificationData } from "./_components/Certifications";
+import { AboutEditorial } from "./_components/AboutEditorial";
 
 export const revalidate = 60;
 
@@ -48,6 +44,9 @@ const defaultProcessSteps = [
 ];
 
 export default async function AboutPage() {
+  return <AboutEditorial />;
+
+  /*
   let certifications: CertificationData[] = [];
 
   try {
@@ -92,9 +91,8 @@ export default async function AboutPage() {
         imageUrl="/images/owner_image.jpeg"
       />
 
-      <ProcessTimeline title="Our 6-Step Design & Execution Process" steps={defaultProcessSteps} />
-
       <Certifications certifications={certifications} />
     </div>
   );
+  */
 }

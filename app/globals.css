@@ -11,12 +11,33 @@
   --color-foreground: var(--foreground);
   --font-serif: var(--font-serif), Georgia, serif;
   --font-sans: var(--font-sans), Arial, Helvetica, sans-serif;
-  /* REALSPACE Brand Colors (Kunku Red & Halad Yellow) */
+  /* REALSPACE Brand & Extended Palette */
   --color-brand-red: #990000;
+  --color-brand-redHover: #7A0000;
+  --color-brand-redMuted: #F5E6E6;
   --color-brand-yellow: #FECC00;
+  --color-brand-yellowMuted: #FFF9E0;
   --color-brand-bg: #FFFFFF;
   --color-brand-bgAlt: #F7F7F5;
+  --color-brand-warmWhite: #FDFCFA;
+  --color-brand-cream: #F9F6F0;
   --color-brand-text: #1F1F1F;
+  --color-brand-dark: #141414;
+  --color-brand-muted: #666666;
+  --color-brand-lightMuted: #8E8E8E;
+  --color-brand-border: #E5E5E0;
+  --color-brand-borderLight: #F0F0EC;
+
+  /* Extended Spacing Tokens */
+  --spacing-section-sm: 3rem;
+  --spacing-section-md: 5rem;
+  --spacing-section-lg: 7.5rem;
+
+  /* Container Width Tokens */
+  --container-narrow: 48rem;
+  --container-standard: 80rem;
+  --container-wide: 90rem;
+  --container-fullBleed: 100rem;
 }
 
 body {

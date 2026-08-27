@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
 
 export interface CertificationData {
   id: string;
@@ -28,9 +27,6 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
           Certifications & Credentials
         </h2>
         <div className="w-16 sm:w-20 h-1 bg-[#990000] mx-auto rounded-full mb-4 sm:mb-6"></div>
-        <p className="text-sm sm:text-base md:text-lg text-neutral-600 max-w-2xl mx-auto">
-          Recognized by leading authorities for our commitment to quality, safety, and professional excellence.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -67,23 +63,6 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
                 {cert.badgeLabel}
               </span>
 
-              {/* Issuing Body */}
-              <p className="text-xs sm:text-sm text-neutral-500 font-medium">
-                Issued by {cert.issuingBody}
-              </p>
-
-              {/* View Certificate Button */}
-              {cert.showCertificateButton && cert.certificateUrl && cert.certificateUrl.trim() !== "" && (
-                <a
-                  href={cert.certificateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#990000] border border-[#990000]/30 rounded-lg bg-white hover:bg-[#990000] hover:text-white hover:border-[#990000] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
-                >
-                  View Certificate
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              )}
             </div>
           );
         })}

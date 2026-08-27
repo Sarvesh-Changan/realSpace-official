@@ -7,6 +7,7 @@ export interface CertificationData {
   badgeLabel: string;
   issuingBody: string;
   imageUrl?: string | null;
+  textureUrl?: string | null;
   certificateUrl?: string | null;
   showCertificateButton?: boolean;
 }
@@ -22,42 +23,35 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
 
   return (
     <section className="w-full border-t border-brand-border bg-brand-cream/50 px-4 py-16 sm:px-6 sm:py-20 md:py-28">
-      <div className="mx-auto max-w-standard">
-        <div className="mb-8 flex items-end justify-between gap-6 sm:mb-12">
-          <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-red">Recognition</p>
-            <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-5xl">Certifications &amp; Credentials</h2>
-          </div>
-          <div className="hidden h-px w-24 bg-brand-yellow sm:block" />
-        </div>
-      </div>
-
-      <div className="mx-auto grid max-w-standard grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+      <div className="mx-auto grid max-w-standard grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
         {certifications.map((cert, idx) => {
-          const accentColor = idx % 2 === 0 ? "border-brand-red" : "border-brand-yellow";
-          const badgeBg = idx % 2 === 0 ? "bg-brand-red/10 text-brand-red" : "bg-brand-yellow/20 text-brand-text";
+          const textureFallbacks = [
+            "bg-brand-dark",
+            "bg-stone-200",
+            "bg-amber-800",
+            "bg-stone-300",
+            "bg-brand-cream",
+            "bg-stone-700",
+          ];
           const displayImage = cert.imageUrl && cert.imageUrl.trim() !== "" ? cert.imageUrl : "/images/certifications/cadpro.png";
 
           return (
             <div
               key={cert.id}
-              className={`group relative overflow-hidden border-t-4 ${accentColor} bg-white p-3 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl sm:p-4`}
+              className={`group relative aspect-[4/5] overflow-hidden ${textureFallbacks[idx % textureFallbacks.length]} shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl`}
             >
-              <div className="relative aspect-[4/3] overflow-hidden bg-brand-warmWhite">
-                <Image
-                  src={displayImage}
-                  alt={`${cert.title} certification badge`}
-                  fill
-                  className="object-contain p-5 transition-transform duration-500 ease-out group-hover:scale-[1.03] sm:p-8"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  unoptimized={!displayImage.includes("res.cloudinary.com")}
-                />
-                <div className="pointer-events-none absolute inset-0 bg-brand-dark/5" />
+              {cert.textureUrl && (
+                <Image src={cert.textureUrl} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" unoptimized={!cert.textureUrl.includes("res.cloudinary.com")} />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/10 via-brand-dark/15 to-brand-dark/90" />
+              <div className="absolute inset-x-0 top-[24%] flex justify-center px-6">
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-white/70 bg-brand-warmWhite/95 p-5 shadow-xl sm:h-28 sm:w-28 sm:p-6">
+                  <Image src={displayImage} alt={`${cert.title} certification logo`} fill sizes="112px" className="object-contain p-5 sm:p-6" unoptimized={!displayImage.includes("res.cloudinary.com")} />
+                </div>
               </div>
-
-              <div className="flex items-center justify-between gap-3 px-2 pb-2 pt-4 sm:px-3 sm:pb-3">
-                <h3 className="font-serif text-base font-bold leading-tight text-brand-text sm:text-lg">{cert.title}</h3>
-                <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${badgeBg}`}>{cert.badgeLabel}</span>
+              <div className="absolute inset-x-5 bottom-6 text-center text-white sm:inset-x-6 sm:bottom-7">
+                <h3 className="font-serif text-xl font-bold leading-tight drop-shadow-md sm:text-2xl">{cert.title}</h3>
+                <span className="mt-4 inline-flex max-w-full rounded-full border border-white/75 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-white drop-shadow-md sm:text-[10px]">{cert.badgeLabel}</span>
               </div>
 
             </div>

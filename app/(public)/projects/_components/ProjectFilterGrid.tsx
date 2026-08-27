@@ -5,9 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Badge } from "@/components/ui/Badge";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
 
 export interface ProjectCardData {
@@ -81,6 +80,9 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
     });
   }, [projects, selectedDesignType, selectedPropertyType, selectedCategory]);
 
+  const interiorCount = projects.filter((project) => project.designType === "INTERIOR").length;
+  const exteriorCount = projects.filter((project) => project.designType === "EXTERIOR").length;
+
   const resetFilters = () => {
     setSelectedDesignType("ALL");
     setSelectedPropertyType("ALL");
@@ -89,20 +91,43 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
 
   return (
     <div className="pb-16 sm:pb-24">
-      {/* Header Section */}
-      <section className="bg-brand-bg pt-20 sm:pt-28 pb-8 sm:pb-12 border-b border-brand-bgAlt/60">
+      {/* Editorial portfolio masthead */}
+      <section className="relative overflow-hidden bg-brand-cream pt-24 pb-10 sm:pt-32 sm:pb-14 lg:pt-40">
+        <div className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full border border-brand-yellow/30 sm:h-96 sm:w-96" />
+        <div className="pointer-events-none absolute -right-8 top-28 h-40 w-40 rounded-full border border-brand-red/10 sm:h-60 sm:w-60" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            title="Our Portfolio"
-            subtitle="Explore our curated interior & exterior design projects across Thane & Mumbai."
-            align="left"
-          />
+          <div className="relative max-w-4xl">
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.32em] text-brand-red sm:text-xs">
+              Selected work · Est. 1989
+            </p>
+            <h1 className="max-w-3xl font-serif text-4xl font-bold leading-[0.98] tracking-tight text-brand-text sm:text-6xl lg:text-7xl">
+              Spaces with a point of view.
+            </h1>
+            <div className="mt-7 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <p className="max-w-xl text-sm leading-7 text-brand-muted sm:text-base">
+                Explore our curated interior and exterior design projects across Thane, Mumbai, and Navi Mumbai—each shaped around the people who live and work there.
+              </p>
+              <Link
+                href="/contact"
+                className="group inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-text transition-colors hover:text-brand-red"
+              >
+                Start a project
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 border-t border-brand-text/15 pt-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-text/55 sm:mt-12">
+              <span>{projects.length} projects</span>
+              <span>{interiorCount} interiors</span>
+              <span>{exteriorCount} exteriors</span>
+              <span>Residential · Commercial · Turnkey</span>
+            </div>
+          </div>
 
           {/* Filter Controls */}
-          <div className="mt-6 sm:mt-8 flex flex-col gap-4 sm:gap-6">
+          <div className="mt-12 flex flex-col gap-5 border-t border-brand-text/15 pt-5 sm:mt-16 sm:gap-6">
             {/* Design Type Tabs - Scrollable on small screens */}
-            <div className="flex items-center gap-2 border-b border-brand-bgAlt pb-3 sm:pb-4 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-text/50 mr-1 shrink-0">
+            <div className="flex items-center gap-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+              <span className="mr-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-text/45">
                 Type:
               </span>
               {[
@@ -114,11 +139,11 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                   key={tab.value}
                   type="button"
                   onClick={() => setSelectedDesignType(tab.value)}
-                  className={`px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-full transition-colors shrink-0 min-h-[38px] cursor-pointer ${
-                    selectedDesignType === tab.value
-                      ? "bg-brand-red text-white shadow-sm"
-                      : "bg-brand-bgAlt/60 text-brand-text/70 hover:bg-brand-bgAlt hover:text-brand-text"
-                  }`}
+                    className={`relative shrink-0 min-h-[38px] px-0 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] transition-colors cursor-pointer ${
+                      selectedDesignType === tab.value
+                        ? "text-brand-red after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:bg-brand-red"
+                        : "text-brand-text/60 hover:text-brand-text"
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -140,7 +165,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     id="propertyType"
                     value={selectedPropertyType}
                     onChange={(e) => setSelectedPropertyType(e.target.value)}
-                    className="w-full sm:w-auto rounded-lg border border-brand-bgAlt bg-brand-bg px-3 py-2 min-h-[44px] text-xs sm:text-sm font-medium text-brand-text shadow-sm focus:border-brand-red focus:outline-none cursor-pointer"
+                    className="w-full sm:w-auto min-h-[44px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-2 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
                   >
                     <option value="ALL">All Properties</option>
                     <option value="RESIDENTIAL">Residential</option>
@@ -160,7 +185,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     id="category"
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full sm:w-auto rounded-lg border border-brand-bgAlt bg-brand-bg px-3 py-2 min-h-[44px] text-xs sm:text-sm font-medium text-brand-text shadow-sm focus:border-brand-red focus:outline-none cursor-pointer"
+                    className="w-full sm:w-auto min-h-[44px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-2 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
                   >
                     <option value="ALL">All Categories</option>
                     {availableCategories.map((cat) => (
@@ -174,7 +199,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
 
               {/* Reset & Active Filter Count */}
               <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t border-brand-bgAlt sm:border-t-0">
-                <span className="text-xs text-brand-text/50 font-medium">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-text/50">
                   Showing {filteredProjects.length} of {projects.length}
                 </span>
                 {(selectedDesignType !== "ALL" ||
@@ -196,7 +221,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
       </section>
 
       {/* Projects Grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
+      <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 sm:pt-16 lg:px-8">
         {filteredProjects.length === 0 ? (
           <div className="py-12 sm:py-20 text-center bg-brand-bgAlt/30 rounded-2xl sm:rounded-3xl border border-dashed border-brand-bgAlt max-w-2xl mx-auto px-4 sm:px-6">
             <h3 className="text-lg sm:text-xl font-bold text-brand-text mb-2">
@@ -235,20 +260,24 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                           unoptimized={!project.coverImageUrl?.includes("res.cloudinary.com")}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/35 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-100" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/65 via-brand-dark/5 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-100" />
+                        <div className="absolute inset-x-5 bottom-5 flex translate-y-2 items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                          <span>View project</span>
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/70">
+                            <ArrowUpRight className="h-4 w-4" />
+                          </span>
+                        </div>
                       </div>
                       <div className="pt-5 sm:pt-6">
                         <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-text/50 sm:text-[11px]">
-                          <Badge variant="default" className="rounded-none border-0 bg-brand-yellow/20 px-2.5 py-1 text-[10px] font-bold tracking-[0.12em] text-brand-text sm:text-[11px]">
-                            {formatCategoryLabel(project.category)}
-                          </Badge>
+                          <span className="text-brand-red">{formatCategoryLabel(project.category)}</span>
                           <span>{project.designType} · {project.propertyType}</span>
                         </div>
                         <h3 className="mt-4 line-clamp-2 font-serif text-2xl font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red sm:text-3xl">
                           {project.title}
                         </h3>
                         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-brand-border pt-3 text-xs font-medium text-brand-text/60 sm:text-sm">
-                          <span>{project.location}</span>
+                          <span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-brand-red" />{project.location}</span>
                           {project.completionYear && <span>{project.completionYear}</span>}
                           {project.carpetAreaSqFt && <span>{project.carpetAreaSqFt.toLocaleString()} sq.ft</span>}
                         </div>

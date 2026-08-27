@@ -11,6 +11,7 @@ export interface ProjectImage {
   url: string;
   altText: string;
   mediaType?: "IMAGE" | "VIDEO";
+  isCoverImage?: boolean;
 }
 
 export interface ProjectData {
@@ -144,11 +145,12 @@ export default async function ProjectDetailPage({
   }
 
   // Map main project images
-  const projectImages: ProjectImage[] = project.images.map((img: any) => ({
+  const projectImages: ProjectImage[] = project.images.map((img) => ({
     id: img.id,
     url: img.url,
     altText: img.altText || project.title,
     mediaType: img.mediaType,
+    isCoverImage: img.isCoverImage,
   }));
 
   // Fallback image if project has no image records

@@ -504,7 +504,12 @@ export function ProjectForm({
                                                 name="coverImageRadio"
                                                 checked={Boolean(isCover)}
                                                 onChange={() => {
-                                                    fields.forEach((_, i) => setValue(`images.${i}.isCoverImage`, i === index));
+                                                    fields.forEach((_, i) =>
+                                                        setValue(`images.${i}.isCoverImage`, i === index, {
+                                                            shouldDirty: true,
+                                                            shouldValidate: true,
+                                                        })
+                                                    );
                                                 }}
                                                 className="text-brand-red focus:ring-brand-red"
                                             />
@@ -512,6 +517,10 @@ export function ProjectForm({
                                                 {isCover ? "★ Main Cover Image" : "Set as Cover Image"}
                                             </span>
                                         </label>
+                                        <input
+                                            type="hidden"
+                                            {...register(`images.${index}.isCoverImage`)}
+                                        />
 
                                         <button
                                             type="button"

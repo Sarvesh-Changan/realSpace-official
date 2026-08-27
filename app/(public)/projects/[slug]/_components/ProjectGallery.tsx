@@ -10,9 +10,17 @@ const FALLBACK_IMAGE_URL =
   "/images/placeholder-image.png";
 
 export function ProjectGallery({ images }: { images: ProjectImage[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const coverIndex = images.findIndex((image) => image.isCoverImage);
+    return coverIndex >= 0 ? coverIndex : 0;
+  });
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [failedImageIds, setFailedImageIds] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const coverIndex = images.findIndex((image) => image.isCoverImage);
+    setActiveIndex(coverIndex >= 0 ? coverIndex : 0);
+  }, [images]);
 
   // Ensure activeIndex is within bounds if images change
   const currentMediaIndex = Math.min(activeIndex, Math.max(0, images.length - 1));

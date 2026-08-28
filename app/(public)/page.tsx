@@ -147,7 +147,7 @@ export default async function HomePage() {
       prisma.service.findMany({
         where: { isPublished: true },
         orderBy: { sortOrder: "asc" },
-        take: 6,
+        take: 3,
       }),
       prisma.testimonial.findMany({
         where: {

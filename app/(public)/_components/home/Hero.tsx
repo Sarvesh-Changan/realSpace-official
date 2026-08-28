@@ -6,14 +6,22 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { useIdleAttention } from "@/hooks/useIdleAttention";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SocialBrandIcon, type SocialPlatform } from "@/components/ui/SocialBrandIcons";
 
 export interface HeroProps {
   heroHeadline?: string;
   heroSubhead?: string;
   ctaText?: string;
+  socialLinks?: {
+    instagram?: string | null;
+    facebook?: string | null;
+    youtube?: string | null;
+    linkedin?: string | null;
+    linkedinUrl?: string | null;
+  } | null;
 }
 
-export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
+export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroProps) {
   const isIdle = useIdleAttention(5000);
   const shouldReduceMotion = useReducedMotion();
   const headline = heroHeadline || "Your Space, Reimagined.";
@@ -21,6 +29,12 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
     heroSubhead ||
     "Interior and exterior design for Thane homes and offices that begins where your walls, beams, and budget actually are. Personal attention. Exceptional results.";
   const buttonCta = ctaText || "Get Free Quote";
+  const socialPlatforms = [
+    { name: "Instagram" as const, url: socialLinks?.instagram },
+    { name: "Facebook" as const, url: socialLinks?.facebook },
+    { name: "YouTube" as const, url: socialLinks?.youtube },
+    { name: "LinkedIn" as const, url: socialLinks?.linkedin || socialLinks?.linkedinUrl },
+  ].filter((platform) => Boolean(platform.url?.trim()));
 
   return (
     <section className="group relative isolate min-h-[680px] overflow-hidden bg-brand-dark sm:min-h-[740px]">
@@ -36,6 +50,26 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
       </div>
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
+
+      {socialPlatforms.length > 0 && (
+        <nav
+          aria-label="Social media links"
+          className="absolute left-4 top-5 z-10 flex items-center gap-3 sm:left-6 sm:top-7 lg:left-8"
+        >
+          {socialPlatforms.map(({ name, url }) => (
+            <a
+              key={name}
+              href={url as string}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={name}
+              className="inline-flex rounded-md transition-transform duration-200 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-yellow"
+            >
+              <SocialBrandIcon platform={name} idPrefix={`hero-${name.toLowerCase()}`} />
+            </a>
+          ))}
+        </nav>
+      )}
 
       <div className="mx-auto flex min-h-[680px] max-w-standard items-end px-4 pb-16 pt-32 sm:min-h-[740px] sm:px-6 sm:pb-24 lg:px-8">
         <div className="max-w-3xl text-white">

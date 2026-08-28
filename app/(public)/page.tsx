@@ -245,6 +245,13 @@ export default async function HomePage() {
         heroHeadline={siteSettings?.heroHeadline}
         heroSubhead={siteSettings?.heroSubhead}
         ctaText={siteSettings?.ctaText}
+        socialLinks={siteSettings?.socialLinks as {
+          instagram?: string | null;
+          facebook?: string | null;
+          youtube?: string | null;
+          linkedin?: string | null;
+          linkedinUrl?: string | null;
+        } | null}
       />
       <WelcomeIntro intro={siteSettings?.heroSubhead} />
       <Projects

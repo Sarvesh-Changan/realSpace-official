@@ -23,6 +23,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [internalIsOpen, setInternalIsOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const isIdle = useIdleAttention(5000);
+  const isHome = pathname === "/";
+  const isTransparentHome = isHome && !isScrolled;
 
   const isMobileMenuOpen = controlledIsOpen ?? internalIsOpen;
   const handleToggle =
@@ -56,10 +58,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-brand-border/60 py-2 sm:py-3"
-          : "bg-white/95 backdrop-blur-sm border-b border-brand-borderLight py-3 sm:py-4"
+      className={`${isHome ? "fixed" : "sticky"} top-0 z-50 w-full transition-all duration-300 ${
+        isTransparentHome
+          ? "border-b border-transparent bg-transparent py-3 sm:py-4"
+          : "border-b border-brand-border/60 bg-white/90 py-2 shadow-sm backdrop-blur-md sm:py-3"
       }`}
     >
       <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
@@ -95,15 +97,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   href={link.href}
                   className={`relative px-3 py-2 text-xs lg:text-sm font-semibold uppercase tracking-wider transition-colors duration-200 ${
                     isActive
-                      ? "text-brand-red font-bold"
-                      : "text-brand-text/80 hover:text-brand-red"
+                      ? isTransparentHome
+                        ? "font-bold text-brand-yellow"
+                        : "font-bold text-brand-red"
+                      : isTransparentHome
+                        ? "text-white/90 hover:text-brand-yellow"
+                        : "text-brand-text/80 hover:text-brand-red"
                   }`}
                 >
                   {link.label}
                   {isActive && (
                     <motion.span
                       layoutId="activeNavIndicator"
-                      className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-red rounded-full"
+                      className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${isTransparentHome ? "bg-brand-yellow" : "bg-brand-red"}`}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -141,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden inline-flex items-center justify-center p-2.5 rounded-lg text-brand-text hover:bg-brand-bgAlt focus:outline-none focus:ring-2 focus:ring-brand-red transition-colors"
+              className={`inline-flex items-center justify-center rounded-lg p-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red md:hidden ${isTransparentHome ? "text-white hover:bg-white/10" : "text-brand-text hover:bg-brand-bgAlt"}`}
               onClick={handleToggle}
               aria-expanded={isMobileMenuOpen}
               aria-label="Toggle navigation menu"
@@ -182,7 +188,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden border-t border-brand-border/60 bg-white/98 backdrop-blur-md shadow-lg"
+            className={`overflow-hidden border-t backdrop-blur-md shadow-lg md:hidden ${isTransparentHome ? "border-white/15 bg-brand-dark/95" : "border-brand-border/60 bg-white/98"}`}
           >
             <div className="space-y-1 px-4 pb-6 pt-3 sm:px-6">
               {navLinks.map((link) => {
@@ -200,7 +206,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     className={`block rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${
                       isActive
-                        ? "bg-brand-red/10 text-brand-red font-bold"
+                      ? isTransparentHome
+                        ? "bg-white/10 font-bold text-brand-yellow"
+                        : "bg-brand-red/10 font-bold text-brand-red"
+                      : isTransparentHome
+                        ? "text-white hover:bg-white/10 hover:text-brand-yellow"
                         : "text-brand-text hover:bg-brand-bgAlt hover:text-brand-red"
                     }`}
                   >

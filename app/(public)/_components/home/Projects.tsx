@@ -1,13 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Button } from "@/components/ui/Button";
+import { ArrowUpRight } from "lucide-react";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export interface ProjectType {
   id: string;
@@ -25,90 +22,74 @@ export interface ProjectsProps {
   viewAllLink: string;
 }
 
-export function Projects({
-  title,
-  subtitle,
-  projects,
-  viewAllLink,
-}: ProjectsProps) {
+export function Projects({ title, subtitle, projects, viewAllLink }: ProjectsProps) {
+  // TODO: home-3 is a temporary static placeholder pending real per-project photography.
+  const backgroundImage = projects[0]?.imageUrl || "/images/home/home-3.png";
+  const backgroundSrc = getCloudinaryUrl(backgroundImage, { width: 1800 });
+
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-brand-bg">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12">
-          <SectionHeading
-            title={title}
-            subtitle={subtitle}
-            className="mb-0 md:mb-0"
-          />
-          <Link href={viewAllLink} className="hidden md:block">
-            <Button variant="ghost" className="cursor-pointer">View All Projects</Button>
+    <section className="relative isolate overflow-hidden bg-brand-dark py-16 sm:py-20 md:py-24">
+      <Image
+        src={backgroundSrc}
+        alt={`${title} featured project background`}
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover"
+        unoptimized={backgroundSrc.includes("res.cloudinary.com")}
+      />
+      <div className="absolute inset-0 -z-10 bg-black/55" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/25 to-black/45" />
+
+      <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 text-white sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-eyebrow text-brand-yellow">Selected work · REALSPACE</p>
+            <h2 className="mt-4 font-serif text-h2 font-semibold tracking-tight text-white">{title}</h2>
+            {subtitle && <p className="mt-4 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">{subtitle}</p>}
+          </div>
+          <Link
+            href={viewAllLink}
+            className="inline-flex min-h-11 w-fit items-center gap-2 border-b border-brand-yellow pb-2 text-sm font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:text-brand-yellow"
+          >
+            View All Projects <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
 
         {projects.length === 0 ? (
-          <div className="py-12 sm:py-16 text-center text-brand-text/50 bg-brand-bgAlt/30 rounded-2xl border border-dashed border-brand-bgAlt px-4">
-            <p className="text-sm sm:text-base font-medium">
-              No featured projects available at the moment.
-            </p>
-            <p className="text-xs sm:text-sm text-brand-text/40 mt-1">
-              Check back soon to explore our latest showcase.
-            </p>
+          <div className="mt-10 rounded-2xl border border-white/25 bg-black/30 p-8 text-center text-white/75 backdrop-blur-sm">
+            <p className="text-sm font-medium">No featured projects available at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-              >
+          <ScrollReveal direction="up" delay={0.12} className="mt-10 sm:mt-14">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project, index) => (
                 <Link
+                  key={project.id}
                   href={`/projects/${project.slug || project.id}`}
-                  className="block h-full"
+                  className={`group/project rounded-2xl border border-white/35 bg-black/35 p-3 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-brand-yellow/80 hover:bg-black/50 ${index === 0 ? "sm:col-span-2 lg:col-span-1" : ""}`}
                 >
-                  <Card className="h-full group cursor-pointer border-transparent hover:border-brand-bgAlt">
-                    <div className="aspect-[4/3] w-full relative overflow-hidden bg-brand-bgAlt">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-white/10 sm:h-24 sm:w-28">
                       <Image
-                        src={getCloudinaryUrl(project.imageUrl, { width: 800 })}
+                        src={getCloudinaryUrl(project.imageUrl, { width: 360 })}
                         alt={project.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        unoptimized={!project.imageUrl?.includes("res.cloudinary.com")}
+                        sizes="112px"
+                        className="object-cover transition-transform duration-500 group-hover/project:scale-105"
+                        unoptimized={project.imageUrl.includes("res.cloudinary.com")}
                       />
-                      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                        <Badge
-                          variant="default"
-                          className="bg-white/90 backdrop-blur shadow-sm text-xs"
-                        >
-                          {project.category}
-                        </Badge>
-                      </div>
                     </div>
-                    <div className="p-4 sm:p-6">
-                      <h3 className="text-lg sm:text-xl font-bold mb-1.5 sm:mb-2 group-hover:text-brand-red transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="text-brand-text/60 text-xs sm:text-sm">
-                        {project.location}
-                      </p>
+                    <div className="min-w-0 py-1">
+                      <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-yellow">{project.category}</p>
+                      <h3 className="mt-2 line-clamp-2 font-serif text-lg font-semibold leading-tight text-white">{project.title}</h3>
+                      <p className="mt-2 truncate text-sm text-white/65">{project.location}</p>
                     </div>
-                  </Card>
+                  </div>
                 </Link>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         )}
-
-        <div className="mt-8 text-center md:hidden">
-          <Link href={viewAllLink}>
-            <Button variant="secondary" className="w-full min-h-[44px] cursor-pointer">
-              View All Projects
-            </Button>
-          </Link>
-        </div>
       </div>
     </section>
   );

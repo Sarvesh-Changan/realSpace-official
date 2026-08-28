@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { Award, Star, MapPin } from "lucide-react";
 
-export function TrustStats() {
+export function TrustStats({ compact = false }: { compact?: boolean }) {
   const shouldReduceMotion = usePrefersReducedMotion();
 
   const stats = [
@@ -31,10 +31,8 @@ export function TrustStats() {
     },
   ];
 
-  return (
-    <section className="relative isolate py-12 sm:py-16 bg-brand-cream/40 border-y border-brand-border/50 overflow-hidden">
-      <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+  const statsGrid = (
+    <div className={`grid grid-cols-1 md:grid-cols-3 ${compact ? "gap-3 sm:gap-4" : "gap-6 sm:gap-8"}`}>
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -48,23 +46,29 @@ export function TrustStats() {
                   delay: shouldReduceMotion ? 0 : stat.delay,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="group relative flex flex-col items-center justify-center p-6 sm:p-8 bg-white/90 backdrop-blur-md rounded-2xl border border-brand-border/60 shadow-sm hover:shadow-md hover:border-brand-red/30 transition-all duration-300 text-center"
+                className={`group relative flex flex-col items-center justify-center bg-white/90 text-center backdrop-blur-md transition-all duration-300 hover:border-brand-red/30 hover:shadow-md ${compact ? "min-h-28 rounded-xl border border-brand-border/50 p-4 sm:min-h-32 sm:p-5" : "rounded-2xl border border-brand-border/60 p-6 sm:p-8 shadow-sm"}`}
               >
                 <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-brand-red/5 flex items-center justify-center text-brand-red group-hover:bg-brand-red group-hover:text-white transition-colors duration-300">
                   <Icon className="w-4 h-4" />
                 </div>
 
-                <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-red mb-2 tracking-tight group-hover:scale-105 transition-transform duration-300">
+                <div className={`font-serif font-bold tracking-tight text-brand-red transition-transform duration-300 group-hover:scale-105 ${compact ? "mb-1 text-2xl sm:text-3xl" : "mb-2 text-3xl sm:text-4xl lg:text-5xl"}`}>
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-semibold text-brand-text/80 uppercase tracking-widest">
+                <div className={`font-semibold uppercase tracking-widest text-brand-text/80 ${compact ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"}`}>
                   {stat.label}
                 </div>
               </motion.div>
             );
           })}
         </div>
-      </div>
+  );
+
+  if (compact) return statsGrid;
+
+  return (
+    <section className="relative isolate overflow-hidden border-y border-brand-border/50 bg-brand-cream/40 py-12 sm:py-16">
+      <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">{statsGrid}</div>
     </section>
   );
 }

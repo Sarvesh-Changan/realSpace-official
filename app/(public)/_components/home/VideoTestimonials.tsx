@@ -26,7 +26,7 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="py-12 sm:py-16 md:py-24 bg-brand-bg">
+    <section className="bg-brand-bg py-16 sm:py-20 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           title="Video Testimonials"
@@ -52,7 +52,7 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
               >
                 <Link
                   href={testimonialHref}
-                  className="group block overflow-hidden rounded-2xl border border-brand-bgAlt bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-offset-2"
+                  className="group block overflow-hidden rounded-2xl border border-brand-border/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-yellow/70 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-offset-2"
                 >
                   <div className="relative aspect-video overflow-hidden bg-brand-bgAlt">
                     <Image
@@ -66,7 +66,7 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
                     <div className="absolute inset-0 bg-black/15 transition-colors group-hover:bg-black/30" />
                     {item.videoUrl && (
                       <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-brand-red text-white shadow-lg transition-transform duration-300 group-hover:scale-110">
                           <Play className="ml-1 h-6 w-6 fill-current" />
                         </span>
                       </span>

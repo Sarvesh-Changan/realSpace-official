@@ -29,7 +29,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
 
     if (!items || items.length === 0) return null;
 
-    const displayItems = items.slice(0, 8);
+    const displayItems = items.slice(0, 6);
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -60,32 +60,33 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
     };
 
     return (
-        <section className="py-12 sm:py-16 md:py-24 bg-white">
+        <section className="border-y border-brand-border/50 bg-brand-warmWhite py-16 sm:py-20 md:py-24">
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
                 <motion.div
-                    className="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6"
+                    className="mb-8 flex flex-col justify-between gap-5 sm:mb-12 md:flex-row md:items-end"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
                     variants={headerVariants}
                 >
                     <div className="max-w-2xl">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 mb-2 sm:mb-4">
+                        <p className="text-eyebrow text-brand-red">A visual archive</p>
+                        <h2 className="mt-3 font-serif text-h2 font-semibold tracking-tight text-brand-text">
                             Explore Our Gallery
                         </h2>
-                        <p className="text-sm sm:text-base md:text-lg text-neutral-600">
+                        <p className="mt-3 max-w-2xl text-base leading-relaxed text-brand-text/65 sm:text-lg">
                             A curated collection of our finest interior and exterior transformations.
                         </p>
                         {/* Kunku Red Accent Line */}
-                        <div className="w-16 sm:w-20 h-1 bg-[#990000] mt-4 sm:mt-6 rounded-full"></div>
+                        <div className="mt-5 h-px w-20 bg-brand-yellow"></div>
                     </div>
 
                     {/* Desktop CTA */}
                     <div className="hidden md:block">
                         <Link
                             href="/gallery"
-                            className="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-[#990000] text-white font-medium rounded-md hover:bg-[#7a0000] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000] cursor-pointer text-sm sm:text-base"
+                            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-brand-red px-5 py-3 text-sm font-semibold text-brand-red transition-colors hover:bg-brand-red hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red"
                         >
                             View Full Gallery
                             <ArrowRight className="ml-2 w-4 h-4" />
@@ -95,7 +96,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
 
                 {/* Gallery Grid */}
                 <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+                    className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
@@ -105,7 +106,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                         <motion.div key={item.id} variants={cardVariants}>
                             <Link
                                 href={`/gallery?category=${encodeURIComponent(item.category)}`}
-                                className="group relative aspect-[4/3] sm:aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#990000]"
+                                className="group relative block aspect-[4/3] overflow-hidden rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-red sm:aspect-[5/4]"
                             >
                                 <Image
                                     src={getVideoThumbnailUrl(item.imageUrl)}
@@ -123,7 +124,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                                 <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
                                     <div className="transform transition-all duration-300 ease-out motion-safe:translate-y-2 motion-safe:group-hover:translate-y-0">
                                         {/* Halad Yellow Category Badge */}
-                                        <span className="inline-block max-w-full truncate px-2.5 sm:px-3 py-0.5 sm:py-1 mb-1.5 sm:mb-3 text-[10px] sm:text-xs font-semibold tracking-wider uppercase bg-[#FECC00] text-neutral-900 rounded-sm shadow-sm">
+                                        <span className="mb-1.5 inline-block max-w-full truncate rounded-sm border border-brand-yellow bg-brand-yellow px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-dark shadow-sm sm:mb-3 sm:px-3 sm:py-1 sm:text-xs">
                                             {item.category}
                                         </span>
 

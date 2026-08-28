@@ -1,11 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 import { useIdleAttention } from "@/hooks/useIdleAttention";
 
 export interface HeroProps {
@@ -14,55 +12,9 @@ export interface HeroProps {
   ctaText?: string;
 }
 
-function HeroImage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [canHover, setCanHover] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const shouldReduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const updateHoverCapability = () => setCanHover(mediaQuery.matches && shouldReduceMotion !== true);
-    updateHoverCapability();
-    mediaQuery.addEventListener("change", updateHoverCapability);
-
-    return () => mediaQuery.removeEventListener("change", updateHoverCapability);
-  }, [shouldReduceMotion]);
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!canHover || shouldReduceMotion) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    setOffset({ x: -x * 7, y: -y * 7 });
-  };
-
-  return (
-    <div
-      ref={containerRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={() => setOffset({ x: 0, y: 0 })}
-      className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-bgAlt shadow-lg"
-    >
-      <Image
-        src="/images/hero-living-room.png"
-        alt="Elegant REALSPACE living room interior"
-        fill
-        priority
-        sizes="(max-width: 1024px) 100vw, 42vw"
-        className="object-cover"
-        style={{
-          transform: `translate(${offset.x}px, ${offset.y}px) scale(${canHover ? 1.06 : 1})`,
-          transition: shouldReduceMotion ? "none" : "transform 450ms ease-out",
-        }}
-      />
-    </div>
-  );
-}
-
 export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
   const isIdle = useIdleAttention(5000);
+  const shouldReduceMotion = useReducedMotion();
   const headline = heroHeadline || "Your Space, Reimagined.";
   const subhead =
     heroSubhead ||
@@ -70,66 +22,63 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
   const buttonCta = ctaText || "Get Free Quote";
 
   return (
-    <section className="relative overflow-hidden bg-brand-bg pt-16 pb-12 sm:pt-20 sm:pb-16 md:pt-28 md:pb-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8 items-center">
-          
-          {/* Left Column: Headline, Subheadline, CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-7 text-center lg:text-left space-y-4 sm:space-y-6"
-          >
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-brand-text leading-tight sm:leading-tight">
-              {headline}
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-brand-text/75 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              {subhead}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full">
-              <Link href="/projects" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full min-h-[48px] shadow-md cursor-pointer">
-                  View Our Work
-                </Button>
-              </Link>
-              <Link href="/quote" className="w-full sm:w-auto relative inline-block">
-                {isIdle && (
-                  <motion.span
-                    initial={{ scale: 1, opacity: 0.75 }}
-                    animate={{ scale: 1.12, opacity: 0 }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut",
-                    }}
-                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
-                  />
-                )}
-                <Button variant="secondary" size="lg" className="w-full min-h-[48px] cursor-pointer relative z-10">
-                  {buttonCta}
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Static Hero Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="lg:col-span-5 w-full max-w-lg mx-auto lg:max-w-none"
-          >
-            <HeroImage />
-          </motion.div>
-
-        </div>
+    <section className="group relative isolate min-h-[680px] overflow-hidden bg-brand-dark sm:min-h-[740px]">
+      <div className="absolute inset-0 -z-20">
+        <Image
+          src="/images/home/home-1.png"
+          alt="A refined REALSPACE interior design project"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover transition-transform duration-[1400ms] ease-out motion-safe:group-hover:scale-[1.03]"
+        />
       </div>
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
-      {/* Subtle Background Accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-full -z-10 opacity-30 pointer-events-none">
-        <div className="absolute top-10 right-10 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
+      <div className="mx-auto flex min-h-[680px] max-w-standard items-end px-4 pb-16 pt-32 sm:min-h-[740px] sm:px-6 sm:pb-24 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0.01 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-3xl text-white"
+        >
+          <p className="text-eyebrow text-brand-yellow">EST. 1989 · THANE · MUMBAI</p>
+          <h1 className="mt-5 max-w-3xl font-serif text-display font-semibold tracking-tight text-white">
+            {headline}
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
+            {subhead}
+          </p>
+
+          <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Link href="/projects" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="min-h-[50px] w-full border border-brand-yellow bg-brand-yellow px-8 font-semibold text-brand-dark shadow-lg hover:border-white hover:bg-white sm:w-auto"
+              >
+                View Our Work
+              </Button>
+            </Link>
+            <Link href="/quote" className="relative w-full sm:w-auto">
+              {isIdle && !shouldReduceMotion && (
+                <motion.span
+                  initial={{ scale: 1, opacity: 0.65 }}
+                  animate={{ scale: 1.08, opacity: 0 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                  className="pointer-events-none absolute -inset-1 rounded-md border border-white/80"
+                />
+              )}
+              <Button
+                variant="secondary"
+                size="lg"
+                className="relative z-10 min-h-[50px] w-full border-white bg-white/10 px-8 font-semibold text-white backdrop-blur-sm hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark sm:w-auto"
+              >
+                {buttonCta}
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Hero } from "./_components/home/Hero";
-import { ActiveOffers, type OfferType } from "./_components/home/ActiveOffers";
-import { TrustStats } from "./_components/home/TrustStats";
+import { WelcomeIntro } from "./_components/home/WelcomeIntro";
 import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
@@ -185,16 +184,6 @@ export default async function HomePage() {
     // Graceful fallback: empty states will be rendered by subcomponents
   }
 
-  // Map database offer models to OfferType props for subcomponent
-  const offers: OfferType[] = rawOffers.map((o) => ({
-    id: o.id,
-    title: o.title,
-    description: o.description,
-    imageUrl: o.imageUrl,
-    ctaLabel: o.ctaLabel,
-    ctaLink: o.ctaLink,
-  }));
-
   // Map database project models to ProjectType props for subcomponents
   const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => {
     const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
@@ -255,16 +244,15 @@ export default async function HomePage() {
         heroSubhead={siteSettings?.heroSubhead}
         ctaText={siteSettings?.ctaText}
       />
-      <ActiveOffers offers={offers} />
-      <TrustStats />
+      <WelcomeIntro intro={siteSettings?.heroSubhead} />
       <Projects
-        title="Selected Interior Projects"
+        title="Interior Projects"
         subtitle="Explore our curated portfolio of bespoke interior transformations."
         projects={interiorProjects}
         viewAllLink="/projects?type=interior"
       />
       <Projects
-        title="Selected Exterior Projects"
+        title="Exterior Projects"
         subtitle="Discover our striking architectural facades and outdoor spaces."
         projects={exteriorProjects}
         viewAllLink="/projects?type=exterior"

@@ -150,7 +150,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
 
           {/* Company Info */}
           <div className="space-y-6 text-center sm:text-left">
-            <Link href="/" className="inline-block">
+            <Link href="/" className="mx-auto flex w-fit">
               <Image
                 src="/images/realspace_logo.png"
                 alt="REALSPACE logo"

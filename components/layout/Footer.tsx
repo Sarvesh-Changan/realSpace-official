@@ -27,6 +27,44 @@ const LinkedinIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+const BrandInstagramIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <defs>
+      <linearGradient id="footer-instagram-gradient" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FFDC80" />
+        <stop offset="0.35" stopColor="#F77737" />
+        <stop offset="0.68" stopColor="#E1306C" />
+        <stop offset="1" stopColor="#833AB4" />
+      </linearGradient>
+    </defs>
+    <rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="url(#footer-instagram-gradient)" />
+    <rect x="6.5" y="6.5" width="11" height="11" rx="3.2" fill="none" stroke="white" strokeWidth="1.8" />
+    <circle cx="12" cy="12" r="2.7" fill="none" stroke="white" strokeWidth="1.8" />
+    <circle cx="17.4" cy="6.7" r="1.1" fill="white" />
+  </svg>
+);
+
+const BrandFacebookIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" fill="#1877F2" />
+    <path fill="white" d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.5-1.5h1.7V4a22 22 0 0 0-2.5-.1c-2.5 0-4.1 1.5-4.1 4.2V10H7.4v3h2.7v8h3.4Z" />
+  </svg>
+);
+
+const BrandYoutubeIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="1" y="4" width="22" height="16" rx="5" fill="#FF0000" />
+    <path fill="white" d="m10 8.5 6 3.5-6 3.5v-7Z" />
+  </svg>
+);
+
+const BrandLinkedinIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="4" fill="#0A66C2" />
+    <path fill="white" d="M7.1 10H4.4v9h2.7v-9ZM5.75 4.7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2ZM19.6 13.8c0-2.8-1.5-4.1-3.6-4.1-1.7 0-2.4.9-2.8 1.5V10h-2.7v9h2.7v-4.9c0-1.3.2-2.6 1.9-2.6 1.7 0 1.8 1.5 1.8 2.7V19h2.7v-5.2Z" />
+  </svg>
+);
+
 export interface SocialLinks {
   instagram?: string | null;
   facebook?: string | null;
@@ -64,26 +102,22 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
     {
       name: "Instagram",
       url: instagram,
-      Icon: InstagramIcon,
-      colorClass: "text-social-instagram hover:bg-social-instagram/15 hover:border-social-instagram/50",
+      Icon: BrandInstagramIcon,
     },
     {
       name: "Facebook",
       url: facebook,
-      Icon: FacebookIcon,
-      colorClass: "text-social-facebook hover:bg-social-facebook/15 hover:border-social-facebook/50",
+      Icon: BrandFacebookIcon,
     },
     {
       name: "YouTube",
       url: youtube,
-      Icon: YoutubeIcon,
-      colorClass: "text-social-youtube hover:bg-social-youtube/15 hover:border-social-youtube/50",
+      Icon: BrandYoutubeIcon,
     },
     {
       name: "LinkedIn",
       url: linkedin,
-      Icon: LinkedinIcon,
-      colorClass: "text-social-linkedin hover:bg-social-linkedin/15 hover:border-social-linkedin/50",
+      Icon: BrandLinkedinIcon,
     },
   ].filter((platform) => Boolean(platform.url && platform.url.length > 0));
 
@@ -209,17 +243,17 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
           </p>
           {socialPlatforms.length > 0 && (
             <div className="flex flex-wrap justify-center gap-4">
-              {socialPlatforms.map(({ name, url, Icon, colorClass }) => (
+              {socialPlatforms.map(({ name, url, Icon }) => (
                 <a
                   key={name}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`rounded-lg border border-white/10 bg-white/5 p-2.5 transition-all duration-200 hover:scale-105 ${colorClass}`}
+                  className="inline-flex transition-transform duration-200 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-yellow"
                   aria-label={name}
                 >
                   <span className="sr-only">{name}</span>
-                  <Icon className="w-5 h-5" />
+                  <Icon className="h-10 w-10" />
                 </a>
               ))}
             </div>

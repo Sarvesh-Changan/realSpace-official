@@ -31,12 +31,6 @@ const config: Config = {
           border: "#E5E5E0",
           borderLight: "#F0F0EC",
         },
-        social: {
-          instagram: "#E4405F",
-          facebook: "#1877F2",
-          youtube: "#FF0000",
-          linkedin: "#0A66C2",
-        },
       },
       spacing: {
         "section-sm": "3rem",

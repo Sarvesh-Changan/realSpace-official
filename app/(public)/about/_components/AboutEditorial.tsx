@@ -61,7 +61,7 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
             <h2 className="mt-5 font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">FOUNDATION</h2>
             <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-[1.85] text-brand-text/75 sm:text-base">{foundationCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
           </motion.div>
-          <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }} className="relative aspect-[4/5] overflow-hidden bg-brand-dark"><Image src="/images/hero-living-room.png" alt="REALSPACE interior design" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover" /><div className="absolute inset-0 bg-brand-dark/20" /></motion.div>
+          <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }} className="relative aspect-[4/5] overflow-hidden bg-brand-dark"><Image src="/images/about/foundation.png" alt="REALSPACE interior design" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover" /><div className="absolute inset-0 bg-brand-dark/20" /></motion.div>
         </div>
       </section>
 

@@ -52,21 +52,31 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
     };
 
     return (
-        <section className="border-y border-brand-border/50 bg-brand-warmWhite py-16 sm:py-20 md:py-24">
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="relative isolate overflow-hidden border-y border-brand-dark/20 bg-brand-dark py-16 sm:py-20 md:py-24">
+            {/* TODO: home-3 is a temporary static gallery backdrop pending a dedicated gallery texture asset. */}
+            <Image
+                src="/images/home/home-3.png"
+                alt="Warm REALSPACE interior design setting"
+                fill
+                sizes="100vw"
+                className="-z-20 object-cover"
+            />
+            <div className="absolute inset-0 -z-10 bg-brand-dark/65" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-dark/45 via-brand-dark/55 to-brand-dark/80" />
+            <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
                 <div className="mb-8 flex flex-col justify-between gap-5 sm:mb-12 md:flex-row md:items-end">
                     <div className="max-w-2xl">
-                        <ScrollReveal direction="left" distance={24} className="text-eyebrow text-brand-red">
+                        <ScrollReveal direction="left" distance={24} className="text-eyebrow text-brand-yellow">
                             A visual archive
                         </ScrollReveal>
                         <ScrollReveal direction="left" distance={28} delay={0.08}>
-                            <h2 className="mt-3 font-serif text-h2 font-semibold tracking-tight text-brand-text">
+                        <h2 className="mt-3 font-serif text-h2 font-semibold tracking-tight text-white">
                                 Explore Our Gallery
                             </h2>
                         </ScrollReveal>
                         <ScrollReveal direction="left" distance={24} delay={0.16}>
-                            <p className="mt-3 max-w-2xl text-base leading-relaxed text-brand-text/65 sm:text-lg">
+                        <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
                                 A curated collection of our finest interior and exterior transformations.
                             </p>
                         </ScrollReveal>
@@ -78,7 +88,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                     <ScrollReveal direction="right" distance={24} delay={0.1} className="hidden md:block">
                         <Link
                             href="/gallery"
-                            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-brand-red px-5 py-3 text-sm font-semibold text-brand-red transition-colors hover:bg-brand-red hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red"
+                            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-white px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-yellow hover:border-brand-yellow hover:text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
                         >
                             View Full Gallery
                             <ArrowRight className="ml-2 h-4 w-4" />
@@ -139,7 +149,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                 <div className="mt-8 flex justify-center md:hidden">
                     <Link
                         href="/gallery"
-                        className="inline-flex items-center justify-center w-full min-h-[44px] px-6 py-3 bg-[#990000] text-white font-medium rounded-md hover:bg-[#7a0000] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000] text-sm cursor-pointer"
+                        className="inline-flex min-h-[44px] w-full items-center justify-center rounded-md border border-white px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
                     >
                         View Full Gallery
                         <ArrowRight className="ml-2 w-4 h-4" />

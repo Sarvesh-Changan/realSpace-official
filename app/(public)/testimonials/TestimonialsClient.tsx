@@ -253,7 +253,16 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   }), [endDate, selectedDateFilter, selectedLocation, selectedMonth, selectedProjectType, startDate, testimonials]);
 
   return (
-    <main className="min-h-screen bg-brand-bgAlt/30 pb-16 pt-24 sm:pb-20 sm:pt-28">
+    <main className="relative isolate min-h-screen overflow-hidden bg-brand-cream pb-16 pt-24 sm:pb-20 sm:pt-28">
+      <Image
+        src="/images/testmonial/behind-testimonial.png"
+        alt=""
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover object-center opacity-[0.2]"
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 -z-10 bg-brand-cream/75" aria-hidden="true" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-serif text-3xl font-bold text-brand-text sm:text-5xl">Testimonials</h1>

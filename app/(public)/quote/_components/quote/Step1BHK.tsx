@@ -31,6 +31,16 @@ export default function Step1BHK({ state, updateState, activeRoomTypes = [] }: P
   const [loadingBhk, setLoadingBhk] = useState<string | null>(null);
 
   const handleSelectBhk = async (option: string) => {
+    if (option === 'Commercial & Others') {
+      updateState({
+        bhkType: option,
+        isCommercialFlow: true,
+        rooms: {},
+        roomConstraints: {},
+      } as Partial<QuoteState>);
+      return;
+    }
+
     updateState({ bhkType: option });
 
     setLoadingBhk(option);
@@ -38,19 +48,6 @@ export default function Step1BHK({ state, updateState, activeRoomTypes = [] }: P
     try {
       const res = await getBhkRoomDefaultsAction(option);
       const effectiveActiveRooms = res.activeRoomTypes || activeRoomTypes;
-
-      if (option === 'Commercial & Others') {
-        const commercialRooms: Record<string, number> = {};
-        effectiveActiveRooms.forEach((r) => {
-          commercialRooms[r.key] = 0;
-        });
-        updateState({
-          bhkType: option,
-          rooms: commercialRooms,
-          roomConstraints: {},
-        });
-        return;
-      }
 
       const numBhk = parseInt(option.charAt(0)) || 1;
       const newRooms: Record<string, number> = {};
@@ -77,9 +74,10 @@ export default function Step1BHK({ state, updateState, activeRoomTypes = [] }: P
 
       updateState({
         bhkType: option,
+        isCommercialFlow: false,
         rooms: newRooms,
         roomConstraints: newConstraints,
-      });
+      } as Partial<QuoteState>);
     } catch (err) {
       console.error('Failed to fetch BHK defaults:', err);
     } finally {

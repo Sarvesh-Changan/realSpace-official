@@ -25,6 +25,8 @@ interface VideoTestimonialsProps {
 export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
   if (testimonials.length === 0) return null;
 
+  const featuredTestimonials = testimonials.slice(0, 3);
+
   return (
     <section className="bg-brand-bg py-16 sm:py-20 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -41,7 +43,7 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-14">
-          {testimonials.map((item, index) => {
+          {featuredTestimonials.map((item, index) => {
             const videoSlug = item.slug || item.id;
             const thumbnail = item.imageUrl || item.thumbnailUrl || (item.videoUrl ? getVideoThumbnailUrl(item.videoUrl, "VIDEO") : "/images/placeholder-image.png");
             const testimonialHref = item.videoUrl

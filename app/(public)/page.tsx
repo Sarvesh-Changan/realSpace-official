@@ -224,7 +224,7 @@ export default async function HomePage() {
   }));
 
   const videoTestimonialItems: VideoTestimonialItem[] = rawVideoTestimonials.flatMap((item) => {
-    if (!item.videoUrl) return [];
+    if (!item.videoUrl && !item.imageUrl && !item.thumbnailUrl) return [];
     return [{
       id: item.id,
       title: item.projectType || "A REALSPACE design story",

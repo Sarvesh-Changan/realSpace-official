@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import { DoorOpen } from "lucide-react";
 import { motion, useReducedMotion, type Transition } from "framer-motion";
 
@@ -10,129 +9,33 @@ interface ServicesHeaderProps {
   intro: string;
 }
 
-const FRAME_COUNT = 36;
-const FRAME_INTERVAL_MS = 1000 / 24;
-const FRAME_PATHS = Array.from(
-  { length: FRAME_COUNT },
-  (_, index) => `/images/swastik/frames/frame-${String(index + 1).padStart(2, "0")}.webp`,
-);
-const FALLBACK_FRAME_PATH = "/images/swastik-kunku-halad-traditional.svg";
+const SWASTIK_IMAGE_PATH = "/images/service/swastik.png";
 
 function SwastikIntroMark() {
-  const markRef = useRef<HTMLDivElement>(null);
-  const readyRef = useRef(false);
-  const shouldPlayRef = useRef(false);
-  const animationFrameRef = useRef<number | null>(null);
   const shouldReduceMotion = useReducedMotion();
-  const [frameIndex, setFrameIndex] = useState(FRAME_COUNT - 1);
-  const [hasFrameAssets, setHasFrameAssets] = useState(true);
-
-  const play = useCallback(() => {
-    if (!readyRef.current || shouldReduceMotion) return;
-
-    if (animationFrameRef.current !== null) {
-      window.cancelAnimationFrame(animationFrameRef.current);
-    }
-
-    let currentFrame = 0;
-    let lastFrameTime = 0;
-
-    const renderNextFrame = (timestamp: number) => {
-      if (timestamp - lastFrameTime >= FRAME_INTERVAL_MS) {
-        lastFrameTime = timestamp;
-        currentFrame += 1;
-
-        if (currentFrame >= FRAME_COUNT) {
-          animationFrameRef.current = null;
-          setFrameIndex(FRAME_COUNT - 1);
-          return;
-        }
-
-        setFrameIndex(currentFrame);
-      }
-
-      animationFrameRef.current = window.requestAnimationFrame(renderNextFrame);
-    };
-
-    setFrameIndex(0);
-    animationFrameRef.current = window.requestAnimationFrame(renderNextFrame);
-  }, [shouldReduceMotion]);
-
-  useEffect(() => {
-    const mark = markRef.current;
-    if (!mark) return;
-
-    let cancelled = false;
-    let observer: IntersectionObserver | null = null;
-
-    const preloadFrames = async () => {
-      const frameResults = await Promise.all(
-        FRAME_PATHS.map(
-          (src) =>
-            new Promise<boolean>((resolve) => {
-              const image = new window.Image();
-              image.onload = () => resolve(true);
-              image.onerror = () => resolve(false);
-              image.src = src;
-            }),
-        ),
-      );
-
-      if (cancelled) return;
-
-      const allFramesLoaded = frameResults.every(Boolean);
-      setHasFrameAssets(allFramesLoaded);
-      readyRef.current = allFramesLoaded;
-
-      if (allFramesLoaded && shouldPlayRef.current) {
-        play();
-      }
-    };
-
-    preloadFrames();
-
-    if (shouldReduceMotion) {
-      return () => {
-        cancelled = true;
-        if (animationFrameRef.current !== null) {
-          window.cancelAnimationFrame(animationFrameRef.current);
-        }
-      };
-    }
-
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          shouldPlayRef.current = true;
-          if (readyRef.current) play();
-          observer?.disconnect();
-        }
-      },
-      { threshold: 0.35 },
-    );
-    observer.observe(mark);
-
-    return () => {
-      cancelled = true;
-      observer?.disconnect();
-      if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [play, shouldReduceMotion]);
 
   return (
-    <div ref={markRef} className="relative w-full max-w-[580px] aspect-[580/350]" aria-hidden="true">
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? { opacity: 1, scale: 1, clipPath: "circle(100% at 50% 50%)" }
+          : { opacity: 0, scale: 0, clipPath: "circle(0% at 50% 50%)" }
+      }
+      animate={{ opacity: 1, scale: 1, clipPath: "circle(100% at 50% 50%)" }}
+      transition={{ duration: shouldReduceMotion ? 0.01 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+      style={{ transformOrigin: "center" }}
+      className="relative aspect-[632/395] w-full max-w-[580px]"
+      aria-hidden="true"
+    >
       <Image
-        src={hasFrameAssets ? FRAME_PATHS[frameIndex] : FALLBACK_FRAME_PATH}
+        src={SWASTIK_IMAGE_PATH}
         alt=""
         fill
         sizes="(max-width: 767px) 100vw, 580px"
         className="object-contain"
         priority
-        onError={() => setHasFrameAssets(false)}
       />
-    </div>
+    </motion.div>
   );
 }
 

@@ -24,18 +24,18 @@ export interface ProjectsProps {
 
 export function Projects({ title, subtitle, projects, viewAllLink }: ProjectsProps) {
   // TODO: home-3 is a temporary static placeholder pending real per-project photography.
-  const backgroundImage = projects[0]?.imageUrl || "/images/home/home-3.png";
-  const backgroundSrc = getCloudinaryUrl(backgroundImage, { width: 1800 });
+  const backgroundSrc = "/images/home/home-3.png";
 
   return (
     <section className="relative isolate overflow-hidden bg-brand-dark py-16 sm:py-20 md:py-24">
       <Image
         src={backgroundSrc}
-        alt={`${title} featured project background`}
+        alt=""
         fill
         sizes="100vw"
         className="-z-20 object-cover"
-        unoptimized={backgroundSrc.includes("res.cloudinary.com")}
+        priority={false}
+        aria-hidden="true"
       />
       <div className="absolute inset-0 -z-10 bg-black/55" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/25 to-black/45" />

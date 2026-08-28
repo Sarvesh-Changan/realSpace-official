@@ -23,8 +23,7 @@ export interface ProjectsProps {
 }
 
 export function Projects({ title, subtitle, projects, viewAllLink }: ProjectsProps) {
-  // TODO: home-3 is a temporary static placeholder pending real per-project photography.
-  const backgroundSrc = "/images/home/home-3.png";
+  const backgroundSrc = "/images/home/behind-project.png";
 
   return (
     <section className="relative isolate overflow-hidden bg-brand-dark py-16 sm:py-20 md:py-24">

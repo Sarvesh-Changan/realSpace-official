@@ -61,14 +61,31 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
   const linkedin = (socialLinks?.linkedin || socialLinks?.linkedinUrl)?.trim();
 
   const socialPlatforms = [
-    { name: "Instagram", url: instagram, Icon: InstagramIcon },
-    { name: "Facebook", url: facebook, Icon: FacebookIcon },
-    { name: "YouTube", url: youtube, Icon: YoutubeIcon },
-    { name: "LinkedIn", url: linkedin, Icon: LinkedinIcon },
-  ].filter(
-    (platform): platform is { name: string; url: string; Icon: typeof InstagramIcon } =>
-      Boolean(platform.url && platform.url.length > 0)
-  );
+    {
+      name: "Instagram",
+      url: instagram,
+      Icon: InstagramIcon,
+      colorClass: "text-social-instagram hover:bg-social-instagram/15 hover:border-social-instagram/50",
+    },
+    {
+      name: "Facebook",
+      url: facebook,
+      Icon: FacebookIcon,
+      colorClass: "text-social-facebook hover:bg-social-facebook/15 hover:border-social-facebook/50",
+    },
+    {
+      name: "YouTube",
+      url: youtube,
+      Icon: YoutubeIcon,
+      colorClass: "text-social-youtube hover:bg-social-youtube/15 hover:border-social-youtube/50",
+    },
+    {
+      name: "LinkedIn",
+      url: linkedin,
+      Icon: LinkedinIcon,
+      colorClass: "text-social-linkedin hover:bg-social-linkedin/15 hover:border-social-linkedin/50",
+    },
+  ].filter((platform) => Boolean(platform.url && platform.url.length > 0));
 
   return (
     <footer className="bg-brand-dark text-neutral-300 border-t border-white/10 pt-16 pb-10 sm:pt-20 sm:pb-12">
@@ -192,13 +209,13 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
           </p>
           {socialPlatforms.length > 0 && (
             <div className="flex flex-wrap justify-center gap-4">
-              {socialPlatforms.map(({ name, url, Icon }) => (
+              {socialPlatforms.map(({ name, url, Icon, colorClass }) => (
                 <a
                   key={name}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-lg bg-white/5 border border-white/10 text-neutral-400 hover:text-brand-yellow hover:bg-white/10 transition-all duration-200 hover:scale-105"
+                  className={`rounded-lg border border-white/10 bg-white/5 p-2.5 transition-all duration-200 hover:scale-105 ${colorClass}`}
                   aria-label={name}
                 >
                   <span className="sr-only">{name}</span>

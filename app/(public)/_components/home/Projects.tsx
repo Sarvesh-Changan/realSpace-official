@@ -20,10 +20,11 @@ export interface ProjectsProps {
   subtitle?: string;
   projects: ProjectType[];
   viewAllLink: string;
+  backgroundImage?: string;
 }
 
-export function Projects({ title, subtitle, projects, viewAllLink }: ProjectsProps) {
-  const backgroundSrc = "/images/home/behind-project.png";
+export function Projects({ title, subtitle, projects, viewAllLink, backgroundImage }: ProjectsProps) {
+  const backgroundSrc = backgroundImage || "/images/home/behind-project.png";
 
   return (
     <section className="relative isolate overflow-hidden bg-brand-dark py-16 sm:py-20 md:py-24">

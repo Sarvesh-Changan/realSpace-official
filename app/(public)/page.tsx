@@ -259,12 +259,14 @@ export default async function HomePage() {
         subtitle="Explore our curated portfolio of bespoke interior transformations."
         projects={interiorProjects}
         viewAllLink="/projects?type=interior"
+        backgroundImage="/images/home/behind-project-interior.png"
       />
       <Projects
         title="Exterior Projects"
         subtitle="Discover our striking architectural facades and outdoor spaces."
         projects={exteriorProjects}
         viewAllLink="/projects?type=exterior"
+        backgroundImage="/images/home/behind-project-exterior.png"
       />
       <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />

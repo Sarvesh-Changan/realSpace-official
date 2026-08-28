@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Play, X, Filter, Image as ImageIcon, Video, ArrowLeft, ArrowRight, Folder, Grid } from "lucide-react";
 import type { DesignType, MediaType } from "@prisma/client";
-import { getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 // --- Types ---
 
@@ -215,15 +215,9 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.4 }}
             >
-              <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.32em] text-brand-red sm:text-xs">
-                Spaces · Materials · Details
-              </p>
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold leading-[0.98] tracking-tight text-brand-text mb-4">
                 Design <span className="text-brand-red">Gallery</span>
               </h1>
-              <p className="text-sm sm:text-base leading-7 text-brand-muted max-w-xl mx-auto">
-                A considered collection of spaces, materials, and details from the REALSPACE portfolio.
-              </p>
             </motion.div>
 
             {/* Category Folders Grid */}
@@ -236,7 +230,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                     <motion.button
                       type="button"
                       key={folder.id}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={shouldReduceMotion || index < 3 ? false : { opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{
                         duration: shouldReduceMotion ? 0.01 : 0.35,
@@ -249,12 +243,12 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                       {/* Thumbnail Container (4:3 Aspect Ratio) */}
                       <div className="relative w-full aspect-[4/3] overflow-hidden bg-brand-bgAlt">
                         <Image
-                          src={getVideoThumbnailUrl(coverSrc, folder.coverMediaType)}
+                          src={getCloudinaryUrl(getVideoThumbnailUrl(coverSrc, folder.coverMediaType), { width: 900, crop: "fill" })}
                           alt={folder.name}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                          unoptimized={folder.coverMediaType === "VIDEO"}
+                          preload={index < 3}
                         />
 
                         {/* Dark Gradient Overlay */}
@@ -387,12 +381,12 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                       {/* Image/Thumbnail Container (Fixed 4:3 Aspect Ratio) */}
                       <div className="relative w-full aspect-[4/3] overflow-hidden bg-[#EEE6DD]">
                         <Image
-                          src={getVideoThumbnailUrl(item.url, item.mediaType)}
+                          src={getCloudinaryUrl(getVideoThumbnailUrl(item.url, item.mediaType), { width: 900, crop: "fill" })}
                           alt={item.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover transition-transform duration-400 ease-out motion-safe:lg:group-hover:scale-105"
-                          unoptimized={item.mediaType === "VIDEO"}
+                          priority={index === 0}
                         />
 
                         {/* Dark Overlay on Hover */}
@@ -520,6 +514,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                     src={lightboxItem.url}
                     alt={lightboxItem.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 58vw"
                     className="object-cover"
                   />
                 )}

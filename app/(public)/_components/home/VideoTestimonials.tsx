@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin, Play } from "lucide-react";
-import { getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export interface VideoTestimonialItem {
@@ -32,14 +32,9 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col items-center text-center md:mb-16">
           <ScrollReveal direction="up" distance={20}>
-            <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">Video Testimonials</h2>
+            <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">Testimonials</h2>
           </ScrollReveal>
           <div className="mt-5 h-1 w-16 rounded-full bg-brand-yellow" />
-          <ScrollReveal direction="up" distance={18} delay={0.08}>
-            <p className="mt-5 max-w-2xl text-body-large text-brand-text/70">
-              See how REALSPACE helped clients reimagine the way they live and work.
-            </p>
-          </ScrollReveal>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-14">
@@ -64,12 +59,11 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
                 >
                   <div className="relative aspect-video overflow-hidden bg-brand-bgAlt">
                     <Image
-                      src={thumbnail}
+                      src={getCloudinaryUrl(thumbnail, { width: 800, crop: "fill" })}
                       alt={`${item.title} video testimonial from ${item.clientName}`}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      unoptimized={thumbnail.includes("res.cloudinary.com") || thumbnail.startsWith("http")}
                     />
                     <div className="absolute inset-0 bg-black/15 transition-colors group-hover:bg-black/30" />
                     {item.videoUrl && (

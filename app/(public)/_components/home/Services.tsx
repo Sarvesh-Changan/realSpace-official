@@ -61,11 +61,6 @@ export function Services({ services }: ServicesProps) {
             <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">Our Services</h2>
           </ScrollReveal>
           <div className="mt-5 h-1 w-16 rounded-full bg-brand-yellow" />
-          <ScrollReveal direction="up" distance={18} delay={0.08}>
-            <p className="mt-5 max-w-2xl text-body-large text-brand-text/70">
-              Comprehensive design expertise tailored to your specific requirements and budget.
-            </p>
-          </ScrollReveal>
         </div>
 
         {services.length === 0 ? (

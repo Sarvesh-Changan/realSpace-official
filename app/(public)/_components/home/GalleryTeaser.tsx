@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
-import { getVideoThumbnailUrl } from '@/lib/cloudinary';
+import { getCloudinaryUrl, getVideoThumbnailUrl } from '@/lib/cloudinary';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export interface GalleryTeaserItem {
@@ -75,11 +75,6 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                                 Explore Our Gallery
                             </h2>
                         </ScrollReveal>
-                        <ScrollReveal direction="left" distance={24} delay={0.16}>
-                        <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
-                                A curated collection of our finest interior and exterior transformations.
-                            </p>
-                        </ScrollReveal>
                         {/* Kunku Red Accent Line */}
                         <div className="mt-5 h-px w-20 bg-brand-yellow"></div>
                     </div>
@@ -111,7 +106,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                                 className="group relative block aspect-[4/3] overflow-hidden rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-red sm:aspect-[5/4]"
                             >
                                 <Image
-                                    src={getVideoThumbnailUrl(item.imageUrl)}
+                                    src={getCloudinaryUrl(getVideoThumbnailUrl(item.imageUrl), { width: 900, crop: 'fill' })}
                                     alt={item.title}
                                     fill
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"

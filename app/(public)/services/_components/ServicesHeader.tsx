@@ -32,7 +32,6 @@ function SwastikIntroMark() {
         fill
         sizes="(max-width: 767px) 100vw, 580px"
         className="object-contain"
-        priority
       />
     </motion.div>
   );
@@ -55,6 +54,7 @@ export function ServicesHeader({ title }: ServicesHeaderProps) {
         fill
         priority
         sizes="100vw"
+        quality={70}
         className="object-cover opacity-[0.11]"
         aria-hidden="true"
       />

@@ -97,15 +97,13 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
           fill
           priority
           sizes="100vw"
+          quality={70}
           className="-z-20 object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-transparent to-black/25" />
-        <div className="mx-auto flex min-h-[360px] max-w-7xl items-end px-4 pb-12 pt-28 sm:min-h-[430px] sm:px-6 sm:pb-16 lg:px-8">
+        <div className="mx-auto flex min-h-[360px] max-w-7xl items-center px-4 pb-12 pt-28 sm:min-h-[430px] sm:px-6 sm:pb-16 lg:px-8">
           <div className="relative max-w-4xl text-white">
-            <ScrollReveal direction="left" distance={30} className="text-eyebrow text-brand-yellow">
-              Selected work · Est. 1989
-            </ScrollReveal>
             <ScrollReveal direction="left" distance={36} delay={0.09}>
               <h1 className="mt-4 max-w-3xl font-serif text-display font-semibold leading-[0.98] tracking-tight text-white">
                 OUR PORTFOLIO
@@ -261,7 +259,6 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                          unoptimized={!project.coverImageUrl?.includes("res.cloudinary.com")}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/65 via-brand-dark/5 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-100" />
                         <div className="absolute inset-x-5 bottom-5 flex translate-y-2 items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">

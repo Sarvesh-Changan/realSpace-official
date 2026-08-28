@@ -45,6 +45,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
           fill
           priority
           sizes="100vw"
+          quality={70}
           className="object-cover transition-transform duration-[1400ms] ease-out motion-safe:group-hover:scale-[1.03]"
         />
       </div>
@@ -53,9 +54,6 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
 
       <div className="mx-auto flex min-h-[680px] max-w-standard items-end px-4 pb-16 pt-32 sm:min-h-[740px] sm:px-6 sm:pb-24 lg:px-8">
         <div className="max-w-3xl text-white">
-          <ScrollReveal direction="left" distance={32} className="text-eyebrow text-brand-yellow">
-            EST. 1989 · THANE · MUMBAI
-          </ScrollReveal>
           <ScrollReveal direction="left" distance={36} delay={0.09}>
             <h1 className="mt-5 max-w-3xl font-serif text-display font-semibold tracking-tight text-white">
             {headline}
@@ -66,6 +64,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
               {subhead}
             </p>
           </ScrollReveal>
+          <ScrollReveal direction="left" distance={32} delay={0.18}>
           {socialPlatforms.length > 0 && (
             <nav aria-label="Social media links" className="mt-6 flex items-center gap-3">
               {socialPlatforms.map(({ name, url }) => (
@@ -82,6 +81,8 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
               ))}
             </nav>
           )}
+          </ScrollReveal>
+          <ScrollReveal direction="up" distance={32} delay={0.18}>
           <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <Link href="/projects" className="w-full sm:w-auto">
               <Button
@@ -103,12 +104,13 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
               <Button
                 variant="secondary"
                 size="lg"
-                className="relative z-10 min-h-[50px] w-full border-white bg-white/10 px-8 font-semibold text-white backdrop-blur-sm hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark sm:w-auto"
+                className="relative z-10 min-h-[50px] w-full border-white bg-white/10 px-8 font-semibold text-white backdrop-blur-sm hover:border-brand-red hover:bg-brand-red hover:text-brand-dark sm:w-auto"
               >
                 {buttonCta}
               </Button>
             </Link>
           </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

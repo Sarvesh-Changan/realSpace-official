@@ -156,13 +156,11 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
                 alt="REALSPACE logo"
                 width={300}
                 height={60}
+                sizes="(max-width: 640px) 123px, 154px"
                 className="h-16 sm:h-20 w-auto filter brightness-110"
                 style={{ width: "auto" }}
               />
             </Link>
-            <p className="text-sm leading-relaxed text-neutral-400 max-w-sm mx-auto sm:mx-0">
-              A premium interior and exterior design studio based in Thane. We create elegant, highly functional spaces tailored to your modern lifestyle.
-            </p>
           </div>
 
           {/* Quick Links */}

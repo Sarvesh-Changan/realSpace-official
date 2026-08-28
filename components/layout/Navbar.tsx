@@ -74,6 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 alt={`${logoText} logo`}
                 width={300}
                 height={60}
+                sizes="(max-width: 640px) 160px, 180px"
                 className={`w-auto transition-all duration-300 ${
                   isScrolled ? "h-12 sm:h-14" : "h-14 sm:h-16"
                 }`}

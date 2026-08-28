@@ -28,7 +28,7 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
   return (
     <div className="overflow-hidden bg-brand-warmWhite">
       <section className="relative isolate min-h-[72vh] bg-brand-dark text-white">
-        <Image src="/images/hero-living-room.png" alt="REALSPACE interior design studio" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+        <Image src="/images/hero-living-room.png" alt="REALSPACE interior design studio" fill priority sizes="100vw" quality={70} className="-z-20 object-cover object-center" />
         <div className="absolute inset-0 -z-10 bg-brand-dark/65" />
         <div className="mx-auto flex min-h-[72vh] max-w-standard items-end px-5 pb-14 pt-32 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
           <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={reveal} transition={transition} className="max-w-4xl">
@@ -50,7 +50,6 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-red">MEET OUR FOUNDER</p>
           <h2 className="mt-5 max-w-2xl font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">Vijay Chawan — Principal Designer &amp; Founder, REALSPACE</h2>
           <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-[1.85] text-brand-text/75 sm:text-base">{founderCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
-          <blockquote className="mt-10 border-l-2 border-brand-yellow pl-5 font-serif text-xl italic leading-relaxed text-brand-text sm:text-2xl">“Vijay understands the REAL value of your MONEY and SPACE.”</blockquote>
         </motion.div>
       </section>
 

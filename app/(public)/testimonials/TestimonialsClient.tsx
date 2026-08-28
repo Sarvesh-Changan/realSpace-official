@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, Play, X } from "lucide-react";
-import { getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 export interface PublicVideoTestimonial {
   id: string;
@@ -253,19 +253,21 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   }), [endDate, selectedDateFilter, selectedLocation, selectedMonth, selectedProjectType, startDate, testimonials]);
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-brand-cream pb-16 pt-24 sm:pb-20 sm:pt-28">
+    <main className="relative isolate min-h-screen overflow-hidden bg-neutral-950 pb-16 pt-24 sm:pb-20 sm:pt-28">
       <Image
         src="/images/testmonial/behind-testimonial.png"
         alt=""
         fill
+        priority
         sizes="100vw"
-        className="-z-20 object-cover object-center opacity-[0.2]"
+        quality={70}
+        className="-z-20 object-cover object-center"
         aria-hidden="true"
       />
-      <div className="absolute inset-0 -z-10 bg-brand-cream/75" aria-hidden="true" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-black/65 via-black/40 to-black/20" aria-hidden="true" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="font-serif text-3xl font-bold text-brand-text sm:text-5xl">Testimonials</h1>
+          <h1 className="font-serif text-3xl font-bold text-white sm:text-5xl">Testimonials</h1>
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-3 rounded-2xl border border-brand-bgAlt bg-white p-3 shadow-sm sm:mt-12 sm:grid-cols-2 lg:grid-cols-5">
@@ -311,7 +313,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
           </div>
         </div>
 
-        <p className="mt-5 text-sm text-neutral-500">Showing {filteredTestimonials.length} of {testimonials.length} client testimonials</p>
+        <p className="mt-5 text-sm text-white/75">Showing {filteredTestimonials.length} of {testimonials.length} client testimonials</p>
 
         {filteredTestimonials.length > 0 ? (
           <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
@@ -320,7 +322,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
               const cardContent = (
                 <>
                   <div className="relative aspect-video overflow-hidden bg-brand-bgAlt">
-                    <Image src={thumbnail} alt={`${item.title} testimonial from ${item.clientName}`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" unoptimized={thumbnail.startsWith("http")} />
+                    <Image src={getCloudinaryUrl(thumbnail, { width: 960, crop: "fill" })} alt={`${item.title} testimonial from ${item.clientName}`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/15 transition-colors group-hover:bg-black/30" />
                     {item.videoUrl && <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform group-hover:scale-110"><Play className="ml-1 h-6 w-6 fill-current" /></span></span>}
                   </div>

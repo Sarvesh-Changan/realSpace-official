@@ -43,9 +43,6 @@ export function Projects({ title, subtitle, projects, viewAllLink, backgroundIma
       <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 text-white sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
-            <ScrollReveal direction="left" distance={28} className="text-eyebrow text-brand-yellow">
-              Selected work · REALSPACE
-            </ScrollReveal>
             <ScrollReveal direction="left" distance={32} delay={0.08}>
               <h2 className="mt-4 font-serif text-h2 font-semibold tracking-tight text-white">{title}</h2>
             </ScrollReveal>
@@ -85,7 +82,6 @@ export function Projects({ title, subtitle, projects, viewAllLink, backgroundIma
                         fill
                         sizes="112px"
                         className="object-cover transition-transform duration-500 group-hover/project:scale-105"
-                        unoptimized={project.imageUrl.includes("res.cloudinary.com")}
                       />
                     </div>
                     <div className="min-w-0 py-1">

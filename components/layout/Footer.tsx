@@ -30,14 +30,22 @@ const LinkedinIcon: React.FC<{ className?: string }> = ({ className }) => (
 const BrandInstagramIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
     <defs>
-      <linearGradient id="footer-instagram-gradient" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#FFDC80" />
-        <stop offset="0.35" stopColor="#F77737" />
-        <stop offset="0.68" stopColor="#E1306C" />
-        <stop offset="1" stopColor="#833AB4" />
+      <linearGradient id="footer-instagram-gradient" x1="4" y1="21" x2="20" y2="3" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FFD600" />
+        <stop offset="0.3" stopColor="#FF7A00" />
+        <stop offset="0.63" stopColor="#FF0169" />
+        <stop offset="1" stopColor="#7638FA" />
       </linearGradient>
+      <linearGradient id="footer-instagram-highlight" x1="5" y1="5" x2="18" y2="18" gradientUnits="userSpaceOnUse">
+        <stop stopColor="white" stopOpacity="0.28" />
+        <stop offset="0.5" stopColor="white" stopOpacity="0" />
+      </linearGradient>
+      <filter id="footer-instagram-shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="1" stdDeviation="0.8" floodColor="#000" floodOpacity="0.35" />
+      </filter>
     </defs>
-    <rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="url(#footer-instagram-gradient)" />
+    <rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="url(#footer-instagram-gradient)" filter="url(#footer-instagram-shadow)" />
+    <rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="url(#footer-instagram-highlight)" />
     <rect x="6.5" y="6.5" width="11" height="11" rx="3.2" fill="none" stroke="white" strokeWidth="1.8" />
     <circle cx="12" cy="12" r="2.7" fill="none" stroke="white" strokeWidth="1.8" />
     <circle cx="17.4" cy="6.7" r="1.1" fill="white" />
@@ -46,21 +54,51 @@ const BrandInstagramIcon: React.FC<{ className?: string }> = ({ className }) => 
 
 const BrandFacebookIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" fill="#1877F2" />
+    <defs>
+      <linearGradient id="footer-facebook-gradient" x1="7" y1="3" x2="17" y2="22" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#49A9F8" />
+        <stop offset="0.45" stopColor="#1877F2" />
+        <stop offset="1" stopColor="#0866D5" />
+      </linearGradient>
+      <filter id="footer-facebook-shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="1" stdDeviation="0.8" floodColor="#000" floodOpacity="0.35" />
+      </filter>
+    </defs>
+    <circle cx="12" cy="12" r="10" fill="url(#footer-facebook-gradient)" filter="url(#footer-facebook-shadow)" />
     <path fill="white" d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.5-1.5h1.7V4a22 22 0 0 0-2.5-.1c-2.5 0-4.1 1.5-4.1 4.2V10H7.4v3h2.7v8h3.4Z" />
   </svg>
 );
 
 const BrandYoutubeIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-    <rect x="1" y="4" width="22" height="16" rx="5" fill="#FF0000" />
+    <defs>
+      <linearGradient id="footer-youtube-gradient" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FF4B55" />
+        <stop offset="0.5" stopColor="#FF0000" />
+        <stop offset="1" stopColor="#D90000" />
+      </linearGradient>
+      <filter id="footer-youtube-shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="1" stdDeviation="0.8" floodColor="#000" floodOpacity="0.35" />
+      </filter>
+    </defs>
+    <rect x="1" y="4" width="22" height="16" rx="5" fill="url(#footer-youtube-gradient)" filter="url(#footer-youtube-shadow)" />
     <path fill="white" d="m10 8.5 6 3.5-6 3.5v-7Z" />
   </svg>
 );
 
 const BrandLinkedinIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-    <rect x="2" y="2" width="20" height="20" rx="4" fill="#0A66C2" />
+    <defs>
+      <linearGradient id="footer-linkedin-gradient" x1="5" y1="3" x2="19" y2="21" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#36A6E8" />
+        <stop offset="0.5" stopColor="#0A66C2" />
+        <stop offset="1" stopColor="#004182" />
+      </linearGradient>
+      <filter id="footer-linkedin-shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="1" stdDeviation="0.8" floodColor="#000" floodOpacity="0.35" />
+      </filter>
+    </defs>
+    <rect x="2" y="2" width="20" height="20" rx="4" fill="url(#footer-linkedin-gradient)" filter="url(#footer-linkedin-shadow)" />
     <path fill="white" d="M7.1 10H4.4v9h2.7v-9ZM5.75 4.7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2ZM19.6 13.8c0-2.8-1.5-4.1-3.6-4.1-1.7 0-2.4.9-2.8 1.5V10h-2.7v9h2.7v-4.9c0-1.3.2-2.6 1.9-2.6 1.7 0 1.8 1.5 1.8 2.7V19h2.7v-5.2Z" />
   </svg>
 );

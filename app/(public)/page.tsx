@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
+import { Button } from "@/components/ui/Button";
 import { Hero } from "./_components/home/Hero";
 import { WelcomeIntro } from "./_components/home/WelcomeIntro";
 import { Projects, type ProjectType } from "./_components/home/Projects";
 import { Services } from "./_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
-import { FinalCta } from "./_components/home/FinalCta";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
 
@@ -260,7 +262,19 @@ export default async function HomePage() {
       <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
-      <FinalCta ctaText={siteSettings?.ctaText} />
+      <section className="bg-brand-cream px-4 py-14 sm:py-20">
+        <div className="flex justify-center">
+          <Link href="/quote">
+            <Button
+              size="lg"
+              className="group min-h-[52px] gap-3 rounded-full border border-brand-red bg-brand-red px-8 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-brand-dark hover:bg-brand-dark hover:shadow-xl sm:px-10"
+            >
+              Get Free Quote
+              <ArrowUpRight className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Button>
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

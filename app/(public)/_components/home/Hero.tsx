@@ -51,26 +51,6 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
-      {socialPlatforms.length > 0 && (
-        <nav
-          aria-label="Social media links"
-          className="absolute left-4 top-5 z-10 flex items-center gap-3 sm:left-6 sm:top-7 lg:left-8"
-        >
-          {socialPlatforms.map(({ name, url }) => (
-            <a
-              key={name}
-              href={url as string}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={name}
-              className="inline-flex rounded-md transition-transform duration-200 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-yellow"
-            >
-              <SocialBrandIcon platform={name} idPrefix={`hero-${name.toLowerCase()}`} />
-            </a>
-          ))}
-        </nav>
-      )}
-
       <div className="mx-auto flex min-h-[680px] max-w-standard items-end px-4 pb-16 pt-32 sm:min-h-[740px] sm:px-6 sm:pb-24 lg:px-8">
         <div className="max-w-3xl text-white">
           <ScrollReveal direction="left" distance={32} className="text-eyebrow text-brand-yellow">
@@ -86,7 +66,22 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
               {subhead}
             </p>
           </ScrollReveal>
-
+          {socialPlatforms.length > 0 && (
+            <nav aria-label="Social media links" className="mt-6 flex items-center gap-3">
+              {socialPlatforms.map(({ name, url }) => (
+                <a
+                  key={name}
+                  href={url as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={name}
+                  className="inline-flex rounded-md transition-transform duration-200 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-yellow"
+                >
+                  <SocialBrandIcon platform={name} idPrefix={`hero-${name.toLowerCase()}`} />
+                </a>
+              ))}
+            </nav>
+          )}
           <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <Link href="/projects" className="w-full sm:w-auto">
               <Button

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { ServiceGrid, type ServiceItem } from "./_components/ServiceGrid";
 import { ServicesHeader } from "./_components/ServicesHeader";
-import { ServicesCta } from "./_components/ServicesCta";
 import { getServiceIconComponent } from "./_components/iconMapper";
 import {
+  ArrowRight,
   Home,
   Utensils,
   Sofa,
@@ -170,17 +171,13 @@ export default async function ServicesPage() {
   return (
     <div className="flex flex-col pt-0">
       <ServicesHeader
-        title="Our Services"
-        intro="From a compact 1BHK kitchen redesign to a complete 3BHK turnkey transformation, REALSPACE handles every square foot with the same level of care."
+        title="OUR SERVICES"
       />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-24 space-y-16 sm:space-y-24 md:space-y-32">
         <section id="interior-services">
           <div className="mb-7 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-brand-red sm:text-xs">
-                01 / The foundation
-              </p>
               <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-4xl md:text-5xl">
                 Interior Services
               </h2>
@@ -192,9 +189,6 @@ export default async function ServicesPage() {
         <section id="exterior-services">
           <div className="mb-7 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-brand-red sm:text-xs">
-                02 / First impression
-              </p>
               <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-4xl md:text-5xl">
                 Exterior Services
               </h2>
@@ -204,7 +198,15 @@ export default async function ServicesPage() {
         </section>
       </div>
 
-      <ServicesCta />
+      <div className="flex justify-center px-4 py-10 sm:py-14">
+        <Link
+          href="/quote"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-red px-7 py-3.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(153,0,0,0.28)] transition-all duration-200 hover:bg-brand-redHover hover:shadow-[0_12px_30px_rgba(153,0,0,0.36)] motion-reduce:animate-none animate-pulse"
+        >
+          Calculate Free Quote
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { motion, useReducedMotion, type Transition } from "framer-motion";
 
 interface ServicesHeaderProps {
   title: string;
-  intro: string;
+  intro?: string;
 }
 
 const SWASTIK_IMAGE_PATH = "/images/service/swastik.png";
@@ -75,7 +75,7 @@ export function ServicesHeader({ title }: ServicesHeaderProps) {
         transition={contentTransition}
           className="flex flex-col items-center text-center md:items-start md:text-left"
       >
-        <h1 className="font-serif text-5xl font-bold leading-[0.98] tracking-tight text-brand-text sm:text-7xl lg:text-8xl">
+        <h1 className="whitespace-nowrap font-serif text-[clamp(2.25rem,5vw,5rem)] font-bold leading-[0.98] tracking-tight text-brand-text">
           {title}
         </h1>
         </motion.div>

@@ -23,7 +23,7 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
 
   return (
     <section className="relative isolate w-full overflow-hidden border-t border-brand-border px-4 py-10 sm:px-6 sm:py-14 md:py-16">
-      <Image src="https://images.unsplash.com/photo-1768332572728-2fff6ecbd6b6?auto=format&fit=crop&fm=jpg&q=80&w=2400" alt="Warm modern living room interior" fill sizes="100vw" className="-z-20 object-cover object-center" />
+      <Image src="/images/about/behind-certificates.png" alt="Warm interior design studio behind the certifications" fill sizes="100vw" className="-z-20 object-cover object-center" />
       <div className="absolute inset-0 -z-10 bg-brand-dark/45" />
       <div className="relative mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6">
         {certifications.map((cert, idx) => {
@@ -32,9 +32,9 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
           return (
             <div
               key={cert.id}
-              className="group relative aspect-[1.1/1] overflow-hidden rounded-xl border border-white/65 bg-gradient-to-br from-white/35 via-white/15 to-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-1 hover:from-white/45 hover:shadow-[0_16px_36px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.9)] sm:rounded-2xl"
+              className="group relative aspect-[1.1/1] overflow-hidden [clip-path:polygon(6%_0,100%_0,94%_100%,0_100%)] border border-white/65 bg-gradient-to-br from-white/35 via-white/15 to-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-lg transition-all duration-300 ease-out hover:-translate-y-1 hover:from-white/45 hover:shadow-[0_16px_36px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.9)]"
             >
-              <div className="pointer-events-none absolute inset-2 rounded-lg border border-white/30 shadow-[inset_0_0_18px_rgba(255,255,255,0.14)] sm:inset-3 sm:rounded-xl" />
+              <div className="pointer-events-none absolute inset-2 [clip-path:polygon(5%_0,100%_0,95%_100%,0_100%)] border border-white/30 shadow-[inset_0_0_18px_rgba(255,255,255,0.14)] sm:inset-3" />
               {cert.textureUrl && (
                 <Image src={cert.textureUrl} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" unoptimized={!cert.textureUrl.includes("res.cloudinary.com")} />
               )}

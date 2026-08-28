@@ -8,6 +8,7 @@ import Image from "next/image";
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { getCloudinaryUrl } from "@/lib/cloudinary";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export interface ProjectCardData {
   id: string;
@@ -89,27 +90,45 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
   return (
     <div className="pb-16 sm:pb-24">
       {/* Editorial portfolio masthead */}
-      <section className="relative overflow-hidden bg-brand-cream pt-16 pb-6 sm:pt-20 sm:pb-8 lg:pt-24">
-        <div className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full border border-brand-yellow/30 sm:h-96 sm:w-96" />
-        <div className="pointer-events-none absolute -right-8 top-28 h-40 w-40 rounded-full border border-brand-red/10 sm:h-60 sm:w-60" />
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative max-w-4xl">
-            <h1 className="max-w-3xl font-serif text-3xl font-bold leading-[0.98] tracking-tight text-brand-text sm:text-5xl lg:text-6xl">
-              OUR PORTFOLIO
-            </h1>
-            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <section className="relative isolate min-h-[360px] overflow-hidden bg-brand-dark sm:min-h-[430px]">
+        <Image
+          src="/images/project/project-1.png"
+          alt="A REALSPACE architectural design project"
+          fill
+          priority
+          sizes="100vw"
+          className="-z-20 object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-transparent to-black/25" />
+        <div className="mx-auto flex min-h-[360px] max-w-7xl items-end px-4 pb-12 pt-28 sm:min-h-[430px] sm:px-6 sm:pb-16 lg:px-8">
+          <div className="relative max-w-4xl text-white">
+            <ScrollReveal direction="left" distance={30} className="text-eyebrow text-brand-yellow">
+              Selected work · Est. 1989
+            </ScrollReveal>
+            <ScrollReveal direction="left" distance={36} delay={0.09}>
+              <h1 className="mt-4 max-w-3xl font-serif text-display font-semibold leading-[0.98] tracking-tight text-white">
+                OUR PORTFOLIO
+              </h1>
+            </ScrollReveal>
+            <ScrollReveal direction="left" distance={28} delay={0.18}>
+              <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <Link
                 href="/contact"
-                className="group inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-brand-text transition-colors hover:text-brand-red"
+                className="group inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition-colors hover:text-brand-yellow"
               >
                 Start a project
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
-            </div>
+              </div>
+            </ScrollReveal>
           </div>
+        </div>
+      </section>
 
-          {/* Filter Controls */}
-          <div className="mt-7 flex flex-col gap-3 rounded-xl border border-brand-text/10 bg-white/65 p-3 shadow-sm backdrop-blur-sm sm:mt-9 sm:gap-4 sm:p-4">
+      <div className="relative z-10 mx-auto -mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Filter Controls */}
+        <div className="flex flex-col gap-3 rounded-xl border border-brand-text/10 bg-white/90 p-3 shadow-lg backdrop-blur-md sm:gap-4 sm:p-4">
             {/* Design Type Tabs - Scrollable on small screens */}
             <div className="flex items-center gap-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
               <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-brand-text/45">
@@ -201,9 +220,8 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                 )}
               </div>
             </div>
-          </div>
         </div>
-      </section>
+      </div>
 
       {/* Projects Grid */}
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-10 lg:px-8">

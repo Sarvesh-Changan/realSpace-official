@@ -141,6 +141,59 @@ export function LeadDetailClient({ lead }: { lead: LeadDetailData }) {
           ? JSON.parse(selections)
           : (selections as Record<string, unknown>);
 
+      if (parsed.flowType === "commercial" || parsed.bhkType === "Commercial & Others") {
+        const spaceDesc = String(parsed.description || parsed.spaceDescription || "");
+        return (
+          <div className="p-4 bg-amber-50/50 rounded-md border border-amber-200">
+            <h4 className="text-sm font-semibold text-amber-900 mb-4">
+              Commercial Space Qualification Details
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <div className="flex flex-col py-2 border-b border-amber-200/60">
+                <span className="text-neutral-500 text-xs font-medium uppercase tracking-wide mb-1">
+                  Property Type
+                </span>
+                <span className="font-semibold text-neutral-900">{String(parsed.bhkType || "Commercial & Others")}</span>
+              </div>
+              {Boolean(parsed.businessType) && (
+                <div className="flex flex-col py-2 border-b border-amber-200/60">
+                  <span className="text-neutral-500 text-xs font-medium uppercase tracking-wide mb-1">
+                    Business / Space Type
+                  </span>
+                  <span className="font-semibold text-neutral-900">{String(parsed.businessType)}</span>
+                </div>
+              )}
+              {Boolean(parsed.approxAreaSqft) && (
+                <div className="flex flex-col py-2 border-b border-amber-200/60">
+                  <span className="text-neutral-500 text-xs font-medium uppercase tracking-wide mb-1">
+                    Approximate Area
+                  </span>
+                  <span className="font-semibold text-neutral-900">{String(parsed.approxAreaSqft)} sq ft</span>
+                </div>
+              )}
+              {Boolean(parsed.budgetRangeLabel) && (
+                <div className="flex flex-col py-2 border-b border-amber-200/60">
+                  <span className="text-neutral-500 text-xs font-medium uppercase tracking-wide mb-1">
+                    Rough Budget Range
+                  </span>
+                  <span className="font-semibold text-neutral-900">{String(parsed.budgetRangeLabel)}</span>
+                </div>
+              )}
+              {Boolean(spaceDesc) && (
+                <div className="sm:col-span-2 flex flex-col py-2">
+                  <span className="text-neutral-500 text-xs font-medium uppercase tracking-wide mb-1">
+                    Description & Requirements
+                  </span>
+                  <p className="text-neutral-800 bg-white p-3 rounded border border-neutral-200 text-sm whitespace-pre-wrap">
+                    {spaceDesc}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
       // Compute total from breakdown
       const breakdown = parsed["breakdown"];
       const total = Array.isArray(breakdown)
@@ -304,14 +357,20 @@ export function LeadDetailClient({ lead }: { lead: LeadDetailData }) {
                   </div>
                 </div>
 
-                {(lead.estimatedBudgetLow || lead.estimatedBudgetHigh) && (
-                  <div>
-                    <span className="block text-neutral-500 text-xs mb-1">Estimated Budget</span>
-                    <span className="font-medium text-neutral-900">
-                      {formatCurrency(lead.estimatedBudgetLow)} - {formatCurrency(lead.estimatedBudgetHigh)}
-                    </span>
-                  </div>
-                )}
+                <div>
+                  <span className="block text-neutral-500 text-xs mb-1">Estimated Budget</span>
+                  <span className="font-medium text-neutral-900">
+                    {lead.selections?.flowType === "commercial" || lead.selections?.bhkType === "Commercial & Others" ? (
+                      <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block">
+                        Custom quote — see details
+                      </span>
+                    ) : lead.estimatedBudgetLow || lead.estimatedBudgetHigh ? (
+                      `${formatCurrency(lead.estimatedBudgetLow)} - ${formatCurrency(lead.estimatedBudgetHigh)}`
+                    ) : (
+                      "—"
+                    )}
+                  </span>
+                </div>
               </div>
             </div>
 

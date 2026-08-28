@@ -102,7 +102,12 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
 
 const quoteSelectionSchema = z.object({
   bhkType: z.string().min(1, 'BHK type is required'),
-  rooms: z.record(z.string(), z.number().min(0)),
+  isCommercialFlow: z.boolean().optional(),
+  businessType: z.string().optional(),
+  approxAreaSqft: z.number().optional(),
+  description: z.string().optional().or(z.literal('')),
+  budgetRangeLabel: z.string().optional().or(z.literal('')),
+  rooms: z.record(z.string(), z.number().min(0)).optional().default({}),
   spaceDescription: z.string().optional().or(z.literal('')),
   requirements: z.object({
     interior: z.boolean(),
@@ -126,8 +131,8 @@ type QuoteActionResult = {
   success: boolean;
   error?: string;
   data?: {
-    estimatedBudgetLow: number;
-    estimatedBudgetHigh: number;
+    estimatedBudgetLow: number | null;
+    estimatedBudgetHigh: number | null;
     breakdown: Array<{ label: string; amount: number }>;
     leadId?: string;
   };
@@ -167,19 +172,109 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       return {
         success: true,
         data: {
-          estimatedBudgetLow: 0,
-          estimatedBudgetHigh: 0,
+          estimatedBudgetLow: null,
+          estimatedBudgetHigh: null,
           breakdown: [],
         },
       };
     }
 
-    // 4. Query PricingOption table for all active options by groupKey
+    // 4. Verify Email OTP token before lead creation (enforced for all flows)
+    const submittedEmail = input.contact.email?.trim().toLowerCase();
+    const verifiedToken = input.contact.verifiedToken?.trim();
+
+    if (!submittedEmail || !verifiedToken) {
+      return {
+        success: false,
+        error: 'Email verification is required before submitting your quote request.',
+      };
+    }
+
+    const otpRecord = await prisma.emailOtp.findFirst({
+      where: {
+        email: submittedEmail,
+        verifiedToken,
+      },
+    });
+
+    if (
+      !otpRecord ||
+      !otpRecord.verified ||
+      otpRecord.used ||
+      Date.now() > otpRecord.expiresAt.getTime()
+    ) {
+      return {
+        success: false,
+        error: 'Invalid, expired, or already used email verification token. Please verify your email before submitting.',
+      };
+    }
+
+    // 5. Check if payload represents a Commercial & Others flow
+    const isCommercial =
+      input.isCommercialFlow === true || input.bhkType === 'Commercial & Others';
+
+    if (isCommercial) {
+      const spaceDesc = input.description || input.spaceDescription || null;
+      const requirementsText = [
+        spaceDesc ? `Space Details: ${spaceDesc}` : null,
+        input.contact.requirements ? `Notes: ${input.contact.requirements}` : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const selections = {
+        flowType: 'commercial',
+        bhkType: input.bhkType,
+        businessType: input.businessType || null,
+        approxAreaSqft: input.approxAreaSqft || null,
+        description: spaceDesc,
+        budgetRangeLabel: input.budgetRangeLabel || null,
+      };
+
+      const [lead] = await prisma.$transaction([
+        prisma.lead.create({
+          data: {
+            name: input.contact.name,
+            phone: input.contact.phone,
+            email: submittedEmail,
+            location: input.contact.location && input.contact.location.trim() !== '' ? input.contact.location : null,
+            requirements: requirementsText || null,
+            source: LeadSource.QUOTE_CALCULATOR,
+            selections,
+            estimatedBudgetLow: null,
+            estimatedBudgetHigh: null,
+            status: LeadStatus.NEW,
+          },
+        }),
+        prisma.emailOtp.update({
+          where: { id: otpRecord.id },
+          data: { used: true },
+        }),
+      ]);
+
+      try {
+        await sendLeadNotification(lead);
+      } catch (emailErr) {
+        console.error('Failed to send lead notification email for commercial quote submission:', emailErr);
+      }
+
+      return {
+        success: true,
+        data: {
+          estimatedBudgetLow: null,
+          estimatedBudgetHigh: null,
+          breakdown: [],
+          leadId: lead.id,
+        },
+      };
+    }
+
+    // 6. Residential Flow: Query PricingOption table for active options
     const activeOptions = await prisma.pricingOption.findMany({
       where: { isActive: true },
     });
 
-    // 5. Calculate estimated price range (low/high) & breakdown
+    // Calculate estimated price range (low/high) & breakdown
     let totalBase = 0;
     const breakdown: Array<{ label: string; amount: number }> = [];
 
@@ -249,36 +344,6 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     const estimatedBudgetLow = Math.round(totalBase * 0.9);
     const estimatedBudgetHigh = Math.round(totalBase * 1.15);
 
-    // 6. Verify Email OTP token before lead creation
-    const submittedEmail = input.contact.email?.trim().toLowerCase();
-    const verifiedToken = input.contact.verifiedToken?.trim();
-
-    if (!submittedEmail || !verifiedToken) {
-      return {
-        success: false,
-        error: 'Email verification is required before submitting your quote request.',
-      };
-    }
-
-    const otpRecord = await prisma.emailOtp.findFirst({
-      where: {
-        email: submittedEmail,
-        verifiedToken,
-      },
-    });
-
-    if (
-      !otpRecord ||
-      !otpRecord.verified ||
-      otpRecord.used ||
-      Date.now() > otpRecord.expiresAt.getTime()
-    ) {
-      return {
-        success: false,
-        error: 'Invalid, expired, or already used email verification token. Please verify your email before submitting.',
-      };
-    }
-
     const requirementsText = [
       input.spaceDescription ? `Space Details: ${input.spaceDescription}` : null,
       input.contact.requirements ? `Notes: ${input.contact.requirements}` : null,
@@ -286,7 +351,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       .filter(Boolean)
       .join('\n');
 
-    // 7. Create Lead row and mark EmailOtp token as used in a single database transaction
+    // Create Lead row and mark EmailOtp token as used in a single database transaction
     const [lead] = await prisma.$transaction([
       prisma.lead.create({
         data: {
@@ -315,7 +380,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       }),
     ]);
 
-    // 8. Send lead notification email to admin (non-blocking)
+    // Send lead notification email to admin (non-blocking)
     try {
       await sendLeadNotification(lead);
     } catch (emailErr) {

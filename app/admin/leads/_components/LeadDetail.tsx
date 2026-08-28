@@ -68,6 +68,49 @@ export function LeadDetail({ lead, onClose, onNotesUpdated }: { lead: LeadData, 
       const parsed: Record<string, unknown> =
         typeof selections === "string" ? JSON.parse(selections) : (selections as Record<string, unknown>);
 
+      if (parsed.flowType === "commercial" || parsed.bhkType === "Commercial & Others") {
+        const spaceDesc = String(parsed.description || parsed.spaceDescription || "");
+        return (
+          <div className="mt-4 p-4 bg-amber-50/50 rounded-md border border-amber-200">
+            <h4 className="text-sm font-semibold text-amber-900 mb-3">
+              Commercial Space Qualification Details
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="block text-neutral-500 text-xs font-medium uppercase tracking-wide">Property Type</span>
+                <span className="font-semibold text-neutral-900">{String(parsed.bhkType || "Commercial & Others")}</span>
+              </div>
+              {Boolean(parsed.businessType) && (
+                <div>
+                  <span className="block text-neutral-500 text-xs font-medium uppercase tracking-wide">Business / Space Type</span>
+                  <span className="font-semibold text-neutral-900">{String(parsed.businessType)}</span>
+                </div>
+              )}
+              {Boolean(parsed.approxAreaSqft) && (
+                <div>
+                  <span className="block text-neutral-500 text-xs font-medium uppercase tracking-wide">Approximate Area</span>
+                  <span className="font-semibold text-neutral-900">{String(parsed.approxAreaSqft)} sq ft</span>
+                </div>
+              )}
+              {Boolean(parsed.budgetRangeLabel) && (
+                <div>
+                  <span className="block text-neutral-500 text-xs font-medium uppercase tracking-wide">Rough Budget Range</span>
+                  <span className="font-semibold text-neutral-900">{String(parsed.budgetRangeLabel)}</span>
+                </div>
+              )}
+              {Boolean(spaceDesc) && (
+                <div className="sm:col-span-2">
+                  <span className="block text-neutral-500 text-xs font-medium uppercase tracking-wide mb-1">Description & Requirements</span>
+                  <p className="text-neutral-800 bg-white p-3 rounded border border-neutral-200 text-xs sm:text-sm whitespace-pre-wrap">
+                    {spaceDesc}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
       // Compute total from breakdown if available
       const breakdown = parsed["breakdown"];
       const total =
@@ -178,6 +221,20 @@ export function LeadDetail({ lead, onClose, onNotesUpdated }: { lead: LeadData, 
                     <span className="inline-flex font-medium text-neutral-700 bg-neutral-100 border border-neutral-200 px-2 py-0.5 rounded text-xs">
                       {lead.source.replace(/_/g, " ")}
                     </span>
+                  </div>
+                  <div>
+                    <span className="block text-neutral-500 text-xs mb-1">Estimated Budget</span>
+                    {lead.selections?.flowType === "commercial" || lead.selections?.bhkType === "Commercial & Others" ? (
+                      <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block">
+                        Custom quote — see details
+                      </span>
+                    ) : lead.estimatedBudgetLow && lead.estimatedBudgetHigh ? (
+                      <span className="font-medium text-neutral-900">
+                        ₹{lead.estimatedBudgetLow.toLocaleString("en-IN")} - ₹{lead.estimatedBudgetHigh.toLocaleString("en-IN")}
+                      </span>
+                    ) : (
+                      <span className="font-medium text-neutral-500">—</span>
+                    )}
                   </div>
                   <div>
                     <span className="block text-neutral-500 text-xs mb-1">Current Status</span>

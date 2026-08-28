@@ -97,9 +97,15 @@ export function LeadTableClient({ leads }: { leads: LeadData[] }) {
                                         </td>
 
                                         <td className="py-4 px-4 text-neutral-600 font-medium">
-                                            {lead.estimatedBudgetLow && lead.estimatedBudgetHigh
-                                                ? `${formatCurrency(lead.estimatedBudgetLow)} - ${formatCurrency(lead.estimatedBudgetHigh)}`
-                                                : "—"}
+                                            {lead.selections?.flowType === "commercial" || lead.selections?.bhkType === "Commercial & Others" ? (
+                                                <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block">
+                                                    Custom quote — see details
+                                                </span>
+                                            ) : lead.estimatedBudgetLow && lead.estimatedBudgetHigh ? (
+                                                `${formatCurrency(lead.estimatedBudgetLow)} - ${formatCurrency(lead.estimatedBudgetHigh)}`
+                                            ) : (
+                                                "—"
+                                            )}
                                         </td>
 
                                         <td className="py-4 px-4">

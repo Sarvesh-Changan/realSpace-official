@@ -39,9 +39,9 @@ export function ScrollReveal({
       case "down":
         return { y: -distance, x: 0 };
       case "left":
-        return { x: distance, y: 0 };
-      case "right":
         return { x: -distance, y: 0 };
+      case "right":
+        return { x: distance, y: 0 };
       case "none":
       default:
         return { x: 0, y: 0 };

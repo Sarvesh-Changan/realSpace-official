@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { useIdleAttention } from "@/hooks/useIdleAttention";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export interface HeroProps {
   heroHeadline?: string;
@@ -37,19 +38,20 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
       <div className="mx-auto flex min-h-[680px] max-w-standard items-end px-4 pb-16 pt-32 sm:min-h-[740px] sm:px-6 sm:pb-24 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: shouldReduceMotion ? 0.01 : 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-3xl text-white"
-        >
-          <p className="text-eyebrow text-brand-yellow">EST. 1989 · THANE · MUMBAI</p>
-          <h1 className="mt-5 max-w-3xl font-serif text-display font-semibold tracking-tight text-white">
+        <div className="max-w-3xl text-white">
+          <ScrollReveal direction="left" distance={32} className="text-eyebrow text-brand-yellow">
+            EST. 1989 · THANE · MUMBAI
+          </ScrollReveal>
+          <ScrollReveal direction="left" distance={36} delay={0.09}>
+            <h1 className="mt-5 max-w-3xl font-serif text-display font-semibold tracking-tight text-white">
             {headline}
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
-            {subhead}
-          </p>
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal direction="left" distance={32} delay={0.18}>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
+              {subhead}
+            </p>
+          </ScrollReveal>
 
           <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <Link href="/projects" className="w-full sm:w-auto">
@@ -78,7 +80,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
               </Button>
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -3,8 +3,9 @@
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { Award, Star, MapPin } from "lucide-react";
+import { ScrollReveal, type ScrollRevealDirection } from "@/components/ui/ScrollReveal";
 
-export function TrustStats({ compact = false }: { compact?: boolean }) {
+export function TrustStats({ compact = false, directional = false }: { compact?: boolean; directional?: boolean }) {
   const shouldReduceMotion = usePrefersReducedMotion();
 
   const stats = [
@@ -12,21 +13,18 @@ export function TrustStats({ compact = false }: { compact?: boolean }) {
       value: "27+",
       label: "Years Experience",
       icon: Award,
-      initial: shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 },
       delay: 0,
     },
     {
       value: "5★",
       label: "Client Rating",
       icon: Star,
-      initial: shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 },
       delay: 0.15,
     },
     {
       value: "Thane, Navi Mumbai",
       label: "& Mumbai Regions",
       icon: MapPin,
-      initial: shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 },
       delay: 0.3,
     },
   ];
@@ -35,11 +33,12 @@ export function TrustStats({ compact = false }: { compact?: boolean }) {
     <div className={`grid grid-cols-1 md:grid-cols-3 ${compact ? "gap-3 sm:gap-4" : "gap-6 sm:gap-8"}`}>
           {stats.map((stat, index) => {
             const Icon = stat.icon;
+            const textDirection: ScrollRevealDirection = index === 0 ? "left" : index === 2 ? "right" : "up";
             return (
               <motion.div
                 key={index}
-                initial={stat.initial}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{
                   duration: shouldReduceMotion ? 0.01 : 0.6,
@@ -56,7 +55,13 @@ export function TrustStats({ compact = false }: { compact?: boolean }) {
                   {stat.value}
                 </div>
                 <div className={`font-semibold uppercase tracking-widest text-brand-text/80 ${compact ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"}`}>
-                  {stat.label}
+                  {directional ? (
+                    <ScrollReveal direction={textDirection} distance={20} delay={stat.delay}>
+                      {stat.label}
+                    </ScrollReveal>
+                  ) : (
+                    stat.label
+                  )}
                 </div>
               </motion.div>
             );

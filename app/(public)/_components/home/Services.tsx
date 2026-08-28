@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import {
   Sofa,
   PaintBucket,
@@ -56,11 +56,17 @@ export function Services({ services }: ServicesProps) {
   return (
     <section className="border-y border-brand-border/60 bg-brand-bgAlt/45 py-16 sm:py-20 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          title="Our Services"
-          subtitle="Comprehensive design expertise tailored to your specific requirements and budget."
-          align="center"
-        />
+        <div className="mb-12 flex flex-col items-center text-center md:mb-16">
+          <ScrollReveal direction="up" distance={20}>
+            <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">Our Services</h2>
+          </ScrollReveal>
+          <div className="mt-5 h-1 w-16 rounded-full bg-brand-yellow" />
+          <ScrollReveal direction="up" distance={18} delay={0.08}>
+            <p className="mt-5 max-w-2xl text-body-large text-brand-text/70">
+              Comprehensive design expertise tailored to your specific requirements and budget.
+            </p>
+          </ScrollReveal>
+        </div>
 
         {services.length === 0 ? (
           <div className="py-12 sm:py-16 text-center text-brand-text/50 bg-brand-bg rounded-2xl border border-dashed border-brand-bgAlt max-w-xl mx-auto px-4">
@@ -82,10 +88,14 @@ export function Services({ services }: ServicesProps) {
                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-brand-yellow/60 bg-brand-yellow/10 transition-colors duration-300 group-hover:bg-brand-yellow/25 sm:mb-5 sm:h-12 sm:w-12">
                   {getServiceIcon(service.iconKey, index)}
                 </div>
-                <h3 className="mb-2 font-serif text-h3 font-semibold tracking-tight text-brand-text transition-colors group-hover:text-brand-red">{service.title}</h3>
-                <p className="text-sm leading-relaxed text-brand-text/65 sm:text-base">
-                  {service.description}
-                </p>
+                <ScrollReveal direction="up" distance={18} delay={index * 0.04}>
+                  <h3 className="mb-2 font-serif text-h3 font-semibold tracking-tight text-brand-text transition-colors group-hover:text-brand-red">{service.title}</h3>
+                </ScrollReveal>
+                <ScrollReveal direction="up" distance={16} delay={index * 0.04 + 0.05}>
+                  <p className="text-sm leading-relaxed text-brand-text/65 sm:text-base">
+                    {service.description}
+                  </p>
+                </ScrollReveal>
               </motion.div>
             ))}
           </div>

@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin, Play } from "lucide-react";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export interface VideoTestimonialItem {
   id: string;
@@ -28,11 +28,17 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
   return (
     <section className="bg-brand-bg py-16 sm:py-20 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          title="Video Testimonials"
-          subtitle="See how REALSPACE helped clients reimagine the way they live and work."
-          align="center"
-        />
+        <div className="mb-12 flex flex-col items-center text-center md:mb-16">
+          <ScrollReveal direction="up" distance={20}>
+            <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">Video Testimonials</h2>
+          </ScrollReveal>
+          <div className="mt-5 h-1 w-16 rounded-full bg-brand-yellow" />
+          <ScrollReveal direction="up" distance={18} delay={0.08}>
+            <p className="mt-5 max-w-2xl text-body-large text-brand-text/70">
+              See how REALSPACE helped clients reimagine the way they live and work.
+            </p>
+          </ScrollReveal>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-14">
           {testimonials.map((item, index) => {
@@ -74,18 +80,22 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
                   </div>
 
                   <div className="p-5 sm:p-6">
-                    <h3 className="line-clamp-2 text-lg sm:text-xl font-serif font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red">
-                      {item.title}
-                    </h3>
-                    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600">
-                      <span className="font-semibold text-brand-text">{item.clientName}</span>
-                      {item.location && (
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-brand-red" />
-                          {item.location}
-                        </span>
-                      )}
-                    </div>
+                    <ScrollReveal direction="up" distance={16}>
+                      <h3 className="line-clamp-2 text-lg font-serif font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red sm:text-xl">
+                        {item.title}
+                      </h3>
+                    </ScrollReveal>
+                    <ScrollReveal direction="up" distance={14} delay={0.06}>
+                      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600">
+                        <span className="font-semibold text-brand-text">{item.clientName}</span>
+                        {item.location && (
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-3.5 w-3.5 text-brand-red" />
+                            {item.location}
+                          </span>
+                        )}
+                      </div>
+                    </ScrollReveal>
                   </div>
                 </Link>
               </motion.div>

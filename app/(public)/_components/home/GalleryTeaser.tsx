@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { getVideoThumbnailUrl } from '@/lib/cloudinary';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export interface GalleryTeaserItem {
     id: string;
@@ -41,15 +42,6 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
         },
     };
 
-    const headerVariants: Variants = {
-        hidden: { opacity: 0, y: 16 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: shouldReduceMotion ? 0.01 : 0.4, ease: "easeOut" },
-        },
-    };
-
     const cardVariants: Variants = {
         hidden: { opacity: 0, y: 20 },
         visible: {
@@ -63,36 +55,36 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
         <section className="border-y border-brand-border/50 bg-brand-warmWhite py-16 sm:py-20 md:py-24">
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
-                <motion.div
-                    className="mb-8 flex flex-col justify-between gap-5 sm:mb-12 md:flex-row md:items-end"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-50px" }}
-                    variants={headerVariants}
-                >
+                <div className="mb-8 flex flex-col justify-between gap-5 sm:mb-12 md:flex-row md:items-end">
                     <div className="max-w-2xl">
-                        <p className="text-eyebrow text-brand-red">A visual archive</p>
-                        <h2 className="mt-3 font-serif text-h2 font-semibold tracking-tight text-brand-text">
-                            Explore Our Gallery
-                        </h2>
-                        <p className="mt-3 max-w-2xl text-base leading-relaxed text-brand-text/65 sm:text-lg">
-                            A curated collection of our finest interior and exterior transformations.
-                        </p>
+                        <ScrollReveal direction="left" distance={24} className="text-eyebrow text-brand-red">
+                            A visual archive
+                        </ScrollReveal>
+                        <ScrollReveal direction="left" distance={28} delay={0.08}>
+                            <h2 className="mt-3 font-serif text-h2 font-semibold tracking-tight text-brand-text">
+                                Explore Our Gallery
+                            </h2>
+                        </ScrollReveal>
+                        <ScrollReveal direction="left" distance={24} delay={0.16}>
+                            <p className="mt-3 max-w-2xl text-base leading-relaxed text-brand-text/65 sm:text-lg">
+                                A curated collection of our finest interior and exterior transformations.
+                            </p>
+                        </ScrollReveal>
                         {/* Kunku Red Accent Line */}
                         <div className="mt-5 h-px w-20 bg-brand-yellow"></div>
                     </div>
 
                     {/* Desktop CTA */}
-                    <div className="hidden md:block">
+                    <ScrollReveal direction="right" distance={24} delay={0.1} className="hidden md:block">
                         <Link
                             href="/gallery"
                             className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-brand-red px-5 py-3 text-sm font-semibold text-brand-red transition-colors hover:bg-brand-red hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red"
                         >
                             View Full Gallery
-                            <ArrowRight className="ml-2 w-4 h-4" />
+                            <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
-                    </div>
-                </motion.div>
+                    </ScrollReveal>
+                </div>
 
                 {/* Gallery Grid */}
                 <motion.div
@@ -102,7 +94,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                     viewport={{ once: true, margin: "-50px" }}
                     variants={containerVariants}
                 >
-                    {displayItems.map((item) => (
+                    {displayItems.map((item, index) => (
                         <motion.div key={item.id} variants={cardVariants}>
                             <Link
                                 href={`/gallery?category=${encodeURIComponent(item.category)}`}
@@ -124,14 +116,18 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                                 <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
                                     <div className="transform transition-all duration-300 ease-out motion-safe:translate-y-2 motion-safe:group-hover:translate-y-0">
                                         {/* Halad Yellow Category Badge */}
-                                        <span className="mb-1.5 inline-block max-w-full truncate rounded-sm border border-brand-yellow bg-brand-yellow px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-dark shadow-sm sm:mb-3 sm:px-3 sm:py-1 sm:text-xs">
-                                            {item.category}
-                                        </span>
+                                        <ScrollReveal direction={index % 3 === 0 ? "left" : index % 3 === 2 ? "right" : "up"} distance={16}>
+                                            <span className="mb-1.5 inline-block max-w-full truncate rounded-sm border border-brand-yellow bg-brand-yellow px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-dark shadow-sm sm:mb-3 sm:px-3 sm:py-1 sm:text-xs">
+                                                {item.category}
+                                            </span>
+                                        </ScrollReveal>
 
                                         {/* Title */}
-                                        <h3 className="text-base sm:text-xl font-medium text-white leading-snug opacity-95 transition-opacity duration-300 group-hover:opacity-100 line-clamp-2">
-                                            {item.title}
-                                        </h3>
+                                        <ScrollReveal direction={index % 3 === 0 ? "left" : index % 3 === 2 ? "right" : "up"} distance={18} delay={0.06}>
+                                            <h3 className="line-clamp-2 text-base font-medium leading-snug text-white opacity-95 transition-opacity duration-300 group-hover:opacity-100 sm:text-xl">
+                                                {item.title}
+                                            </h3>
+                                        </ScrollReveal>
                                     </div>
                                 </div>
                             </Link>

@@ -257,7 +257,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       <div className="absolute inset-0 -z-10 bg-white/80 backdrop-blur-xs" aria-hidden="true" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="font-serif text-3xl font-bold text-brand-dark sm:text-5xl">Testimonials</h1>
+          <h1 className="font-serif text-3xl font-bold uppercase tracking-tight text-brand-dark sm:text-5xl">OUR HAPPY CLIENTS</h1>
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-3 rounded-2xl border border-brand-bgAlt bg-white p-3 shadow-sm sm:mt-12 sm:grid-cols-2 lg:grid-cols-5">

@@ -55,7 +55,7 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
         <div className="mx-auto grid max-w-standard items-center gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:px-12 lg:py-36">
           <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={transition}>
             <h2 className="mt-5 font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">FOUNDATION</h2>
-            <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-[1.85] text-brand-text/75 sm:text-base">{foundationCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
+            <div className="mt-8 max-w-2xl space-y-5 text-[18px] sm:text-[20px] leading-[1.85] text-brand-text/75">{foundationCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
           </motion.div>
           <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }} className="relative aspect-[4/5] overflow-hidden bg-brand-dark"><Image src="/images/about/foundation2.jpeg" alt="REALSPACE interior design" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover" /><div className="absolute inset-0 bg-brand-dark/20" /></motion.div>
         </div>

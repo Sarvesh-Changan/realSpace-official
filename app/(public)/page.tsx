@@ -6,7 +6,7 @@ import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { Hero } from "./_components/home/Hero";
 import { WelcomeIntro } from "./_components/home/WelcomeIntro";
-import { Projects, type ProjectType } from "./_components/home/Projects";
+import { OwnerPortrait } from "./_components/home/OwnerPortrait";
 import { GallerySlider, type GallerySliderItem } from "./_components/home/GallerySlider";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
 
@@ -42,22 +42,6 @@ export default async function HomePage() {
     ctaLabel: string;
     ctaLink: string;
   }> = [];
-  let rawInteriorProjects: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    location: string;
-    category: string;
-    images: Array<{ url: string; isCoverImage: boolean }>;
-  }> = [];
-  let rawExteriorProjects: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    location: string;
-    category: string;
-    images: Array<{ url: string; isCoverImage: boolean }>;
-  }> = [];
   let rawVideoTestimonials: Array<{
     id: string;
     clientName: string;
@@ -84,8 +68,6 @@ export default async function HomePage() {
     const [
       fetchedSettings,
       fetchedOffers,
-      fetchedInterior,
-      fetchedExterior,
       fetchedVideoTestimonials,
       fetchedGalleryImages,
     ] = await Promise.all([
@@ -99,42 +81,6 @@ export default async function HomePage() {
           ],
         },
         orderBy: { sortOrder: "asc" },
-      }),
-      prisma.project.findMany({
-        where: {
-          designType: "INTERIOR",
-          isFeatured: true,
-          isPublished: true,
-        },
-        include: {
-          images: {
-            orderBy: [
-              { isCoverImage: "desc" },
-              { sortOrder: "asc" },
-            ],
-            take: 1,
-          },
-        },
-        orderBy: { sortOrder: "asc" },
-        take: 3,
-      }),
-      prisma.project.findMany({
-        where: {
-          designType: "EXTERIOR",
-          isFeatured: true,
-          isPublished: true,
-        },
-        include: {
-          images: {
-            orderBy: [
-              { isCoverImage: "desc" },
-              { sortOrder: "asc" },
-            ],
-            take: 1,
-          },
-        },
-        orderBy: { sortOrder: "asc" },
-        take: 3,
       }),
       prisma.testimonial.findMany({
         where: {
@@ -163,45 +109,12 @@ export default async function HomePage() {
 
     siteSettings = fetchedSettings;
     rawOffers = fetchedOffers;
-    rawInteriorProjects = fetchedInterior;
-    rawExteriorProjects = fetchedExterior;
     rawVideoTestimonials = fetchedVideoTestimonials;
     rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
     console.error("Error loading home page data from Prisma:", error);
     // Graceful fallback: empty states will be rendered by subcomponents
   }
-
-  // Map database project models to ProjectType props for subcomponents
-  const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => {
-    const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
-
-    return {
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      location: p.location,
-      category: formatCategory(p.category),
-      imageUrl:
-        coverImage?.url ||
-        "/images/placeholder-image.png",
-    };
-  });
-
-  const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => {
-    const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
-
-    return {
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      location: p.location,
-      category: formatCategory(p.category),
-      imageUrl:
-        coverImage?.url ||
-        "/images/placeholder-image.png",
-    };
-  });
 
   // Map database gallery image models to GallerySliderItem props
   const gallerySliderItems: GallerySliderItem[] = rawGalleryImages.map((img) => ({
@@ -240,20 +153,7 @@ export default async function HomePage() {
         } | null}
       />
       <WelcomeIntro intro={siteSettings?.heroSubhead} />
-      <Projects
-        title="Interior Projects"
-        subtitle="Explore our curated portfolio of bespoke interior transformations."
-        projects={interiorProjects}
-        viewAllLink="/projects?type=interior"
-        backgroundImage="/images/home/behind-project-interior.png"
-      />
-      <Projects
-        title="Exterior Projects"
-        subtitle="Discover our striking architectural facades and outdoor spaces."
-        projects={exteriorProjects}
-        viewAllLink="/projects?type=exterior"
-        backgroundImage="/images/home/behind-project-exterior.png"
-      />
+      <OwnerPortrait />
       <GallerySlider items={gallerySliderItems} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
       <section className="bg-brand-cream px-4 py-14 sm:py-20">

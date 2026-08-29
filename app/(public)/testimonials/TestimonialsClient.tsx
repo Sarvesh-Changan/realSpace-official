@@ -253,7 +253,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   }), [endDate, selectedDateFilter, selectedLocation, selectedMonth, selectedProjectType, startDate, testimonials]);
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-[url('/images/hero-living-room.png')] bg-fixed bg-cover bg-center pb-16 pt-24 sm:pb-20 sm:pt-28">
+    <main className="relative isolate min-h-screen overflow-hidden bg-[url('/images/home/home-1.jpeg')] bg-fixed bg-cover bg-center pb-16 pt-24 sm:pb-20 sm:pt-28">
       <div className="absolute inset-0 -z-10 bg-white/80 backdrop-blur-xs" aria-hidden="true" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">

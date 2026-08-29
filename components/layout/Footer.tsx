@@ -144,20 +144,20 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
   ].filter((platform) => Boolean(platform.url && platform.url.length > 0));
 
   return (
-    <footer className="bg-brand-dark text-neutral-300 border-t border-white/10 pt-16 pb-10 sm:pt-20 sm:pb-12">
+    <footer className="bg-brand-dark text-neutral-300 border-t border-white/10 pt-10 pb-6 sm:pt-12 sm:pb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:gap-12 items-start justify-between">
 
-          {/* Company Info */}
-          <div className="space-y-6 text-center sm:text-left">
-            <Link href="/" className="mx-auto flex w-fit">
+          {/* Company Info / Enlarged Logo */}
+          <div className="flex items-center justify-center sm:justify-start">
+            <Link href="/" className="flex w-fit">
               <Image
                 src="/images/realspace_logo.png"
                 alt="REALSPACE logo"
-                width={300}
-                height={60}
-                sizes="(max-width: 640px) 123px, 154px"
-                className="h-16 sm:h-20 w-auto filter brightness-110"
+                width={400}
+                height={150}
+                sizes="(max-width: 640px) 180px, 240px"
+                className="h-24 sm:h-28 lg:h-32 w-auto filter brightness-110 object-contain"
                 style={{ width: "auto" }}
               />
             </Link>
@@ -165,10 +165,10 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
 
           {/* Quick Links */}
           <div className="text-center sm:text-left">
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-yellow">
+            <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-brand-yellow">
               Quick Links
             </h4>
-            <ul className="space-y-3.5">
+            <ul className="space-y-2.5">
               {["Projects", "About", "FAQ", "Contact", "Get Free Quote"].map((link) => {
                 const href = link === "Get Free Quote" ? "/quote" : `/${link.toLowerCase()}`;
                 return (
@@ -185,45 +185,12 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
             </ul>
           </div>
 
-          {/* Services */}
-          <div className="text-center sm:text-left">
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-yellow">
-              Services
-            </h4>
-            <ul className="space-y-3.5">
-              <li>
-                <Link
-                  href="/services/interior"
-                  className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
-                >
-                  Interior Design
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/services/exterior"
-                  className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
-                >
-                  Exterior & Elevation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/services"
-                  className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
-                >
-                  View All Services
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Contact Info */}
           <div className="text-center sm:text-left">
-            <h4 className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-yellow">
+            <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-brand-yellow">
               Contact Us
             </h4>
-            <ul className="space-y-4 text-sm text-neutral-300 max-w-sm mx-auto sm:mx-0">
+            <ul className="space-y-3 text-sm text-neutral-300 max-w-sm mx-auto sm:mx-0">
               <li className="flex items-start justify-center gap-3 sm:justify-start">
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-brand-red shrink-0 mt-0.5">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -257,7 +224,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col items-center justify-between gap-6 md:flex-row">
+        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-xs text-neutral-400 text-center md:text-left">
             &copy; {new Date().getFullYear()} REALSPACE Interiors. All rights reserved.
           </p>

@@ -40,7 +40,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
     <section className="group relative isolate min-h-[680px] overflow-hidden bg-brand-dark sm:min-h-[740px]">
       <div className="absolute inset-0 -z-20">
         <Image
-          src="/images/home/home-1.png"
+          src="/images/home/home-1.jpeg"
           alt="A refined REALSPACE interior design project"
           fill
           priority
@@ -63,6 +63,9 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
               {subhead}
             </p>
+          </ScrollReveal>
+          <ScrollReveal direction="left" distance={32} delay={0.18}>
+            <p>At REALSPACE, we’re all about ensuring every bit of a home reflects the personality and style of the people living there. By designing your house with dedication and skill, we ensure each corner of your living space echoes the quality of a house that’s designed well and a place you can call home.</p>
           </ScrollReveal>
           <ScrollReveal direction="left" distance={32} delay={0.18}>
           {socialPlatforms.length > 0 && (

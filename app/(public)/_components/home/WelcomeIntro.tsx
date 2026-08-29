@@ -16,7 +16,7 @@ export function WelcomeIntro({ intro }: WelcomeIntroProps) {
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.82fr] lg:gap-20">
           <div className="max-w-2xl">
             <ScrollReveal direction="left" distance={28} className="text-eyebrow text-brand-red">
-              Welcome to REALSPACE
+              <h4 className="mt-4 font-serif text-h4 font-bold tracking-tight text-brand-text">Welcome to REALSPACE</h4>
             </ScrollReveal>
             <ScrollReveal direction="left" distance={32} delay={0.08}>
               <h2 className="mt-4 font-serif text-h2 font-semibold tracking-tight text-brand-text">

@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Hero } from "./_components/home/Hero";
 import { WelcomeIntro } from "./_components/home/WelcomeIntro";
 import { Projects, type ProjectType } from "./_components/home/Projects";
-import { Services } from "./_components/home/Services";
-import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
+import { GallerySlider, type GallerySliderItem } from "./_components/home/GallerySlider";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
@@ -59,12 +58,6 @@ export default async function HomePage() {
     category: string;
     images: Array<{ url: string; isCoverImage: boolean }>;
   }> = [];
-  let services: Array<{
-    id: string;
-    title: string;
-    description: string;
-    iconKey?: string | null;
-  }> = [];
   let rawVideoTestimonials: Array<{
     id: string;
     clientName: string;
@@ -93,7 +86,6 @@ export default async function HomePage() {
       fetchedOffers,
       fetchedInterior,
       fetchedExterior,
-      fetchedServices,
       fetchedVideoTestimonials,
       fetchedGalleryImages,
     ] = await Promise.all([
@@ -144,11 +136,6 @@ export default async function HomePage() {
         orderBy: { sortOrder: "asc" },
         take: 3,
       }),
-      prisma.service.findMany({
-        where: { isPublished: true },
-        orderBy: { sortOrder: "asc" },
-        take: 3,
-      }),
       prisma.testimonial.findMany({
         where: {
           isPublished: true,
@@ -178,7 +165,6 @@ export default async function HomePage() {
     rawOffers = fetchedOffers;
     rawInteriorProjects = fetchedInterior;
     rawExteriorProjects = fetchedExterior;
-    services = fetchedServices;
     rawVideoTestimonials = fetchedVideoTestimonials;
     rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
@@ -217,11 +203,11 @@ export default async function HomePage() {
     };
   });
 
-  // Map database gallery image models to GalleryTeaserItem props
-  const galleryTeaserItems: GalleryTeaserItem[] = rawGalleryImages.map((img) => ({
+  // Map database gallery image models to GallerySliderItem props
+  const gallerySliderItems: GallerySliderItem[] = rawGalleryImages.map((img) => ({
     id: img.id,
     title: img.title,
-    category: img.category?.name || "Gallery",
+    altText: img.title ? `${img.title} — REALSPACE interior design` : undefined,
     imageUrl: img.url,
   }));
 
@@ -268,8 +254,7 @@ export default async function HomePage() {
         viewAllLink="/projects?type=exterior"
         backgroundImage="/images/home/behind-project-exterior.png"
       />
-      <Services services={services} />
-      <GalleryTeaser items={galleryTeaserItems} />
+      <GallerySlider items={gallerySliderItems} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
       <section className="bg-brand-cream px-4 py-14 sm:py-20">
         <div className="flex justify-center">

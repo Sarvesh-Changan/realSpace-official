@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Josefin_Sans, Lato } from "next/font/google";
 import "./globals.css";
 
-const playfairDisplay = Playfair_Display({
+const josefinSans = Josefin_Sans({
   variable: "--font-serif",
   subsets: ["latin"],
   display: "swap",
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const lato = Lato({
+  weight: ["100", "300", "400", "700", "900"],
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${playfairDisplay.variable} ${plusJakartaSans.variable} h-full antialiased`}
+      className={`${josefinSans.variable} ${lato.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

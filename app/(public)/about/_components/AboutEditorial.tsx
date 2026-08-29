@@ -34,7 +34,6 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
           <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={reveal} transition={transition} className="max-w-4xl">
             <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-yellow">EST. 1989</p>
             <h1 className="max-w-3xl font-serif text-5xl font-bold leading-[0.98] tracking-tight sm:text-7xl lg:text-8xl">MEET OUR FOUNDER</h1>
-            <p className="mt-7 max-w-2xl text-xs font-semibold uppercase tracking-[0.18em] text-white/75">THANE · MUMBAI · NAVI MUMBAI</p>
           </motion.div>
         </div>
       </section>
@@ -43,12 +42,11 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
         <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={transition} className="relative mx-auto w-full max-w-md lg:mx-0">
           <div className="absolute -left-3 -top-3 h-full w-full border border-brand-yellow/70 sm:-left-5 sm:-top-5" />
           <div className="relative aspect-[4/5] overflow-hidden bg-brand-cream"><Image src="/images/owner_image.jpeg" alt="Vijay Chawan" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover object-top" /></div>
-          <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-muted">RESIDENTIAL · COMMERCIAL · TURNKEY</p>
         </motion.div>
 
         <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.1 }} className="lg:pt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-red">MEET OUR FOUNDER</p>
-          <h2 className="mt-5 max-w-2xl font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">Vijay Chawan — Principal Designer &amp; Founder, REALSPACE</h2>
+          <h2 className="mt-5 max-w-2xl font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">Vijay vasant chawan —</h2> <h3 className="mt-2 max-w-2xl font-serif text-lg font-semibold leading-tight text-brand-text sm:text-2xl">Principal Designer &amp; Founder, REALSPACE</h3>
           <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-[1.85] text-brand-text/75 sm:text-base">{founderCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
         </motion.div>
       </section>

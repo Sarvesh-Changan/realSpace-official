@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["var(--font-serif)", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "Arial", "Helvetica", "sans-serif"],
+        serif: ["var(--font-serif)", "Josefin Sans", "sans-serif"],
+        sans: ["var(--font-sans)", "Lato", "sans-serif"],
       },
       colors: {
         brand: {

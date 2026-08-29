@@ -129,7 +129,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
 
                                         {/* Title */}
                                         <ScrollReveal direction={index % 3 === 0 ? "left" : index % 3 === 2 ? "right" : "up"} distance={18} delay={0.06}>
-                                            <h3 className="line-clamp-2 text-base font-medium leading-snug text-white opacity-95 transition-opacity duration-300 group-hover:opacity-100 sm:text-xl">
+                                            <h3 className="line-clamp-2 text-base font-serif font-medium leading-snug text-white opacity-95 transition-opacity duration-300 group-hover:opacity-100 sm:text-xl">
                                                 {item.title}
                                             </h3>
                                         </ScrollReveal>

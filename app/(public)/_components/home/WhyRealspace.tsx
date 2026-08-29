@@ -48,21 +48,15 @@ export function WhyRealspace() {
           <div className="mx-auto mt-4 h-0.5 w-16 bg-brand-red rounded-full" />
         </ScrollReveal>
 
-        {/* 2x2 Text-Only Card Grid with Alternating Backgrounds */}
+        {/* 2x2 Text-Only Card Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
           {WHY_REALSPACE_ITEMS.map((item, index) => {
-            // Alternating card background between white and light neutral per design tokens
-            const isEven = index % 2 === 0;
-            const bgClass = isEven
-              ? "bg-white shadow-sm hover:shadow-md"
-              : "bg-brand-cream/60 border border-brand-border/80 hover:shadow-md";
-
             return (
               <ScrollReveal
                 key={item.id}
                 direction="up"
                 delay={index * 0.08}
-                className={`p-6 sm:p-8 rounded-2xl border border-brand-border/60 transition-all duration-300 ${bgClass}`}
+                className="p-6 sm:p-8 rounded-2xl border border-brand-border/60 bg-white shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <h3 className="mb-3 text-lg sm:text-xl font-serif font-bold text-brand-dark">
                   {item.title}

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Hero } from "./_components/home/Hero";
 import { WelcomeIntro } from "./_components/home/WelcomeIntro";
 import { OwnerPortrait } from "./_components/home/OwnerPortrait";
+import { KeyFeatures } from "./_components/home/KeyFeatures";
+import { WhyRealspace } from "./_components/home/WhyRealspace";
 import { GallerySlider, type GallerySliderItem } from "./_components/home/GallerySlider";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
 
@@ -154,6 +156,8 @@ export default async function HomePage() {
       />
       <WelcomeIntro intro={siteSettings?.heroSubhead} />
       <OwnerPortrait />
+      <KeyFeatures />
+      <WhyRealspace />
       <GallerySlider items={gallerySliderItems} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
       <section className="bg-brand-cream px-4 py-14 sm:py-20">

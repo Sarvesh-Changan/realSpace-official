@@ -30,16 +30,8 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
   const doubleCertifications = [...certifications, ...certifications, ...certifications];
 
   return (
-    <section className="relative isolate w-full overflow-hidden border-t border-brand-border py-12 sm:py-16 select-none">
-      {/* Background Image */}
-      <Image
-        src="/images/about/behind-certificates.png"
-        alt="Warm interior design studio behind the certifications"
-        fill
-        sizes="100vw"
-        className="-z-20 object-cover object-center"
-      />
-      <div className="absolute inset-0 -z-10 bg-brand-dark/50" />
+    <section className="relative isolate w-full overflow-hidden border-t border-brand-border/40 py-12 sm:py-16 select-none bg-[url('/images/home/behind-project.png')] bg-fixed bg-cover bg-center">
+      <div className="absolute inset-0 -z-10 bg-brand-dark/60" />
 
       {/* Infinite Right-to-Left Moving Marquee Track */}
       <div className="relative w-full overflow-hidden">

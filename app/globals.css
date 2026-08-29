@@ -40,7 +40,7 @@
   --container-fullBleed: 100rem;
 }
 
-body {
+body, input, textarea, button, select {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), "Lato", sans-serif;
@@ -48,6 +48,14 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif), "Josefin Sans", sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-serif), "Josefin Sans", sans-serif !important;
+}
+
+.font-sans {
+  font-family: var(--font-sans), "Lato", sans-serif !important;
 }
 
 /* Phase 2 Type-Scale Token System */

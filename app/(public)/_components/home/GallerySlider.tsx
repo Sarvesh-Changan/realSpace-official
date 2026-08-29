@@ -197,16 +197,26 @@ export function GallerySlider({ items }: GallerySliderProps) {
           exit="exit"
           className="absolute inset-0 h-full w-full"
         >
+          {/* Ambient blurred backdrop to fill aspect ratio gaps */}
           <Image
-            src={getCloudinaryUrl(currentSlide.imageUrl, { width: 1920, quality: 85, crop: "fill" })}
+            src={getCloudinaryUrl(currentSlide.imageUrl, { width: 400, quality: 30 })}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-30 blur-2xl scale-110 pointer-events-none"
+            aria-hidden="true"
+          />
+          {/* Main Uncropped Full Image */}
+          <Image
+            src={getCloudinaryUrl(currentSlide.imageUrl, { width: 1920, quality: 90 })}
             alt={currentSlide.altText || currentSlide.title || "REALSPACE interior design showcase"}
             fill
             priority={currentIndex === 0}
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-contain object-center z-10 p-2 sm:p-4"
           />
           {/* Subtle gradient vignette at top and bottom for smooth blending */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/35 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40 pointer-events-none z-10" />
         </motion.div>
       </AnimatePresence>
 

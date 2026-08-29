@@ -12,11 +12,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        "bg-brand-red text-white hover:bg-brand-yellow hover:text-brand-dark shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 cursor-pointer",
+        "bg-brand-red text-brand-yellow border-2 border-brand-red hover:bg-brand-yellow hover:text-brand-red hover:border-brand-yellow shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-pointer font-bold",
       secondary:
-        "border border-brand-red text-brand-red hover:bg-brand-red hover:text-white bg-transparent hover:shadow-sm hover:scale-[1.02] transition-all duration-300 cursor-pointer",
+        "bg-brand-yellow text-brand-red border-2 border-brand-yellow hover:bg-brand-red hover:text-brand-yellow hover:border-brand-red shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-pointer font-bold",
       ghost:
-        "text-brand-text hover:bg-brand-yellow/20 hover:text-brand-dark bg-transparent transition-all duration-300 cursor-pointer",
+        "bg-transparent text-brand-red border-2 border-brand-red hover:bg-brand-yellow hover:text-brand-red hover:border-brand-yellow shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer font-bold",
     };
 
     const sizes = {

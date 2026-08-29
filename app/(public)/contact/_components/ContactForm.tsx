@@ -205,7 +205,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full min-h-[48px] bg-brand-red hover:bg-red-700 text-white font-semibold py-3.5 px-6 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base cursor-pointer"
+          className="w-full min-h-[48px] bg-brand-red border-2 border-brand-red hover:bg-brand-yellow hover:border-brand-yellow text-brand-yellow hover:text-brand-red font-bold py-3.5 px-6 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base cursor-pointer"
         >
           {isSubmitting ? "Sending..." : "Send Message"}
         </button>

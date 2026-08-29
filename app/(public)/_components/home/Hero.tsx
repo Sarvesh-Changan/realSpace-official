@@ -105,8 +105,9 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
             <div className="mt-8 flex w-full flex-col gap-4 sm:w-auto sm:flex-row items-center">
               <Link href="/projects" className="w-full sm:w-auto">
                 <Button
+                  variant="secondary"
                   size="lg"
-                  className="min-h-[52px] w-full border border-brand-yellow bg-brand-yellow px-8 text-base font-bold text-brand-dark shadow-lg hover:border-brand-red hover:bg-brand-red hover:text-white hover:scale-[1.03] sm:w-auto transition-all duration-300 rounded-xl cursor-pointer"
+                  className="min-h-[52px] w-full px-8 text-base font-bold sm:w-auto"
                 >
                   View Our Work
                 </Button>
@@ -117,13 +118,13 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
                     initial={{ scale: 1, opacity: 0.65 }}
                     animate={{ scale: 1.08, opacity: 0 }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-                    className="pointer-events-none absolute -inset-1 rounded-xl border border-white/80"
+                    className="pointer-events-none absolute -inset-1 rounded-xl border border-brand-yellow"
                   />
                 )}
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="lg"
-                  className="relative z-10 min-h-[52px] w-full border-white/50 bg-white/10 px-8 text-base font-bold text-white backdrop-blur-md hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark hover:scale-[1.03] sm:w-auto transition-all duration-300 rounded-xl cursor-pointer"
+                  className="relative z-10 min-h-[52px] w-full px-8 text-base font-bold sm:w-auto"
                 >
                   {buttonCta}
                 </Button>

@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`${isHome ? "fixed" : "sticky"} top-0 z-50 w-full transition-all duration-300 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         isTransparentHome
           ? "border-b border-transparent bg-transparent py-3 sm:py-4"
           : "border-b border-brand-border/60 bg-white/90 py-2 shadow-sm backdrop-blur-md sm:py-3"

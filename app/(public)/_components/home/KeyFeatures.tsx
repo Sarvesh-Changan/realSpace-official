@@ -68,13 +68,13 @@ export function KeyFeatures() {
                 className="flex flex-col sm:flex-row items-start gap-5 sm:gap-6 p-6 sm:p-8 rounded-2xl border border-brand-border/60 bg-white hover:border-brand-yellow/80 hover:shadow-md transition-all duration-300"
               >
                 {/* Bordered Square Icon Box */}
-                <div className="flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-xl border border-brand-yellow/80 bg-brand-bgAlt/50 p-3">
+                <div className="flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-xl border border-brand-yellow/80 bg-brand-bgAlt/50 p-1.5 sm:p-2">
                   <Image
                     src={feature.imageSrc}
                     alt={feature.title}
-                    width={56}
-                    height={56}
-                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
+                    width={80}
+                    height={80}
+                    className="h-16 w-16 sm:h-20 sm:w-20 object-contain"
                   />
                 </div>
 

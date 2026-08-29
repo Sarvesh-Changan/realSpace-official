@@ -135,8 +135,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   />
                 )}
                 <Button
+                  variant="primary"
                   size="sm"
-                  className="relative z-10 font-bold !bg-white !text-[#990000] !border-2 !border-white hover:!bg-[#990000] hover:!text-white hover:!border-[#990000] transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="relative z-10 font-bold"
                 >
                   Get Free Quote
                 </Button>

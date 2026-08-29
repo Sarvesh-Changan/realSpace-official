@@ -118,13 +118,12 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
                     initial={{ scale: 1, opacity: 0.65 }}
                     animate={{ scale: 1.08, opacity: 0 }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-                    className="pointer-events-none absolute -inset-1 rounded-xl border border-brand-yellow"
+                    className="pointer-events-none absolute -inset-1 rounded-xl border border-white"
                   />
                 )}
                 <Button
-                  variant="primary"
                   size="lg"
-                  className="relative z-10 min-h-[52px] w-full px-8 text-base font-bold sm:w-auto"
+                  className="relative z-10 min-h-[52px] w-full px-8 text-base font-bold sm:w-auto !bg-white !text-[#990000] !border-2 !border-white hover:!bg-[#990000] hover:!text-white hover:!border-[#990000] transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03]"
                 >
                   {buttonCta}
                 </Button>

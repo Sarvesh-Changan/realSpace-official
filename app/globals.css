@@ -53,7 +53,7 @@ input, textarea, button, select {
 /* Custom Kunku Red (#990000) & Halad Yellow (#FECC00) Button Classes */
 .btn-kunku {
   background-color: #990000 !important;
-  color: #FECC00 !important;
+  color: #ffffff !important;
   border: 2px solid #990000 !important;
   transition: all 0.3s ease !important;
 }
@@ -75,7 +75,7 @@ input, textarea, button, select {
 
 .btn-halad:hover {
   background-color: #990000 !important;
-  color: #FECC00 !important;
+  color: #ffffff !important;
   border-color: #990000 !important;
   transform: scale(1.03) !important;
   box-shadow: 0 10px 25px rgba(153, 0, 0, 0.45) !important;

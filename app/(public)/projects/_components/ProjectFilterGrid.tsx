@@ -113,7 +113,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
               <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <Link
                 href="/contact"
-                className="group inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white transition-colors hover:text-brand-yellow"
+                className="group inline-flex shrink-0 items-center gap-2 text-lg font-bold uppercase tracking-[0.18em] text-white transition-colors hover:text-brand-yellow"
               >
                 Start a project
                 <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -126,10 +126,10 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
 
       <div className="relative z-10 mx-auto -mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Filter Controls */}
-        <div className="flex flex-col gap-3 rounded-xl border border-brand-text/10 bg-white/90 p-3 shadow-lg backdrop-blur-md sm:gap-4 sm:p-4">
+        <div className="flex flex-col gap-4 rounded-2xl border border-brand-text/10 bg-white/95 p-4 shadow-xl backdrop-blur-md sm:gap-5 sm:p-5">
             {/* Design Type Tabs - Scrollable on small screens */}
-            <div className="flex items-center gap-5 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-              <span className="mr-1 shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-brand-text/45">
+            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 py-1">
+              <span className="mr-2 shrink-0 text-xs sm:text-sm font-bold uppercase tracking-wider text-brand-text/60">
                 Type:
               </span>
               {[
@@ -141,11 +141,11 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                   key={tab.value}
                   type="button"
                   onClick={() => setSelectedDesignType(tab.value)}
-                    className={`relative shrink-0 min-h-[30px] px-0 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors cursor-pointer ${
-                      selectedDesignType === tab.value
-                        ? "text-brand-red after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:bg-brand-red"
-                        : "text-brand-text/60 hover:text-brand-text"
-                    }`}
+                  className={`shrink-0 rounded-full px-5 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                    selectedDesignType === tab.value
+                      ? "btn-kunku shadow-md scale-[1.02]"
+                      : "bg-transparent text-brand-text/70 hover:text-brand-red hover:bg-brand-cream/80"
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -153,13 +153,13 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
             </div>
 
             {/* Secondary Filters: Property Type & Category */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 w-full sm:w-auto">
                 {/* Property Type Dropdown */}
                 <div className="flex items-center gap-2">
                   <label
                     htmlFor="propertyType"
-                    className="text-xs font-bold uppercase tracking-wider text-brand-text/50 shrink-0 min-w-[70px] sm:min-w-0"
+                    className="text-xs sm:text-sm font-bold uppercase tracking-wider text-brand-text/60 shrink-0"
                   >
                     Property:
                   </label>
@@ -167,7 +167,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     id="propertyType"
                     value={selectedPropertyType}
                     onChange={(e) => setSelectedPropertyType(e.target.value)}
-                    className="w-full sm:w-auto min-h-[34px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-1 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
+                    className="min-h-[36px] rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs sm:text-sm font-bold text-brand-text focus:border-brand-red focus:outline-none cursor-pointer shadow-xs"
                   >
                     <option value="ALL">All Properties</option>
                     <option value="RESIDENTIAL">Residential</option>
@@ -179,7 +179,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                 <div className="flex items-center gap-2">
                   <label
                     htmlFor="category"
-                    className="text-xs font-bold uppercase tracking-wider text-brand-text/50 shrink-0 min-w-[70px] sm:min-w-0"
+                    className="text-xs sm:text-sm font-bold uppercase tracking-wider text-brand-text/60 shrink-0"
                   >
                     Category:
                   </label>
@@ -187,7 +187,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     id="category"
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full sm:w-auto min-h-[34px] rounded-none border-0 border-b border-brand-text/20 bg-transparent px-0 py-1 text-xs font-medium text-brand-text focus:border-brand-red focus:outline-none cursor-pointer"
+                    className="min-h-[36px] rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs sm:text-sm font-bold text-brand-text focus:border-brand-red focus:outline-none cursor-pointer shadow-xs"
                   >
                     <option value="ALL">All Categories</option>
                     {availableCategories.map((cat) => (
@@ -200,8 +200,8 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
               </div>
 
               {/* Reset & Active Filter Count */}
-              <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0 border-t border-brand-bgAlt sm:border-t-0">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-text/50">
+              <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t border-brand-border/40 sm:border-t-0">
+                <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-brand-text/60">
                   Showing {filteredProjects.length} of {projects.length}
                 </span>
                 {(selectedDesignType !== "ALL" ||
@@ -211,7 +211,7 @@ function ProjectFilterContent({ projects }: ProjectFilterGridProps) {
                     variant="ghost"
                     size="sm"
                     onClick={resetFilters}
-                    className="text-xs text-brand-red hover:bg-brand-red/10 h-8 px-2.5 cursor-pointer"
+                    className="text-xs font-bold text-brand-red hover:bg-brand-red/10 h-9 px-3 cursor-pointer"
                   >
                     Clear Filters
                   </Button>

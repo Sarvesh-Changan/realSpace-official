@@ -41,7 +41,7 @@ export default async function ContactPage() {
   const waNumberClean = whatsapp.replace(/[^\d]/g, "");
 
   return (
-    <div className="relative isolate flex flex-col overflow-hidden bg-neutral-950 pt-8 sm:pt-12 md:pt-16 pb-12 sm:pb-16 md:pb-20">
+    <div className="relative isolate flex flex-col overflow-hidden bg-neutral-950 pt-4 sm:pt-6 md:pt-8 pb-10 sm:pb-14 md:pb-16">
       <Image
         src="/images/contact/contact-bg.jpeg"
         alt=""
@@ -58,21 +58,21 @@ export default async function ContactPage() {
       />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Page Header */}
-        <div className="mb-6 sm:mb-8 md:mb-10 max-w-2xl">
-          <ScrollReveal direction="left" distance={32}>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 leading-tight">
-              Let's discuss your space.
-            </h1>
-          </ScrollReveal>
-          <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full mt-3 sm:mt-4"></div>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10 items-start">
+          {/* Left Column: Page Header & Contact Information */}
+          <div className="lg:col-span-2 flex flex-col gap-6 sm:gap-8 lg:pr-4">
+            {/* Page Header */}
+            <div className="pt-2 sm:pt-4">
+              <ScrollReveal direction="left" distance={32}>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 leading-tight">
+                  Let's discuss your space.
+                </h1>
+              </ScrollReveal>
+              <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full mt-3 sm:mt-4"></div>
+            </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8">
-          {/* Left Column: Contact Information */}
-          <div className="lg:col-span-2 flex flex-col gap-6 sm:gap-8 lg:pr-8">
             {/* Phone */}
-            <div className="flex items-start gap-3.5 sm:gap-4">
+            <div className="flex items-start gap-3.5 sm:gap-4 mt-1">
               <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/25 bg-white/15 backdrop-blur-sm flex items-center justify-center text-green-400">
                 <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
@@ -150,8 +150,8 @@ export default async function ContactPage() {
             </div>
           </div>
 
-          {/* Right Column: Contact Form */}
-          <div className="lg:col-span-3">
+          {/* Right Column: Contact Form Shifted Above to Top-Right */}
+          <div className="lg:col-span-3 lg:-mt-2">
             <ContactForm />
           </div>
         </div>

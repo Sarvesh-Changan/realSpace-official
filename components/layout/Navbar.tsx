@@ -57,10 +57,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isTransparentHome
+      className={`${isHome ? "absolute top-0" : "relative"} z-50 w-full transition-all duration-300 ${
+        isHome
           ? "border-b border-transparent bg-transparent py-3 sm:py-4"
-          : "border-b border-brand-border/60 bg-white/90 py-2 shadow-sm backdrop-blur-md sm:py-3"
+          : "border-b border-brand-border/60 bg-white py-3 sm:py-4 shadow-sm"
       }`}
     >
       <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
@@ -97,10 +97,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   href={link.href}
                   className={`relative px-3 py-2 text-xs lg:text-sm font-semibold uppercase tracking-wider transition-colors duration-200 ${
                     isActive
-                      ? isTransparentHome
+                      ? isHome
                         ? "font-bold text-brand-yellow"
                         : "font-bold text-brand-red"
-                      : isTransparentHome
+                      : isHome
                         ? "text-white/90 hover:text-brand-yellow"
                         : "text-brand-text/80 hover:text-brand-red"
                   }`}
@@ -109,7 +109,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {isActive && (
                     <motion.span
                       layoutId="activeNavIndicator"
-                      className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${isTransparentHome ? "bg-brand-yellow" : "bg-brand-red"}`}
+                      className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${isHome ? "bg-brand-yellow" : "bg-brand-red"}`}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -147,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className={`inline-flex items-center justify-center rounded-lg p-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red md:hidden ${isTransparentHome ? "text-white hover:bg-white/10" : "text-brand-text hover:bg-brand-bgAlt"}`}
+              className={`inline-flex items-center justify-center rounded-lg p-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red md:hidden ${isHome ? "text-white hover:bg-white/10" : "text-brand-text hover:bg-brand-bgAlt"}`}
               onClick={handleToggle}
               aria-expanded={isMobileMenuOpen}
               aria-label="Toggle navigation menu"
@@ -188,7 +188,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className={`overflow-hidden border-t backdrop-blur-md shadow-lg md:hidden ${isTransparentHome ? "border-white/15 bg-brand-dark/95" : "border-brand-border/60 bg-white/98"}`}
+            className={`overflow-hidden border-t backdrop-blur-md shadow-lg md:hidden ${isHome ? "border-white/15 bg-brand-dark/95" : "border-brand-border/60 bg-white/98"}`}
           >
             <div className="space-y-1 px-4 pb-6 pt-3 sm:px-6">
               {navLinks.map((link) => {
@@ -206,10 +206,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     className={`block rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${
                       isActive
-                      ? isTransparentHome
+                      ? isHome
                         ? "bg-white/10 font-bold text-brand-yellow"
                         : "bg-brand-red/10 font-bold text-brand-red"
-                      : isTransparentHome
+                      : isHome
                         ? "text-white hover:bg-white/10 hover:text-brand-yellow"
                         : "text-brand-text hover:bg-brand-bgAlt hover:text-brand-red"
                     }`}

@@ -11,28 +11,28 @@ interface WhyRealspaceItem {
 
 const WHY_REALSPACE_ITEMS: WhyRealspaceItem[] = [
   {
-    id: "trust",
-    title: "27+ Years of Trust",
+    id: "reputation",
+    title: "Our Reputation Precedes Us",
     description:
-      "Since 1989, REALSPACE has been turning homes and commercial spaces across Thane, Mumbai, and Navi Mumbai into lasting, functional designs — built on quality material, professional installation, and rigorous quality checks, within budget.",
+      "We have been transforming homes into masterpieces and managing turnkey projects with exceptional results since 1989. Our commitment to excellence has earned us a loyal following of clients who trust us with their most treasured possession – their homes.",
   },
   {
-    id: "vision",
-    title: "Your Vision, Realized",
+    id: "perfection",
+    title: "Our Goal is to Achieve Perfection",
     description:
-      "We believe a space should reflect the person who lives or works in it. We start every project from scratch, working closely with each client to design something that fits their personality as much as their floor plan.",
+      "At REALSPACE, we believe a home should express its owner's personality. That's why we work closely with our clients to create living spaces that capture their unique style and surpass their expectations.",
   },
   {
     id: "expertise",
-    title: "Expertise Across Interior and Exterior",
+    title: "Our Area of Expertise is Expansive",
     description:
-      "We don't stop at decorating a room. From modular kitchens and full-home interiors to building facades and villa exteriors, our team shapes the complete look and feel of a property, residential or commercial.",
+      "We do not limit ourselves to just decorating your home. Instead, we go a step ahead to ensure your house exhibits a personality of its own. Whether it's a cozy apartment or a luxurious villa, our team is dedicated to delivering the highest quality of service for every project, making us an expert in bringing out the soul of your living space.",
   },
   {
     id: "tailored",
-    title: "Tailored to Every Client",
+    title: "Tailored Offerings to meet our Client's Needs",
     description:
-      "No two projects at REALSPACE look the same. Whether it's a compact 2BHK or a full turnkey villa, our design, execution, and onsite supervision are shaped around what each client actually needs, not a fixed package.",
+      "Our offerings are as exceptional as our services. We offer a wide range of quality interior design solutions, including home renovation, turnkey project management, and interior styling. Our team has a passion for designing spaces that are not only beautiful but also practical and perfectly tailored to our client's needs. We believe that a great design can stand the test of time, which is why we specialize in creating timeless interiors.",
   },
 ];
 

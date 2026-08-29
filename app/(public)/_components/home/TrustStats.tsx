@@ -22,8 +22,8 @@ export function TrustStats({ compact = false, directional = false }: { compact?:
       delay: 0.15,
     },
     {
-      value: "Thane, Navi Mumbai",
-      label: "& Mumbai Regions",
+      value: "Thane - Mumbai",
+      label: "& Navi Mumbai Regions",
       icon: MapPin,
       delay: 0.3,
     },

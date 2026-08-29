@@ -34,7 +34,7 @@ export function WelcomeIntro({ intro }: WelcomeIntroProps) {
           <div className="relative mx-auto w-full max-w-sm lg:max-w-md">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-8 border-white/70 shadow-xl">
               <Image
-                src="/images/home/home-2.png"
+                src="/images/home/home-2-1.jpeg"
                 alt="REALSPACE interior design detail"
                 fill
                 sizes="(max-width: 1024px) 90vw, 34vw"

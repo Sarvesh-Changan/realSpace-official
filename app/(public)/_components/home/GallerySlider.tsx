@@ -227,7 +227,7 @@ export function GallerySlider({ items }: GallerySliderProps) {
             type="button"
             onClick={prevSlide}
             aria-label="Previous image"
-            className="absolute left-4 sm:left-8 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-brand-yellow hover:bg-black/65 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-yellow"
+            className="absolute left-4 sm:left-8 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-yellow cursor-pointer"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -235,7 +235,7 @@ export function GallerySlider({ items }: GallerySliderProps) {
             type="button"
             onClick={nextSlide}
             aria-label="Next image"
-            className="absolute right-4 sm:right-8 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-brand-yellow hover:bg-black/65 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-yellow"
+            className="absolute right-4 sm:right-8 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-yellow cursor-pointer"
           >
             <ChevronRight className="h-6 w-6" />
           </button>

@@ -106,7 +106,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
               <Link href="/projects" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="min-h-[52px] w-full border border-brand-yellow bg-brand-yellow px-8 text-base font-bold text-brand-dark shadow-lg hover:border-white hover:bg-white sm:w-auto transition-all duration-300 rounded-xl"
+                  className="min-h-[52px] w-full border border-brand-yellow bg-brand-yellow px-8 text-base font-bold text-brand-dark shadow-lg hover:border-brand-red hover:bg-brand-red hover:text-white hover:scale-[1.03] sm:w-auto transition-all duration-300 rounded-xl cursor-pointer"
                 >
                   View Our Work
                 </Button>
@@ -123,7 +123,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="relative z-10 min-h-[52px] w-full border-white/40 bg-white/10 px-8 text-base font-bold text-white backdrop-blur-md hover:border-brand-red hover:bg-brand-red hover:text-white sm:w-auto transition-all duration-300 rounded-xl"
+                  className="relative z-10 min-h-[52px] w-full border-white/50 bg-white/10 px-8 text-base font-bold text-white backdrop-blur-md hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark hover:scale-[1.03] sm:w-auto transition-all duration-300 rounded-xl cursor-pointer"
                 >
                   {buttonCta}
                 </Button>

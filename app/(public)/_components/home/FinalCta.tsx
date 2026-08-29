@@ -29,7 +29,7 @@ export function FinalCta({ ctaText }: FinalCtaProps) {
           <Link href="/quote" className="inline-block w-full sm:w-auto">
             <Button
               size="lg"
-              className="min-h-[48px] w-full border-0 bg-brand-red text-white shadow-md transition-all hover:bg-brand-red/90 hover:shadow-lg sm:w-auto"
+              className="min-h-[48px] w-full border-0 bg-brand-red text-white shadow-md transition-all duration-300 hover:bg-brand-yellow hover:text-brand-dark hover:shadow-lg hover:scale-[1.02] sm:w-auto cursor-pointer"
             >
               {buttonText}
             </Button>

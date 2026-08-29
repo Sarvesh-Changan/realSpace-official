@@ -11,12 +11,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-yellow disabled:opacity-50 disabled:pointer-events-none";
 
     const variants = {
-      primary:
-        "bg-brand-red text-brand-yellow border-2 border-brand-red hover:bg-brand-yellow hover:text-brand-red hover:border-brand-yellow shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-pointer font-bold",
-      secondary:
-        "bg-brand-yellow text-brand-red border-2 border-brand-yellow hover:bg-brand-red hover:text-brand-yellow hover:border-brand-red shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-pointer font-bold",
+      primary: "btn-kunku rounded-xl font-bold cursor-pointer shadow-md hover:shadow-xl",
+      secondary: "btn-halad rounded-xl font-bold cursor-pointer shadow-md hover:shadow-xl",
       ghost:
-        "bg-transparent text-brand-red border-2 border-brand-red hover:bg-brand-yellow hover:text-brand-red hover:border-brand-yellow shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer font-bold",
+        "bg-transparent text-[#990000] border-2 border-[#990000] hover:bg-[#FECC00] hover:text-[#990000] hover:border-[#FECC00] rounded-xl font-bold cursor-pointer",
     };
 
     const sizes = {

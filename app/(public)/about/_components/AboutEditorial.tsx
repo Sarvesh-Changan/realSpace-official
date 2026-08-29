@@ -32,7 +32,7 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
         <div className="absolute inset-0 -z-10 bg-brand-dark/65" />
         <div className="mx-auto flex min-h-[72vh] max-w-standard items-end px-5 pb-14 pt-32 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
           <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={reveal} transition={transition} className="max-w-4xl">
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-yellow">EST. 1989</p>
+            <p className="mb-5 text-[20px] font-semibold uppercase tracking-[0.28em] text-brand-yellow">EST. 1989</p>
             <h1 className="max-w-3xl font-serif text-5xl font-bold leading-[0.98] tracking-tight sm:text-7xl lg:text-8xl">MEET OUR FOUNDER</h1>
           </motion.div>
         </div>

@@ -7,17 +7,27 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 export function OwnerPortrait() {
   return (
     <section className="relative h-[80dvh] sm:h-[85dvh] lg:h-[90dvh] w-full max-w-full overflow-hidden bg-brand-dark select-none">
-      <ScrollReveal direction="none" duration={0.8} className="relative h-full w-full">
+      <ScrollReveal direction="none" duration={0.8} className="relative h-full w-full flex items-center justify-center">
+        {/* Ambient blurred backdrop to fill aspect ratio gaps */}
+        <Image
+          src="/images/home/owner-onchair.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-30 blur-2xl scale-110 pointer-events-none"
+          aria-hidden="true"
+        />
+        {/* Main Full Fit Uncropped Image */}
         <Image
           src="/images/home/owner-onchair.png"
           alt="REALSPACE Principal Designer & Founder"
           fill
           priority={false}
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-contain object-center z-10 p-2 sm:p-4"
         />
         {/* Subtle top & bottom vignette for smooth visual transition */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40 pointer-events-none z-10" />
       </ScrollReveal>
     </section>
   );

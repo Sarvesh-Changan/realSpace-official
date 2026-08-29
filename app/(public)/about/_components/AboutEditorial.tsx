@@ -54,17 +54,15 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
       <section className="relative bg-brand-cream">
         <div className="mx-auto grid max-w-standard items-center gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:px-12 lg:py-36">
           <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={transition}>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-red">FOUNDATION</p>
             <h2 className="mt-5 font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">FOUNDATION</h2>
             <div className="mt-8 max-w-2xl space-y-5 text-[15px] leading-[1.85] text-brand-text/75 sm:text-base">{foundationCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
           </motion.div>
-          <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }} className="relative aspect-[4/5] overflow-hidden bg-brand-dark"><Image src="/images/about/foundation.png" alt="REALSPACE interior design" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover" /><div className="absolute inset-0 bg-brand-dark/20" /></motion.div>
+          <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.12 }} className="relative aspect-[4/5] overflow-hidden bg-brand-dark"><Image src="/images/about/foundation1.png" alt="REALSPACE interior design" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover" /><div className="absolute inset-0 bg-brand-dark/20" /></motion.div>
         </div>
       </section>
 
       <section className="mx-auto max-w-standard px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
         <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={reveal} transition={transition} className="mx-auto max-w-4xl border-t border-brand-border pt-8 text-center sm:pt-12">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-red">OUR TEAM OF EXPERTS</p>
           <h2 className="mt-5 font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">OUR TEAM OF EXPERTS</h2>
           <p className="mx-auto mt-8 max-w-3xl text-lg leading-[1.85] text-brand-text/75 sm:text-xl">“Our team consists of highly skilled and experienced interior designers, architects, engineers and artisans who share our passion for creating exceptional living spaces. Every project is a collaboration, where client preferences guide personalized design and precise execution.”</p>
         </motion.div>

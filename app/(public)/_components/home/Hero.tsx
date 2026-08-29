@@ -76,7 +76,7 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
           {/* Body Copy */}
           <ScrollReveal direction="left" distance={32} delay={0.22}>
             <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white/90 font-sans drop-shadow-sm text-justify">
-              At REALSPACE, we’re all about ensuring every bit of a home reflects the personality and style of the people living there. By designing your house with dedication and skill, we ensure each corner of your living space echoes the quality of a house that’s designed well and a place you can call home.
+              At REALSPACE, we’re all about ensuring every bit of a home reflects the personality and style of the people living there. By designing your house with dedication, we ensure each corner of your living space echoes the quality of a house that’s designed well and a place you can call home.
             </p>
           </ScrollReveal>
 

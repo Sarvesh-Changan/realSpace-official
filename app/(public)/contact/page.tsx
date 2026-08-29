@@ -41,31 +41,31 @@ export default async function ContactPage() {
   const waNumberClean = whatsapp.replace(/[^\d]/g, "");
 
   return (
-    <div className="relative isolate flex flex-col overflow-hidden bg-neutral-950 pt-16 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-24">
+    <div className="relative isolate flex flex-col overflow-hidden bg-neutral-950 pt-8 sm:pt-12 md:pt-16 pb-12 sm:pb-16 md:pb-20">
       <Image
-        src="/images/contact/behind-contact.png"
+        src="/images/contact/contact-bg.jpeg"
         alt=""
         fill
         priority
         sizes="100vw"
-        quality={70}
+        quality={85}
         className="-z-20 object-cover object-center"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-black/70 via-black/45 to-black/25"
+        className="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/65 to-black/35"
         aria-hidden="true"
       />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
-        <div className="mb-8 sm:mb-12 md:mb-20 max-w-2xl">
+        <div className="mb-6 sm:mb-8 md:mb-10 max-w-2xl">
           <ScrollReveal direction="left" distance={32}>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 leading-tight">
               Let's discuss your space.
             </h1>
           </ScrollReveal>
-          <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full mt-6 sm:mt-8"></div>
+          <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full mt-3 sm:mt-4"></div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8">

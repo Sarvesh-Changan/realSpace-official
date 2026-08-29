@@ -45,20 +45,14 @@ const FALLBACK_SLIDES: GallerySliderItem[] = [
   },
 ];
 
-export function GallerySlider({ items = [] }: GallerySliderProps) {
-  // Combine provided items with fallbacks to ensure exactly 5 images
+export function GallerySlider({ items }: GallerySliderProps) {
+  // Use the 5 curated high-resolution local gallery images for the home section showcase
   const slides = React.useMemo(() => {
-    const validItems = items.filter((item) => Boolean(item.imageUrl?.trim()));
-    const merged = [...validItems];
-
-    for (const fallback of FALLBACK_SLIDES) {
-      if (merged.length >= 5) break;
-      if (!merged.some((m) => m.imageUrl === fallback.imageUrl)) {
-        merged.push(fallback);
-      }
+    if (items && items.length >= 5) {
+      const validItems = items.filter((item) => Boolean(item.imageUrl?.trim()));
+      if (validItems.length >= 5) return validItems.slice(0, 5);
     }
-
-    return merged.slice(0, 5);
+    return FALLBACK_SLIDES;
   }, [items]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -163,25 +157,20 @@ export function GallerySlider({ items = [] }: GallerySliderProps) {
   const currentSlide = slides[currentIndex];
 
   const slideVariants = {
-    initial: (dir: number) =>
-      shouldReduceMotion
-        ? { opacity: 0 }
-        : {
-            opacity: 0,
-            scale: 1.06,
-          },
+    initial: {
+      opacity: 0,
+    },
     animate: {
       opacity: 1,
-      scale: 1.0,
       transition: {
-        opacity: { duration: shouldReduceMotion ? 0.3 : 0.9, ease: [0.25, 1, 0.5, 1] as const },
-        scale: { duration: shouldReduceMotion ? 0 : 1.2, ease: [0.25, 1, 0.5, 1] as const },
+        duration: shouldReduceMotion ? 0.3 : 0.8,
+        ease: "easeInOut" as const,
       },
     },
     exit: {
       opacity: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.3 : 0.7,
+        duration: shouldReduceMotion ? 0.3 : 0.6,
         ease: "easeInOut" as const,
       },
     },

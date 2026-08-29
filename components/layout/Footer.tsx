@@ -144,8 +144,21 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
   ].filter((platform) => Boolean(platform.url && platform.url.length > 0));
 
   return (
-    <footer className="bg-brand-dark text-neutral-300 border-t border-white/10 pt-10 pb-6 sm:pt-12 sm:pb-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <footer className="relative isolate overflow-hidden bg-brand-dark text-neutral-300 border-t border-white/10 pt-10 pb-6 sm:pt-12 sm:pb-8">
+      {/* Fixed Background Image stuck in viewport background */}
+      <Image
+        src="/images/home/behind-project.png"
+        alt=""
+        fill
+        sizes="100vw"
+        quality={80}
+        className="-z-20 object-cover object-center fixed inset-0 pointer-events-none"
+        aria-hidden="true"
+      />
+      {/* Dark Gradient Overlay for Legibility & Contrast */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-dark/92 via-brand-dark/85 to-brand-dark/95 backdrop-blur-[1px]" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:gap-12 items-start justify-between">
 
           {/* Company Info / Enlarged Logo */}

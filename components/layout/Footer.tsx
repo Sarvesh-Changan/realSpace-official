@@ -171,20 +171,28 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
             <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-brand-yellow">
               Quick Links
             </h4>
-            <ul className="space-y-2.5">
-              {["Projects", "About", "FAQ", "Contact", "Get Free Quote"].map((link) => {
-                const href = link === "Get Free Quote" ? "/quote" : `/${link.toLowerCase()}`;
-                return (
-                  <li key={link}>
-                    <Link
-                      href={href}
-                      className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
-                    >
-                      {link}
-                    </Link>
-                  </li>
-                );
-              })}
+            <ul className="grid grid-cols-2 gap-y-2.5 gap-x-4 max-w-xs mx-auto sm:mx-0">
+              {[
+                { name: "Home", href: "/" },
+                { name: "Projects", href: "/projects" },
+                { name: "Gallery", href: "/gallery" },
+                { name: "Services", href: "/services" },
+                { name: "Testimonials", href: "/testimonials" },
+                { name: "About Us", href: "/about" },
+                { name: "Contact", href: "/contact" },
+                { name: "Events", href: "/events" },
+                { name: "FAQ", href: "/faq" },
+                { name: "Get Free Quote", href: "/quote" },
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-neutral-300 hover:text-brand-yellow transition-all duration-200 inline-block hover:translate-x-1"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -222,6 +230,14 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
                   </svg>
                 </div>
                 <span className="text-neutral-300 font-medium">realspace.org@gmail.com</span>
+              </li>
+              <li className="flex items-center justify-center gap-3 sm:justify-start">
+                <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-brand-red shrink-0">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <span className="text-neutral-300 font-medium">24*7 Support</span>
               </li>
             </ul>
           </div>

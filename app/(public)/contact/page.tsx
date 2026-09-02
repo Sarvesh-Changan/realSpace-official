@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Phone, Mail, MapPin } from "lucide-react";
@@ -41,19 +40,18 @@ export default async function ContactPage() {
   const waNumberClean = whatsapp.replace(/[^\d]/g, "");
 
   return (
-    <div className="relative isolate flex flex-col overflow-hidden bg-neutral-950 pt-4 sm:pt-6 md:pt-8 pb-10 sm:pb-14 md:pb-16">
-      <Image
-        src="/images/contact/contact-bg.jpeg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        quality={85}
-        className="-z-20 object-cover object-center"
+    <div className="relative isolate flex flex-col overflow-hidden bg-gradient-to-b from-brand-warmWhite via-brand-cream/60 to-brand-warmWhite pt-4 sm:pt-6 md:pt-8 pb-10 sm:pb-14 md:pb-16 border-t border-brand-border/40">
+      {/* Subtle CSS Warm Ambient Glow & Micro Texture */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(#d4d4d8_1px,transparent_1px)] [background-size:24px_24px] opacity-40"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/65 to-black/35"
+        className="pointer-events-none absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand-yellow/15 blur-3xl -z-10"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute top-1/2 -right-40 w-[30rem] h-[30rem] rounded-full bg-brand-red/5 blur-3xl -z-10"
         aria-hidden="true"
       />
 
@@ -64,25 +62,25 @@ export default async function ContactPage() {
             {/* Page Header */}
             <div className="pt-2 sm:pt-4">
               <ScrollReveal direction="left" distance={32}>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 mb-2 sm:mb-3 leading-tight">
                   Let's discuss your space.
                 </h1>
               </ScrollReveal>
-              <div className="w-16 sm:w-20 h-1 bg-brand-yellow rounded-full mt-3 sm:mt-4"></div>
+              <div className="w-16 sm:w-20 h-1 bg-brand-red rounded-full mt-3 sm:mt-4"></div>
             </div>
 
             {/* Phone */}
             <div className="flex items-start gap-3.5 sm:gap-4 mt-1">
-              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/25 bg-white/15 backdrop-blur-sm flex items-center justify-center text-green-400">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-200 bg-white shadow-sm flex items-center justify-center text-brand-red">
                 <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <ScrollReveal direction="left" distance={24} delay={0.12} className="min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-0.5 sm:mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-neutral-900 mb-0.5 sm:mb-1">
                   Call Us
                 </h3>
                 <a
                   href={`tel:${phone.replace(/\s+/g, "")}`}
-                  className="text-white font-medium text-sm sm:text-base hover:text-brand-yellow transition-colors"
+                  className="text-neutral-700 font-medium text-sm sm:text-base hover:text-brand-red transition-colors"
                 >
                   {phone}
                 </a>
@@ -91,7 +89,7 @@ export default async function ContactPage() {
 
             {/* WhatsApp */}
             <div className="flex items-start gap-3.5 sm:gap-4">
-              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/25 bg-white/15 backdrop-blur-sm flex items-center justify-center text-green-400">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-emerald-200/80 bg-white shadow-sm flex items-center justify-center text-emerald-600">
                 <svg
                   className="h-5 w-5 sm:h-6 sm:w-6"
                   fill="currentColor"
@@ -102,14 +100,14 @@ export default async function ContactPage() {
                 </svg>
               </div>
               <ScrollReveal direction="left" distance={24} delay={0.18} className="min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-0.5 sm:mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-neutral-900 mb-0.5 sm:mb-1">
                   WhatsApp
                 </h3>
                 <a
                   href={`https://wa.me/${waNumberClean}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white font-medium text-sm sm:text-base hover:text-green-300 transition-colors"
+                  className="text-emerald-700 font-medium text-sm sm:text-base hover:text-emerald-800 transition-colors"
                 >
                   Chat on WhatsApp
                 </a>
@@ -118,16 +116,16 @@ export default async function ContactPage() {
 
             {/* Email */}
             <div className="flex items-start gap-3.5 sm:gap-4">
-              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/25 bg-white/15 backdrop-blur-sm flex items-center justify-center text-brand-yellow">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-200 bg-white shadow-sm flex items-center justify-center text-brand-red">
                 <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <ScrollReveal direction="left" distance={24} delay={0.24} className="min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-0.5 sm:mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-neutral-900 mb-0.5 sm:mb-1">
                   Email
                 </h3>
                 <a
                   href={`mailto:${email}`}
-                  className="text-white font-medium text-sm sm:text-base hover:text-brand-yellow transition-colors break-all sm:break-normal"
+                  className="text-neutral-700 font-medium text-sm sm:text-base hover:text-brand-red transition-colors break-all sm:break-normal"
                 >
                   {email}
                 </a>
@@ -136,14 +134,14 @@ export default async function ContactPage() {
 
             {/* Address */}
             <div className="flex items-start gap-3.5 sm:gap-4">
-              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/25 bg-white/15 backdrop-blur-sm flex items-center justify-center text-brand-yellow">
+              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-200 bg-white shadow-sm flex items-center justify-center text-brand-red">
                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <ScrollReveal direction="left" distance={24} delay={0.3} className="min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-0.5 sm:mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-neutral-900 mb-0.5 sm:mb-1">
                   Studio Address
                 </h3>
-                <p className="text-xs sm:text-sm text-white/80 leading-relaxed whitespace-pre-line">
+                <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed whitespace-pre-line">
                   {address}
                 </p>
               </ScrollReveal>
@@ -159,3 +157,4 @@ export default async function ContactPage() {
     </div>
   );
 }
+

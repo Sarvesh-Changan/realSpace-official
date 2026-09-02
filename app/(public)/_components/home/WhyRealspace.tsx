@@ -43,7 +43,7 @@ export function WhyRealspace() {
         {/* Section Header */}
         <ScrollReveal direction="up" className="mb-12 sm:mb-16 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-brand-dark">
-            Why REALSPACE
+            Features & Benefits
           </h2>
           <div className="mx-auto mt-4 h-0.5 w-16 bg-brand-red rounded-full" />
         </ScrollReveal>

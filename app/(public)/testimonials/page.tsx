@@ -33,6 +33,8 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     quote: true,
     videoUrl: true,
     videoPublicId: true,
+    videoUrls: true,
+    videoPublicIds: true,
     imageUrl: true,
     thumbnailUrl: true,
     imageUrls: true,
@@ -57,13 +59,29 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
   ]);
 
   const allTestimonials = directTestimonial &&
-    directTestimonial.videoUrl &&
     directTestimonial.isPublished &&
     !testimonials.some((testimonial) => testimonial.id === directTestimonial.id)
     ? [directTestimonial, ...testimonials]
     : testimonials;
 
-  const items: PublicVideoTestimonial[] = allTestimonials.map((testimonial) => ({
+  const items: PublicVideoTestimonial[] = allTestimonials.map((testimonial) => {
+    const videoUrls = testimonial.videoUrls.length
+      ? testimonial.videoUrls
+      : testimonial.videoUrl
+      ? [testimonial.videoUrl]
+      : [];
+    const videoPublicIds = testimonial.videoPublicIds.length
+      ? testimonial.videoPublicIds
+      : testimonial.videoPublicId
+      ? [testimonial.videoPublicId]
+      : [];
+    const imageUrls = testimonial.imageUrls.length
+      ? testimonial.imageUrls
+      : testimonial.imageUrl
+      ? [testimonial.imageUrl]
+      : [];
+
+    return {
       id: testimonial.id,
       title: testimonial.projectType || "A REALSPACE design story",
       clientName: testimonial.clientName,
@@ -71,14 +89,17 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
       location: testimonial.location,
       slug: testimonial.slug || testimonial.id,
       quote: testimonial.quote,
-      videoUrl: testimonial.videoUrl,
-      videoPublicId: testimonial.videoPublicId,
-      imageUrl: testimonial.imageUrl,
-      imageUrls: testimonial.imageUrls.length ? testimonial.imageUrls : testimonial.imageUrl ? [testimonial.imageUrl] : [],
+      videoUrl: videoUrls[0] || testimonial.videoUrl || null,
+      videoPublicId: videoPublicIds[0] || testimonial.videoPublicId || null,
+      videoUrls,
+      videoPublicIds,
+      imageUrl: imageUrls[0] || testimonial.imageUrl || null,
+      imageUrls,
       thumbnailUrl: testimonial.thumbnailUrl,
       rating: testimonial.rating,
       createdAt: testimonial.createdAt.toISOString(),
-    }));
+    };
+  });
 
   return <TestimonialsClient testimonials={items} />;
 }

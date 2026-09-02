@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarDays, ChevronLeft, ChevronRight, MapPin, Play, X } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, MapPin, Play, X, Film, ImageIcon } from "lucide-react";
 import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 export interface PublicVideoTestimonial {
@@ -17,6 +17,8 @@ export interface PublicVideoTestimonial {
   quote: string;
   videoUrl: string | null;
   videoPublicId: string | null;
+  videoUrls?: string[];
+  videoPublicIds?: string[];
   imageUrl: string | null;
   imageUrls: string[];
   thumbnailUrl: string | null;
@@ -119,10 +121,11 @@ function getThumbnail(item: PublicVideoTestimonial) {
   const imageUrl = item.imageUrls[0] || item.imageUrl;
   if (imageUrl) return imageUrl;
   if (item.thumbnailUrl) return item.thumbnailUrl;
-  if (!item.videoUrl) return "/images/placeholder-image.png";
-  return getEmbedUrl(item.videoUrl)
+  const videoUrl = item.videoUrls?.[0] || item.videoUrl;
+  if (!videoUrl) return "/images/placeholder-image.png";
+  return getEmbedUrl(videoUrl)
     ? "/images/placeholder-image.png"
-    : getVideoThumbnailUrl(item.videoUrl, "VIDEO");
+    : getVideoThumbnailUrl(videoUrl, "VIDEO");
 }
 
 export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
@@ -153,45 +156,67 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [manualSelectedVideo, setManualSelectedVideo] = useState<PublicVideoTestimonial | null>(null);
-  const [manualSelectedImage, setManualSelectedImage] = useState<PublicVideoTestimonial | null>(null);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [manualSelectedTestimonial, setManualSelectedTestimonial] = useState<PublicVideoTestimonial | null>(null);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+
   const querySelectedVideo = useMemo(() => {
     const videoSlug = searchParams.get("video");
     if (!videoSlug) return null;
-    return testimonials.find((testimonial) => testimonial.videoUrl && (testimonial.slug === videoSlug || testimonial.id === videoSlug)) || null;
+    return testimonials.find((testimonial) => (testimonial.videoUrl || testimonial.videoUrls?.length) && (testimonial.slug === videoSlug || testimonial.id === videoSlug)) || null;
   }, [searchParams, testimonials]);
-  const selectedVideo = manualSelectedVideo || querySelectedVideo;
-  const selectedTestimonial = manualSelectedImage || selectedVideo;
 
-  const openVideo = (item: PublicVideoTestimonial) => {
-    if (!item.videoUrl) return;
-    setManualSelectedImage(null);
-    setManualSelectedVideo(item);
-    setSelectedImageIndex(0);
-    const params = new URLSearchParams(window.location.search);
-    params.set("video", item.slug);
-    window.history.pushState(null, "", `/testimonials?${params.toString()}`);
+  const selectedTestimonial = manualSelectedTestimonial || querySelectedVideo;
+
+  const allMediaItems = useMemo(() => {
+    if (!selectedTestimonial) return [];
+    const items: Array<{ type: "VIDEO" | "IMAGE"; url: string; publicId?: string | null }> = [];
+
+    const vUrls = selectedTestimonial.videoUrls?.length
+      ? selectedTestimonial.videoUrls
+      : selectedTestimonial.videoUrl
+      ? [selectedTestimonial.videoUrl]
+      : [];
+    const vPids = selectedTestimonial.videoPublicIds?.length
+      ? selectedTestimonial.videoPublicIds
+      : selectedTestimonial.videoPublicId
+      ? [selectedTestimonial.videoPublicId]
+      : [];
+
+    vUrls.forEach((url, i) => {
+      items.push({ type: "VIDEO", url, publicId: vPids[i] || null });
+    });
+
+    const iUrls = selectedTestimonial.imageUrls?.length
+      ? selectedTestimonial.imageUrls
+      : selectedTestimonial.imageUrl
+      ? [selectedTestimonial.imageUrl]
+      : [];
+
+    iUrls.forEach((url) => {
+      items.push({ type: "IMAGE", url });
+    });
+
+    return items;
+  }, [selectedTestimonial]);
+
+  const openTestimonial = (item: PublicVideoTestimonial) => {
+    setManualSelectedTestimonial(item);
+    setSelectedMediaIndex(0);
+    if (item.videoUrl || item.videoUrls?.length) {
+      const params = new URLSearchParams(window.location.search);
+      params.set("video", item.slug);
+      window.history.pushState(null, "", `/testimonials?${params.toString()}`);
+    }
   };
 
-  const openImage = (item: PublicVideoTestimonial) => {
-    if (!item.imageUrl) return;
-    setManualSelectedVideo(null);
-    setManualSelectedImage(item);
-    setSelectedImageIndex(0);
-  };
-
-  const moveImage = (direction: "next" | "previous") => {
-    if (!manualSelectedImage) return;
-    const imageUrls = manualSelectedImage.imageUrls.length ? manualSelectedImage.imageUrls : manualSelectedImage.imageUrl ? [manualSelectedImage.imageUrl] : [];
-    if (imageUrls.length < 2) return;
+  const moveMedia = useCallback((direction: "next" | "previous") => {
+    if (!allMediaItems.length) return;
     const offset = direction === "next" ? 1 : -1;
-    setSelectedImageIndex((currentIndex) => (currentIndex + offset + imageUrls.length) % imageUrls.length);
-  };
+    setSelectedMediaIndex((currentIndex) => (currentIndex + offset + allMediaItems.length) % allMediaItems.length);
+  }, [allMediaItems.length]);
 
   const closeTestimonial = () => {
-    setManualSelectedVideo(null);
-    setManualSelectedImage(null);
+    setManualSelectedTestimonial(null);
     const params = new URLSearchParams(window.location.search);
     params.delete("video");
     const query = params.toString();
@@ -221,8 +246,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       setSelectedLocation(location);
       setSelectedProjectType(projectType);
       setSelectedMonth(month);
-      setManualSelectedVideo(null);
-      setManualSelectedImage(null);
+      setManualSelectedTestimonial(null);
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -232,17 +256,16 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
     if (!selectedTestimonial) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        const params = new URLSearchParams(window.location.search);
-        params.delete("video");
-        const query = params.toString();
-        setManualSelectedVideo(null);
-        setManualSelectedImage(null);
-        window.history.pushState(null, "", query ? `/testimonials?${query}` : "/testimonials");
+        closeTestimonial();
+      } else if (event.key === "ArrowLeft") {
+        moveMedia("previous");
+      } else if (event.key === "ArrowRight") {
+        moveMedia("next");
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedTestimonial]);
+  }, [selectedTestimonial, moveMedia]);
 
   const filteredTestimonials = useMemo(() => testimonials.filter((item) => {
     const matchesLocation = selectedLocation === "ALL" || item.location === selectedLocation;
@@ -251,6 +274,8 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
     const matchesDate = isWithinDateFilter(item.createdAt, selectedDateFilter, startDate, endDate);
     return matchesLocation && matchesProjectType && matchesMonth && matchesDate;
   }), [endDate, selectedDateFilter, selectedLocation, selectedMonth, selectedProjectType, startDate, testimonials]);
+
+  const currentMedia = allMediaItems[selectedMediaIndex] || allMediaItems[0];
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-[url('/images/home/home-1.jpeg')] bg-fixed bg-cover bg-center pb-16 pt-24 sm:pb-20 sm:pt-28">
@@ -309,12 +334,19 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
           <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {filteredTestimonials.map((item, index) => {
               const thumbnail = getThumbnail(item);
+              const hasVideo = item.videoUrl || item.videoUrls?.length;
               const cardContent = (
                 <>
                   <div className="relative aspect-video overflow-hidden bg-brand-bgAlt">
                     <Image src={getCloudinaryUrl(thumbnail, { width: 960, crop: "fill" })} alt={`${item.title} testimonial from ${item.clientName}`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/15 transition-colors group-hover:bg-black/30" />
-                    {item.videoUrl && <span className="absolute inset-0 flex items-center justify-center"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform group-hover:scale-110"><Play className="ml-1 h-6 w-6 fill-current" /></span></span>}
+                    {hasVideo && (
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-red text-white shadow-lg transition-transform group-hover:scale-110">
+                          <Play className="ml-1 h-6 w-6 fill-current" />
+                        </span>
+                      </span>
+                    )}
                   </div>
                   <div className="p-5 sm:p-6">
                     <h2 className="line-clamp-2 font-serif text-xl font-bold leading-tight text-brand-text transition-colors group-hover:text-brand-red">{item.title}</h2>
@@ -334,9 +366,11 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-30px" }}
                   transition={{ duration: 0.35, delay: index * 0.06 }}
-                  className="group overflow-hidden rounded-2xl border border-brand-bgAlt bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl"
+                  className="group overflow-hidden rounded-2xl border border-brand-bgAlt bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/30 hover:shadow-xl cursor-pointer"
                 >
-                  {item.videoUrl ? <button type="button" onClick={() => openVideo(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">{cardContent}</button> : item.imageUrl ? <button type="button" onClick={() => openImage(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">{cardContent}</button> : <article>{cardContent}</article>}
+                  <button type="button" onClick={() => openTestimonial(item)} className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red focus-visible:ring-inset">
+                    {cardContent}
+                  </button>
                 </motion.div>
               );
             })}
@@ -349,42 +383,113 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
         )}
       </div>
 
+      {/* Lightbox Modal with Multi-Media Arrow Navigation */}
       <AnimatePresence>
         {selectedTestimonial && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={closeTestimonial} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`${selectedTestimonial.title} testimonial`}>
-            <button type="button" onClick={closeTestimonial} className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Close testimonial"><X className="h-5 w-5" /></button>
-            <motion.div initial={{ scale: 0.96, y: 14 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 14 }} onClick={(event) => event.stopPropagation()} className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-              <div className="grid md:grid-cols-[1.55fr_1fr]">
-                <div className="relative aspect-video min-h-[220px] bg-black">
-                  {selectedTestimonial.videoUrl ? getEmbedUrl(selectedTestimonial.videoUrl) ? (
-                    <iframe src={getEmbedUrl(selectedTestimonial.videoUrl) || undefined} title={`${selectedTestimonial.title} video testimonial`} className="h-full w-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+            <button type="button" onClick={closeTestimonial} className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20" aria-label="Close testimonial"><X className="h-5 w-5" /></button>
+            
+            <motion.div initial={{ scale: 0.96, y: 14 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 14 }} onClick={(event) => event.stopPropagation()} className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl flex flex-col md:flex-row items-stretch">
+              
+              {/* Media Viewer with Navigation Arrows (Left Column: Full Height Black Background) */}
+              <div className="relative bg-black w-full md:w-[60%] lg:w-[62%] min-h-[300px] sm:min-h-[380px] md:min-h-[480px] max-h-[85vh] flex items-center justify-center overflow-hidden shrink-0">
+                {currentMedia ? (
+                  currentMedia.type === "VIDEO" ? (
+                    getEmbedUrl(currentMedia.url) ? (
+                      <iframe key={currentMedia.url} src={getEmbedUrl(currentMedia.url) || undefined} title={`${selectedTestimonial.title} video testimonial`} className="h-full w-full border-0" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+                    ) : (
+                      <video key={currentMedia.url} src={getPlayableVideoUrl(currentMedia.url, currentMedia.publicId)} controls autoPlay playsInline preload="metadata" className="h-full w-full object-contain max-h-[85vh]" />
+                    )
                   ) : (
-                    <video src={getPlayableVideoUrl(selectedTestimonial.videoUrl, selectedTestimonial.videoPublicId)} controls autoPlay playsInline preload="metadata" className="h-full w-full object-contain" />
-                  ) : selectedTestimonial.imageUrls[selectedImageIndex] || selectedTestimonial.imageUrl ? (
-                    <Image src={selectedTestimonial.imageUrls[selectedImageIndex] || selectedTestimonial.imageUrl || ""} alt={`${selectedTestimonial.title} testimonial from ${selectedTestimonial.clientName}`} width={1600} height={900} className="h-full w-full object-contain" unoptimized />
-                  ) : null}
-                  {!selectedTestimonial.videoUrl && selectedTestimonial.imageUrls.length > 1 && (
-                    <>
-                      <button type="button" onClick={() => moveImage("previous")} className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Previous image testimonial">
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button type="button" onClick={() => moveImage("next")} className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75 focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Next image testimonial">
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    </>
-                  )}
-                </div>
-                <div className="flex flex-col justify-center p-6 sm:p-8">
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-red">Client story</p>
-                  <h2 className="mt-3 font-serif text-2xl font-bold leading-tight text-brand-text sm:text-3xl">{selectedTestimonial.title}</h2>
-                  <dl className="mt-6 space-y-4 text-sm">
-                    <div><dt className="font-semibold text-neutral-500">Client</dt><dd className="mt-0.5 text-brand-text">{selectedTestimonial.clientName}</dd></div>
-                    {selectedTestimonial.projectType && <div><dt className="font-semibold text-neutral-500">Project Type</dt><dd className="mt-0.5 text-brand-text">{selectedTestimonial.projectType}</dd></div>}
-                    {selectedTestimonial.location && <div><dt className="font-semibold text-neutral-500">Location</dt><dd className="mt-0.5 text-brand-text">{selectedTestimonial.location}</dd></div>}
-                    <div><dt className="font-semibold text-neutral-500">Date</dt><dd className="mt-0.5 text-brand-text">{formatDate(selectedTestimonial.createdAt)}</dd></div>
+                    <div className="relative w-full h-full flex items-center justify-center p-2">
+                      <Image key={currentMedia.url} src={currentMedia.url} alt={`${selectedTestimonial.title} testimonial`} fill className="object-contain" unoptimized />
+                    </div>
+                  )
+                ) : null}
+
+                {/* Left / Right Arrow Navigation */}
+                {allMediaItems.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => moveMedia("previous")}
+                      className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white border border-white/20 transition-all hover:bg-brand-red hover:scale-110 focus:outline-none cursor-pointer shadow-lg z-10"
+                      aria-label="Previous media item"
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveMedia("next")}
+                      className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white border border-white/20 transition-all hover:bg-brand-red hover:scale-110 focus:outline-none cursor-pointer shadow-lg z-10"
+                      aria-label="Next media item"
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </button>
+
+                    {/* Media Counter Badge */}
+                    <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full border border-white/20 z-10 font-mono">
+                      {selectedMediaIndex + 1} / {allMediaItems.length} ({currentMedia?.type})
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Info Panel & Thumbnail Navigation (Right Column) */}
+              <div className="w-full md:w-[40%] lg:w-[38%] bg-white flex flex-col justify-between p-6 sm:p-8 overflow-y-auto max-h-[50vh] md:max-h-[85vh]">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-[0.18em] text-brand-red">Client Story</span>
+                  <h2 className="mt-2 font-serif text-2xl font-bold leading-tight text-brand-text sm:text-3xl">{selectedTestimonial.title}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-neutral-600 italic">&quot;{selectedTestimonial.quote}&quot;</p>
+                  
+                  <dl className="mt-5 space-y-3 text-sm border-t border-neutral-100 pt-4">
+                    <div><dt className="font-semibold text-neutral-500">Client</dt><dd className="mt-0.5 font-medium text-brand-text">{selectedTestimonial.clientName}</dd></div>
+                    {selectedTestimonial.projectType && <div><dt className="font-semibold text-neutral-500">Project Type</dt><dd className="mt-0.5 font-medium text-brand-text">{selectedTestimonial.projectType}</dd></div>}
+                    {selectedTestimonial.location && <div><dt className="font-semibold text-neutral-500">Location</dt><dd className="mt-0.5 font-medium text-brand-text">{selectedTestimonial.location}</dd></div>}
                   </dl>
                 </div>
+
+                {/* Thumbnail Strip to jump directly */}
+                {allMediaItems.length > 1 && (
+                  <div className="mt-6 pt-4 border-t border-neutral-100">
+                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2.5 block">
+                      Media Gallery ({allMediaItems.length})
+                    </span>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {allMediaItems.map((item, idx) => {
+                        const isActive = idx === selectedMediaIndex;
+                        const thumbSrc = item.type === "IMAGE" ? item.url : (selectedTestimonial.thumbnailUrl || selectedTestimonial.imageUrl || (getEmbedUrl(item.url) ? "" : getVideoThumbnailUrl(item.url, "VIDEO")));
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedMediaIndex(idx)}
+                            className={`relative w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer bg-neutral-900 ${
+                              isActive ? "border-brand-red ring-2 ring-brand-red/30 scale-95" : "border-neutral-200 opacity-70 hover:opacity-100"
+                            }`}
+                          >
+                            {thumbSrc ? (
+                              <>
+                                <Image src={thumbSrc} alt={`Thumb ${idx + 1}`} fill className="object-cover" sizes="60px" />
+                                {item.type === "VIDEO" && (
+                                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <Play className="w-4 h-4 text-white fill-white" />
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-black text-white">
+                                <Film className="w-5 h-5 text-brand-yellow" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
+
             </motion.div>
           </motion.div>
         )}

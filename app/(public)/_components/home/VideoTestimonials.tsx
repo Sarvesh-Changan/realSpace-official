@@ -32,7 +32,7 @@ export function VideoTestimonials({ testimonials }: VideoTestimonialsProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col items-center text-center md:mb-16">
           <ScrollReveal direction="up" distance={20}>
-            <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">Testimonials</h2>
+            <h2 className="font-serif text-h2 font-semibold tracking-tight text-brand-text">OUR HAPPY CLIENTS</h2>
           </ScrollReveal>
           <div className="mt-5 h-1 w-16 rounded-full bg-brand-yellow" />
         </div>

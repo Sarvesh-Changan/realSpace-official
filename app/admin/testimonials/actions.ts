@@ -23,6 +23,8 @@ const testimonialSchema = z.object({
   imagePublicIds: z.array(z.string().trim().max(500)).max(20).default([]),
   videoUrl: z.string().trim().url("Video URL must be valid").optional().or(z.literal("")),
   videoPublicId: z.string().trim().max(500).optional().or(z.literal("")),
+  videoUrls: z.array(z.string().trim().url("Video URL must be valid")).max(20).default([]),
+  videoPublicIds: z.array(z.string().trim().max(500)).max(20).default([]),
   thumbnailUrl: z.string().trim().url("Thumbnail URL must be valid").optional().or(z.literal("")),
   thumbnailPublicId: z.string().trim().max(500).optional().or(z.literal("")),
   slug: z.string().trim().max(200).optional().or(z.literal("")),
@@ -32,7 +34,8 @@ const testimonialSchema = z.object({
   sortOrder: z.coerce.number().int().min(0).default(0),
   isPublished: z.boolean().default(true),
 }).superRefine((data, context) => {
-  if (data.videoUrl && !data.thumbnailUrl) {
+  const hasVideo = data.videoUrl || data.videoUrls.length > 0;
+  if (hasVideo && !data.thumbnailUrl) {
     context.addIssue({ code: "custom", path: ["thumbnailUrl"], message: "A thumbnail is required when a video testimonial is provided." });
   }
 });
@@ -58,20 +61,22 @@ async function getUniqueSlug(rawSlug: string | undefined, clientName: string, ex
   }
 
   if (requestedSlug) {
-    throw new Error("That testimonial slug is already in use.");
+    return `${baseSlug}-${Date.now().toString(36)}`;
   }
 
-  for (let attempt = 0; attempt < 10; attempt += 1) {
-    const candidate = `${baseSlug}-${Math.random().toString(36).slice(2, 7)}`;
-    const collision = await prisma.testimonial.findUnique({ where: { slug: candidate } });
-    if (!collision) return candidate;
+  let counter = 2;
+  while (counter < 50) {
+    const candidate = `${baseSlug}-${counter}`;
+    const found = await prisma.testimonial.findUnique({ where: { slug: candidate } });
+    if (!found || found.id === excludedId) return candidate;
+    counter++;
   }
 
-  throw new Error("Could not generate a unique testimonial slug.");
+  return `${baseSlug}-${Date.now().toString(36)}`;
 }
 
 async function destroyCloudinaryAsset(publicId: string | null | undefined, resourceType: "image" | "video") {
-  if (!publicId || publicId.startsWith("http")) return;
+  if (!publicId) return;
   try {
     await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
   } catch (error) {
@@ -93,17 +98,25 @@ export async function createTestimonial(data: TestimonialFormValues) {
   try {
     const testimonialData = parsed.data;
     const slug = await getUniqueSlug(testimonialData.slug, testimonialData.clientName);
+
+    const imageUrls = testimonialData.imageUrls.length ? testimonialData.imageUrls : testimonialData.imageUrl ? [testimonialData.imageUrl] : [];
+    const imagePublicIds = testimonialData.imagePublicIds.length ? testimonialData.imagePublicIds : testimonialData.imagePublicId ? [testimonialData.imagePublicId] : [];
+    const videoUrls = testimonialData.videoUrls.length ? testimonialData.videoUrls : testimonialData.videoUrl ? [testimonialData.videoUrl] : [];
+    const videoPublicIds = testimonialData.videoPublicIds.length ? testimonialData.videoPublicIds : testimonialData.videoPublicId ? [testimonialData.videoPublicId] : [];
+
     const testimonial = await prisma.testimonial.create({
       data: {
         clientName: testimonialData.clientName,
         clientRole: testimonialData.clientRole || null,
         quote: testimonialData.quote,
-        imageUrl: testimonialData.imageUrls[0] || testimonialData.imageUrl || null,
-        imagePublicId: testimonialData.imagePublicIds[0] || testimonialData.imagePublicId || null,
-        imageUrls: testimonialData.imageUrls.length ? testimonialData.imageUrls : testimonialData.imageUrl ? [testimonialData.imageUrl] : [],
-        imagePublicIds: testimonialData.imagePublicIds.length ? testimonialData.imagePublicIds : testimonialData.imagePublicId ? [testimonialData.imagePublicId] : [],
-        videoUrl: testimonialData.videoUrl || null,
-        videoPublicId: testimonialData.videoPublicId || null,
+        imageUrl: imageUrls[0] || null,
+        imagePublicId: imagePublicIds[0] || null,
+        imageUrls,
+        imagePublicIds,
+        videoUrl: videoUrls[0] || null,
+        videoPublicId: videoPublicIds[0] || null,
+        videoUrls,
+        videoPublicIds,
         thumbnailUrl: testimonialData.thumbnailUrl || null,
         thumbnailPublicId: testimonialData.thumbnailPublicId || null,
         slug,
@@ -116,6 +129,7 @@ export async function createTestimonial(data: TestimonialFormValues) {
     });
 
     revalidatePath("/admin/testimonials");
+    revalidatePath("/testimonials");
     revalidatePath("/");
     return { success: true, id: testimonial.id };
   } catch (error) {
@@ -141,18 +155,26 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
 
     const testimonialData = parsed.data;
     const slug = await getUniqueSlug(testimonialData.slug, testimonialData.clientName, id);
+
+    const imageUrls = testimonialData.imageUrls.length ? testimonialData.imageUrls : testimonialData.imageUrl ? [testimonialData.imageUrl] : [];
+    const imagePublicIds = testimonialData.imagePublicIds.length ? testimonialData.imagePublicIds : testimonialData.imagePublicId ? [testimonialData.imagePublicId] : [];
+    const videoUrls = testimonialData.videoUrls.length ? testimonialData.videoUrls : testimonialData.videoUrl ? [testimonialData.videoUrl] : [];
+    const videoPublicIds = testimonialData.videoPublicIds.length ? testimonialData.videoPublicIds : testimonialData.videoPublicId ? [testimonialData.videoPublicId] : [];
+
     await prisma.testimonial.update({
       where: { id },
       data: {
         clientName: testimonialData.clientName,
         clientRole: testimonialData.clientRole || null,
         quote: testimonialData.quote,
-        imageUrl: testimonialData.imageUrls[0] || testimonialData.imageUrl || null,
-        imagePublicId: testimonialData.imagePublicIds[0] || testimonialData.imagePublicId || null,
-        imageUrls: testimonialData.imageUrls.length ? testimonialData.imageUrls : testimonialData.imageUrl ? [testimonialData.imageUrl] : [],
-        imagePublicIds: testimonialData.imagePublicIds.length ? testimonialData.imagePublicIds : testimonialData.imagePublicId ? [testimonialData.imagePublicId] : [],
-        videoUrl: testimonialData.videoUrl || null,
-        videoPublicId: testimonialData.videoPublicId || null,
+        imageUrl: imageUrls[0] || null,
+        imagePublicId: imagePublicIds[0] || null,
+        imageUrls,
+        imagePublicIds,
+        videoUrl: videoUrls[0] || null,
+        videoPublicId: videoPublicIds[0] || null,
+        videoUrls,
+        videoPublicIds,
         thumbnailUrl: testimonialData.thumbnailUrl || null,
         thumbnailPublicId: testimonialData.thumbnailPublicId || null,
         slug,
@@ -164,18 +186,19 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
       },
     });
 
-    if (existing.videoPublicId !== (testimonialData.videoPublicId || null)) {
+    if (existing.videoPublicId !== (videoPublicIds[0] || null)) {
       await destroyCloudinaryAsset(existing.videoPublicId, "video");
     }
     if (existing.thumbnailPublicId !== (testimonialData.thumbnailPublicId || null)) {
       await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
     }
-    if (existing.imagePublicId !== (testimonialData.imagePublicId || null)) {
+    if (existing.imagePublicId !== (imagePublicIds[0] || null)) {
       await destroyCloudinaryAsset(existing.imagePublicId, "image");
     }
 
     revalidatePath("/admin/testimonials");
     revalidatePath(`/admin/testimonials/${id}`);
+    revalidatePath("/testimonials");
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -195,11 +218,28 @@ export async function deleteTestimonial(id: string) {
     if (!existing) return { success: false, error: "Testimonial not found." };
 
     await prisma.testimonial.delete({ where: { id } });
-    await destroyCloudinaryAsset(existing.videoPublicId, "video");
-    await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
-    await destroyCloudinaryAsset(existing.imagePublicId, "image");
+
+    // Destroy Cloudinary assets
+    for (const vPid of existing.videoPublicIds) {
+      await destroyCloudinaryAsset(vPid, "video");
+    }
+    if (existing.videoPublicId && !existing.videoPublicIds.includes(existing.videoPublicId)) {
+      await destroyCloudinaryAsset(existing.videoPublicId, "video");
+    }
+
+    for (const iPid of existing.imagePublicIds) {
+      await destroyCloudinaryAsset(iPid, "image");
+    }
+    if (existing.imagePublicId && !existing.imagePublicIds.includes(existing.imagePublicId)) {
+      await destroyCloudinaryAsset(existing.imagePublicId, "image");
+    }
+
+    if (existing.thumbnailPublicId) {
+      await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
+    }
 
     revalidatePath("/admin/testimonials");
+    revalidatePath("/testimonials");
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -217,6 +257,7 @@ export async function toggleTestimonialPublish(id: string, isPublished: boolean)
   try {
     await prisma.testimonial.update({ where: { id }, data: { isPublished } });
     revalidatePath("/admin/testimonials");
+    revalidatePath("/testimonials");
     revalidatePath("/");
     return { success: true };
   } catch (error) {

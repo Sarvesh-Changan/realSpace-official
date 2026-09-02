@@ -140,7 +140,7 @@ export function ComponentPricingMatrixEditor({ initialPricing }: ComponentPricin
             <Sparkles className="w-5 h-5 text-brand-red" /> Component Tier Pricing Matrix
           </h2>
           <p className="text-xs sm:text-sm text-neutral-500 mt-1">
-            Configure per-unit prices (₹) across components and material tiers. Standard 4 components only (Wardrobe excluded).
+            Configure per-unit prices (₹) across components and material tiers.
           </p>
         </div>
         <button
@@ -273,9 +273,6 @@ export function ComponentPricingMatrixEditor({ initialPricing }: ComponentPricin
 
         {/* Footer info banner */}
         <div className="bg-neutral-50 px-5 py-3 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-neutral-500">
-          <div>
-            * Note: Wardrobe component is excluded per client specification. Controls render automatically for active pricing data.
-          </div>
           {isDirty && (
             <div className="text-amber-700 font-medium flex items-center gap-1">
               ● Unsaved changes in matrix

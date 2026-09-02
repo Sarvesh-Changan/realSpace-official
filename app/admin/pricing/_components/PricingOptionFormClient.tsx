@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { PricingConfigForm, type PricingConfigFormValues } from "./PricingOptionForm";
-import { createPricingOption, updatePricingOption } from "../actions";
 
 interface PricingOptionFormClientProps {
   mode: "create" | "update";
@@ -13,36 +12,15 @@ interface PricingOptionFormClientProps {
 }
 
 export function PricingOptionFormClient({
-  mode,
-  optionId,
   initialData,
 }: PricingOptionFormClientProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
-  const handleSubmit = async (data: PricingConfigFormValues) => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const result =
-        mode === "create"
-          ? await createPricingOption(data)
-          : await updatePricingOption(optionId!, data);
-
-      if (result.success) {
-        router.push("/admin/pricing");
-        router.refresh();
-      } else {
-        setError(result.error || "Failed to save pricing option.");
-        setIsSubmitting(false);
-      }
-    } catch (err) {
-      console.error(err);
-      setError("An unexpected error occurred while saving.");
-      setIsSubmitting(false);
-    }
+    router.push("/admin/pricing");
   };
 
   const handleCancel = () => {

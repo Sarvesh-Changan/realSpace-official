@@ -4,7 +4,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { headers } from 'next/headers';
-import { LeadSource, LeadStatus } from '@prisma/client';
+import { LeadSource, LeadStatus, PricingTier } from '@prisma/client';
 import { sendLeadNotification } from '@/lib/email';
 
 const ROOM_MAP = [
@@ -14,26 +14,31 @@ const ROOM_MAP = [
   { key: 'bathrooms', groupKeys: ['bathroom'], fallbackLabel: 'Bathrooms' },
 ];
 
+const COMPONENT_MAPPING = [
+  { roomKey: 'kitchens', componentKey: 'kitchen', singular: 'Kitchen', plural: 'Kitchens' },
+  { roomKey: 'livingRooms', componentKey: 'living_room', singular: 'Living Room', plural: 'Living Rooms' },
+  { roomKey: 'bedrooms', componentKey: 'bedroom', singular: 'Bedroom', plural: 'Bedrooms' },
+  { roomKey: 'bathrooms', componentKey: 'bathroom', singular: 'Bathroom', plural: 'Bathrooms' },
+];
+
 export async function getActiveRoomTypesAction() {
   try {
-    const activePricingOptions = await prisma.pricingOption.findMany({
-      where: {
-        isActive: true,
-        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom'] },
-      },
-      orderBy: { sortOrder: 'asc' },
-    });
+    const activeComponentPricings = prisma.componentPricing
+      ? await prisma.componentPricing.findMany({
+          where: { isActive: true },
+          select: { componentKey: true },
+        })
+      : [];
+
+    const activeKeys = new Set(activeComponentPricings.map((cp) => cp.componentKey));
 
     const activeRoomTypes = ROOM_MAP.filter((roomDef) =>
-      activePricingOptions.some((opt: { groupKey: string }) => roomDef.groupKeys.includes(opt.groupKey))
-    ).map((roomDef) => {
-      const matchingOpt = activePricingOptions.find((opt: { groupKey: string; label: string | null }) => roomDef.groupKeys.includes(opt.groupKey));
-      return {
-        key: roomDef.key,
-        groupKeys: roomDef.groupKeys,
-        label: matchingOpt?.label || roomDef.fallbackLabel,
-      };
-    });
+      roomDef.groupKeys.some((gk) => activeKeys.has(gk))
+    ).map((roomDef) => ({
+      key: roomDef.key,
+      groupKeys: roomDef.groupKeys,
+      label: roomDef.fallbackLabel,
+    }));
 
     return { success: true, activeRoomTypes };
   } catch (error) {
@@ -44,26 +49,22 @@ export async function getActiveRoomTypesAction() {
 
 export async function getBhkRoomDefaultsAction(bhkLabel: string) {
   try {
-    const activePricingOptions = await prisma.pricingOption.findMany({
-      where: {
-        isActive: true,
-        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom'] },
-      },
-      orderBy: { sortOrder: 'asc' },
-    });
+    const activeComponentPricings = prisma.componentPricing
+      ? await prisma.componentPricing.findMany({
+          where: { isActive: true },
+          select: { componentKey: true },
+        })
+      : [];
 
-    const activeGroupKeys = new Set(activePricingOptions.map((o: { groupKey: string }) => o.groupKey));
+    const activeKeys = new Set(activeComponentPricings.map((cp) => cp.componentKey));
 
     const activeRoomTypes = ROOM_MAP.filter((roomDef) =>
-      activePricingOptions.some((opt: { groupKey: string }) => roomDef.groupKeys.includes(opt.groupKey))
-    ).map((roomDef) => {
-      const matchingOpt = activePricingOptions.find((opt: { groupKey: string; label: string | null }) => roomDef.groupKeys.includes(opt.groupKey));
-      return {
-        key: roomDef.key,
-        groupKeys: roomDef.groupKeys,
-        label: matchingOpt?.label || roomDef.fallbackLabel,
-      };
-    });
+      roomDef.groupKeys.some((gk) => activeKeys.has(gk))
+    ).map((roomDef) => ({
+      key: roomDef.key,
+      groupKeys: roomDef.groupKeys,
+      label: roomDef.fallbackLabel,
+    }));
 
     if (!bhkLabel || bhkLabel === 'Commercial & Others') {
       return { success: true, activeRoomTypes, defaults: [] };
@@ -81,7 +82,9 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
       where: { bhkOptionId: bhkOpt.id },
     });
 
-    const filteredDefaults = defaults.filter((d: { roomGroupKey: string }) => activeGroupKeys.has(d.roomGroupKey));
+    const filteredDefaults = defaults.filter((d: { roomGroupKey: string }) =>
+      activeKeys.has(d.roomGroupKey) || (d.roomGroupKey === 'hall' && activeKeys.has('living_room'))
+    );
 
     return {
       success: true,
@@ -269,74 +272,44 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       };
     }
 
-    // 6. Residential Flow: Query PricingOption table for active options
-    const activeOptions = await prisma.pricingOption.findMany({
-      where: { isActive: true },
-    });
+    // 6. Residential Flow: Per-component per-tier pricing via ComponentPricing
+    const rawTier = (input.packageTier || 'STANDARD').trim().toUpperCase();
+    const selectedTier: PricingTier =
+      rawTier.includes('PREMIUM') ? 'PREMIUM' :
+      rawTier.includes('LUXURY') ? 'LUXURY' : 'STANDARD';
 
-    // Calculate estimated price range (low/high) & breakdown
+    const componentPricings = prisma.componentPricing
+      ? await prisma.componentPricing.findMany({
+          where: {
+            tier: selectedTier,
+            isActive: true,
+          },
+        })
+      : [];
+
     let totalBase = 0;
     const breakdown: Array<{ label: string; amount: number }> = [];
 
-    // (a) BHK Type
-    if (input.bhkType) {
-      const bhkOpt = activeOptions.find(
-        (o: { groupKey: string; label: string }) => o.groupKey === 'bhk_type' && o.label === input.bhkType
-      );
-      if (bhkOpt) {
-        const base = Number(bhkOpt.basePrice);
-        const perUnit = bhkOpt.perUnitPrice ? Number(bhkOpt.perUnitPrice) : 0;
-        const cost = base + perUnit;
-        if (cost > 0) {
-          totalBase += cost;
-          breakdown.push({ label: `${bhkOpt.label} Base`, amount: cost });
-        }
-      }
-    }
+    const tierDisplayLabel =
+      selectedTier === 'PREMIUM' ? 'Premium' :
+      selectedTier === 'LUXURY' ? 'Luxury' : 'Standard';
 
-    // (b) Room Counts
-    for (const roomCfg of ROOM_MAP) {
-      const qty = input.rooms[roomCfg.key] || 0;
+    // Calculate cost for each of the 4 room components
+    for (const comp of COMPONENT_MAPPING) {
+      const qty = input.rooms[comp.roomKey] || 0;
       if (qty > 0) {
-        const opt = activeOptions.find((o: { groupKey: string }) => roomCfg.groupKeys.includes(o.groupKey));
-        if (opt) {
-          const base = Number(opt.basePrice);
-          const perUnit = opt.perUnitPrice ? Number(opt.perUnitPrice) : base;
-          const cost = opt.perUnitPrice ? base + perUnit * qty : base * qty;
-          totalBase += cost;
+        const pricing = componentPricings.find((p) => p.componentKey === comp.componentKey);
+        if (pricing) {
+          const unitPrice = Number(pricing.pricePerUnit);
+          const lineTotal = qty * unitPrice;
+          totalBase += lineTotal;
+
+          const labelName = qty === 1 ? comp.singular : comp.plural;
           breakdown.push({
-            label: `${qty}x ${opt.label || roomCfg.fallbackLabel}`,
-            amount: cost,
+            label: `${qty} ${labelName} (${tierDisplayLabel})`,
+            amount: lineTotal,
           });
         }
-      }
-    }
-
-    // (c) Material Package Tier
-    if (input.packageTier) {
-      const pkgOpt = activeOptions.find(
-        (o: { groupKey: string; label: string }) => o.groupKey === 'material_tier' && o.label === input.packageTier
-      );
-      if (pkgOpt) {
-        const base = Number(pkgOpt.basePrice);
-        const perUnit = pkgOpt.perUnitPrice ? Number(pkgOpt.perUnitPrice) : 0;
-        const cost = base + perUnit;
-        totalBase += cost;
-        breakdown.push({ label: `${pkgOpt.label} Material Package`, amount: cost });
-      }
-    }
-
-    // (d) Exterior Service
-    if (input.requirements.exterior) {
-      const extOpt = activeOptions.find(
-        (o: { groupKey: string }) => o.groupKey === 'exterior_service' || o.groupKey === 'exterior'
-      );
-      if (extOpt) {
-        const base = Number(extOpt.basePrice);
-        const perUnit = extOpt.perUnitPrice ? Number(extOpt.perUnitPrice) : 0;
-        const cost = base + perUnit;
-        totalBase += cost;
-        breakdown.push({ label: extOpt.label || 'Exterior Architecture Base', amount: cost });
       }
     }
 
@@ -404,3 +377,4 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     };
   }
 }
+

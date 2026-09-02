@@ -9,27 +9,14 @@ export default async function AdminPricingPage() {
     redirect("/admin/login");
   }
 
-  const [rawOptions, rawBhkOptions, rawDefaults, rawComponentPricing] = await Promise.all([
-    prisma.pricingOption.findMany({
-      orderBy: { sortOrder: "asc" },
-    }),
+  const [rawBhkOptions, rawDefaults, rawComponentPricing] = await Promise.all([
     prisma.pricingOption.findMany({
       where: { groupKey: "bhk_type" },
       orderBy: { sortOrder: "asc" },
     }),
     prisma.bhkRoomDefault.findMany(),
-    prisma.componentPricing.findMany(),
+    prisma.componentPricing ? prisma.componentPricing.findMany() : Promise.resolve([]),
   ]);
-
-  const options = rawOptions.map((opt: any) => ({
-    id: opt.id,
-    groupKey: opt.groupKey,
-    label: opt.label,
-    basePrice: Number(opt.basePrice),
-    perUnitPrice: opt.perUnitPrice ? Number(opt.perUnitPrice) : null,
-    isActive: opt.isActive,
-    sortOrder: opt.sortOrder,
-  }));
 
   const bhkOptions = rawBhkOptions.map((bhk: any) => ({
     id: bhk.id,
@@ -57,7 +44,6 @@ export default async function AdminPricingPage() {
   return (
     <div className="space-y-6">
       <PricingTabsClient
-        options={options}
         bhkOptions={bhkOptions}
         initialDefaults={initialDefaults}
         componentPricing={componentPricing}

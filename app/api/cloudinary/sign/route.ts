@@ -47,6 +47,8 @@ export async function POST(request: Request) {
       "realspace-certifications",
       "certifications",
       "testimonials",
+      "realspace-events",
+      "events",
     ];
     const requestedFolder = body.folder;
     const folder = allowedFolders.includes(requestedFolder)
@@ -61,7 +63,14 @@ export async function POST(request: Request) {
     };
 
     const isTestimonialUpload = folder === "testimonials";
-    const resourceType = isTestimonialUpload && body.resourceType === "image" ? "image" : isTestimonialUpload ? "video" : "image";
+    const isEventsUpload = folder === "events" || folder === "realspace-events";
+
+    let resourceType = "image";
+    if (isTestimonialUpload) {
+      resourceType = body.resourceType === "image" ? "image" : "video";
+    } else if (isEventsUpload) {
+      resourceType = body.resourceType === "video" ? "video" : "image";
+    }
 
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
@@ -73,10 +82,10 @@ export async function POST(request: Request) {
       timestamp,
       folder,
       resourceType,
-      allowedFormats: isTestimonialUpload
+      allowedFormats: isTestimonialUpload || isEventsUpload
         ? resourceType === "video" ? ["mp4", "webm", "mov"] : ["jpg", "jpeg", "png", "webp"]
         : undefined,
-      maxFileSize: isTestimonialUpload ? 100 * 1024 * 1024 : undefined,
+      maxFileSize: isTestimonialUpload || isEventsUpload ? 100 * 1024 * 1024 : undefined,
       cloudName:
         process.env.CLOUDINARY_CLOUD_NAME ||
         process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,

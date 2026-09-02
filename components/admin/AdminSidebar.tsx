@@ -13,6 +13,7 @@ import {
   Calculator,
   Tag,
   Users,
+  Calendar,
   Settings,
 } from "lucide-react";
 import clsx from "clsx";
@@ -25,6 +26,7 @@ const navItems = [
   { name: "Certifications", href: "/admin/certifications", icon: Award },
   { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
   { name: "Gallery", href: "/admin/gallery", icon: ImageIcon },
+  { name: "Events", href: "/admin/events", icon: Calendar },
   { name: "Pricing", href: "/admin/pricing", icon: Calculator },
   { name: "Offers", href: "/admin/offers", icon: Tag },
   { name: "Leads", href: "/admin/leads", icon: Users },

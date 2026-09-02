@@ -53,9 +53,10 @@ const ROOM_MAP: Record<RoomType, string> = {
 };
 
 export default function BhkRoomDefaultsEditor({
-  bhkOptions,
+  bhkOptions: rawBhkOptions,
   initialDefaults,
 }: BhkRoomDefaultsEditorProps) {
+  const bhkOptions = rawBhkOptions.filter((b) => b.label !== "Commercial & Others");
   const [selectedBhkId, setSelectedBhkId] = useState<string>(
     bhkOptions[0]?.id || ""
   );

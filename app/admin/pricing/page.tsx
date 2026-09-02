@@ -18,10 +18,12 @@ export default async function AdminPricingPage() {
     prisma.componentPricing ? prisma.componentPricing.findMany() : Promise.resolve([]),
   ]);
 
-  const bhkOptions = rawBhkOptions.map((bhk: any) => ({
-    id: bhk.id,
-    label: bhk.label,
-  }));
+  const bhkOptions = rawBhkOptions
+    .filter((bhk: any) => bhk.label !== "Commercial & Others")
+    .map((bhk: any) => ({
+      id: bhk.id,
+      label: bhk.label,
+    }));
 
   const initialDefaults = rawDefaults.map((d: any) => ({
     id: d.id,

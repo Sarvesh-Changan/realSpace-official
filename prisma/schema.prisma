@@ -334,3 +334,30 @@ model GalleryImage {
   @@index([designType, categoryId])
   @@index([isFeatured, isPublished])
 }
+
+model Event {
+  id                 String       @id @default(cuid())
+  title              String
+  slug               String       @unique
+  coverImageUrl      String
+  coverImagePublicId String?
+  isPublished        Boolean      @default(true)
+  sortOrder          Int          @default(0)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  media              EventMedia[]
+}
+
+model EventMedia {
+  id            String    @id @default(cuid())
+  eventId       String
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  mediaUrl      String
+  mediaPublicId String?
+  mediaType     MediaType
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  @@index([eventId])
+}
+

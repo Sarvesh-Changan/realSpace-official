@@ -24,3 +24,17 @@ export const bhkRoomDefaultsSchema = z.object({
 });
 
 export type BhkRoomDefaultsInput = z.infer<typeof bhkRoomDefaultsSchema>;
+
+export const componentPricingItemSchema = z.object({
+  componentKey: z.enum(["kitchen", "living_room", "bedroom", "bathroom"]),
+  tier: z.enum(["STANDARD", "PREMIUM", "LUXURY"]),
+  pricePerUnit: z.coerce.number().min(0, "Price must be a positive number"),
+  isActive: z.boolean().default(true),
+});
+
+export const componentPricingMatrixSchema = z.object({
+  items: z.array(componentPricingItemSchema),
+});
+
+export type ComponentPricingMatrixInput = z.infer<typeof componentPricingMatrixSchema>;
+

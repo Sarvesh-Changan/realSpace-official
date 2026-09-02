@@ -59,6 +59,12 @@ enum CertificationType {
   REGISTRATION
 }
 
+enum PricingTier {
+  STANDARD
+  PREMIUM
+  LUXURY
+}
+
 // ---------- Core content ----------
 
 model Project {
@@ -199,6 +205,18 @@ model BhkRoomDefault {
 
   @@unique([bhkOptionId, roomGroupKey])
   @@index([bhkOptionId])
+}
+
+model ComponentPricing {
+  id           String      @id @default(cuid())
+  componentKey String
+  tier         PricingTier
+  pricePerUnit Decimal     @db.Decimal(10, 2)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([componentKey, tier])
 }
 
 model Lead {

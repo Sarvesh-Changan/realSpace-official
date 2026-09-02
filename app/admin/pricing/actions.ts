@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import type { PricingConfigFormValues } from "./_components/PricingOptionForm";
-import { pricingOptionSchema, bhkRoomDefaultsSchema } from "./schema";
+import { pricingOptionSchema, bhkRoomDefaultsSchema, componentPricingMatrixSchema } from "./schema";
 
 export async function createPricingOption(data: PricingConfigFormValues) {
   const session = await auth();
@@ -180,3 +180,59 @@ export async function upsertBhkRoomDefaults(
     return { success: false, error: "Failed to save BHK room defaults." };
   }
 }
+
+export async function updateComponentPricingMatrix(
+  items: Array<{
+    componentKey: "kitchen" | "living_room" | "bedroom" | "bathroom";
+    tier: "STANDARD" | "PREMIUM" | "LUXURY";
+    pricePerUnit: number;
+    isActive: boolean;
+  }>
+) {
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized: Admin session required." };
+  }
+
+  const parsed = componentPricingMatrixSchema.safeParse({ items });
+  if (!parsed.success) {
+    const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
+    return { success: false, error: errorMsg || "Invalid pricing matrix data." };
+  }
+
+  const validatedItems = parsed.data.items;
+
+  try {
+    await prisma.$transaction(
+      validatedItems.map((item) =>
+        prisma.componentPricing.upsert({
+          where: {
+            componentKey_tier: {
+              componentKey: item.componentKey,
+              tier: item.tier,
+            },
+          },
+          create: {
+            componentKey: item.componentKey,
+            tier: item.tier,
+            pricePerUnit: item.pricePerUnit,
+            isActive: item.isActive,
+          },
+          update: {
+            pricePerUnit: item.pricePerUnit,
+            isActive: item.isActive,
+          },
+        })
+      )
+    );
+
+    revalidatePath("/admin/pricing");
+    revalidatePath("/quote");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update component pricing matrix:", error);
+    return { success: false, error: "Failed to update component pricing matrix in database." };
+  }
+}
+
+

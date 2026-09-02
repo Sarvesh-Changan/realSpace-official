@@ -27,3 +27,16 @@ export const imageSchema = z.object({
 });
 
 export type ImageInput = z.infer<typeof imageSchema>;
+
+export const bulkImageSchema = z.object({
+  title: z.string().min(1, "Title is required").max(200, "Title too long"),
+  categoryId: z.string().min(1, "Category is required"),
+  designType: z.enum(DESIGN_TYPE_VALUES),
+  isCategoryCover: z.boolean().default(false),
+  isFeatured: z.boolean().default(false),
+  isPublished: z.boolean().default(true),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+export type BulkImageInput = z.infer<typeof bulkImageSchema>;
+

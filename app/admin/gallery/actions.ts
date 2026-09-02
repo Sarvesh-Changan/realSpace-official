@@ -149,6 +149,80 @@ export async function createImage(data: ImageInput) {
   }
 }
 
+export async function createBulkImages(items: ImageInput[]) {
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized: Admin session required." };
+  }
+
+  if (!items || items.length === 0) {
+    return { success: false, error: "No images provided for bulk creation." };
+  }
+
+  const validatedItems: ImageInput[] = [];
+  for (const item of items) {
+    const parsed = imageSchema.safeParse(item);
+    if (!parsed.success) {
+      const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
+      return { success: false, error: errorMsg || "Invalid image data in batch." };
+    }
+    validatedItems.push(parsed.data);
+  }
+
+  try {
+    const categoryId = validatedItems[0].categoryId;
+    const hasCategoryCover = validatedItems.some((item) => item.isCategoryCover);
+
+    // If any item in the batch is set as category cover, unset isCategoryCover on existing images
+    if (hasCategoryCover) {
+      await prisma.galleryImage.updateMany({
+        where: { categoryId },
+        data: { isCategoryCover: false },
+      });
+    }
+
+    // Ensure isCategoryCover is true ONLY for the first file in the batch if requested
+    let coverAssigned = false;
+    const finalData = validatedItems.map((item) => {
+      let isCover = item.isCategoryCover;
+      if (isCover) {
+        if (coverAssigned) {
+          isCover = false;
+        } else {
+          coverAssigned = true;
+        }
+      }
+      return {
+        title: item.title,
+        categoryId: item.categoryId,
+        designType: item.designType,
+        mediaType: item.mediaType,
+        url: item.url,
+        cloudinaryId: item.cloudinaryId || item.url,
+        isCategoryCover: isCover,
+        isFeatured: item.isFeatured,
+        isPublished: item.isPublished,
+        sortOrder: item.sortOrder,
+      };
+    });
+
+    await prisma.$transaction(
+      finalData.map((data) => prisma.galleryImage.create({ data }))
+    );
+
+    revalidatePath("/admin/gallery");
+    revalidatePath("/gallery");
+    revalidatePath("/projects");
+    revalidatePath("/", "layout");
+
+    return { success: true, count: finalData.length };
+  } catch (error) {
+    console.error("Failed to create bulk gallery images:", error);
+    return { success: false, error: "Failed to create gallery images batch in database." };
+  }
+}
+
+
 export async function updateImage(id: string, data: ImageInput) {
   const session = await auth();
   if (!session?.user) {

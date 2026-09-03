@@ -237,7 +237,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <span className="text-neutral-300 font-medium">24*7 Support</span>
+                <span className="text-neutral-300 font-medium">24x7 Support</span>
               </li>
             </ul>
           </div>

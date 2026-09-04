@@ -51,31 +51,32 @@ export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroPr
         />
       </div>
 
-      {/* Layered Gradient Overlays for Peak Contrast & Legibility */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/92 via-black/75 to-black/35" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-transparent to-black/40" />
+      {/* Scoped left-side dark gradient scrim behind text content column for 100% effortless legibility */}
+      <div
+        className="absolute inset-y-0 left-0 -z-10 w-full sm:w-[70%] lg:w-[55%] bg-gradient-to-r from-black/95 via-black/75 to-transparent pointer-events-none"
+        aria-hidden="true"
+      />
 
       {/* Content Container */}
       <div className="mx-auto flex min-h-[700px] sm:min-h-[780px] max-w-standard items-end px-5 pb-16 pt-32 sm:px-8 sm:pb-24 lg:px-12">
         <div className="max-w-3xl text-white">
-          
           {/* Headline */}
           <ScrollReveal direction="left" distance={36} delay={0.09}>
-            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08] drop-shadow-md">
+            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08] [text-shadow:_0_2px_12px_rgba(0,0,0,1),_0_4px_24px_rgba(0,0,0,0.95)]">
               {headline}
             </h1>
           </ScrollReveal>
 
           {/* Lead Subtitle */}
           <ScrollReveal direction="left" distance={32} delay={0.16}>
-            <p className="mt-4 text-lg sm:text-xl font-semibold text-brand-yellow leading-snug drop-shadow-sm">
+            <p className="mt-4 text-lg sm:text-xl font-bold text-brand-yellow leading-snug [text-shadow:_0_1px_4px_rgba(0,0,0,1),_0_2px_10px_rgba(0,0,0,0.95)]">
               {subhead}
             </p>
           </ScrollReveal>
 
           {/* Body Copy */}
           <ScrollReveal direction="left" distance={32} delay={0.22}>
-            <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white/90 font-sans drop-shadow-sm text-justify">
+            <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white font-sans text-justify [text-shadow:_0_1px_4px_rgba(0,0,0,1),_0_2px_8px_rgba(0,0,0,0.95)]">
               At REALSPACE, we’re all about ensuring every bit of a home reflects the personality and style of the people living there. By designing your house with dedication, we ensure each corner of your living space echoes the quality of a house that’s designed well and a place you can call home.
             </p>
           </ScrollReveal>

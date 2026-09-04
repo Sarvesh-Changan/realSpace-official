@@ -13,7 +13,7 @@ export function WelcomeIntro({ intro }: WelcomeIntroProps) {
   return (
     <section className="relative overflow-hidden bg-brand-cream py-16 sm:py-20 md:py-24">
       <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.82fr] lg:gap-20">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <div className="max-w-2xl">
             <ScrollReveal direction="left" distance={28} className="text-eyebrow text-brand-red">
               <h4 className="mt-4 font-serif text-[14px] font-bold tracking-tight text-brand-text">Welcome to REALSPACE</h4>
@@ -31,13 +31,13 @@ export function WelcomeIntro({ intro }: WelcomeIntroProps) {
             <div className="mt-7 h-px w-20 bg-brand-yellow" />
           </div>
 
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-md">
+          <div className="relative mx-auto w-full max-w-xl lg:max-w-2xl">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-8 border-white/70 shadow-xl">
               <Image
                 src="/images/home/home-2-1.jpeg"
                 alt="REALSPACE interior design detail"
                 fill
-                sizes="(max-width: 1024px) 90vw, 34vw"
+                sizes="(max-width: 1024px) 90vw, 50vw"
                 className="object-cover"
               />
             </div>

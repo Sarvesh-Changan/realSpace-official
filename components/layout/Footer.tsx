@@ -155,7 +155,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
           <div className="flex items-center justify-center sm:justify-start">
             <Link href="/" className="flex w-fit">
               <Image
-                src="/images/footer/footer-logo.png"
+                src="/images/updated-realspace_logo.png"
                 alt="REALSPACE logo"
                 width={400}
                 height={150}

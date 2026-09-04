@@ -58,11 +58,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`${isHome ? "absolute top-0" : "relative"} z-50 w-full transition-all duration-300 ${
-        isHome
-          ? "border-b border-transparent bg-transparent py-3 sm:py-4"
+      className={`${isHome ? "absolute top-0" : "relative"} z-50 w-full transition-all duration-300 ${isHome
+          ? "border-b border-transparent bg-gradient-to-b from-black/85 via-black/50 to-transparent py-3 sm:py-4"
           : "border-b border-brand-border/60 bg-white py-3 sm:py-4 shadow-sm"
-      }`}
+        }`}
     >
       <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
@@ -70,14 +69,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center group">
               <Image
-                src="/images/realspace_logo.png"
+                src="/images/updated-realspace_logo.png"
                 alt={`${logoText} logo`}
                 width={300}
                 height={60}
                 sizes="(max-width: 640px) 160px, 180px"
-                className={`w-auto transition-all duration-300 ${
-                  isScrolled ? "h-12 sm:h-14" : "h-14 sm:h-16"
-                }`}
+                className={`w-auto transition-all duration-300 ${isScrolled ? "h-12 sm:h-14" : "h-14 sm:h-16"
+                  }`}
                 style={{ width: "auto" }}
                 priority
               />
@@ -96,15 +94,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`relative px-3 py-2 text-xs lg:text-sm font-semibold uppercase tracking-wider transition-colors duration-200 ${
-                    isActive
+                  className={`relative px-3 py-2 text-xs lg:text-sm font-semibold uppercase tracking-wider transition-colors duration-200 ${isActive
                       ? isHome
-                        ? "font-bold text-brand-yellow"
+                        ? "font-bold text-brand-yellow drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]"
                         : "font-bold text-brand-red"
                       : isHome
-                        ? "text-white/90 hover:text-brand-yellow"
+                        ? "text-white hover:text-brand-yellow drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] [text-shadow:_0_1px_4px_rgba(0,0,0,0.9)]"
                         : "text-brand-text/80 hover:text-brand-red"
-                  }`}
+                    }`}
                 >
                   {link.label}
                   {isActive && (
@@ -205,15 +202,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onClick={() => {
                       if (controlledIsOpen === undefined) setInternalIsOpen(false);
                     }}
-                    className={`block rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${
-                      isActive
-                      ? isHome
-                        ? "bg-white/10 font-bold text-brand-yellow"
-                        : "bg-brand-red/10 font-bold text-brand-red"
-                      : isHome
-                        ? "text-white hover:bg-white/10 hover:text-brand-yellow"
-                        : "text-brand-text hover:bg-brand-bgAlt hover:text-brand-red"
-                    }`}
+                    className={`block rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${isActive
+                        ? isHome
+                          ? "bg-white/10 font-bold text-brand-yellow"
+                          : "bg-brand-red/10 font-bold text-brand-red"
+                        : isHome
+                          ? "text-white hover:bg-white/10 hover:text-brand-yellow"
+                          : "text-brand-text hover:bg-brand-bgAlt hover:text-brand-red"
+                      }`}
                   >
                     {link.label}
                   </Link>

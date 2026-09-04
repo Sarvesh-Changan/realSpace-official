@@ -19,11 +19,11 @@ export interface ComponentPricingRecord {
   isActive: boolean;
 }
 
-export const COMPONENTS: { key: ComponentKey; label: string; description: string; Icon: React.FC<{ className?: string }> }[] = [
-  { key: "kitchen", label: "Kitchen", description: "Modular cabinetry, countertops, and kitchen layouts", Icon: ChefHat },
-  { key: "living_room", label: "Living Room", description: "TV units, wall paneling, seating & hall decor", Icon: Sofa },
-  { key: "bedroom", label: "Bedroom", description: "Beds, nightstands, dressers & bedroom interior", Icon: Bed },
-  { key: "bathroom", label: "Bathroom", description: "Vanities, tiling, fixtures & bathroom fitting", Icon: Bath },
+export const COMPONENTS: { key: ComponentKey; label: string; Icon: React.FC<{ className?: string }> }[] = [
+  { key: "kitchen", label: "Kitchen", Icon: ChefHat },
+  { key: "living_room", label: "Living Room", Icon: Sofa },
+  { key: "bedroom", label: "Bedroom", Icon: Bed },
+  { key: "bathroom", label: "Bathroom", Icon: Bath },
 ];
 
 export const TIERS: { key: TierKey; label: string; badgeColor: string }[] = [
@@ -197,7 +197,6 @@ export function ComponentPricingMatrixEditor({ initialPricing }: ComponentPricin
                       !active ? "bg-neutral-50/70 opacity-60" : ""
                     }`}
                   >
-                    {/* Component Name & Description */}
                     <td className="py-4 px-5 align-middle">
                       <div className="flex items-start gap-3">
                         <div className="p-2 rounded-lg bg-neutral-100 border border-neutral-200 text-brand-red shrink-0 mt-0.5">
@@ -205,7 +204,6 @@ export function ComponentPricingMatrixEditor({ initialPricing }: ComponentPricin
                         </div>
                         <div>
                           <div className="font-semibold text-neutral-900 text-base">{comp.label}</div>
-                          <div className="text-xs text-neutral-500 leading-tight">{comp.description}</div>
                         </div>
                       </div>
                     </td>

@@ -204,11 +204,19 @@ export function EventForm({ mode, eventId, initialData }: EventFormProps) {
     setIsSubmitting(true);
     setServerError(null);
 
+    const formattedData: EventInput = {
+      ...data,
+      media: data.media?.map((item, index) => ({
+        ...item,
+        sortOrder: index,
+      })),
+    };
+
     try {
       const res =
         mode === "create"
-          ? await createEvent(data)
-          : await updateEvent(eventId!, data);
+          ? await createEvent(formattedData)
+          : await updateEvent(eventId!, formattedData);
 
       if (res.success) {
         router.push("/admin/events");
@@ -482,25 +490,11 @@ export function EventForm({ mode, eventId, initialData }: EventFormProps) {
                       </button>
                     </div>
 
-                    {/* Footer Controls */}
-                    <div className="p-2.5 bg-[#F8F5F1] text-xs flex items-center justify-between border-t border-[#E8E2DA]">
-                      <span className="font-mono text-[11px] text-[#6D6A66]">
-                        #{index + 1} ({mediaType})
-                      </span>
-                      <input
-                        type="number"
-                        min="0"
-                        {...register(`media.${index}.sortOrder`, { valueAsNumber: true })}
-                        placeholder="Order"
-                        className="w-14 px-1.5 py-1 text-xs border border-[#E8E2DA] rounded bg-white font-mono text-center text-[#1C1C1C]"
-                        title="Sort Order"
-                      />
-                    </div>
-
                     {/* Hidden inputs to pass data to react-hook-form */}
                     <input type="hidden" {...register(`media.${index}.mediaUrl`)} />
                     <input type="hidden" {...register(`media.${index}.mediaPublicId`)} />
                     <input type="hidden" {...register(`media.${index}.mediaType`)} />
+                    <input type="hidden" {...register(`media.${index}.sortOrder`, { valueAsNumber: true })} />
                   </div>
                 );
               })}

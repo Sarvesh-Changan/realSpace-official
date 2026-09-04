@@ -9,9 +9,9 @@ interface Props {
 }
 
 const PACKAGES = [
-  { id: 'Standard', label: 'Standard', desc: 'Essential materials, functional design, cost-effective finish.' },
-  { id: 'Premium', label: 'Premium', desc: 'High-quality materials, customized finishes, balanced luxury.' },
-  { id: 'Luxury', label: 'Luxury', desc: 'Premium imported materials, bespoke elements, high-end finish.' }
+  { id: 'Standard', label: 'Standard', desc: 'Essential materials, cost-effective finish.' },
+  { id: 'Premium', label: 'Premium', desc: 'Premium quality material, balance luxury.' },
+  { id: 'Luxury', label: 'Luxury', desc: 'High Quality materials, high-end finish.' }
 ];
 
 export default function Step3Package({ state, updateState }: Props) {

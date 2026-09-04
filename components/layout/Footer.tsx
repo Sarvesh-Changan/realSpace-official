@@ -245,7 +245,7 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
 
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-xs text-neutral-400 text-center md:text-left">
-            &copy; {new Date().getFullYear()} REALSPACE Interiors. All rights reserved.
+            &copy; {new Date().getFullYear()} REALSPACE. All rights reserved.
           </p>
           {socialPlatforms.length > 0 && (
             <div className="flex flex-wrap justify-center gap-4">

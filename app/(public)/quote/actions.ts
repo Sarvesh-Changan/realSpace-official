@@ -9,7 +9,7 @@ import { sendLeadNotification } from '@/lib/email';
 
 const ROOM_MAP = [
   { key: 'kitchens', groupKeys: ['kitchen'], fallbackLabel: 'Kitchens' },
-  { key: 'livingRooms', groupKeys: ['hall', 'living_room'], fallbackLabel: 'Living Rooms / Halls' },
+  { key: 'livingRooms', groupKeys: ['hall', 'living_room'], fallbackLabel: 'Living Rooms' },
   { key: 'bedrooms', groupKeys: ['bedroom'], fallbackLabel: 'Bedrooms' },
   { key: 'bathrooms', groupKeys: ['bathroom'], fallbackLabel: 'Bathrooms' },
 ];

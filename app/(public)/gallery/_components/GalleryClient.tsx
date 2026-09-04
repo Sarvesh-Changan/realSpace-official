@@ -162,18 +162,6 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
     updateUrl(selectedFolder?.id || null, null);
   };
 
-  // Close lightbox on Escape key press
-  useEffect(() => {
-    if (!lightboxItem) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleCloseLightbox();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxItem, selectedFolder]);
-
   // Filter Items within the selected category
   const categoryItems = useMemo(() => {
     if (!selectedFolder) return [];
@@ -199,13 +187,59 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
     setActiveBudget("ALL");
   };
 
+  // Index of currently open lightbox item in filtered list
+  const lightboxIndex = useMemo(() => {
+    if (!lightboxItem) return -1;
+    return filteredItems.findIndex((item) => item.id === lightboxItem.id);
+  }, [lightboxItem, filteredItems]);
+
+  const handlePrevLightbox = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (filteredItems.length <= 1) return;
+    const currentIndex = filteredItems.findIndex((item) => item.id === lightboxItem?.id);
+    if (currentIndex <= 0) {
+      const lastItem = filteredItems[filteredItems.length - 1];
+      if (lastItem) handleOpenLightbox(lastItem);
+    } else {
+      const prevItem = filteredItems[currentIndex - 1];
+      if (prevItem) handleOpenLightbox(prevItem);
+    }
+  };
+
+  const handleNextLightbox = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (filteredItems.length <= 1) return;
+    const currentIndex = filteredItems.findIndex((item) => item.id === lightboxItem?.id);
+    if (currentIndex >= filteredItems.length - 1 || currentIndex === -1) {
+      const firstItem = filteredItems[0];
+      if (firstItem) handleOpenLightbox(firstItem);
+    } else {
+      const nextItem = filteredItems[currentIndex + 1];
+      if (nextItem) handleOpenLightbox(nextItem);
+    }
+  };
+
+  // Close lightbox on Escape key press, handle ArrowLeft / ArrowRight
+  useEffect(() => {
+    if (!lightboxItem) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleCloseLightbox();
+      } else if (e.key === "ArrowLeft") {
+        handlePrevLightbox();
+      } else if (e.key === "ArrowRight") {
+        handleNextLightbox();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxItem, filteredItems]);
+
   return (
     <div className="min-h-screen bg-brand-cream text-brand-text pt-16 sm:pt-20 pb-16 sm:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* ========================================================================= */}
-        {/* VIEW 1: TOP-LEVEL CATEGORY FOLDERS GRID (DEFAULT / LANDING VIEW)         */}
-        {/* ========================================================================= */}
+        {/* VIEW 1: TOP-LEVEL CATEGORY FOLDERS GRID (DEFAULT / LANDING VIEW) */}
         {!selectedFolder ? (
           <div>
             {/* Header Section */}
@@ -286,9 +320,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
             )}
           </div>
         ) : (
-          /* ========================================================================= */
-          /* VIEW 2: CATEGORY DETAIL VIEW (IMAGES GRID + FILTERS + BACK BUTTON)       */
-          /* ========================================================================= */
+          /* VIEW 2: CATEGORY DETAIL VIEW (IMAGES GRID + FILTERS + BACK BUTTON) */
           <div>
             {/* Navigation / Breadcrumb Header */}
             <motion.div
@@ -318,7 +350,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
               </div>
             </motion.div>
 
-            {/* Secondary Filters Bar (Interior/Exterior Toggle & Budget Filter ONLY within Detail View) */}
+            {/* Secondary Filters Bar */}
             <div className="mb-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 bg-white p-3.5 sm:p-4 rounded-xl border border-[#E8E2DA] shadow-sm">
               {/* Interior / Exterior Toggle */}
               <div className="flex items-center bg-[#F8F5F1] p-1 rounded-lg border border-[#E8E2DA] w-full sm:w-auto">
@@ -407,7 +439,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                         {/* Top Badges */}
                         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-1.5 transition-transform duration-400 ease-out motion-safe:lg:group-hover:-translate-y-1.5">
                           <span
-                           className="px-3.5 sm:px-4 py-0.5 sm:py-1.5 text-[15px] sm:text-sm font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
+                            className="px-3.5 sm:px-4 py-0.5 sm:py-1.5 text-[15px] sm:text-sm font-bold uppercase tracking-wider text-white rounded-full shadow-sm"
                             style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
                           >
                             {item.category}
@@ -479,6 +511,7 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
             onClick={handleCloseLightbox}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-3 sm:p-4 md:p-8 backdrop-blur-sm"
           >
+            {/* Close Button */}
             <button
               type="button"
               onClick={(e) => {
@@ -490,6 +523,30 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
             >
               <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
+
+            {/* Left Arrow Button */}
+            {filteredItems.length > 1 && (
+              <button
+                type="button"
+                onClick={handlePrevLightbox}
+                className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-black/60 hover:bg-white/20 rounded-full text-white transition-colors z-50 cursor-pointer shadow-lg border border-white/20"
+                aria-label="Previous image"
+              >
+                <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+
+            {/* Right Arrow Button */}
+            {filteredItems.length > 1 && (
+              <button
+                type="button"
+                onClick={handleNextLightbox}
+                className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-black/60 hover:bg-white/20 rounded-full text-white transition-colors z-50 cursor-pointer shadow-lg border border-white/20"
+                aria-label="Next image"
+              >
+                <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
 
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 16 }}
@@ -515,28 +572,59 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
                     alt={lightboxItem.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 58vw"
-                    className="object-cover"
+                    className="object-contain"
                   />
                 )}
               </div>
 
-              {/* Content Details */}
-              <div className="w-full md:w-[42%] bg-white p-5 sm:p-6 md:p-9 flex flex-col justify-center overflow-y-auto flex-1">
-                <div className="mb-3 sm:mb-4 flex flex-wrap gap-2">
-                  <span
-                    className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white rounded-md"
-                    style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
-                  >
-                    {lightboxItem.category}
-                  </span>
-                  <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider bg-[#F8F5F1] text-[#6D6A66] rounded-md border border-[#E8E2DA]">
-                    {lightboxItem.designType}
-                  </span>
-                </div>
+              {/* Details Content Sidebar */}
+              <div className="flex-1 p-5 sm:p-6 md:p-8 flex flex-col justify-between overflow-y-auto bg-[#1C1C1C]">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span
+                      className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-white rounded-full"
+                      style={{ backgroundColor: BRAND_COLORS.kunkuRed }}
+                    >
+                      {lightboxItem.category}
+                    </span>
+                    {lightboxIndex >= 0 && (
+                      <span className="text-xs font-medium text-white/60 bg-white/10 px-2.5 py-1 rounded-full">
+                        {lightboxIndex + 1} of {filteredItems.length}
+                      </span>
+                    )}
+                  </div>
 
-                <h2 className="text-2xl sm:text-3xl md:text-4xl leading-[1.08] font-serif font-bold text-[#1C1C1C]">
-                  {lightboxItem.title}
-                </h2>
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-4">
+                    {lightboxItem.title}
+                  </h3>
+
+                  {lightboxItem.description && (
+                    <p className="text-sm text-white/70 leading-relaxed mb-6">
+                      {lightboxItem.description}
+                    </p>
+                  )}
+
+                  <div className="space-y-3 pt-4 border-t border-white/10 text-xs sm:text-sm">
+                    {lightboxItem.approxBudgetLabel && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/50">Approximate Budget</span>
+                        <span className="font-semibold text-white">{lightboxItem.approxBudgetLabel}</span>
+                      </div>
+                    )}
+                    {lightboxItem.theme && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/50">Theme / Style</span>
+                        <span className="font-semibold text-white">{lightboxItem.theme}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/50">Design Scope</span>
+                      <span className="font-semibold text-white">
+                        {lightboxItem.designType === "INTERIOR" ? "Interior Design" : "Exterior Design"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -548,8 +636,10 @@ function GalleryContent({ categoryFolders, images }: GalleryClientProps) {
 
 export function GalleryClient(props: GalleryClientProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F8F5F1] pt-24 pb-20" />}>
+    <Suspense fallback={<div className="min-h-screen bg-brand-cream" />}>
       <GalleryContent {...props} />
     </Suspense>
   );
 }
+
+export default GalleryClient;

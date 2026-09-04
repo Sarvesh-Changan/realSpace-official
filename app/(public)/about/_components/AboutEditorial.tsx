@@ -58,15 +58,44 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-standard gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-12 lg:py-36">
-        <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={transition} className="relative mx-auto w-full max-w-md lg:mx-0">
-          <div className="absolute -left-3 -top-3 h-full w-full border border-brand-yellow/70 sm:-left-5 sm:-top-5" />
-          <div className="relative aspect-[4/5] overflow-hidden bg-brand-cream"><Image src="/images/owner_image.jpeg" alt="Vijay Chawan" fill sizes="(max-width: 1024px) 90vw, 35vw" className="object-cover object-top" /></div>
-        </motion.div>
+      <section className="mx-auto max-w-standard px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+        <motion.div
+          initial={initial}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={reveal}
+          transition={transition}
+          className="relative rounded-2xl sm:rounded-3xl border-2 sm:border-[3px] border-brand-yellow p-6 sm:p-10 lg:p-12 bg-brand-warmWhite shadow-sm"
+        >
+          <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:items-center">
+            {/* Founder Photo */}
+            <div className="relative mx-auto w-full max-w-md lg:mx-0">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-brand-cream">
+                <Image
+                  src="/images/owner_image.jpeg"
+                  alt="Vijay Chawan"
+                  fill
+                  sizes="(max-width: 1024px) 90vw, 35vw"
+                  className="object-cover object-top"
+                />
+              </div>
+            </div>
 
-        <motion.div initial={initial} whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={reveal} transition={{ ...transition, delay: reduceMotion ? 0 : 0.1 }} className="lg:pt-8">
-          <h2 className="mt-5 max-w-2xl font-serif text-4xl font-bold leading-tight text-brand-text sm:text-6xl">Vijay vasant chawan</h2> <h3 className="mt-2 max-w-2xl font-serif text-lg font-semibold leading-tight text-brand-text sm:text-2xl">Principal Designer &amp; Founder, REALSPACE</h3>
-          <div className="mt-8 max-w-2xl space-y-5 text-[18px] sm:text-[18px] leading-[1.85] text-brand-text/85">{founderCopy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
+            {/* Text Content */}
+            <div className="flex flex-col justify-center">
+              <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-5xl lg:text-6xl capitalize">
+                Vijay vasant chawan
+              </h2>
+              <h3 className="mt-2 font-serif text-base font-semibold leading-tight text-brand-red sm:text-xl lg:text-2xl">
+                Principal Designer &amp; Founder, REALSPACE
+              </h3>
+              <div className="mt-6 space-y-4 text-base sm:text-lg leading-relaxed text-brand-text/85">
+                {founderCopy.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </div>
         </motion.div>
       </section>
 

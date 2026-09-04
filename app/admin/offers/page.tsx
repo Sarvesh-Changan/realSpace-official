@@ -24,6 +24,7 @@ export default async function AdminOffersPage() {
     startDate: offer.startDate ? offer.startDate.toISOString() : null,
     endDate: offer.endDate ? offer.endDate.toISOString() : null,
     isActive: offer.isActive,
+    showOnHome: offer.showOnHome ?? false,
     sortOrder: offer.sortOrder,
   }));
 

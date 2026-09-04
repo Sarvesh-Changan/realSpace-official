@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Edit, Trash2, Megaphone, Calendar } from "lucide-react";
-import { deleteOffer } from "../actions";
+import { Plus, Edit, Trash2, Megaphone, Calendar, Home } from "lucide-react";
+import { deleteOffer, toggleOfferShowOnHomeAction } from "../actions";
 
 export type OfferData = {
     id: string;
@@ -14,6 +15,7 @@ export type OfferData = {
     startDate: string | null;
     endDate: string | null;
     isActive: boolean;
+    showOnHome: boolean;
     sortOrder: number;
 };
 
@@ -23,6 +25,7 @@ interface OfferTableClientProps {
 
 export function OfferTableClient({ offers }: OfferTableClientProps) {
     const router = useRouter();
+    const [togglingId, setTogglingId] = useState<string | null>(null);
 
     const handleDelete = async (id: string) => {
         if (window.confirm("Are you sure you want to delete this offer?")) {
@@ -32,6 +35,17 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
             } else {
                 alert(res.error || "Failed to delete offer.");
             }
+        }
+    };
+
+    const handleToggleShowOnHome = async (id: string, currentVal: boolean) => {
+        setTogglingId(id);
+        const res = await toggleOfferShowOnHomeAction(id, !currentVal);
+        setTogglingId(null);
+        if (res.success) {
+            router.refresh();
+        } else {
+            alert(res.error || "Failed to update Home Strip setting.");
         }
     };
 
@@ -79,7 +93,7 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
                                 <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                                     <th className="py-3.5 px-4 w-1/3">Offer Details</th>
                                     <th className="py-3.5 px-4">Validity Period</th>
-                                    <th className="py-3.5 px-4">Status</th>
+                                    <th className="py-3.5 px-4">Status & Placement</th>
                                     <th className="py-3.5 px-4 text-center">Sort Order</th>
                                     <th className="py-3.5 px-4 text-right">Actions</th>
                                 </tr>
@@ -112,15 +126,38 @@ export function OfferTableClient({ offers }: OfferTableClientProps) {
                                             </div>
                                         </td>
 
-                                        <td className="py-4 px-4">
-                                            <span
-                                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${offer.isActive
-                                                        ? "bg-green-50 text-green-700 border-green-200"
-                                                        : "bg-neutral-100 text-neutral-700 border-neutral-200"
+                                        <td className="py-4 px-4 space-y-2">
+                                            <div>
+                                                <span
+                                                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${offer.isActive
+                                                            ? "bg-green-50 text-green-700 border-green-200"
+                                                            : "bg-neutral-100 text-neutral-700 border-neutral-200"
+                                                        }`}
+                                                >
+                                                    {offer.isActive ? "Active" : "Inactive"}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 pt-1 border-t border-neutral-100">
+                                                <button
+                                                    type="button"
+                                                    disabled={togglingId === offer.id}
+                                                    onClick={() => handleToggleShowOnHome(offer.id, offer.showOnHome)}
+                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-red ${
+                                                        offer.showOnHome ? "bg-amber-600" : "bg-neutral-200"
                                                     }`}
-                                            >
-                                                {offer.isActive ? "Active" : "Inactive"}
-                                            </span>
+                                                    title="Toggle show on Home page strip"
+                                                >
+                                                    <span
+                                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                            offer.showOnHome ? "translate-x-4" : "translate-x-0"
+                                                        }`}
+                                                    />
+                                                </button>
+                                                <span className="text-xs font-medium text-neutral-600 flex items-center gap-1">
+                                                    <Home className="w-3 h-3 text-neutral-400" />
+                                                    {offer.showOnHome ? "Show on Home" : "Off Home"}
+                                                </span>
+                                            </div>
                                         </td>
 
                                         <td className="py-4 px-4 text-center text-neutral-600 font-mono text-xs">

@@ -33,6 +33,7 @@ export default async function EditOfferPage({ params }: Props) {
     ctaLabel: offer.ctaLabel,
     ctaLink: offer.ctaLink,
     isActive: offer.isActive,
+    showOnHome: offer.showOnHome ?? false,
     startDate: offer.startDate ? offer.startDate.toISOString().split("T")[0] : "",
     endDate: offer.endDate ? offer.endDate.toISOString().split("T")[0] : "",
     sortOrder: offer.sortOrder,

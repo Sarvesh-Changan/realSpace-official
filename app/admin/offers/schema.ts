@@ -26,6 +26,7 @@ export const offerSchema = z.object({
   ctaLabel: z.string().min(1, "CTA Label is required"),
   ctaLink: z.string().min(1, "CTA Link is required"),
   isActive: z.boolean().default(true),
+  showOnHome: z.boolean().default(false).optional().nullable(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
   sortOrder: z.coerce.number().int().default(0),

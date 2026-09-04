@@ -39,6 +39,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
       ctaLabel: initialData?.ctaLabel || "Claim Offer",
       ctaLink: initialData?.ctaLink || "/contact",
       isActive: initialData?.isActive ?? true,
+      showOnHome: initialData?.showOnHome ?? false,
       startDate: initialData?.startDate || "",
       endDate: initialData?.endDate || "",
       sortOrder: initialData?.sortOrder ?? 0,
@@ -267,20 +268,39 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
         </div>
         
         {/* Is Active Toggle */}
-        <div className="flex items-center pt-2 sm:pt-6 min-h-[44px]">
-          <div className="flex items-center h-5">
-            <input
-              id="isActive"
-              type="checkbox"
-              {...register("isActive")}
-              className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
-            />
+        <div className="flex flex-col sm:flex-row gap-6 pt-2 sm:pt-6">
+          <div className="flex items-center min-h-[44px]">
+            <div className="flex items-center h-5">
+              <input
+                id="isActive"
+                type="checkbox"
+                {...register("isActive")}
+                className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label htmlFor="isActive" className="font-medium text-neutral-900 cursor-pointer">
+                Active Status
+              </label>
+              <p className="text-neutral-500 text-xs">If unchecked, this offer is hidden from all public sites.</p>
+            </div>
           </div>
-          <div className="ml-3 text-sm">
-            <label htmlFor="isActive" className="font-medium text-neutral-900 cursor-pointer">
-              Active Status
-            </label>
-            <p className="text-neutral-500 text-xs">If unchecked, this offer is hidden from the public site.</p>
+
+          <div className="flex items-center min-h-[44px]">
+            <div className="flex items-center h-5">
+              <input
+                id="showOnHome"
+                type="checkbox"
+                {...register("showOnHome")}
+                className="h-5 w-5 rounded border-neutral-300 text-amber-600 focus:ring-amber-600 cursor-pointer"
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label htmlFor="showOnHome" className="font-medium text-neutral-900 cursor-pointer">
+                Show on Home Page Strip
+              </label>
+              <p className="text-neutral-500 text-xs">If checked, featured on the top announcement strip on Home page.</p>
+            </div>
           </div>
         </div>
       </div>

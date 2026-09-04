@@ -49,6 +49,7 @@ export async function createOffer(data: OfferInput) {
         ctaLabel: offerData.ctaLabel.trim(),
         ctaLink: offerData.ctaLink.trim(),
         isActive: offerData.isActive,
+        showOnHome: offerData.showOnHome ?? false,
         startDate: offerData.startDate && offerData.startDate.trim() !== "" ? new Date(offerData.startDate) : null,
         endDate: offerData.endDate && offerData.endDate.trim() !== "" ? new Date(offerData.endDate) : null,
         sortOrder: offerData.sortOrder,
@@ -98,6 +99,7 @@ export async function updateOffer(id: string, data: OfferInput) {
         ctaLabel: offerData.ctaLabel.trim(),
         ctaLink: offerData.ctaLink.trim(),
         isActive: offerData.isActive,
+        showOnHome: offerData.showOnHome ?? false,
         startDate: offerData.startDate && offerData.startDate.trim() !== "" ? new Date(offerData.startDate) : null,
         endDate: offerData.endDate && offerData.endDate.trim() !== "" ? new Date(offerData.endDate) : null,
         sortOrder: offerData.sortOrder,
@@ -110,6 +112,27 @@ export async function updateOffer(id: string, data: OfferInput) {
   } catch (error) {
     console.error("Failed to update offer:", error);
     return { success: false, error: "Failed to update offer in database." };
+  }
+}
+
+export async function toggleOfferShowOnHomeAction(id: string, showOnHome: boolean) {
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized: Admin session required." };
+  }
+
+  try {
+    await prisma.offer.update({
+      where: { id },
+      data: { showOnHome },
+    });
+
+    revalidatePath("/admin/offers");
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update offer showOnHome:", error);
+    return { success: false, error: "Failed to update offer showOnHome." };
   }
 }
 

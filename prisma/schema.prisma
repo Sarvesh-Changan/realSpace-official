@@ -297,6 +297,7 @@ model Offer {
   ctaLabel      String
   ctaLink       String
   isActive      Boolean   @default(true)
+  showOnHome    Boolean?  @default(false)
   startDate     DateTime?
   endDate       DateTime?
   sortOrder     Int       @default(0)

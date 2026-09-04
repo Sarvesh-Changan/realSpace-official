@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { Hero } from "./_components/home/Hero";
+import { HomeOfferStrip } from "./_components/home/HomeOfferStrip";
 import { WelcomeIntro } from "./_components/home/WelcomeIntro";
 import { OwnerPortrait } from "./_components/home/OwnerPortrait";
 import { KeyFeatures } from "./_components/home/KeyFeatures";
@@ -77,12 +78,14 @@ export default async function HomePage() {
       prisma.offer.findMany({
         where: {
           isActive: true,
+          showOnHome: true,
           AND: [
             { OR: [{ startDate: null }, { startDate: { lte: endOfToday } }] },
             { OR: [{ endDate: null }, { endDate: { gte: startOfToday } }] },
           ],
         },
         orderBy: { sortOrder: "asc" },
+        take: 1,
       }),
       prisma.testimonial.findMany({
         where: {
@@ -159,6 +162,7 @@ export default async function HomePage() {
           linkedinUrl?: string | null;
         } | null}
       />
+      <HomeOfferStrip offer={rawOffers[0]} />
       <WelcomeIntro intro={siteSettings?.heroSubhead} />
       <OwnerPortrait />
       <KeyFeatures />

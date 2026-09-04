@@ -121,8 +121,8 @@ export default function QuoteCalculator() {
       (state as any).isCommercialFlow ?? (state.bhkType === 'Commercial & Others');
 
     const hasValidEstimate =
-      calculationResult?.estimatedBudgetLow != null &&
-      calculationResult?.estimatedBudgetHigh != null &&
+      (calculationResult?.estimatedBudget != null ||
+        (calculationResult?.estimatedBudgetLow != null && calculationResult?.estimatedBudgetHigh != null)) &&
       !isCommercial;
 
     return (
@@ -136,16 +136,18 @@ export default function QuoteCalculator() {
         <p className="text-sm sm:text-base text-[#6D6A66] max-w-lg mx-auto leading-relaxed mb-6 sm:mb-8">
           Thank you, <span className="font-semibold text-[#1C1C1C]">{state.contact.name || 'there'}</span>. 
           {hasValidEstimate
-            ? 'Here is your real-time calculated estimate range based on active database pricing.'
+            ? 'Here is your real-time calculated estimate based on active database pricing.'
             : 'Our team will review your requirements and follow up with a detailed, custom quote within 24–48 hours.'}
         </p>
 
         {hasValidEstimate && calculationResult ? (
           <div className="max-w-2xl mx-auto bg-[#F8F5F1] p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-[#E8E2DA] text-left mb-6 sm:mb-8 space-y-4 sm:space-y-6">
             <div>
-              <div className="text-[#C8A96A] font-medium tracking-wider text-xs uppercase mb-1">Calculated Budget Range</div>
+              <div className="text-[#C8A96A] font-medium tracking-wider text-xs uppercase mb-1">Calculated Estimate</div>
               <div className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#1C1C1C]">
-                {formatCurrency(calculationResult.estimatedBudgetLow!)} – {formatCurrency(calculationResult.estimatedBudgetHigh!)}
+                {calculationResult.estimatedBudget != null
+                  ? formatCurrency(calculationResult.estimatedBudget)
+                  : `${formatCurrency(calculationResult.estimatedBudgetLow!)} – ${formatCurrency(calculationResult.estimatedBudgetHigh!)}`}
               </div>
             </div>
 

@@ -134,6 +134,7 @@ type QuoteActionResult = {
   success: boolean;
   error?: string;
   data?: {
+    estimatedBudget: number | null;
     estimatedBudgetLow: number | null;
     estimatedBudgetHigh: number | null;
     breakdown: Array<{ label: string; amount: number }>;
@@ -175,6 +176,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       return {
         success: true,
         data: {
+          estimatedBudget: null,
           estimatedBudgetLow: null,
           estimatedBudgetHigh: null,
           breakdown: [],
@@ -244,6 +246,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
             requirements: requirementsText || null,
             source: LeadSource.QUOTE_CALCULATOR,
             selections,
+            estimatedBudget: null,
             estimatedBudgetLow: null,
             estimatedBudgetHigh: null,
             status: LeadStatus.NEW,
@@ -264,6 +267,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       return {
         success: true,
         data: {
+          estimatedBudget: null,
           estimatedBudgetLow: null,
           estimatedBudgetHigh: null,
           breakdown: [],
@@ -313,7 +317,8 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       }
     }
 
-    // Calculate low and high range estimates
+    // Calculate exact price as well as low/high range estimates for historical backwards compatibility
+    const estimatedBudget = Math.round(totalBase);
     const estimatedBudgetLow = Math.round(totalBase * 0.9);
     const estimatedBudgetHigh = Math.round(totalBase * 1.15);
 
@@ -342,6 +347,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
             packageTier: input.packageTier,
             breakdown,
           },
+          estimatedBudget,
           estimatedBudgetLow,
           estimatedBudgetHigh,
           status: LeadStatus.NEW,
@@ -363,6 +369,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     return {
       success: true,
       data: {
+        estimatedBudget,
         estimatedBudgetLow,
         estimatedBudgetHigh,
         breakdown,

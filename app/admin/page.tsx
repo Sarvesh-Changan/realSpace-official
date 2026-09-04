@@ -16,7 +16,6 @@ export default async function AdminDashboardPage() {
   const [
     totalProjects,
     publishedProjects,
-    totalServices,
     totalTestimonials,
     newLeadsCount,
     totalLeadsCount,
@@ -24,7 +23,6 @@ export default async function AdminDashboardPage() {
   ] = await Promise.all([
     prisma.project.count(),
     prisma.project.count({ where: { isPublished: true } }),
-    prisma.service.count({ where: { isPublished: true } }),
     prisma.testimonial.count({ where: { isPublished: true } }),
     prisma.lead.count({ where: { status: "NEW" } }),
     prisma.lead.count(),
@@ -37,7 +35,6 @@ export default async function AdminDashboardPage() {
   const stats = {
     totalProjects,
     publishedProjects,
-    totalServices,
     totalTestimonials,
     newLeadsCount,
     totalLeadsCount,

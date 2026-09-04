@@ -8,7 +8,6 @@ Database: PostgreSQL (Neon) · ORM: Prisma · IDs: `cuid()` unless noted
 AdminUser
 Project ──< ProjectImage
 Project >── ProjectCategory (enum-like via fields, see §2.2)
-Service
 Testimonial
 FAQ
 Lead

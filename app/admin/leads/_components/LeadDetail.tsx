@@ -228,6 +228,10 @@ export function LeadDetail({ lead, onClose, onNotesUpdated }: { lead: LeadData, 
                       <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block">
                         Custom quote — see details
                       </span>
+                    ) : lead.estimatedBudget != null ? (
+                      <span className="font-medium text-neutral-900">
+                        ₹{lead.estimatedBudget.toLocaleString("en-IN")}
+                      </span>
                     ) : lead.estimatedBudgetLow && lead.estimatedBudgetHigh ? (
                       <span className="font-medium text-neutral-900">
                         ₹{lead.estimatedBudgetLow.toLocaleString("en-IN")} - ₹{lead.estimatedBudgetHigh.toLocaleString("en-IN")}

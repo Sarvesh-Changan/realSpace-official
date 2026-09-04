@@ -46,11 +46,10 @@ const FALLBACK_SLIDES: GallerySliderItem[] = [
 ];
 
 export function GallerySlider({ items }: GallerySliderProps) {
-  // Use the 5 curated high-resolution local gallery images for the home section showcase
   const slides = React.useMemo(() => {
-    if (items && items.length >= 5) {
+    if (items && items.length > 0) {
       const validItems = items.filter((item) => Boolean(item.imageUrl?.trim()));
-      if (validItems.length >= 5) return validItems.slice(0, 5);
+      if (validItems.length > 0) return validItems;
     }
     return FALLBACK_SLIDES;
   }, [items]);

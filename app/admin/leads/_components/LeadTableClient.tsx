@@ -16,6 +16,7 @@ export type LeadData = {
     requirements: string | null;
     source: LeadSource;
     selections: any | null;
+    estimatedBudget?: number | null;
     estimatedBudgetLow: number | null;
     estimatedBudgetHigh: number | null;
     status: LeadStatus;
@@ -101,6 +102,8 @@ export function LeadTableClient({ leads }: { leads: LeadData[] }) {
                                                 <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block">
                                                     Custom quote — see details
                                                 </span>
+                                            ) : lead.estimatedBudget != null ? (
+                                                formatCurrency(lead.estimatedBudget)
                                             ) : lead.estimatedBudgetLow && lead.estimatedBudgetHigh ? (
                                                 `${formatCurrency(lead.estimatedBudgetLow)} - ${formatCurrency(lead.estimatedBudgetHigh)}`
                                             ) : (

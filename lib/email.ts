@@ -34,10 +34,25 @@ export async function sendLeadNotification(
       };
     }
 
-    const budgetText =
-      lead.estimatedBudgetLow && lead.estimatedBudgetHigh
-        ? `₹${lead.estimatedBudgetLow.toLocaleString("en-IN")} - ₹${lead.estimatedBudgetHigh.toLocaleString("en-IN")}`
-        : "Not specified";
+    const selections = (lead.selections as Record<string, any>) || {};
+
+    const roomType = selections.bhkType || "Not specified";
+
+    let materialPackage = "Not specified";
+    if (selections.packageTier) {
+      const tierUpper = String(selections.packageTier).toUpperCase();
+      if (tierUpper.includes("PREMIUM")) materialPackage = "Premium";
+      else if (tierUpper.includes("LUXURY")) materialPackage = "Luxury";
+      else if (tierUpper.includes("STANDARD")) materialPackage = "Standard";
+      else materialPackage = String(selections.packageTier);
+    }
+
+    let estimatedPriceText = "Custom Quote Required";
+    if (lead.estimatedBudget != null) {
+      estimatedPriceText = `₹${lead.estimatedBudget.toLocaleString("en-IN")}`;
+    } else if (lead.estimatedBudgetLow != null && lead.estimatedBudgetHigh != null) {
+      estimatedPriceText = `₹${lead.estimatedBudgetLow.toLocaleString("en-IN")} - ₹${lead.estimatedBudgetHigh.toLocaleString("en-IN")}`;
+    }
 
     const bodyText = `New Lead Submission Received
 
@@ -46,7 +61,9 @@ Phone: ${lead.phone}
 Email: ${lead.email || "Not provided"}
 Location: ${lead.location || "Not provided"}
 Source: ${lead.source}
-Budget Range: ${budgetText}
+Room Type: ${roomType}
+Material Package: ${materialPackage}
+Estimated Price: ${estimatedPriceText}
 Submitted At: ${lead.createdAt ? lead.createdAt.toISOString() : new Date().toISOString()}
 
 Requirements:

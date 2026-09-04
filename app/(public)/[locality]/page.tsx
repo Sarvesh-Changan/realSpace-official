@@ -7,7 +7,6 @@ import { Hero } from "../_components/home/Hero";
 import { ActiveOffers, type OfferType } from "../_components/home/ActiveOffers";
 import { TrustStats } from "../_components/home/TrustStats";
 import { Projects, type ProjectType } from "../_components/home/Projects";
-import { Services } from "../_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "../_components/home/GalleryTeaser";
 import { Testimonials } from "../_components/home/Testimonials";
 import { FinalCta } from "../_components/home/FinalCta";
@@ -123,12 +122,6 @@ export default async function LocalityPage({
     category: string;
     images: Array<{ url: string; isCoverImage: boolean }>;
   }> = [];
-  let services: Array<{
-    id: string;
-    title: string;
-    description: string;
-    iconKey?: string | null;
-  }> = [];
   let testimonials: Array<{
     id: string;
     quote: string;
@@ -152,7 +145,6 @@ export default async function LocalityPage({
       fetchedOffers,
       fetchedInterior,
       fetchedExterior,
-      fetchedServices,
       fetchedTestimonials,
       fetchedGalleryImages,
     ] = await Promise.all([
@@ -202,11 +194,6 @@ export default async function LocalityPage({
         orderBy: { sortOrder: "asc" },
         take: 3,
       }),
-      prisma.service.findMany({
-        where: { isPublished: true },
-        orderBy: { sortOrder: "asc" },
-        take: 6,
-      }),
       prisma.testimonial.findMany({
         where: { isPublished: true },
         orderBy: { sortOrder: "asc" },
@@ -223,7 +210,6 @@ export default async function LocalityPage({
     rawOffers = fetchedOffers;
     rawInteriorProjects = fetchedInterior;
     rawExteriorProjects = fetchedExterior;
-    services = fetchedServices;
     testimonials = fetchedTestimonials;
     rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
@@ -292,7 +278,6 @@ export default async function LocalityPage({
         projects={exteriorProjects}
         viewAllLink="/projects?type=exterior"
       />
-      <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />
       <Testimonials testimonials={testimonials} />
       <FinalCta />

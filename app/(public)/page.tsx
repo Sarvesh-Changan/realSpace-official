@@ -54,11 +54,11 @@ export default async function HomePage() {
     imageUrl: string | null;
     thumbnailUrl: string | null;
   }> = [];
-  let rawGalleryImages: Array<{
+  let rawHomeGalleryImages: Array<{
     id: string;
     title: string;
+    altText: string | null;
     url: string;
-    category: { name: string } | null;
   }> = [];
 
   try {
@@ -71,7 +71,7 @@ export default async function HomePage() {
       fetchedSettings,
       fetchedOffers,
       fetchedVideoTestimonials,
-      fetchedGalleryImages,
+      fetchedHomeGalleryImages,
     ] = await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
       prisma.offer.findMany({
@@ -101,28 +101,33 @@ export default async function HomePage() {
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
-      prisma.galleryImage.findMany({
+      prisma.homeGalleryImage.findMany({
         where: { isPublished: true },
-        include: { category: true },
-        orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-        take: 8,
+        select: {
+          id: true,
+          title: true,
+          altText: true,
+          url: true,
+        },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        take: 15,
       }),
     ]);
 
     siteSettings = fetchedSettings;
     rawOffers = fetchedOffers;
     rawVideoTestimonials = fetchedVideoTestimonials;
-    rawGalleryImages = fetchedGalleryImages;
+    rawHomeGalleryImages = fetchedHomeGalleryImages;
   } catch (error) {
     console.error("Error loading home page data from Prisma:", error);
     // Graceful fallback: empty states will be rendered by subcomponents
   }
 
-  // Map database gallery image models to GallerySliderItem props
-  const gallerySliderItems: GallerySliderItem[] = rawGalleryImages.map((img) => ({
+  // Map database home gallery image models to GallerySliderItem props
+  const gallerySliderItems: GallerySliderItem[] = rawHomeGalleryImages.map((img) => ({
     id: img.id,
     title: img.title,
-    altText: img.title ? `${img.title} — REALSPACE interior design` : undefined,
+    altText: img.altText || `${img.title} — REALSPACE interior design`,
     imageUrl: img.url,
   }));
 

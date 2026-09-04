@@ -230,6 +230,7 @@ model Lead {
   requirements        String?    @db.Text
   source              LeadSource
   selections          Json? // snapshot of quote calculator selections at submission time
+  estimatedBudget     Int?
   estimatedBudgetLow  Int?
   estimatedBudgetHigh Int?
   status              LeadStatus @default(NEW)
@@ -361,5 +362,19 @@ model EventMedia {
   createdAt     DateTime  @default(now())
 
   @@index([eventId])
+}
+
+model HomeGalleryImage {
+  id           String    @id @default(cuid())
+  title        String
+  altText      String?
+  url          String
+  cloudinaryId String?
+  sortOrder    Int       @default(0)
+  isPublished  Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([isPublished, sortOrder])
 }
 

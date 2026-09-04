@@ -176,7 +176,6 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
                 { name: "Home", href: "/" },
                 { name: "Projects", href: "/projects" },
                 { name: "Gallery", href: "/gallery" },
-                { name: "Services", href: "/services" },
                 { name: "Testimonials", href: "/testimonials" },
                 { name: "About Us", href: "/about" },
                 { name: "Contact", href: "/contact" },

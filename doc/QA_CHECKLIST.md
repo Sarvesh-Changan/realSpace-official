@@ -48,12 +48,6 @@ Test all public and admin pages across the five responsive breakpoint tiers spec
 - [ ] **Description & Specs**: Full text formatted properly; carpet area, services tags, and property type displayed.
 - [ ] **Related Projects**: Grid of related projects in the same category/design type.
 - [ ] **Sticky CTA Sidebar**: Remains accessible on desktop scroll and stacks gracefully on mobile.
-
-### 2.4. Services Pages
-- [ ] **Services Overview (`/services`)**: Intro header, kunku/halad blob decoration, and service cards for both Interior and Exterior.
-- [ ] **Interior Services (`/services/interior`)**: Grid of interior design services (Modular Kitchen, Living Room, Bedroom, Wardrobe, Turnkey, etc.).
-- [ ] **Exterior Services (`/services/exterior`)**: Grid of exterior design services (Architectural Facades, 3D Elevation, Balcony/Terrace, Villas).
-
 ### 2.5. About Page (`/about`)
 - [ ] **Hero & Philosophy**: Studio intro and design approach.
 - [ ] **Trust Indicators**: Verified stats display.
@@ -145,11 +139,6 @@ Per `CODING_STANDARDS.md §8`, verify authentication security, layout responsive
   - [ ] Non-empty `altText` required on all uploaded images (Zod validation enforced).
 - [ ] **Edit Project (`/admin/projects/[id]/edit`)**: Updates existing fields and images cleanly.
 - [ ] **Delete & Toggle**: Delete project and toggle published/featured status.
-
-### 4.4. Services Module (`/admin/services`)
-- [ ] **List & Table**: Displays all interior and exterior services.
-- [ ] **Create/Edit Form**: Inputs for title, slug, design type, description, iconKey, sortOrder, isPublished.
-- [ ] **Publish Toggle & Delete**: Instant status toggle and deletion.
 
 ### 4.5. Testimonials Module (`/admin/testimonials`)
 - [ ] **List & Table**: Displays client reviews, ratings, and published states.

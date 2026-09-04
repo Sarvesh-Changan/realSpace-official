@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { FolderHeart, Image as ImageIcon, Plus, Edit, Trash2 } from "lucide-react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { FolderHeart, Image as ImageIcon, Plus, Edit, Trash2, Filter, RotateCcw } from "lucide-react";
 import Image from "next/image";
 import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 import { deleteCategory, deleteImage, toggleImageStatus } from "../actions";
@@ -16,6 +17,10 @@ export function GalleryTabsClient({
   categories: any[];
   images: any[];
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const [activeTab, setActiveTab] = useState<"categories" | "images">("images");
 
   const [categoryFormOpen, setCategoryFormOpen] = useState(false);
@@ -23,6 +28,31 @@ export function GalleryTabsClient({
 
   const [imageFormOpen, setImageFormOpen] = useState(false);
   const [editingImage, setEditingImage] = useState<ImageInput | null>(null);
+
+  const selectedCategoryId = searchParams.get("category") || "all";
+
+  const handleCategorySelect = (catId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (catId === "all") {
+      params.delete("category");
+    } else {
+      params.set("category", catId);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const filteredImages = images.filter((img) => {
+    if (selectedCategoryId === "all") return true;
+    return (
+      img.categoryId === selectedCategoryId ||
+      img.category?.id === selectedCategoryId ||
+      img.category?.name.toLowerCase() === selectedCategoryId.toLowerCase()
+    );
+  });
+
+  const selectedCatObj = categories.find(
+    (c) => c.id === selectedCategoryId || c.name.toLowerCase() === selectedCategoryId.toLowerCase()
+  );
 
   const handleDeleteCategory = async (id: string) => {
     if (confirm("Are you sure you want to delete this category? All associated images will be deleted.")) {
@@ -190,24 +220,87 @@ export function GalleryTabsClient({
           )}
 
           {!imageFormOpen && (
-            <div className="bg-white rounded-lg border border-neutral-200 shadow-sm overflow-hidden">
-              {images.length === 0 ? (
-                <div className="text-center py-12 px-4 text-neutral-500">No images found.</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse min-w-[640px]">
-                    <thead>
-                      <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                        <th className="py-3.5 px-4">Image</th>
-                        <th className="py-3.5 px-4">Title & Category</th>
-                        <th className="py-3.5 px-4">Type</th>
-                        <th className="py-3.5 px-4">Status & Cover</th>
-                        <th className="py-3.5 px-4">Order</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-200 text-sm">
-                      {images.map((img) => (
+            <div className="space-y-4">
+              {/* Category Filter Controls */}
+              <div className="bg-white p-4 rounded-lg border border-neutral-200 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                  <Filter className="w-4 h-4 text-brand-red shrink-0" />
+                  <span>Filter by Category:</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleCategorySelect("all")}
+                    className={`px-3 py-1.5 min-h-[36px] text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                      selectedCategoryId === "all" || !selectedCategoryId
+                        ? "bg-brand-red text-white shadow-xs font-bold"
+                        : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border border-neutral-200"
+                    }`}
+                  >
+                    All Categories ({images.length})
+                  </button>
+
+                  {categories.map((cat) => {
+                    const catCount = images.filter(
+                      (img) => img.categoryId === cat.id || img.category?.id === cat.id
+                    ).length;
+                    const isSelected =
+                      selectedCategoryId === cat.id ||
+                      selectedCategoryId?.toLowerCase() === cat.name.toLowerCase();
+
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => handleCategorySelect(cat.id)}
+                        className={`px-3 py-1.5 min-h-[36px] text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                          isSelected
+                            ? "bg-brand-red text-white shadow-xs font-bold"
+                            : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border border-neutral-200"
+                        }`}
+                      >
+                        {cat.name} ({catCount})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Images Table */}
+              <div className="bg-white rounded-lg border border-neutral-200 shadow-sm overflow-hidden">
+                {filteredImages.length === 0 ? (
+                  <div className="text-center py-12 px-4 space-y-3">
+                    <p className="text-sm text-neutral-500 font-medium">
+                      {selectedCategoryId === "all"
+                        ? "No images found."
+                        : `No images found in category "${selectedCatObj?.name || "selected"}".`}
+                    </p>
+                    {selectedCategoryId !== "all" && (
+                      <button
+                        type="button"
+                        onClick={() => handleCategorySelect("all")}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-red hover:text-red-800 bg-red-50 hover:bg-red-100 rounded-md transition-colors cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" /> Reset Filter to All Categories
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse min-w-[640px]">
+                      <thead>
+                        <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                          <th className="py-3.5 px-4">Image</th>
+                          <th className="py-3.5 px-4">Title & Category</th>
+                          <th className="py-3.5 px-4">Type</th>
+                          <th className="py-3.5 px-4">Status & Cover</th>
+                          <th className="py-3.5 px-4">Order</th>
+                          <th className="py-3.5 px-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-neutral-200 text-sm">
+                        {filteredImages.map((img) => (
                         <tr key={img.id} className="hover:bg-neutral-50/50">
                           <td className="py-4 px-4">
                             <div className="w-16 h-12 rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
@@ -340,9 +433,10 @@ export function GalleryTabsClient({
                 </div>
               )}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+    )}
     </div>
   );
 }

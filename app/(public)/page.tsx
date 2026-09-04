@@ -85,7 +85,6 @@ export default async function HomePage() {
           ],
         },
         orderBy: { sortOrder: "asc" },
-        take: 1,
       }),
       prisma.testimonial.findMany({
         where: {
@@ -162,7 +161,7 @@ export default async function HomePage() {
           linkedinUrl?: string | null;
         } | null}
       />
-      <HomeOfferStrip offer={rawOffers[0]} />
+      <HomeOfferStrip offers={rawOffers} />
       <WelcomeIntro intro={siteSettings?.heroSubhead} />
       <OwnerPortrait />
       <KeyFeatures />

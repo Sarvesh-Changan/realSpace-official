@@ -83,7 +83,7 @@ export function AboutEditorial({ certifications }: { certifications: Certificati
 
             {/* Text Content */}
             <div className="flex flex-col justify-center">
-              <h2 className="font-serif text-3xl font-bold leading-tight text-brand-text sm:text-5xl lg:text-6xl capitalize">
+              <h2 className="font-serif text-2xl font-bold leading-tight text-brand-text sm:text-4xl lg:text-5xl capitalize">
                 Vijay vasant chawan
               </h2>
               <h3 className="mt-2 font-serif text-base font-semibold leading-tight text-brand-red sm:text-xl lg:text-2xl">

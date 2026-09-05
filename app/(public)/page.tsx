@@ -64,8 +64,8 @@ export default async function HomePage() {
 
   try {
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    const startOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+    const endOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
 
     // Fetch all home page data safely
     const [
@@ -163,7 +163,10 @@ export default async function HomePage() {
       />
       <HomeOfferStrip offers={rawOffers} />
       <WelcomeIntro intro={siteSettings?.heroSubhead} />
-      <OwnerPortrait />
+      <OwnerPortrait
+        portraitUrl={siteSettings?.ownerPortraitUrl}
+        showOwnerPortrait={siteSettings?.showOwnerPortrait}
+      />
       <KeyFeatures />
       <WhyRealspace />
       <GallerySlider items={gallerySliderItems} />

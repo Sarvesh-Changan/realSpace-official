@@ -255,17 +255,20 @@ model AdminUser {
 
 // Singleton row — enforced at the application layer (always id = "singleton")
 model SiteSettings {
-  id           String   @id @default("singleton")
-  companyName  String   @default("REALSPACE")
-  phone        String
-  whatsapp     String
-  email        String
-  address      String
-  socialLinks  Json? // { instagram, facebook, youtube }
-  heroHeadline String
-  heroSubhead  String
-  ctaText      String
-  updatedAt    DateTime @updatedAt
+  id                    String   @id @default("singleton")
+  companyName           String   @default("REALSPACE")
+  phone                 String
+  whatsapp              String
+  email                 String
+  address               String
+  socialLinks           Json? // { instagram, facebook, youtube }
+  heroHeadline          String
+  heroSubhead           String
+  ctaText               String
+  ownerPortraitUrl      String?
+  ownerPortraitPublicId String?
+  showOwnerPortrait     Boolean? @default(true)
+  updatedAt             DateTime @updatedAt
 }
 
 // ---------- OTP & Verification ----------

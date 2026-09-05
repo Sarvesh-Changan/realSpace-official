@@ -6,11 +6,31 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import prisma from "@/lib/prisma";
+import { v2 as cloudinary } from "cloudinary";
 import {
   changePasswordSchema,
   siteSettingsSchema,
   type SiteSettingsInput,
 } from "./schema";
+
+cloudinary.config({
+  cloud_name:
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key:
+    process.env.CLOUDINARY_API_KEY ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function deleteCloudinaryAsset(publicId: string | null | undefined) {
+  if (!publicId) return;
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    console.error("Failed to delete Cloudinary asset:", publicId, err);
+  }
+}
 
 export async function updateSiteSettings(
   data: SiteSettingsInput
@@ -25,18 +45,32 @@ export async function updateSiteSettings(
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { instagram, facebook, youtube, linkedin, ...core } = parsed.data;
+  const { instagram, facebook, youtube, linkedin, ownerPortraitUrl, ownerPortraitPublicId, showOwnerPortrait, ...core } = parsed.data;
 
   try {
+    const existing = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+    const newPublicId = ownerPortraitPublicId && ownerPortraitPublicId.trim() !== "" ? ownerPortraitPublicId.trim() : null;
+    const newUrl = ownerPortraitUrl && ownerPortraitUrl.trim() !== "" ? ownerPortraitUrl.trim() : null;
+
+    if (existing?.ownerPortraitPublicId && existing.ownerPortraitPublicId !== newPublicId) {
+      await deleteCloudinaryAsset(existing.ownerPortraitPublicId);
+    }
+
     await prisma.siteSettings.upsert({
       where: { id: "singleton" },
       update: {
         ...core,
+        ownerPortraitUrl: newUrl,
+        ownerPortraitPublicId: newPublicId,
+        showOwnerPortrait: showOwnerPortrait ?? true,
         socialLinks: { instagram: instagram ?? "", facebook: facebook ?? "", youtube: youtube ?? "", linkedin: linkedin ?? "" },
       },
       create: {
         id: "singleton",
         ...core,
+        ownerPortraitUrl: newUrl,
+        ownerPortraitPublicId: newPublicId,
+        showOwnerPortrait: showOwnerPortrait ?? true,
         socialLinks: { instagram: instagram ?? "", facebook: facebook ?? "", youtube: youtube ?? "", linkedin: linkedin ?? "" },
       },
     });

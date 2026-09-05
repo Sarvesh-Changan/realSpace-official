@@ -26,7 +26,7 @@ export default async function EditOfferPage({ params }: Props) {
   }
 
   const initialData = {
-    title: offer.title,
+    title: offer.title || "",
     description: offer.description,
     imageUrl: offer.imageUrl || "",
     imagePublicId: offer.imagePublicId || "",

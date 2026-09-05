@@ -143,6 +143,21 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+        {/* Title */}
+        <div className="md:col-span-2">
+          <label htmlFor="title" className="block text-sm font-medium text-neutral-900 mb-1">
+            Offer Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="title"
+            type="text"
+            {...register("title")}
+            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
+            placeholder="e.g., Get 10% Off Your Next Order"
+          />
+          {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
+        </div>
+
         {/* Image Upload / Preview Section */}
         <div className="md:col-span-2 space-y-3">
           <label className="block text-sm font-medium text-neutral-900 mb-1">
@@ -186,7 +201,9 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
                   className="sr-only"
                 />
               </label>
-
+              <span className="text-xs text-neutral-500">
+                (Optional) No image required for text-only offers or top announcement strips.
+              </span>
             </div>
           )}
 

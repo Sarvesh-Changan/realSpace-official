@@ -13,6 +13,9 @@ export const siteSettingsSchema = z.object({
   facebook: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
   youtube: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
   linkedin: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  ownerPortraitUrl: z.string().optional().nullable(),
+  ownerPortraitPublicId: z.string().optional().nullable(),
+  showOwnerPortrait: z.boolean().default(true).optional().nullable(),
 });
 
 export type SiteSettingsInput = z.infer<typeof siteSettingsSchema>;

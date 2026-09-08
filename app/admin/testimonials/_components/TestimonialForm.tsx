@@ -83,9 +83,12 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
   const currentRating = watch("rating");
   const currentImageUrls = watch("imageUrls");
   const currentImagePublicIds = watch("imagePublicIds");
+  const currentVideoUrl = watch("videoUrl");
   const currentVideoUrls = watch("videoUrls");
   const currentVideoPublicIds = watch("videoPublicIds");
   const currentThumbnailUrl = watch("thumbnailUrl");
+
+  const hasVideo = Boolean(currentVideoUrl) || (currentVideoUrls && currentVideoUrls.length > 0);
 
   const uploadFile = async (file: File, kind: UploadKind) => {
     setUploadError(null);
@@ -196,6 +199,10 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
     setValue("videoPublicIds", nextPublicIds);
     setValue("videoUrl", nextUrls[0] || "");
     setValue("videoPublicId", nextPublicIds[0] || "");
+    if (nextUrls.length === 0) {
+      setValue("thumbnailUrl", "");
+      setValue("thumbnailPublicId", "");
+    }
   };
 
   return (
@@ -387,43 +394,49 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
           )}
         </div>
 
-        {/* THUMBNAIL SECTION */}
-        <div className="rounded-md border border-neutral-200 p-4">
-          <label className="block text-sm font-semibold text-neutral-900 mb-1">Video Thumbnail</label>
-          <p className="text-xs text-neutral-500 mb-3">Upload a preview thumbnail image for video playback cards.</p>
-          <label className="inline-flex items-center gap-2 px-3 py-2 min-h-[40px] border border-neutral-300 rounded-md text-xs font-medium cursor-pointer hover:bg-neutral-50">
-            {isUploading === "image" ? <Loader2 className="w-4 h-4 animate-spin text-brand-red" /> : <Upload className="w-4 h-4" />}
-            {isUploading === "image" ? `Uploading ${uploadProgress}%` : "Upload Thumbnail"}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="sr-only"
-              disabled={!!isUploading}
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void uploadFile(file, "image");
-                event.target.value = "";
-              }}
-            />
-          </label>
-          {currentThumbnailUrl && (
-            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-green-700 bg-green-50 p-2 rounded">
-              <span className="truncate">Thumbnail attached</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setValue("thumbnailUrl", "");
-                  setValue("thumbnailPublicId", "");
+        {/* THUMBNAIL SECTION (Only when a video is present) */}
+        {hasVideo ? (
+          <div className="rounded-md border border-neutral-200 p-4">
+            <label className="block text-sm font-semibold text-neutral-900 mb-1">Video Thumbnail</label>
+            <p className="text-xs text-neutral-500 mb-3">Upload a preview thumbnail image for video playback cards.</p>
+            <label className="inline-flex items-center gap-2 px-3 py-2 min-h-[40px] border border-neutral-300 rounded-md text-xs font-medium cursor-pointer hover:bg-neutral-50">
+              {isUploading === "image" ? <Loader2 className="w-4 h-4 animate-spin text-brand-red" /> : <Upload className="w-4 h-4" />}
+              {isUploading === "image" ? `Uploading ${uploadProgress}%` : "Upload Thumbnail"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                disabled={!!isUploading}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void uploadFile(file, "image");
+                  event.target.value = "";
                 }}
-                className="p-1 text-neutral-500 hover:text-red-600"
-                aria-label="Remove thumbnail"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-          {errors.thumbnailUrl && <p className="mt-2 text-xs text-red-600">{errors.thumbnailUrl.message}</p>}
-        </div>
+              />
+            </label>
+            {currentThumbnailUrl && (
+              <div className="mt-3 flex items-center justify-between gap-2 text-xs text-green-700 bg-green-50 p-2 rounded">
+                <span className="truncate">Thumbnail attached</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setValue("thumbnailUrl", "");
+                    setValue("thumbnailPublicId", "");
+                  }}
+                  className="p-1 text-neutral-500 hover:text-red-600"
+                  aria-label="Remove thumbnail"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            {errors.thumbnailUrl && <p className="mt-2 text-xs text-red-600">{errors.thumbnailUrl.message}</p>}
+          </div>
+        ) : (
+          <div className="rounded-md border border-dashed border-neutral-200 p-3 bg-neutral-50 text-xs text-neutral-500">
+            Video thumbnail selection is enabled when a video is attached.
+          </div>
+        )}
       </div>
 
       {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}

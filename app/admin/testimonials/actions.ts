@@ -104,6 +104,10 @@ export async function createTestimonial(data: TestimonialFormValues) {
     const videoUrls = testimonialData.videoUrls.length ? testimonialData.videoUrls : testimonialData.videoUrl ? [testimonialData.videoUrl] : [];
     const videoPublicIds = testimonialData.videoPublicIds.length ? testimonialData.videoPublicIds : testimonialData.videoPublicId ? [testimonialData.videoPublicId] : [];
 
+    const hasVideo = videoUrls.length > 0 || Boolean(testimonialData.videoUrl);
+    const thumbnailUrl = hasVideo ? (testimonialData.thumbnailUrl || null) : null;
+    const thumbnailPublicId = hasVideo ? (testimonialData.thumbnailPublicId || null) : null;
+
     const testimonial = await prisma.testimonial.create({
       data: {
         clientName: testimonialData.clientName,
@@ -117,8 +121,8 @@ export async function createTestimonial(data: TestimonialFormValues) {
         videoPublicId: videoPublicIds[0] || null,
         videoUrls,
         videoPublicIds,
-        thumbnailUrl: testimonialData.thumbnailUrl || null,
-        thumbnailPublicId: testimonialData.thumbnailPublicId || null,
+        thumbnailUrl,
+        thumbnailPublicId,
         slug,
         location: testimonialData.location || null,
         projectType: testimonialData.projectType || null,
@@ -161,6 +165,10 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
     const videoUrls = testimonialData.videoUrls.length ? testimonialData.videoUrls : testimonialData.videoUrl ? [testimonialData.videoUrl] : [];
     const videoPublicIds = testimonialData.videoPublicIds.length ? testimonialData.videoPublicIds : testimonialData.videoPublicId ? [testimonialData.videoPublicId] : [];
 
+    const hasVideo = videoUrls.length > 0 || Boolean(testimonialData.videoUrl);
+    const thumbnailUrl = hasVideo ? (testimonialData.thumbnailUrl || null) : null;
+    const thumbnailPublicId = hasVideo ? (testimonialData.thumbnailPublicId || null) : null;
+
     await prisma.testimonial.update({
       where: { id },
       data: {
@@ -175,8 +183,8 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
         videoPublicId: videoPublicIds[0] || null,
         videoUrls,
         videoPublicIds,
-        thumbnailUrl: testimonialData.thumbnailUrl || null,
-        thumbnailPublicId: testimonialData.thumbnailPublicId || null,
+        thumbnailUrl,
+        thumbnailPublicId,
         slug,
         location: testimonialData.location || null,
         projectType: testimonialData.projectType || null,

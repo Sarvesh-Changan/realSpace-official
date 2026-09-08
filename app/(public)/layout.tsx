@@ -28,7 +28,7 @@ export default async function PublicLayout({
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": companyName,
-    "image": `${baseUrl}/icon.png`,
+    "image": `${baseUrl}/images/updated-realspace_logo.png`,
     "telephone": phone,
     "email": email,
     "address": {

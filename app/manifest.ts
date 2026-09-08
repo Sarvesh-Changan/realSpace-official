@@ -6,15 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "REALSPACE",
     description: "Transform your residential or commercial space with REALSPACE, Thane's premier design studio.",
     start_url: "/",
-    display: "standalone",
+    display: "browser",
     background_color: "#ffffff",
     theme_color: "#ffffff",
-    icons: [
-      {
-        src: "/icon.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-    ],
   };
 }

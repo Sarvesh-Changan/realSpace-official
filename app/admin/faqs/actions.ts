@@ -26,6 +26,7 @@ export async function createFaq(data: FaqFormValues) {
         answer: faqData.answer,
         sortOrder: faqData.sortOrder,
         isPublished: faqData.isPublished,
+        isFeatured: faqData.isFeatured,
       },
     });
 
@@ -61,6 +62,7 @@ export async function updateFaq(id: string, data: FaqFormValues) {
         answer: faqData.answer,
         sortOrder: faqData.sortOrder,
         isPublished: faqData.isPublished,
+        isFeatured: faqData.isFeatured,
       },
     });
 
@@ -115,6 +117,28 @@ export async function toggleFaqPublish(id: string, isPublished: boolean) {
   } catch (error) {
     console.error("Failed to toggle FAQ publish:", error);
     return { success: false, error: "Failed to update publish state." };
+  }
+}
+
+export async function toggleFaqFeatured(id: string, isFeatured: boolean) {
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized: Admin session required." };
+  }
+
+  try {
+    await prisma.fAQ.update({
+      where: { id },
+      data: { isFeatured },
+    });
+
+    revalidatePath("/admin/faqs");
+    revalidatePath("/faq");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to toggle FAQ featured status:", error);
+    return { success: false, error: "Failed to update featured state." };
   }
 }
 

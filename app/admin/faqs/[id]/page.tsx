@@ -47,6 +47,7 @@ export default async function EditFaqPage({ params }: EditFaqPageProps) {
           answer: faq.answer,
           sortOrder: faq.sortOrder,
           isPublished: faq.isPublished,
+          isFeatured: faq.isFeatured,
         }}
       />
     </div>

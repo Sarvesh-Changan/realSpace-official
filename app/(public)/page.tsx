@@ -12,6 +12,7 @@ import { KeyFeatures } from "./_components/home/KeyFeatures";
 import { WhyRealspace } from "./_components/home/WhyRealspace";
 import { GallerySlider, type GallerySliderItem } from "./_components/home/GallerySlider";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
+import { HomeFaqPreview, type HomeFaqItem } from "./_components/home/HomeFaqPreview";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
 
@@ -61,6 +62,11 @@ export default async function HomePage() {
     altText: string | null;
     url: string;
   }> = [];
+  let rawFaqs: Array<{
+    id: string;
+    question: string;
+    answer: string;
+  }> = [];
 
   try {
     const now = new Date();
@@ -73,6 +79,7 @@ export default async function HomePage() {
       fetchedOffers,
       fetchedVideoTestimonials,
       fetchedHomeGalleryImages,
+      fetchedFaqs,
     ] = await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
       prisma.offer.findMany({
@@ -114,12 +121,26 @@ export default async function HomePage() {
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
         take: 15,
       }),
+      prisma.fAQ.findMany({
+        where: {
+          isPublished: true,
+          isFeatured: true,
+        },
+        select: {
+          id: true,
+          question: true,
+          answer: true,
+        },
+        orderBy: { sortOrder: "asc" },
+        take: 9,
+      }),
     ]);
 
     siteSettings = fetchedSettings;
     rawOffers = fetchedOffers;
     rawVideoTestimonials = fetchedVideoTestimonials;
     rawHomeGalleryImages = fetchedHomeGalleryImages;
+    rawFaqs = fetchedFaqs;
   } catch (error) {
     console.error("Error loading home page data from Prisma:", error);
     // Graceful fallback: empty states will be rendered by subcomponents
@@ -147,6 +168,12 @@ export default async function HomePage() {
     }];
   });
 
+  const homeFaqItems: HomeFaqItem[] = rawFaqs.map((faq) => ({
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer,
+  }));
+
   return (
     <>
       <Hero
@@ -171,6 +198,7 @@ export default async function HomePage() {
       <WhyRealspace />
       <GallerySlider items={gallerySliderItems} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
+      <HomeFaqPreview faqs={homeFaqItems} />
       <section className="bg-brand-cream px-4 py-14 sm:py-20">
         <div className="flex justify-center">
           <Link href="/quote">

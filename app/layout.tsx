@@ -18,11 +18,6 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: "REALSPACE — Interior & Exterior Design Studio in Thane",
   description: "Transform your residential or commercial space with REALSPACE, Thane's premier design studio.",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "REALSPACE",
-  },
 };
 
 export const viewport: Viewport = {

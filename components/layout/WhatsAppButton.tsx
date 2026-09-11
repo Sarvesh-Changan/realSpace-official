@@ -7,7 +7,7 @@ export interface WhatsAppButtonProps {
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   phoneNumber,
-  message = "Hi! I'm interested in REALSPACE design services.",
+  message = "Hello, we are interested in REALSPACE Design and Services. Could we discuss the next steps?",
 }) => {
   let cleanedNumber = phoneNumber.replace(/\D/g, "");
   if (cleanedNumber.length === 10) {

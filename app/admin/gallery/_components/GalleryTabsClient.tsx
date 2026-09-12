@@ -303,7 +303,7 @@ export function GalleryTabsClient({
                         {filteredImages.map((img) => (
                         <tr key={img.id} className="hover:bg-neutral-50/50">
                           <td className="py-4 px-4">
-                            <div className="w-16 h-12 rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
+                            <div className="w-24 h-[72px] rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
                               <Image
                                 src={getVideoThumbnailUrl(img.url, img.mediaType)}
                                 alt={img.title}

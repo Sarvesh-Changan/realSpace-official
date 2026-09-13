@@ -67,6 +67,8 @@ export function HomeGalleryManager({ initialImages }: HomeGalleryManagerProps) {
     }, 4000);
   };
 
+  const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
   // Direct Signed Upload to Cloudinary (handles single & multiple files)
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -79,6 +81,16 @@ export function HomeGalleryManager({ initialImages }: HomeGalleryManagerProps) {
       );
       e.target.value = "";
       return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        showNotification(`File "${file.name}" (${sizeMB}MB) exceeds the 100MB size limit.`, true);
+        e.target.value = "";
+        return;
+      }
     }
 
     setUploadingFiles(true);

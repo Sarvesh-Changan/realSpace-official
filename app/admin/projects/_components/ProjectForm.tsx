@@ -80,10 +80,25 @@ export function ProjectForm({
         setValue("servicesUsed", servicesUsed.filter((t) => t !== tag), { shouldValidate: true });
     };
 
+    const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
     // Direct Signed Cloudinary File Upload handler
     const handleDirectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
+
+        // Pre-upload validation: Check all files against 100MB limit BEFORE upload begins
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                const errMsg = `File "${file.name}" (${sizeMB}MB) exceeds the 100MB limit — please compress the video or choose a shorter clip.`;
+                setServerError(errMsg);
+                e.target.value = "";
+                document.getElementById("cloudinary-media-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
+        }
 
         setIsUploading(true);
         setServerError(null);
@@ -91,12 +106,18 @@ export function ProjectForm({
         try {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
+                const isVideo =
+                  file.type.startsWith("video/") ||
+                  Boolean(file.name.match(/\.(mp4|mov|webm|ogv|m4v)$/i));
 
                 // 1. Fetch signature from API endpoint per SECURITY.md §4
                 const signRes = await fetch("/api/cloudinary/sign", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ folder: "realspace-projects" }),
+                    body: JSON.stringify({
+                        folder: "realspace-projects",
+                        resourceType: isVideo ? "video" : "image",
+                    }),
                 });
 
                 if (!signRes.ok) {
@@ -122,9 +143,6 @@ export function ProjectForm({
                 formData.append("signature", signature);
                 formData.append("folder", folder || "realspace-projects");
 
-                const isVideo =
-                  file.type.startsWith("video/") ||
-                  Boolean(file.name.match(/\.(mp4|mov|webm|ogv|m4v)$/i));
                 const resourceType = isVideo ? "video" : "auto";
 
                 const targetCloud = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
@@ -156,7 +174,9 @@ export function ProjectForm({
             }
         } catch (err: any) {
             console.error("Direct upload error:", err);
-            setServerError(err.message || "Failed to upload image to Cloudinary.");
+            const errMsg = err.message || "Failed to upload image to Cloudinary.";
+            setServerError(errMsg);
+            document.getElementById("cloudinary-media-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
         } finally {
             setIsUploading(false);
             e.target.value = "";
@@ -362,14 +382,19 @@ export function ProjectForm({
             </div>
 
             {/* Cloudinary Media Section */}
-            <div className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm space-y-4">
+            <div id="cloudinary-media-section" className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm space-y-4">
+                {serverError && (
+                    <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200 text-sm font-medium">
+                        {serverError}
+                    </div>
+                )}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 pb-4">
                     <div>
                         <h2 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
                             <ImageIcon className="w-5 h-5 text-brand-red" /> Cloudinary Media Handling
                         </h2>
                         <p className="text-xs text-neutral-500 mt-0.5">
-                            Direct signed upload to Cloudinary folder <code className="bg-neutral-100 px-1 py-0.5 rounded text-neutral-700 font-mono">realspace-projects</code>.
+                            Direct signed upload to Cloudinary folder <code className="bg-neutral-100 px-1 py-0.5 rounded text-neutral-700 font-mono">realspace-projects</code> (Max file size: 100MB).
                         </p>
                     </div>
 
@@ -399,8 +424,10 @@ export function ProjectForm({
                                 sources: ["local", "url"],
                                 folder: "realspace-projects",
                                 clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "avif", "mp4", "mov"],
+                                maxFileSize: MAX_FILE_SIZE_BYTES,
                             }}
                             onSuccess={(result: any) => {
+                                setServerError(null);
                                 if (result?.info) {
                                     append({
                                         url: result.info.secure_url || result.info.url,
@@ -411,6 +438,14 @@ export function ProjectForm({
                                         sortOrder: fields.length,
                                     });
                                 }
+                            }}
+                            onError={(error: any) => {
+                                console.error("Cloudinary widget error:", error);
+                                const errorMsg = typeof error === "string"
+                                    ? error
+                                    : error?.statusText || error?.message || "Cloudinary widget upload failed. Please ensure file size is under 100MB.";
+                                setServerError(`Upload failed: ${errorMsg}`);
+                                document.getElementById("cloudinary-media-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
                             }}
                         >
                             {({ open }) => (

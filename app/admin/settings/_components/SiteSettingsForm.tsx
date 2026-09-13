@@ -20,9 +20,18 @@ export function SiteSettingsForm({ initialData }: { initialData: SiteSettingsInp
 
     const currentPortraitUrl = watch("ownerPortraitUrl");
 
+    const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
     const handlePortraitFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+            setMessage({ type: "error", text: `Portrait image "${file.name}" (${sizeMB}MB) exceeds the 100MB size limit.` });
+            e.target.value = "";
+            return;
+        }
 
         setIsUploadingPortrait(true);
         setMessage(null);

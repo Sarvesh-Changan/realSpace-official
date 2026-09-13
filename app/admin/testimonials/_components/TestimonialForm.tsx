@@ -330,6 +330,7 @@ export function TestimonialForm({ initialData, onSubmit, onCancel, isSubmitting 
               resourceType: "image",
               clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
               maxFiles: 20,
+              maxFileSize: MAX_VIDEO_SIZE,
             }}
             onSuccess={(result) => {
               if (!result.info || typeof result.info === "string") return;

@@ -64,11 +64,14 @@ export async function POST(request: Request) {
 
     const isTestimonialUpload = folder === "testimonials";
     const isEventsUpload = folder === "events" || folder === "realspace-events";
+    const isProjectsUpload = folder === "realspace-projects";
+    const isGalleryUpload = folder === "realspace-gallery";
+
+    const isVideoSupportedFolder =
+      isTestimonialUpload || isEventsUpload || isProjectsUpload || isGalleryUpload;
 
     let resourceType = "image";
-    if (isTestimonialUpload) {
-      resourceType = body.resourceType === "image" ? "image" : "video";
-    } else if (isEventsUpload) {
+    if (isVideoSupportedFolder) {
       resourceType = body.resourceType === "video" ? "video" : "image";
     }
 
@@ -77,15 +80,19 @@ export async function POST(request: Request) {
       process.env.CLOUDINARY_API_SECRET || ""
     );
 
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB limit
+
     return NextResponse.json({
       signature,
       timestamp,
       folder,
       resourceType,
-      allowedFormats: isTestimonialUpload || isEventsUpload
-        ? resourceType === "video" ? ["mp4", "webm", "mov"] : ["jpg", "jpeg", "png", "webp"]
+      allowedFormats: isVideoSupportedFolder
+        ? resourceType === "video"
+          ? ["mp4", "webm", "mov"]
+          : ["jpg", "jpeg", "png", "webp", "avif"]
         : undefined,
-      maxFileSize: isTestimonialUpload || isEventsUpload ? 100 * 1024 * 1024 : undefined,
+      maxFileSize: isVideoSupportedFolder ? MAX_FILE_SIZE : undefined,
       cloudName:
         process.env.CLOUDINARY_CLOUD_NAME ||
         process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,

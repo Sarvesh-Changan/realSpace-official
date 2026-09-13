@@ -77,10 +77,19 @@ export function EventForm({ mode, eventId, initialData }: EventFormProps) {
     }
   };
 
+  const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
   // Upload Cover Image directly to Cloudinary
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setServerError(`Cover image "${file.name}" (${sizeMB}MB) exceeds the 100MB limit.`);
+      e.target.value = "";
+      return;
+    }
 
     setIsCoverUploading(true);
     setServerError(null);
@@ -89,7 +98,7 @@ export function EventForm({ mode, eventId, initialData }: EventFormProps) {
       const signRes = await fetch("/api/cloudinary/sign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder: "realspace-events" }),
+        body: JSON.stringify({ folder: "realspace-events", resourceType: "image" }),
       });
 
       if (!signRes.ok) {
@@ -138,6 +147,15 @@ export function EventForm({ mode, eventId, initialData }: EventFormProps) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        setServerError(`File "${file.name}" (${sizeMB}MB) exceeds the 100MB limit — please compress the file or choose a shorter video clip.`);
+        e.target.value = "";
+        return;
+      }
+    }
+
     setIsMediaUploading(true);
     setServerError(null);
 
@@ -149,7 +167,7 @@ export function EventForm({ mode, eventId, initialData }: EventFormProps) {
         const signRes = await fetch("/api/cloudinary/sign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ folder: "realspace-events" }),
+          body: JSON.stringify({ folder: "realspace-events", resourceType }),
         });
 
         if (!signRes.ok) {

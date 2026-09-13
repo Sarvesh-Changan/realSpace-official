@@ -67,19 +67,32 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
     },
   });
 
+  const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
   // --- Direct File Upload for Single Edit Mode ---
   const handleSingleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setServerError(`File "${file.name}" (${sizeMB}MB) exceeds the 100MB limit — please compress the file or choose a shorter video clip.`);
+      e.target.value = "";
+      return;
+    }
+
     setIsUploading(true);
     setServerError(null);
 
     try {
+      const isVideo = file.type.startsWith("video");
       const signRes = await fetch("/api/cloudinary/sign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder: "realspace-gallery" }),
+        body: JSON.stringify({
+          folder: "realspace-gallery",
+          resourceType: isVideo ? "video" : "image",
+        }),
       });
 
       if (!signRes.ok) {
@@ -97,7 +110,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
       formData.append("folder", folder);
 
       const targetCloud = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
-      const resourceType = file.type.startsWith("video") ? "video" : "image";
+      const resourceType = isVideo ? "video" : "image";
 
       const uploadRes = await fetch(
         `https://api.cloudinary.com/v1_1/${targetCloud}/${resourceType}/upload`,
@@ -129,6 +142,15 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
   const handleBatchFileUpload = async (files: File[]) => {
     if (!files || files.length === 0) return;
 
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        setServerError(`File "${file.name}" (${sizeMB}MB) exceeds the 100MB limit — please compress the file or choose a shorter video clip.`);
+        return;
+      }
+    }
+
     setIsUploading(true);
     setServerError(null);
     setUploadProgress({ current: 0, total: files.length });
@@ -140,10 +162,14 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
         const file = files[i];
         setUploadProgress({ current: i + 1, total: files.length });
 
+        const isVideo = file.type.startsWith("video");
         const signRes = await fetch("/api/cloudinary/sign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ folder: "realspace-gallery" }),
+          body: JSON.stringify({
+            folder: "realspace-gallery",
+            resourceType: isVideo ? "video" : "image",
+          }),
         });
 
         if (!signRes.ok) {
@@ -161,7 +187,7 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
         formData.append("folder", folder);
 
         const targetCloud = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
-        const resourceType = file.type.startsWith("video") ? "video" : "image";
+        const resourceType = isVideo ? "video" : "image";
 
         const uploadRes = await fetch(
           `https://api.cloudinary.com/v1_1/${targetCloud}/${resourceType}/upload`,

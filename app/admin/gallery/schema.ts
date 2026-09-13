@@ -20,6 +20,8 @@ export const imageSchema = z.object({
   mediaType: z.enum(MEDIA_TYPE_VALUES),
   url: z.string().min(1, "Media URL is required"),
   cloudinaryId: z.string(),
+  fileSizeBytes: z.number().int().optional().nullable(),
+  cloudinaryEtag: z.string().optional().nullable(),
   isCategoryCover: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isPublished: z.boolean().default(true),

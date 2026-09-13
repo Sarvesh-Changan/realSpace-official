@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { FolderHeart, Image as ImageIcon, Plus, Edit, Trash2, Filter, RotateCcw } from "lucide-react";
+import { FolderHeart, Image as ImageIcon, Plus, Edit, Trash2, Filter, RotateCcw, Copy, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import { getVideoThumbnailUrl } from "@/lib/cloudinary";
-import { deleteCategory, deleteImage, toggleImageStatus } from "../actions";
+import { deleteCategory, deleteImage, toggleImageStatus, syncGalleryMediaSizes } from "../actions";
 import { CategoryForm } from "./CategoryForm";
 import { ImageForm } from "./ImageForm";
 import type { CategoryInput, ImageInput } from "../schema";
+
+function formatFileSize(bytes?: number | null): string {
+  if (bytes === null || bytes === undefined || isNaN(bytes)) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export function GalleryTabsClient({
   categories,
@@ -29,7 +36,42 @@ export function GalleryTabsClient({
   const [imageFormOpen, setImageFormOpen] = useState(false);
   const [editingImage, setEditingImage] = useState<ImageInput | null>(null);
 
+  const [showOnlyDuplicates, setShowOnlyDuplicates] = useState(false);
+  const [isSyncingLegacy, setIsSyncingLegacy] = useState(false);
+
+  const legacyCount = images.filter((img) => img.fileSizeBytes === null || img.fileSizeBytes === undefined).length;
+
+  const handleSyncLegacy = async () => {
+    setIsSyncingLegacy(true);
+    try {
+      const res = await syncGalleryMediaSizes();
+      if (res.success) {
+        router.refresh();
+        alert(res.message || "Successfully updated file size metadata for previous uploads.");
+      } else {
+        alert(res.error || "Failed to sync legacy metadata.");
+      }
+    } catch (err) {
+      console.error("Failed to sync legacy metadata:", err);
+      alert("An error occurred while syncing file sizes.");
+    } finally {
+      setIsSyncingLegacy(false);
+    }
+  };
+
   const selectedCategoryId = searchParams.get("category") || "all";
+
+  // Calculate etag frequencies for duplicate detection across all images
+  const etagCounts: Record<string, number> = {};
+  images.forEach((img) => {
+    if (img.cloudinaryEtag) {
+      etagCounts[img.cloudinaryEtag] = (etagCounts[img.cloudinaryEtag] || 0) + 1;
+    }
+  });
+
+  const duplicateCountAll = images.filter(
+    (img) => img.cloudinaryEtag && etagCounts[img.cloudinaryEtag] > 1
+  ).length;
 
   const handleCategorySelect = (catId: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -42,12 +84,16 @@ export function GalleryTabsClient({
   };
 
   const filteredImages = images.filter((img) => {
-    if (selectedCategoryId === "all") return true;
-    return (
+    const matchesCategory =
+      selectedCategoryId === "all" ||
       img.categoryId === selectedCategoryId ||
       img.category?.id === selectedCategoryId ||
-      img.category?.name.toLowerCase() === selectedCategoryId.toLowerCase()
-    );
+      img.category?.name.toLowerCase() === selectedCategoryId.toLowerCase();
+
+    const isDuplicate = Boolean(img.cloudinaryEtag && etagCounts[img.cloudinaryEtag] > 1);
+    const matchesDuplicateFilter = showOnlyDuplicates ? isDuplicate : true;
+
+    return matchesCategory && matchesDuplicateFilter;
   });
 
   const selectedCatObj = categories.find(
@@ -81,7 +127,7 @@ export function GalleryTabsClient({
             Manage your inspiration gallery categories and media.
           </p>
         </div>
-        <div>
+        <div className="flex flex-wrap items-center gap-2">
           {activeTab === "categories" ? (
             <button
               onClick={() => {
@@ -93,15 +139,28 @@ export function GalleryTabsClient({
               <Plus className="w-4 h-4" /> Add Category
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setEditingImage(null);
-                setImageFormOpen(true);
-              }}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white font-medium text-sm rounded-md hover:bg-brand-red/90 transition-colors shadow-sm cursor-pointer w-full sm:w-auto"
-            >
-              <Plus className="w-4 h-4" /> Add Image
-            </button>
+            <>
+              {legacyCount > 0 && (
+                <button
+                  onClick={handleSyncLegacy}
+                  disabled={isSyncingLegacy}
+                  className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 min-h-[44px] bg-neutral-100 text-neutral-800 hover:bg-neutral-200 border border-neutral-300 font-medium text-sm rounded-md transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+                  title="Fetch file size and content hash for images uploaded prior to this update"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isSyncingLegacy ? "animate-spin text-brand-red" : ""}`} />
+                  {isSyncingLegacy ? "Fetching Sizes..." : `Fetch Previous Sizes (${legacyCount})`}
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setEditingImage(null);
+                  setImageFormOpen(true);
+                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white font-medium text-sm rounded-md hover:bg-brand-red/90 transition-colors shadow-sm cursor-pointer w-full sm:w-auto"
+              >
+                <Plus className="w-4 h-4" /> Add Image
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -221,14 +280,14 @@ export function GalleryTabsClient({
 
           {!imageFormOpen && (
             <div className="space-y-4">
-              {/* Category Filter Controls */}
-              <div className="bg-white p-4 rounded-lg border border-neutral-200 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              {/* Category & Duplicate Filter Controls */}
+              <div className="bg-white p-4 rounded-lg border border-neutral-200 shadow-xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
                 <div className="flex items-center gap-2 text-xs font-semibold text-neutral-600 uppercase tracking-wider">
                   <Filter className="w-4 h-4 text-brand-red shrink-0" />
-                  <span>Filter by Category:</span>
+                  <span>Filter Options:</span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => handleCategorySelect("all")}
@@ -264,6 +323,22 @@ export function GalleryTabsClient({
                       </button>
                     );
                   })}
+
+                  <div className="h-6 w-px bg-neutral-200 mx-1 hidden sm:block" />
+
+                  {/* Duplicate Filter Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setShowOnlyDuplicates((prev) => !prev)}
+                    className={`px-3 py-1.5 min-h-[36px] text-xs font-semibold rounded-md transition-colors cursor-pointer flex items-center gap-1.5 ${
+                      showOnlyDuplicates
+                        ? "bg-amber-600 text-white shadow-xs font-bold"
+                        : "bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300"
+                    }`}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Show Only Duplicates ({duplicateCountAll})
+                  </button>
                 </div>
               </div>
 
@@ -272,63 +347,89 @@ export function GalleryTabsClient({
                 {filteredImages.length === 0 ? (
                   <div className="text-center py-12 px-4 space-y-3">
                     <p className="text-sm text-neutral-500 font-medium">
-                      {selectedCategoryId === "all"
+                      {showOnlyDuplicates
+                        ? selectedCategoryId === "all"
+                          ? "No duplicate images detected."
+                          : `No duplicate images detected in category "${selectedCatObj?.name || "selected"}".`
+                        : selectedCategoryId === "all"
                         ? "No images found."
                         : `No images found in category "${selectedCatObj?.name || "selected"}".`}
                     </p>
-                    {selectedCategoryId !== "all" && (
+                    {(selectedCategoryId !== "all" || showOnlyDuplicates) && (
                       <button
                         type="button"
-                        onClick={() => handleCategorySelect("all")}
+                        onClick={() => {
+                          handleCategorySelect("all");
+                          setShowOnlyDuplicates(false);
+                        }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-red hover:text-red-800 bg-red-50 hover:bg-red-100 rounded-md transition-colors cursor-pointer"
                       >
-                        <RotateCcw className="w-3.5 h-3.5" /> Reset Filter to All Categories
+                        <RotateCcw className="w-3.5 h-3.5" /> Reset Filters
                       </button>
                     )}
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[640px]">
+                    <table className="w-full text-left border-collapse min-w-[700px]">
                       <thead>
                         <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                           <th className="py-3.5 px-4">Image</th>
                           <th className="py-3.5 px-4">Title & Category</th>
                           <th className="py-3.5 px-4">Type</th>
+                          <th className="py-3.5 px-4">Size</th>
                           <th className="py-3.5 px-4">Status & Cover</th>
                           <th className="py-3.5 px-4">Order</th>
                           <th className="py-3.5 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-neutral-200 text-sm">
-                        {filteredImages.map((img) => (
-                        <tr key={img.id} className="hover:bg-neutral-50/50">
-                          <td className="py-4 px-4">
-                            <div className="w-24 h-[72px] rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
-                              <Image
-                                src={getVideoThumbnailUrl(img.url, img.mediaType)}
-                                alt={img.title}
-                                fill
-                                className="object-cover"
-                                unoptimized={img.mediaType === "VIDEO"}
-                              />
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="font-medium text-neutral-900">{img.title}</div>
-                            <div className="text-xs text-neutral-500">{img.category?.name}</div>
-                          </td>
-                          <td className="py-4 px-4 space-y-1">
-                            <div>
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
-                                {img.designType}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
-                                {img.mediaType}
-                              </span>
-                            </div>
-                          </td>
+                        {filteredImages.map((img) => {
+                          const isDuplicate = Boolean(img.cloudinaryEtag && etagCounts[img.cloudinaryEtag] > 1);
+
+                          return (
+                            <tr
+                              key={img.id}
+                              className={
+                                isDuplicate
+                                  ? "bg-amber-50/60 hover:bg-amber-100/50 border-l-4 border-l-amber-500"
+                                  : "hover:bg-neutral-50/50"
+                              }
+                            >
+                              <td className="py-4 px-4">
+                                <div className="w-24 h-[72px] rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
+                                  <Image
+                                    src={getVideoThumbnailUrl(img.url, img.mediaType)}
+                                    alt={img.title}
+                                    fill
+                                    className="object-cover"
+                                    unoptimized={img.mediaType === "VIDEO"}
+                                  />
+                                </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="font-medium text-neutral-900">{img.title}</div>
+                                <div className="text-xs text-neutral-500">{img.category?.name}</div>
+                                {isDuplicate && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 rounded text-[11px] font-bold bg-amber-200/80 text-amber-900 border border-amber-300">
+                                    <Copy className="w-3 h-3 text-amber-700" /> Possible Duplicate
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4 space-y-1">
+                                <div>
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+                                    {img.designType}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+                                    {img.mediaType}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4 text-xs font-mono font-medium text-neutral-700">
+                                {formatFileSize(img.fileSizeBytes)}
+                              </td>
                           <td className="py-4 px-4">
                             <div className="flex flex-col gap-2">
                               <label className="flex items-center cursor-pointer group min-h-[32px]">
@@ -427,7 +528,8 @@ export function GalleryTabsClient({
                             </button>
                           </td>
                         </tr>
-                      ))}
+                      );
+                    })}
                     </tbody>
                   </table>
                 </div>

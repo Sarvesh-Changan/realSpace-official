@@ -328,6 +328,8 @@ model GalleryImage {
   mediaType         MediaType       @default(IMAGE)
   cloudinaryId      String
   url               String
+  fileSizeBytes     Int?
+  cloudinaryEtag    String?
   theme             String?
   approxBudgetLabel String?
   description       String?         @db.Text
@@ -341,6 +343,7 @@ model GalleryImage {
   @@index([categoryId])
   @@index([designType, categoryId])
   @@index([isFeatured, isPublished])
+  @@index([cloudinaryEtag])
 }
 
 model Event {

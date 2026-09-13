@@ -15,6 +15,8 @@ interface UploadedMediaItem {
   cloudinaryId: string;
   mediaType: "IMAGE" | "VIDEO";
   fileName: string;
+  fileSizeBytes?: number;
+  cloudinaryEtag?: string;
 }
 
 interface ImageFormProps {
@@ -45,6 +47,8 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
       mediaType: initialData?.mediaType || "IMAGE",
       url: initialData?.url || "",
       cloudinaryId: initialData?.cloudinaryId || "",
+      fileSizeBytes: initialData?.fileSizeBytes ?? null,
+      cloudinaryEtag: initialData?.cloudinaryEtag ?? null,
       isCategoryCover: initialData?.isCategoryCover ?? false,
       isFeatured: initialData?.isFeatured ?? false,
       isPublished: initialData?.isPublished ?? true,
@@ -130,6 +134,8 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
       singleForm.setValue("url", uploadData.secure_url || uploadData.url);
       singleForm.setValue("cloudinaryId", uploadData.public_id);
       singleForm.setValue("mediaType", resourceType === "video" ? "VIDEO" : "IMAGE");
+      if (uploadData.bytes) singleForm.setValue("fileSizeBytes", uploadData.bytes);
+      if (uploadData.etag) singleForm.setValue("cloudinaryEtag", uploadData.etag);
     } catch (err: any) {
       console.error("Direct upload error:", err);
       setServerError(err.message || "Failed to upload file to Cloudinary.");
@@ -210,6 +216,8 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
           cloudinaryId: uploadData.public_id,
           mediaType: resourceType === "video" ? "VIDEO" : "IMAGE",
           fileName: file.name,
+          fileSizeBytes: uploadData.bytes || file.size,
+          cloudinaryEtag: uploadData.etag,
         });
       }
 
@@ -260,6 +268,8 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
         mediaType: file.mediaType,
         url: file.url,
         cloudinaryId: file.cloudinaryId,
+        fileSizeBytes: file.fileSizeBytes,
+        cloudinaryEtag: file.cloudinaryEtag,
         // Apply isCategoryCover ONLY to the first file in the batch
         isCategoryCover: data.isCategoryCover && idx === 0,
         isFeatured: data.isFeatured,

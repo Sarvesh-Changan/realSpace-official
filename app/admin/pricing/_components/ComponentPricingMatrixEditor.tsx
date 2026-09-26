@@ -9,7 +9,7 @@ import { updateComponentPricingMatrix } from "../actions";
 
 // --- Types & Constants ---
 export type ComponentKey = "kitchen" | "living_room" | "bedroom" | "bathroom";
-export type TierKey = "STANDARD" | "PREMIUM" | "LUXURY";
+export type TierKey = "BUDGET" | "STANDARD" | "PREMIUM" | "LUXURY";
 
 export interface ComponentPricingRecord {
   id?: string;
@@ -27,6 +27,7 @@ export const COMPONENTS: { key: ComponentKey; label: string; Icon: React.FC<{ cl
 ];
 
 export const TIERS: { key: TierKey; label: string; badgeColor: string }[] = [
+  { key: "BUDGET", label: "Budget", badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   { key: "STANDARD", label: "Standard", badgeColor: "bg-blue-50 text-blue-700 border-blue-200" },
   { key: "PREMIUM", label: "Premium", badgeColor: "bg-amber-50 text-amber-700 border-amber-200" },
   { key: "LUXURY", label: "Luxury", badgeColor: "bg-purple-50 text-purple-700 border-purple-200" },
@@ -35,7 +36,7 @@ export const TIERS: { key: TierKey; label: string; badgeColor: string }[] = [
 // --- Zod Validation Schema ---
 export const componentPricingItemSchema = z.object({
   componentKey: z.enum(["kitchen", "living_room", "bedroom", "bathroom"]),
-  tier: z.enum(["STANDARD", "PREMIUM", "LUXURY"]),
+  tier: z.enum(["BUDGET", "STANDARD", "PREMIUM", "LUXURY"]),
   pricePerUnit: z.coerce.number().min(0, "Price must be a positive number"),
   isActive: z.boolean().default(true),
 });
@@ -170,12 +171,12 @@ export function ComponentPricingMatrixEditor({ initialPricing }: ComponentPricin
       {/* Pricing Matrix Table */}
       <div className="bg-white border border-neutral-200 rounded-xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[720px]">
+          <table className="w-full text-left border-collapse min-w-[840px]">
             <thead>
               <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                <th className="py-4 px-5 w-1/4">Component</th>
+                <th className="py-4 px-5 w-1/5">Component</th>
                 {TIERS.map((tier) => (
-                  <th key={tier.key} className="py-4 px-5 text-center w-1/5">
+                  <th key={tier.key} className="py-4 px-3 text-center w-[17%]">
                     <div className="flex items-center justify-center gap-1.5">
                       <span className={`px-2 py-0.5 rounded text-[11px] font-bold border uppercase tracking-wider ${tier.badgeColor}`}>
                         {tier.label}
@@ -183,7 +184,7 @@ export function ComponentPricingMatrixEditor({ initialPricing }: ComponentPricin
                     </div>
                   </th>
                 ))}
-                <th className="py-4 px-5 text-right w-1/6">Status</th>
+                <th className="py-4 px-5 text-right w-[12%]">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-200 text-sm">

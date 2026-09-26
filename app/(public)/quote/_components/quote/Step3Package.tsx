@@ -9,6 +9,7 @@ interface Props {
 }
 
 const PACKAGES = [
+  { id: 'Budget', label: 'Budget', desc: 'Essential materials, maximum cost-efficiency.' },
   { id: 'Standard', label: 'Standard', desc: 'Essential materials, cost-effective finish.' },
   { id: 'Premium', label: 'Premium', desc: 'Premium quality material, balance luxury.' },
   { id: 'Luxury', label: 'Luxury', desc: 'High Quality materials, high-end finish.' }
@@ -59,7 +60,7 @@ export default function Step3Package({ state, updateState }: Props) {
         <p className="text-sm sm:text-base text-[#6D6A66]">Choose the level of finish for your space.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {PACKAGES.map((pkg) => {
           const isSelected = state.packageTier === pkg.id;
           return (

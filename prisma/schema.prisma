@@ -60,6 +60,7 @@ enum CertificationType {
 }
 
 enum PricingTier {
+  BUDGET
   STANDARD
   PREMIUM
   LUXURY

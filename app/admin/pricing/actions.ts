@@ -68,7 +68,7 @@ export async function upsertBhkRoomDefaults(
 export async function updateComponentPricingMatrix(
   items: Array<{
     componentKey: "kitchen" | "living_room" | "bedroom" | "bathroom";
-    tier: "STANDARD" | "PREMIUM" | "LUXURY";
+    tier: "BUDGET" | "STANDARD" | "PREMIUM" | "LUXURY";
     pricePerUnit: number;
     isActive: boolean;
   }>

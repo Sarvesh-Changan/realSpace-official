@@ -41,7 +41,8 @@ export async function sendLeadNotification(
     let materialPackage = "Not specified";
     if (selections.packageTier) {
       const tierUpper = String(selections.packageTier).toUpperCase();
-      if (tierUpper.includes("PREMIUM")) materialPackage = "Premium";
+      if (tierUpper.includes("BUDGET")) materialPackage = "Budget";
+      else if (tierUpper.includes("PREMIUM")) materialPackage = "Premium";
       else if (tierUpper.includes("LUXURY")) materialPackage = "Luxury";
       else if (tierUpper.includes("STANDARD")) materialPackage = "Standard";
       else materialPackage = String(selections.packageTier);

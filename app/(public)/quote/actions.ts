@@ -279,6 +279,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     // 6. Residential Flow: Per-component per-tier pricing via ComponentPricing
     const rawTier = (input.packageTier || 'STANDARD').trim().toUpperCase();
     const selectedTier: PricingTier =
+      rawTier.includes('BUDGET') ? 'BUDGET' :
       rawTier.includes('PREMIUM') ? 'PREMIUM' :
       rawTier.includes('LUXURY') ? 'LUXURY' : 'STANDARD';
 
@@ -295,6 +296,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     const breakdown: Array<{ label: string; amount: number }> = [];
 
     const tierDisplayLabel =
+      selectedTier === 'BUDGET' ? 'Budget' :
       selectedTier === 'PREMIUM' ? 'Premium' :
       selectedTier === 'LUXURY' ? 'Luxury' : 'Standard';
 

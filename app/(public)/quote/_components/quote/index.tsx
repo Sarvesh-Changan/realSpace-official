@@ -204,7 +204,7 @@ export default function QuoteCalculator() {
         ) : null}
 
         <h4 className="text-xs font-bold text-[#1C1C1C] uppercase tracking-wider">
-          * Our Design Team will review your Selections & contact you shortly Or You can contact us on <i>9869211777</i> for more information & schedule site visit as per your convenience.
+          Our Design Team will review your Selections & contact you shortly Or You can contact us on <i>9869211777</i> for more information & schedule site visit as per your convenience.
         </h4>
       </div>
     );

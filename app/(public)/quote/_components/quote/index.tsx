@@ -134,7 +134,7 @@ export default function QuoteCalculator() {
         </div>
         <h2 className="text-2xl sm:text-3xl font-serif text-[#1C1C1C] mb-2 sm:mb-3">Quote Request Submitted</h2>
         <p className="text-sm sm:text-base text-[#6D6A66] max-w-lg mx-auto leading-relaxed mb-6 sm:mb-8">
-          Thank you, <span className="font-semibold text-[#1C1C1C]">{state.contact.name || 'there'}</span>. 
+          Thank you, <span className="font-semibold text-[#1C1C1C]">{state.contact.name || 'there'}</span>.
           {hasValidEstimate
             ? 'Here is your real-time calculated estimate based on active database pricing.'
             : 'Our team will review your requirements and follow up with a detailed, custom quote within 24–48 hours.'}
@@ -203,9 +203,9 @@ export default function QuoteCalculator() {
           </div>
         ) : null}
 
-        <p className="text-xs text-[#6D6A66] italic max-w-lg mx-auto">
-          * Our design team will review your selections and contact you at {state.contact.phone} shortly to discuss fine details and exact site measurements.
-        </p>
+        <h4 className="text-xs font-bold text-[#1C1C1C] uppercase tracking-wider">
+          * Our Design Team will review your Selections & contact you shortly Or You can contact us on <i>9869211777</i> for more information & schedule site visit as per your convenience.
+        </h4>
       </div>
     );
   }
@@ -222,7 +222,7 @@ export default function QuoteCalculator() {
           </div>
           {/* Step Progress Bar Track */}
           <div className="w-full bg-[#E8E2DA] h-2 rounded-full overflow-hidden flex">
-            <div 
+            <div
               className="bg-[#C8A96A] h-full transition-all duration-300 rounded-full"
               style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
             />
@@ -234,18 +234,18 @@ export default function QuoteCalculator() {
           <div className="flex justify-between items-center gap-4 relative">
             {/* Connecting Line */}
             <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#E8E2DA] -z-10 -translate-y-1/2" />
-            
+
             {STEPS.map((label, index) => {
               const stepNumber = index + 1;
               const isActive = stepNumber === currentStep;
               const isPast = stepNumber < currentStep;
-              
+
               return (
                 <div key={label} className="flex flex-col items-center flex-1 z-10">
                   <div className={clsx(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors mb-3",
-                    isActive ? "bg-[#C8A96A] text-white ring-4 ring-[#C8A96A]/20" : 
-                    isPast ? "bg-[#1C1C1C] text-white" : "bg-[#F8F5F1] text-[#6D6A66] border border-[#E8E2DA]"
+                    isActive ? "bg-[#C8A96A] text-white ring-4 ring-[#C8A96A]/20" :
+                      isPast ? "bg-[#1C1C1C] text-white" : "bg-[#F8F5F1] text-[#6D6A66] border border-[#E8E2DA]"
                   )}>
                     {isPast ? (
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -298,9 +298,9 @@ export default function QuoteCalculator() {
               )}
               {currentStep === 3 && <Step3Package state={state} updateState={updateState} />}
               {currentStep === 4 && (
-                <Step4Quote 
-                  state={state} 
-                  updateState={updateState} 
+                <Step4Quote
+                  state={state}
+                  updateState={updateState}
                   onSubmit={handleSubmit}
                   isSubmitting={isSubmitting}
                   error={error}
@@ -324,7 +324,7 @@ export default function QuoteCalculator() {
             <ChevronLeft className="w-5 h-5" />
             Back
           </button>
-          
+
           {currentStep < 4 && (
             <button
               type="button"

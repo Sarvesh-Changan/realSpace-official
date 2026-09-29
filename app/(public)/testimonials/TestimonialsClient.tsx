@@ -22,6 +22,8 @@ export interface PublicVideoTestimonial {
   imageUrl: string | null;
   imageUrls: string[];
   thumbnailUrl: string | null;
+  thumbnailUrls?: string[];
+  thumbnailPublicIds?: string[];
   rating: number;
   createdAt: string;
 }
@@ -120,7 +122,8 @@ function isWithinDateFilter(dateValue: string, filter: DateFilter, startDate: st
 function getThumbnail(item: PublicVideoTestimonial) {
   const imageUrl = item.imageUrls[0] || item.imageUrl;
   if (imageUrl) return imageUrl;
-  if (item.thumbnailUrl) return item.thumbnailUrl;
+  const thumbUrl = item.thumbnailUrls?.[0] || item.thumbnailUrl;
+  if (thumbUrl) return thumbUrl;
   const videoUrl = item.videoUrls?.[0] || item.videoUrl;
   if (!videoUrl) return "/images/placeholder-image.png";
   return getEmbedUrl(videoUrl)
@@ -169,7 +172,12 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
 
   const allMediaItems = useMemo(() => {
     if (!selectedTestimonial) return [];
-    const items: Array<{ type: "VIDEO" | "IMAGE"; url: string; publicId?: string | null }> = [];
+    const items: Array<{
+      type: "VIDEO" | "IMAGE";
+      url: string;
+      publicId?: string | null;
+      thumbnail?: string | null;
+    }> = [];
 
     const vUrls = selectedTestimonial.videoUrls?.length
       ? selectedTestimonial.videoUrls
@@ -181,9 +189,21 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       : selectedTestimonial.videoPublicId
       ? [selectedTestimonial.videoPublicId]
       : [];
+    const vThumbs = selectedTestimonial.thumbnailUrls?.length
+      ? selectedTestimonial.thumbnailUrls
+      : selectedTestimonial.thumbnailUrl
+      ? [selectedTestimonial.thumbnailUrl]
+      : [];
 
     vUrls.forEach((url, i) => {
-      items.push({ type: "VIDEO", url, publicId: vPids[i] || null });
+      const explicitThumb = vThumbs[i] || (i === 0 ? selectedTestimonial.thumbnailUrl : null);
+      const autoThumb = getEmbedUrl(url) ? null : getVideoThumbnailUrl(url, "VIDEO");
+      items.push({
+        type: "VIDEO",
+        url,
+        publicId: vPids[i] || null,
+        thumbnail: explicitThumb || autoThumb || null,
+      });
     });
 
     const iUrls = selectedTestimonial.imageUrls?.length
@@ -193,7 +213,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
       : [];
 
     iUrls.forEach((url) => {
-      items.push({ type: "IMAGE", url });
+      items.push({ type: "IMAGE", url, thumbnail: url });
     });
 
     return items;
@@ -458,7 +478,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                     <div className="flex gap-2 overflow-x-auto pb-1">
                       {allMediaItems.map((item, idx) => {
                         const isActive = idx === selectedMediaIndex;
-                        const thumbSrc = item.type === "IMAGE" ? item.url : (selectedTestimonial.thumbnailUrl || selectedTestimonial.imageUrl || (getEmbedUrl(item.url) ? "" : getVideoThumbnailUrl(item.url, "VIDEO")));
+                        const thumbSrc = item.thumbnail;
                         return (
                           <button
                             key={idx}
@@ -470,7 +490,7 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                           >
                             {thumbSrc ? (
                               <>
-                                <Image src={thumbSrc} alt={`Thumb ${idx + 1}`} fill className="object-cover" sizes="60px" />
+                                <Image src={getCloudinaryUrl(thumbSrc, { width: 120, height: 120, crop: "fill" })} alt={`Thumb ${idx + 1}`} fill className="object-cover" sizes="60px" />
                                 {item.type === "VIDEO" && (
                                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                                     <Play className="w-4 h-4 text-white fill-white" />
@@ -478,8 +498,8 @@ export function TestimonialsClient({ testimonials }: TestimonialsClientProps) {
                                 )}
                               </>
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-black text-white">
-                                <Film className="w-5 h-5 text-brand-yellow" />
+                              <div className="w-full h-full flex items-center justify-center bg-neutral-900 text-white">
+                                <Play className="w-5 h-5 text-neutral-400 fill-neutral-400" />
                               </div>
                             )}
                           </button>

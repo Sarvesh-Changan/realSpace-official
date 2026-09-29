@@ -80,7 +80,7 @@ export function AdminSidebar({ mobileOpen = false, onClose }: AdminSidebarProps)
   return (
     <>
       {/* Desktop Sidebar (visible on lg screens and up) */}
-      <div className="w-64 bg-white border-r border-neutral-200 flex-col hidden lg:flex h-screen sticky top-0 shrink-0">
+      <div className="w-64 bg-white border-r border-neutral-200 flex-col hidden lg:flex h-full shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-neutral-200 shrink-0">
           <span className="text-xl font-bold text-neutral-900">REALSPACE</span>
           <span className="ml-2 text-xs font-semibold text-brand-red bg-red-50 px-2 py-0.5 rounded-full">

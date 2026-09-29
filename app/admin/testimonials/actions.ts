@@ -27,17 +27,14 @@ const testimonialSchema = z.object({
   videoPublicIds: z.array(z.string().trim().max(500)).max(20).default([]),
   thumbnailUrl: z.string().trim().url("Thumbnail URL must be valid").optional().or(z.literal("")),
   thumbnailPublicId: z.string().trim().max(500).optional().or(z.literal("")),
+  thumbnailUrls: z.array(z.string().trim().url("Thumbnail URL must be valid").or(z.literal(""))).max(20).default([]),
+  thumbnailPublicIds: z.array(z.string().trim().max(500).or(z.literal(""))).max(20).default([]),
   slug: z.string().trim().max(200).optional().or(z.literal("")),
   location: z.string().trim().max(200).optional().nullable(),
   projectType: z.string().trim().max(200).optional().nullable(),
   rating: z.coerce.number().min(1).max(5).default(5),
   sortOrder: z.coerce.number().int().min(0).default(0),
   isPublished: z.boolean().default(true),
-}).superRefine((data, context) => {
-  const hasVideo = data.videoUrl || data.videoUrls.length > 0;
-  if (hasVideo && !data.thumbnailUrl) {
-    context.addIssue({ code: "custom", path: ["thumbnailUrl"], message: "A thumbnail is required when a video testimonial is provided." });
-  }
 });
 
 function slugify(value: string): string {
@@ -104,25 +101,48 @@ export async function createTestimonial(data: TestimonialFormValues) {
     const videoUrls = testimonialData.videoUrls.length ? testimonialData.videoUrls : testimonialData.videoUrl ? [testimonialData.videoUrl] : [];
     const videoPublicIds = testimonialData.videoPublicIds.length ? testimonialData.videoPublicIds : testimonialData.videoPublicId ? [testimonialData.videoPublicId] : [];
 
+    const thumbnailUrls = testimonialData.thumbnailUrls.length
+      ? testimonialData.thumbnailUrls
+      : testimonialData.thumbnailUrl
+      ? [testimonialData.thumbnailUrl]
+      : [];
+    const thumbnailPublicIds = testimonialData.thumbnailPublicIds.length
+      ? testimonialData.thumbnailPublicIds
+      : testimonialData.thumbnailPublicId
+      ? [testimonialData.thumbnailPublicId]
+      : [];
+
     const hasVideo = videoUrls.length > 0 || Boolean(testimonialData.videoUrl);
-    const thumbnailUrl = hasVideo ? (testimonialData.thumbnailUrl || null) : null;
-    const thumbnailPublicId = hasVideo ? (testimonialData.thumbnailPublicId || null) : null;
+
+    // Sync primary item to scalar fields
+    const primaryVideoIndex = videoUrls.findIndex((v) => v === (testimonialData.videoUrl || videoUrls[0]));
+    const primaryThumbUrl = primaryVideoIndex >= 0 && thumbnailUrls[primaryVideoIndex]
+      ? thumbnailUrls[primaryVideoIndex]
+      : testimonialData.thumbnailUrl || thumbnailUrls[0] || null;
+    const primaryThumbPid = primaryVideoIndex >= 0 && thumbnailPublicIds[primaryVideoIndex]
+      ? thumbnailPublicIds[primaryVideoIndex]
+      : testimonialData.thumbnailPublicId || thumbnailPublicIds[0] || null;
+
+    const thumbnailUrl = hasVideo ? primaryThumbUrl : null;
+    const thumbnailPublicId = hasVideo ? primaryThumbPid : null;
 
     const testimonial = await prisma.testimonial.create({
       data: {
         clientName: testimonialData.clientName,
         clientRole: testimonialData.clientRole || null,
         quote: testimonialData.quote,
-        imageUrl: imageUrls[0] || null,
-        imagePublicId: imagePublicIds[0] || null,
+        imageUrl: testimonialData.imageUrl || imageUrls[0] || null,
+        imagePublicId: testimonialData.imagePublicId || imagePublicIds[0] || null,
         imageUrls,
         imagePublicIds,
-        videoUrl: videoUrls[0] || null,
-        videoPublicId: videoPublicIds[0] || null,
+        videoUrl: testimonialData.videoUrl || videoUrls[0] || null,
+        videoPublicId: testimonialData.videoPublicId || videoPublicIds[0] || null,
         videoUrls,
         videoPublicIds,
         thumbnailUrl,
         thumbnailPublicId,
+        thumbnailUrls,
+        thumbnailPublicIds,
         slug,
         location: testimonialData.location || null,
         projectType: testimonialData.projectType || null,
@@ -165,9 +185,30 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
     const videoUrls = testimonialData.videoUrls.length ? testimonialData.videoUrls : testimonialData.videoUrl ? [testimonialData.videoUrl] : [];
     const videoPublicIds = testimonialData.videoPublicIds.length ? testimonialData.videoPublicIds : testimonialData.videoPublicId ? [testimonialData.videoPublicId] : [];
 
+    const thumbnailUrls = testimonialData.thumbnailUrls.length
+      ? testimonialData.thumbnailUrls
+      : testimonialData.thumbnailUrl
+      ? [testimonialData.thumbnailUrl]
+      : [];
+    const thumbnailPublicIds = testimonialData.thumbnailPublicIds.length
+      ? testimonialData.thumbnailPublicIds
+      : testimonialData.thumbnailPublicId
+      ? [testimonialData.thumbnailPublicId]
+      : [];
+
     const hasVideo = videoUrls.length > 0 || Boolean(testimonialData.videoUrl);
-    const thumbnailUrl = hasVideo ? (testimonialData.thumbnailUrl || null) : null;
-    const thumbnailPublicId = hasVideo ? (testimonialData.thumbnailPublicId || null) : null;
+
+    // Sync primary item to scalar fields
+    const primaryVideoIndex = videoUrls.findIndex((v) => v === (testimonialData.videoUrl || videoUrls[0]));
+    const primaryThumbUrl = primaryVideoIndex >= 0 && thumbnailUrls[primaryVideoIndex]
+      ? thumbnailUrls[primaryVideoIndex]
+      : testimonialData.thumbnailUrl || thumbnailUrls[0] || null;
+    const primaryThumbPid = primaryVideoIndex >= 0 && thumbnailPublicIds[primaryVideoIndex]
+      ? thumbnailPublicIds[primaryVideoIndex]
+      : testimonialData.thumbnailPublicId || thumbnailPublicIds[0] || null;
+
+    const thumbnailUrl = hasVideo ? primaryThumbUrl : null;
+    const thumbnailPublicId = hasVideo ? primaryThumbPid : null;
 
     await prisma.testimonial.update({
       where: { id },
@@ -175,16 +216,18 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
         clientName: testimonialData.clientName,
         clientRole: testimonialData.clientRole || null,
         quote: testimonialData.quote,
-        imageUrl: imageUrls[0] || null,
-        imagePublicId: imagePublicIds[0] || null,
+        imageUrl: testimonialData.imageUrl || imageUrls[0] || null,
+        imagePublicId: testimonialData.imagePublicId || imagePublicIds[0] || null,
         imageUrls,
         imagePublicIds,
-        videoUrl: videoUrls[0] || null,
-        videoPublicId: videoPublicIds[0] || null,
+        videoUrl: testimonialData.videoUrl || videoUrls[0] || null,
+        videoPublicId: testimonialData.videoPublicId || videoPublicIds[0] || null,
         videoUrls,
         videoPublicIds,
         thumbnailUrl,
         thumbnailPublicId,
+        thumbnailUrls,
+        thumbnailPublicIds,
         slug,
         location: testimonialData.location || null,
         projectType: testimonialData.projectType || null,
@@ -194,13 +237,31 @@ export async function updateTestimonial(id: string, data: TestimonialFormValues)
       },
     });
 
-    if (existing.videoPublicId !== (videoPublicIds[0] || null)) {
+    // Cleanup removed assets from Cloudinary
+    for (const vPid of existing.videoPublicIds) {
+      if (vPid && !videoPublicIds.includes(vPid)) {
+        await destroyCloudinaryAsset(vPid, "video");
+      }
+    }
+    if (existing.videoPublicId && !videoPublicIds.includes(existing.videoPublicId) && existing.videoPublicId !== testimonialData.videoPublicId) {
       await destroyCloudinaryAsset(existing.videoPublicId, "video");
     }
-    if (existing.thumbnailPublicId !== (testimonialData.thumbnailPublicId || null)) {
+
+    for (const tPid of existing.thumbnailPublicIds) {
+      if (tPid && !thumbnailPublicIds.includes(tPid)) {
+        await destroyCloudinaryAsset(tPid, "image");
+      }
+    }
+    if (existing.thumbnailPublicId && !thumbnailPublicIds.includes(existing.thumbnailPublicId) && existing.thumbnailPublicId !== thumbnailPublicId) {
       await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
     }
-    if (existing.imagePublicId !== (imagePublicIds[0] || null)) {
+
+    for (const iPid of existing.imagePublicIds) {
+      if (iPid && !imagePublicIds.includes(iPid)) {
+        await destroyCloudinaryAsset(iPid, "image");
+      }
+    }
+    if (existing.imagePublicId && !imagePublicIds.includes(existing.imagePublicId) && existing.imagePublicId !== testimonialData.imagePublicId) {
       await destroyCloudinaryAsset(existing.imagePublicId, "image");
     }
 
@@ -229,21 +290,24 @@ export async function deleteTestimonial(id: string) {
 
     // Destroy Cloudinary assets
     for (const vPid of existing.videoPublicIds) {
-      await destroyCloudinaryAsset(vPid, "video");
+      if (vPid) await destroyCloudinaryAsset(vPid, "video");
     }
     if (existing.videoPublicId && !existing.videoPublicIds.includes(existing.videoPublicId)) {
       await destroyCloudinaryAsset(existing.videoPublicId, "video");
     }
 
+    for (const tPid of existing.thumbnailPublicIds) {
+      if (tPid) await destroyCloudinaryAsset(tPid, "image");
+    }
+    if (existing.thumbnailPublicId && !existing.thumbnailPublicIds.includes(existing.thumbnailPublicId)) {
+      await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
+    }
+
     for (const iPid of existing.imagePublicIds) {
-      await destroyCloudinaryAsset(iPid, "image");
+      if (iPid) await destroyCloudinaryAsset(iPid, "image");
     }
     if (existing.imagePublicId && !existing.imagePublicIds.includes(existing.imagePublicId)) {
       await destroyCloudinaryAsset(existing.imagePublicId, "image");
-    }
-
-    if (existing.thumbnailPublicId) {
-      await destroyCloudinaryAsset(existing.thumbnailPublicId, "image");
     }
 
     revalidatePath("/admin/testimonials");

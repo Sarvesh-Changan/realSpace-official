@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload, Film, Image as ImageIcon, Loader2, X, Trash2, CheckCircle2 } from "lucide-react";
@@ -28,6 +28,9 @@ interface ImageFormProps {
 
 export function ImageForm({ initialData, categories, onSuccess, onCancel }: ImageFormProps) {
   const isUpdate = !!initialData?.id;
+
+  const bulkFileInputRef = useRef<HTMLInputElement>(null);
+  const singleFileInputRef = useRef<HTMLInputElement>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -384,17 +387,25 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
             </label>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white text-sm font-medium rounded-md hover:bg-red-700 cursor-pointer transition-colors shadow-sm disabled:opacity-50">
+              <button
+                type="button"
+                onClick={() => singleFileInputRef.current?.click()}
+                disabled={isUploading}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-brand-red text-white text-sm font-medium rounded-md hover:bg-red-700 cursor-pointer transition-colors shadow-sm disabled:opacity-50"
+              >
                 {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 {isUploading ? "Uploading File..." : "Replace File (Image/Video)"}
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  onChange={handleSingleFileUpload}
-                  disabled={isUploading}
-                  className="sr-only"
-                />
-              </label>
+              </button>
+              <input
+                ref={singleFileInputRef}
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleSingleFileUpload}
+                disabled={isUploading}
+                className="hidden"
+                tabIndex={-1}
+                aria-hidden="true"
+              />
             </div>
 
             <input
@@ -580,36 +591,41 @@ export function ImageForm({ initialData, categories, onSuccess, onCancel }: Imag
                 handleBatchFileUpload(Array.from(e.dataTransfer.files));
               }
             }}
-            className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
+            onClick={() => bulkFileInputRef.current?.click()}
+            className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${
               isDragging ? "border-brand-red bg-red-50/50" : "border-neutral-300 hover:border-neutral-400 bg-neutral-50/50"
             }`}
           >
-            <div className="flex flex-col items-center justify-center space-y-3">
+            <div className="flex flex-col items-center justify-center space-y-3 pointer-events-none">
               <div className="p-3 bg-white rounded-full shadow-xs border border-neutral-200 text-brand-red">
                 <Upload className="w-6 h-6" />
               </div>
               <div className="text-sm font-medium text-neutral-700">
-                <label className="text-brand-red hover:underline cursor-pointer font-semibold inline-block">
+                <span className="text-brand-red hover:underline font-semibold inline-block">
                   Click to select multiple files
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*,video/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        handleBatchFileUpload(Array.from(e.target.files));
-                      }
-                    }}
-                    disabled={isUploading}
-                    className="sr-only"
-                  />
-                </label>{" "}
+                </span>{" "}
                 or drag &amp; drop a batch of images and videos here
               </div>
               <p className="text-xs text-neutral-500">
                 Supports JPG, PNG, WEBP, MP4, MOV, WEBM. Select multiple files at once.
               </p>
             </div>
+            <input
+              ref={bulkFileInputRef}
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  handleBatchFileUpload(Array.from(e.target.files));
+                }
+                e.target.value = "";
+              }}
+              disabled={isUploading}
+              className="hidden"
+              tabIndex={-1}
+              aria-hidden="true"
+            />
           </div>
 
           {/* Upload Progress Feedback */}

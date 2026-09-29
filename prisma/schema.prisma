@@ -134,6 +134,8 @@ model Testimonial {
   videoPublicIds    String[] @default([])
   thumbnailUrl      String?
   thumbnailPublicId String?
+  thumbnailUrls     String[] @default([])
+  thumbnailPublicIds String[] @default([])
   slug              String?  @unique
   location          String?
   projectType       String?

@@ -15,16 +15,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-neutral-50 text-neutral-900">
+    <div className="fixed inset-0 flex overflow-hidden bg-neutral-50 text-neutral-900">
       {/* Sidebar for Desktop + Off-canvas Drawer for Mobile */}
       <AdminSidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Topbar */}
         <AdminTopbar onMenuClick={() => setMobileOpen(true)} />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto min-w-0">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto min-w-0 min-h-0">
           {children}
         </main>
       </div>

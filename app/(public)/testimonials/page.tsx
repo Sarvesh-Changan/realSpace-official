@@ -37,6 +37,9 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     videoPublicIds: true,
     imageUrl: true,
     thumbnailUrl: true,
+    thumbnailPublicId: true,
+    thumbnailUrls: true,
+    thumbnailPublicIds: true,
     imageUrls: true,
     rating: true,
     createdAt: true,
@@ -80,6 +83,16 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
       : testimonial.imageUrl
       ? [testimonial.imageUrl]
       : [];
+    const thumbnailUrls = testimonial.thumbnailUrls?.length
+      ? testimonial.thumbnailUrls
+      : testimonial.thumbnailUrl
+      ? [testimonial.thumbnailUrl]
+      : [];
+    const thumbnailPublicIds = testimonial.thumbnailPublicIds?.length
+      ? testimonial.thumbnailPublicIds
+      : testimonial.thumbnailPublicId
+      ? [testimonial.thumbnailPublicId]
+      : [];
 
     return {
       id: testimonial.id,
@@ -95,7 +108,9 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
       videoPublicIds,
       imageUrl: imageUrls[0] || testimonial.imageUrl || null,
       imageUrls,
-      thumbnailUrl: testimonial.thumbnailUrl,
+      thumbnailUrl: thumbnailUrls[0] || testimonial.thumbnailUrl || null,
+      thumbnailUrls,
+      thumbnailPublicIds,
       rating: testimonial.rating,
       createdAt: testimonial.createdAt.toISOString(),
     };

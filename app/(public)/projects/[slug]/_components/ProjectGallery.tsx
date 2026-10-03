@@ -60,7 +60,7 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
       img.url?.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i);
 
     if (isVideo) {
-      return getVideoThumbnailUrl(img.url, img.mediaType);
+      return img.thumbnailUrl || getVideoThumbnailUrl(img.url, img.mediaType);
     }
 
     return getCloudinaryUrl(img.url, { width: isThumbnail ? 400 : 1600 });

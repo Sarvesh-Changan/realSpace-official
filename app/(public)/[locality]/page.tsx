@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 import { Hero } from "../_components/home/Hero";
 import { ActiveOffers, type OfferType } from "../_components/home/ActiveOffers";
@@ -112,7 +113,7 @@ export default async function LocalityPage({
     title: string;
     location: string;
     category: string;
-    images: Array<{ url: string; isCoverImage: boolean }>;
+    images: Array<{ url: string; isCoverImage: boolean; mediaType?: "IMAGE" | "VIDEO"; thumbnailUrl?: string | null }>;
   }> = [];
   let rawExteriorProjects: Array<{
     id: string;
@@ -120,7 +121,7 @@ export default async function LocalityPage({
     title: string;
     location: string;
     category: string;
-    images: Array<{ url: string; isCoverImage: boolean }>;
+    images: Array<{ url: string; isCoverImage: boolean; mediaType?: "IMAGE" | "VIDEO"; thumbnailUrl?: string | null }>;
   }> = [];
   let testimonials: Array<{
     id: string;
@@ -227,6 +228,16 @@ export default async function LocalityPage({
 
   const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => {
     const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
+    const isVideo =
+      coverImage?.mediaType === "VIDEO" ||
+      Boolean(coverImage?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+      Boolean(coverImage?.url?.includes("/video/upload/"));
+
+    const imageUrl = coverImage
+      ? isVideo
+        ? coverImage.thumbnailUrl || getVideoThumbnailUrl(coverImage.url, "VIDEO")
+        : coverImage.url
+      : "/images/placeholder-image.png";
 
     return {
       id: p.id,
@@ -234,12 +245,22 @@ export default async function LocalityPage({
       title: p.title,
       location: p.location,
       category: formatCategory(p.category),
-      imageUrl: coverImage?.url || "/images/placeholder-image.png",
+      imageUrl,
     };
   });
 
   const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => {
     const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
+    const isVideo =
+      coverImage?.mediaType === "VIDEO" ||
+      Boolean(coverImage?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+      Boolean(coverImage?.url?.includes("/video/upload/"));
+
+    const imageUrl = coverImage
+      ? isVideo
+        ? coverImage.thumbnailUrl || getVideoThumbnailUrl(coverImage.url, "VIDEO")
+        : coverImage.url
+      : "/images/placeholder-image.png";
 
     return {
       id: p.id,
@@ -247,7 +268,7 @@ export default async function LocalityPage({
       title: p.title,
       location: p.location,
       category: formatCategory(p.category),
-      imageUrl: coverImage?.url || "/images/placeholder-image.png",
+      imageUrl,
     };
   });
 

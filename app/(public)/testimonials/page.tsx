@@ -10,8 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const companyName = settings?.companyName || "REALSPACE";
 
   return constructMetadata({
-    title: `Video Testimonials | ${companyName}`,
-    description: `Watch video testimonials from REALSPACE clients about their interior and exterior design projects.`,
+    title: `Client Testimonials | ${companyName}`,
+    description: `Read and watch testimonials from REALSPACE clients about their interior and exterior design projects.`,
     path: "/testimonials",
   });
 }
@@ -30,9 +30,18 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     projectType: true,
     location: true,
     slug: true,
+    quote: true,
     videoUrl: true,
     videoPublicId: true,
+    videoUrls: true,
+    videoPublicIds: true,
+    imageUrl: true,
     thumbnailUrl: true,
+    thumbnailPublicId: true,
+    thumbnailUrls: true,
+    thumbnailPublicIds: true,
+    imageUrls: true,
+    rating: true,
     createdAt: true,
   } as const;
 
@@ -40,7 +49,6 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
     prisma.testimonial.findMany({
       where: {
         isPublished: true,
-        videoUrl: { not: null },
       },
       select: testimonialSelect,
       orderBy: { createdAt: "desc" },
@@ -54,27 +62,58 @@ export default async function TestimonialsPage({ searchParams }: TestimonialsPag
   ]);
 
   const allTestimonials = directTestimonial &&
-    directTestimonial.videoUrl &&
     directTestimonial.isPublished &&
     !testimonials.some((testimonial) => testimonial.id === directTestimonial.id)
     ? [directTestimonial, ...testimonials]
     : testimonials;
 
-  const items: PublicVideoTestimonial[] = allTestimonials.flatMap((testimonial) => {
-    if (!testimonial.videoUrl) return [];
+  const items: PublicVideoTestimonial[] = allTestimonials.map((testimonial) => {
+    const videoUrls = testimonial.videoUrls.length
+      ? testimonial.videoUrls
+      : testimonial.videoUrl
+      ? [testimonial.videoUrl]
+      : [];
+    const videoPublicIds = testimonial.videoPublicIds.length
+      ? testimonial.videoPublicIds
+      : testimonial.videoPublicId
+      ? [testimonial.videoPublicId]
+      : [];
+    const imageUrls = testimonial.imageUrls.length
+      ? testimonial.imageUrls
+      : testimonial.imageUrl
+      ? [testimonial.imageUrl]
+      : [];
+    const thumbnailUrls = testimonial.thumbnailUrls?.length
+      ? testimonial.thumbnailUrls
+      : testimonial.thumbnailUrl
+      ? [testimonial.thumbnailUrl]
+      : [];
+    const thumbnailPublicIds = testimonial.thumbnailPublicIds?.length
+      ? testimonial.thumbnailPublicIds
+      : testimonial.thumbnailPublicId
+      ? [testimonial.thumbnailPublicId]
+      : [];
 
-    return [{
+    return {
       id: testimonial.id,
       title: testimonial.projectType || "A REALSPACE design story",
       clientName: testimonial.clientName,
       projectType: testimonial.projectType,
       location: testimonial.location,
       slug: testimonial.slug || testimonial.id,
-      videoUrl: testimonial.videoUrl,
-      videoPublicId: testimonial.videoPublicId,
-      thumbnailUrl: testimonial.thumbnailUrl,
+      quote: testimonial.quote,
+      videoUrl: videoUrls[0] || testimonial.videoUrl || null,
+      videoPublicId: videoPublicIds[0] || testimonial.videoPublicId || null,
+      videoUrls,
+      videoPublicIds,
+      imageUrl: imageUrls[0] || testimonial.imageUrl || null,
+      imageUrls,
+      thumbnailUrl: thumbnailUrls[0] || testimonial.thumbnailUrl || null,
+      thumbnailUrls,
+      thumbnailPublicIds,
+      rating: testimonial.rating,
       createdAt: testimonial.createdAt.toISOString(),
-    }];
+    };
   });
 
   return <TestimonialsClient testimonials={items} />;

@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Tag, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 export interface OfferType {
   id: string;
-  title: string;
-  description: string;
+  title?: string | null;
+  description?: string | null;
   imageUrl: string | null;
   ctaLabel: string;
   ctaLink: string;
@@ -23,18 +23,17 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
   const [isPaused, setIsPaused] = useState(false);
   const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-advance logic (every 4 seconds)
+  // Auto-advance logic (every 5 seconds)
   useEffect(() => {
     if (!offers || offers.length <= 1 || isPaused) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % offers.length);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isPaused, offers]);
 
-  // Hover / Touch interaction handling with delay
   const handlePause = () => {
     setIsPaused(true);
     if (resumeTimeoutRef.current) {
@@ -46,23 +45,19 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current);
     }
-    // Short delay before resuming auto-advance
     resumeTimeoutRef.current = setTimeout(() => {
       setIsPaused(false);
     }, 1000);
   };
 
-  // Zero-offers variant: render nothing
   if (!offers || offers.length === 0) {
     return null;
   }
 
-  // Calculate relative distance for coverflow effect
   const getDistance = (i: number) => {
     const length = offers.length;
     let diff = (i - currentIndex) % length;
 
-    // Adjust diff to handle circular wrapping correctly
     if (diff > Math.floor(length / 2)) {
       diff -= length;
     } else if (diff < -Math.floor(length / 2)) {
@@ -81,22 +76,11 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
   };
 
   return (
-    <section className="w-full bg-[#F8F5F1] py-12 sm:py-16 md:py-24 overflow-hidden border-b border-[#E8E2DA]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Section Header */}
-        <div className="flex items-center gap-3 mb-8 sm:mb-12">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#990000]/10 rounded-full flex items-center justify-center text-[#990000]">
-            <Tag className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1C1C1C]">
-            Active Offers
-          </h2>
-        </div>
-
-        {/* Coverflow Carousel Track */}
+    <section className="w-full bg-brand-cream/40 py-8 sm:py-12 border-b border-brand-border/40 overflow-hidden">
+      <div className="max-w-standard mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Coverflow Track */}
         <div
-          className="relative w-full h-[420px] sm:h-[460px] md:h-[500px] flex items-center justify-center"
+          className="relative w-full h-[310px] sm:h-[330px] flex items-center justify-center"
           onMouseEnter={handlePause}
           onMouseLeave={handleResume}
           onTouchStart={handlePause}
@@ -109,7 +93,7 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
                 type="button"
                 onClick={handlePrev}
                 aria-label="Previous offer"
-                className="absolute left-1 sm:left-2 md:left-4 z-40 p-2.5 sm:p-3 rounded-full bg-white/90 shadow-md border border-[#E8E2DA] text-[#1C1C1C] hover:bg-[#990000] hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#990000]"
+                className="absolute left-2 sm:left-6 md:left-12 z-40 p-2.5 sm:p-3 rounded-full bg-white/90 shadow-md border border-brand-borderLight text-brand-text hover:bg-brand-red hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-red"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
@@ -117,7 +101,7 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
                 type="button"
                 onClick={handleNext}
                 aria-label="Next offer"
-                className="absolute right-1 sm:right-2 md:right-4 z-40 p-3 rounded-full bg-white/90 shadow-md border border-[#E8E2DA] text-[#1C1C1C] hover:bg-[#990000] hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#990000]"
+                className="absolute right-2 sm:right-6 md:right-12 z-40 p-2.5 sm:p-3 rounded-full bg-white/90 shadow-md border border-brand-borderLight text-brand-text hover:bg-brand-red hover:text-white transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-red"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
@@ -132,64 +116,48 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
 
             let transformClass = "";
             if (isActive) {
-              transformClass = "translate-x-0 scale-100 opacity-100 z-30 shadow-2xl";
+              transformClass = "translate-x-0 scale-100 opacity-100 z-30 shadow-xl border-brand-border/80";
             } else if (isLeft) {
-              transformClass = "-translate-x-[102%] md:-translate-x-[85%] lg:-translate-x-[95%] scale-90 md:scale-75 opacity-70 hover:opacity-95 z-20 shadow-md cursor-pointer";
+              transformClass = "-translate-x-[75%] sm:-translate-x-[80%] scale-90 opacity-70 hover:opacity-90 z-20 shadow-md cursor-pointer";
             } else if (isRight) {
-              transformClass = "translate-x-[102%] md:translate-x-[85%] lg:translate-x-[95%] scale-90 md:scale-75 opacity-70 hover:opacity-95 z-20 shadow-md cursor-pointer";
+              transformClass = "translate-x-[75%] sm:translate-x-[80%] scale-90 opacity-70 hover:opacity-90 z-20 shadow-md cursor-pointer";
             } else {
               const sign = distance > 0 ? 1 : -1;
-              transformClass = `${sign > 0 ? 'translate-x-[180%]' : '-translate-x-[180%]'} scale-50 opacity-0 z-10 pointer-events-none`;
+              transformClass = `${sign > 0 ? 'translate-x-[160%]' : '-translate-x-[160%]'} scale-75 opacity-0 z-10 pointer-events-none`;
             }
 
             return (
               <div
                 key={offer.id}
                 onClick={() => !isActive && setCurrentIndex(index)}
-                className={`absolute w-full max-w-[300px] sm:max-w-md lg:max-w-[480px] h-[420px] sm:h-[460px] md:h-[500px] bg-white rounded-2xl border border-[#E8E2DA] flex flex-col transition-all duration-700 ease-in-out will-change-transform overflow-hidden ${transformClass}`}
+                className={`absolute w-full max-w-[290px] sm:max-w-[320px] h-[290px] sm:h-[310px] bg-white rounded-2xl border border-brand-borderLight flex flex-col transition-all duration-500 ease-in-out will-change-transform overflow-hidden ${transformClass}`}
               >
-                {/* Dynamic Image Container */}
-                <div
-                  className={`relative w-full shrink-0 transition-all duration-700 ease-in-out bg-[#EEE6DD] overflow-hidden ${
-                    isActive ? 'h-[190px] sm:h-[220px] md:h-[240px]' : 'h-[420px] sm:h-[460px] md:h-[500px]'
-                  }`}
-                >
-                  <Image
-                    src={offer.imageUrl || "/images/placeholder-image.png"}
-                    alt={offer.title}
+                {/* Image Banner */}
+                <div className="relative w-full h-[210px] sm:h-[225px] bg-brand-bgAlt shrink-0 overflow-hidden">
+                  <OptimizedImage
+                    src={offer.imageUrl}
+                    alt={offer.ctaLabel || "Promotional Offer"}
                     fill
+                    sizes="(max-width: 640px) 290px, 320px"
                     className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     priority={isActive}
                   />
-                  {/* Accent Badge */}
-                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#FECC00] text-[#1C1C1C] text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full uppercase tracking-wider">
-                    Limited Time
+                  {/* Badge */}
+                  <div className="absolute top-3 left-3 bg-brand-yellow text-brand-dark text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                    LIMITED TIME
                   </div>
                 </div>
 
-                {/* Content Block */}
-                <div
-                  className={`flex flex-col flex-grow transition-all duration-700 ease-in-out ${
-                    isActive ? 'max-h-[300px] opacity-100 p-4 sm:p-6' : 'max-h-0 opacity-0 px-4 sm:px-6 py-0 overflow-hidden'
-                  }`}
-                >
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1C1C1C] mb-2 sm:mb-3 line-clamp-2">
-                    {offer.title}
-                  </h3>
-                  <p className="text-[#6D6A66] mb-4 sm:mb-6 flex-grow line-clamp-3 text-xs sm:text-sm leading-relaxed">
-                    {offer.description}
-                  </p>
-
-                  {/* Prominent Clickable CTA */}
+                {/* Bottom CTA Block */}
+                <div className="flex flex-col flex-grow p-3.5 sm:p-4 justify-center bg-white">
                   <Link
                     href={offer.ctaLink}
-                    className={`mt-auto inline-flex items-center justify-center w-full min-h-[44px] bg-white border border-[#990000] text-[#990000] py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg font-semibold text-xs sm:text-sm hover:bg-[#990000] hover:text-white transition-colors duration-300 gap-2 group/btn ${
+                    className={`inline-flex items-center justify-center w-full min-h-[40px] bg-white border border-brand-red text-brand-red hover:bg-brand-red hover:text-white rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-200 gap-1.5 group/btn ${
                       isActive ? '' : 'pointer-events-none'
                     }`}
                     tabIndex={isActive ? 0 : -1}
                   >
-                    {offer.ctaLabel}
+                    {offer.ctaLabel || "Claim Offer"}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                   </Link>
                 </div>
@@ -200,17 +168,17 @@ export function ActiveOffers({ offers }: ActiveOffersProps) {
 
         {/* Interactive Dot Indicators */}
         {offers.length > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-8 md:mt-12 relative z-40">
+          <div className="flex items-center justify-center gap-2 mt-6 relative z-40">
             {offers.map((_, index) => (
               <button
                 key={index}
                 type="button"
                 onClick={() => setCurrentIndex(index)}
                 aria-label={`Go to offer ${index + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#990000] ${
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-red ${
                   index === currentIndex
-                    ? "w-8 bg-[#990000]"
-                    : "w-2.5 bg-[#990000]/30 hover:bg-[#990000]/60"
+                    ? "w-6 bg-brand-red"
+                    : "w-2 bg-brand-red/30 hover:bg-brand-red/60"
                 }`}
               />
             ))}

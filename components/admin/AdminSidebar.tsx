@@ -10,9 +10,11 @@ import {
   Award,
   HelpCircle,
   Image as ImageIcon,
+  Images,
   Calculator,
   Tag,
   Users,
+  Calendar,
   Settings,
 } from "lucide-react";
 import clsx from "clsx";
@@ -20,11 +22,12 @@ import clsx from "clsx";
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Projects", href: "/admin/projects", icon: FolderOpen },
-  { name: "Services", href: "/admin/services", icon: Layers },
   { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
   { name: "Certifications", href: "/admin/certifications", icon: Award },
   { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
+  { name: "Home Gallery", href: "/admin/home-gallery", icon: Images },
   { name: "Gallery", href: "/admin/gallery", icon: ImageIcon },
+  { name: "Events", href: "/admin/events", icon: Calendar },
   { name: "Pricing", href: "/admin/pricing", icon: Calculator },
   { name: "Offers", href: "/admin/offers", icon: Tag },
   { name: "Leads", href: "/admin/leads", icon: Users },
@@ -77,7 +80,7 @@ export function AdminSidebar({ mobileOpen = false, onClose }: AdminSidebarProps)
   return (
     <>
       {/* Desktop Sidebar (visible on lg screens and up) */}
-      <div className="w-64 bg-white border-r border-neutral-200 flex-col hidden lg:flex h-screen sticky top-0 shrink-0">
+      <div className="w-64 bg-white border-r border-neutral-200 flex-col hidden lg:flex h-full shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-neutral-200 shrink-0">
           <span className="text-xl font-bold text-neutral-900">REALSPACE</span>
           <span className="ml-2 text-xs font-semibold text-brand-red bg-red-50 px-2 py-0.5 rounded-full">

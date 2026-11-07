@@ -26,7 +26,7 @@ export default async function OfferDetailPage({ params }: Props) {
   }
 
   const initialData = {
-    title: offer.title,
+    title: offer.title || "",
     description: offer.description,
     imageUrl: offer.imageUrl || "",
     ctaLabel: offer.ctaLabel,

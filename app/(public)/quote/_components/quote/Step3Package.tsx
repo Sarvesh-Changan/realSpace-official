@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { QuoteState } from './types';
 import { Check } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -9,12 +9,50 @@ interface Props {
 }
 
 const PACKAGES = [
-  { id: 'Standard', label: 'Standard', desc: 'Essential materials, functional design, cost-effective finish.' },
-  { id: 'Premium', label: 'Premium', desc: 'High-quality materials, customized finishes, balanced luxury.' },
-  { id: 'Luxury', label: 'Luxury', desc: 'Premium imported materials, bespoke elements, high-end finish.' }
+  { id: 'Budget', label: 'Budget', desc: 'Essential materials, maximum cost-efficiency.' },
+  { id: 'Standard', label: 'Standard', desc: 'Essential materials, cost-effective finish.' },
+  { id: 'Premium', label: 'Premium', desc: 'Premium quality material, balance luxury.' },
+  { id: 'Luxury', label: 'Luxury', desc: 'High Quality materials, high-end finish.' }
 ];
 
 export default function Step3Package({ state, updateState }: Props) {
+  const isCommercialFlow =
+    (state as any).isCommercialFlow ?? (state.bhkType === 'Commercial & Others');
+
+  useEffect(() => {
+    if (isCommercialFlow) {
+      if (!state.packageTier) {
+        updateState({ packageTier: 'Commercial Custom' });
+      }
+    } else if (state.packageTier === 'Commercial Custom') {
+      updateState({ packageTier: '' });
+    }
+  }, [isCommercialFlow, state.packageTier, updateState]);
+
+  if (isCommercialFlow) {
+    return (
+      <div className="space-y-6 sm:space-y-8 max-w-2xl mx-auto">
+        <div className="text-center">
+          <h2 className="text-xl sm:text-2xl font-serif text-[#1C1C1C] mb-2">
+            Material & Finish Package
+          </h2>
+          <p className="text-sm sm:text-base text-[#6D6A66]">
+            Material and package selection will be discussed with our team based on your project scope.
+          </p>
+        </div>
+
+        <div className="p-6 sm:p-8 bg-[#F8F5F1] border border-[#E8E2DA] rounded-2xl text-center space-y-3">
+          <p className="text-sm sm:text-base text-[#1C1C1C] font-medium leading-relaxed">
+            Commercial and specialty spaces require customized material standards, durability specifications, and custom layouts tailored to your business operations.
+          </p>
+          <p className="text-xs sm:text-sm text-[#6D6A66]">
+            Click &ldquo;Next Step&rdquo; to submit your contact details and receive a customized consultation.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
@@ -22,7 +60,7 @@ export default function Step3Package({ state, updateState }: Props) {
         <p className="text-sm sm:text-base text-[#6D6A66]">Choose the level of finish for your space.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {PACKAGES.map((pkg) => {
           const isSelected = state.packageTier === pkg.id;
           return (
@@ -62,4 +100,5 @@ export default function Step3Package({ state, updateState }: Props) {
     </div>
   );
 }
+
 

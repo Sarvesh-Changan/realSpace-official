@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
-import { getVideoThumbnailUrl } from '@/lib/cloudinary';
+import { getCloudinaryUrl, getVideoThumbnailUrl } from '@/lib/cloudinary';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export interface GalleryTeaserItem {
     id: string;
@@ -29,7 +30,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
 
     if (!items || items.length === 0) return null;
 
-    const displayItems = items.slice(0, 8);
+    const displayItems = items.slice(0, 6);
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -38,15 +39,6 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
             transition: {
                 staggerChildren: shouldReduceMotion ? 0 : 0.06,
             },
-        },
-    };
-
-    const headerVariants: Variants = {
-        hidden: { opacity: 0, y: 16 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: shouldReduceMotion ? 0.01 : 0.4, ease: "easeOut" },
         },
     };
 
@@ -60,55 +52,61 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
     };
 
     return (
-        <section className="py-12 sm:py-16 md:py-24 bg-white">
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="relative isolate overflow-hidden border-y border-brand-dark/20 bg-brand-dark py-16 sm:py-20 md:py-24">
+            {/* TODO: home-3 is a temporary static gallery backdrop pending a dedicated gallery texture asset. */}
+            <Image
+                src="/images/home/home-3.png"
+                alt="Warm REALSPACE interior design setting"
+                fill
+                sizes="100vw"
+                className="-z-20 object-cover"
+            />
+            <div className="absolute inset-0 -z-10 bg-brand-dark/65" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-dark/45 via-brand-dark/55 to-brand-dark/80" />
+            <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
-                <motion.div
-                    className="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-50px" }}
-                    variants={headerVariants}
-                >
+                <div className="mb-8 flex flex-col justify-between gap-5 sm:mb-12 md:flex-row md:items-end">
                     <div className="max-w-2xl">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-neutral-900 mb-2 sm:mb-4">
-                            Explore Our Gallery
-                        </h2>
-                        <p className="text-sm sm:text-base md:text-lg text-neutral-600">
-                            A curated collection of our finest interior and exterior transformations.
-                        </p>
+                        <ScrollReveal direction="left" distance={24} className="text-eyebrow text-brand-yellow">
+                            A visual archive
+                        </ScrollReveal>
+                        <ScrollReveal direction="left" distance={28} delay={0.08}>
+                        <h2 className="mt-3 font-serif text-h2 font-semibold tracking-tight text-white">
+                                Explore Our Gallery
+                            </h2>
+                        </ScrollReveal>
                         {/* Kunku Red Accent Line */}
-                        <div className="w-16 sm:w-20 h-1 bg-[#990000] mt-4 sm:mt-6 rounded-full"></div>
+                        <div className="mt-5 h-px w-20 bg-brand-yellow"></div>
                     </div>
 
                     {/* Desktop CTA */}
-                    <div className="hidden md:block">
+                    <ScrollReveal direction="right" distance={24} delay={0.1} className="hidden md:block">
                         <Link
                             href="/gallery"
-                            className="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-[#990000] text-white font-medium rounded-md hover:bg-[#7a0000] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000] cursor-pointer text-sm sm:text-base"
+                            className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-white px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-yellow hover:border-brand-yellow hover:text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
                         >
                             View Full Gallery
-                            <ArrowRight className="ml-2 w-4 h-4" />
+                            <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
-                    </div>
-                </motion.div>
+                    </ScrollReveal>
+                </div>
 
                 {/* Gallery Grid */}
                 <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+                    className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
                     variants={containerVariants}
                 >
-                    {displayItems.map((item) => (
+                    {displayItems.map((item, index) => (
                         <motion.div key={item.id} variants={cardVariants}>
                             <Link
                                 href={`/gallery?category=${encodeURIComponent(item.category)}`}
-                                className="group relative aspect-[4/3] sm:aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#990000]"
+                                className="group relative block aspect-[4/3] overflow-hidden rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-red sm:aspect-[5/4]"
                             >
                                 <Image
-                                    src={getVideoThumbnailUrl(item.imageUrl)}
+                                    src={getCloudinaryUrl(getVideoThumbnailUrl(item.imageUrl), { width: 900, crop: 'fill' })}
                                     alt={item.title}
                                     fill
                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
@@ -123,14 +121,18 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                                 <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
                                     <div className="transform transition-all duration-300 ease-out motion-safe:translate-y-2 motion-safe:group-hover:translate-y-0">
                                         {/* Halad Yellow Category Badge */}
-                                        <span className="inline-block max-w-full truncate px-2.5 sm:px-3 py-0.5 sm:py-1 mb-1.5 sm:mb-3 text-[10px] sm:text-xs font-semibold tracking-wider uppercase bg-[#FECC00] text-neutral-900 rounded-sm shadow-sm">
-                                            {item.category}
-                                        </span>
+                                        <ScrollReveal direction={index % 3 === 0 ? "left" : index % 3 === 2 ? "right" : "up"} distance={16}>
+                                            <span className="mb-1.5 inline-block max-w-full truncate rounded-sm border border-brand-yellow bg-brand-yellow px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-dark shadow-sm sm:mb-3 sm:px-3 sm:py-1 sm:text-xs">
+                                                {item.category}
+                                            </span>
+                                        </ScrollReveal>
 
                                         {/* Title */}
-                                        <h3 className="text-base sm:text-xl font-medium text-white leading-snug opacity-95 transition-opacity duration-300 group-hover:opacity-100 line-clamp-2">
-                                            {item.title}
-                                        </h3>
+                                        <ScrollReveal direction={index % 3 === 0 ? "left" : index % 3 === 2 ? "right" : "up"} distance={18} delay={0.06}>
+                                            <h3 className="line-clamp-2 text-base font-serif font-medium leading-snug text-white opacity-95 transition-opacity duration-300 group-hover:opacity-100 sm:text-xl">
+                                                {item.title}
+                                            </h3>
+                                        </ScrollReveal>
                                     </div>
                                 </div>
                             </Link>
@@ -142,7 +144,7 @@ export function GalleryTeaser({ items = [] }: GalleryTeaserProps) {
                 <div className="mt-8 flex justify-center md:hidden">
                     <Link
                         href="/gallery"
-                        className="inline-flex items-center justify-center w-full min-h-[44px] px-6 py-3 bg-[#990000] text-white font-medium rounded-md hover:bg-[#7a0000] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000] text-sm cursor-pointer"
+                        className="inline-flex min-h-[44px] w-full items-center justify-center rounded-md border border-white px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-brand-yellow hover:bg-brand-yellow hover:text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-yellow"
                     >
                         View Full Gallery
                         <ArrowRight className="ml-2 w-4 h-4" />

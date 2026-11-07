@@ -9,18 +9,128 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  /* REALSPACE Brand Colors (Kunku Red & Halad Yellow) */
+  --font-serif: var(--font-serif), "Josefin Sans", sans-serif;
+  --font-sans: var(--font-sans), "Lato", sans-serif;
+  /* REALSPACE Brand & Extended Palette */
   --color-brand-red: #990000;
+  --color-brand-redHover: #7A0000;
+  --color-brand-redMuted: #F5E6E6;
   --color-brand-yellow: #FECC00;
+  --color-brand-yellowMuted: #FFF9E0;
   --color-brand-bg: #FFFFFF;
   --color-brand-bgAlt: #F7F7F5;
+  --color-brand-warmWhite: #FDFCFA;
+  --color-brand-cream: #F9F6F0;
   --color-brand-text: #1F1F1F;
+  --color-brand-dark: #141414;
+  --color-brand-muted: #666666;
+  --color-brand-lightMuted: #8E8E8E;
+  --color-brand-border: #E5E5E0;
+  --color-brand-borderLight: #F0F0EC;
+
+  /* Extended Spacing Tokens */
+  --spacing-section-sm: 3rem;
+  --spacing-section-md: 5rem;
+  --spacing-section-lg: 7.5rem;
+
+  /* Container Width Tokens */
+  --container-narrow: 48rem;
+  --container-standard: 80rem;
+  --container-wide: 90rem;
+  --container-fullBleed: 100rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Lato", sans-serif;
+}
+
+input, textarea, button, select {
+  font-family: var(--font-sans), "Lato", sans-serif;
+}
+
+/* Custom Kunku Red (#990000) & Halad Yellow (#FECC00) Button Classes */
+.btn-kunku {
+  background-color: #990000 !important;
+  color: #ffffff !important;
+  border: 2px solid #990000 !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-kunku:hover {
+  background-color: #FECC00 !important;
+  color: #990000 !important;
+  border-color: #FECC00 !important;
+  transform: scale(1.03) !important;
+  box-shadow: 0 10px 25px rgba(254, 204, 0, 0.35) !important;
+}
+
+.btn-halad {
+  background-color: #FECC00 !important;
+  color: #990000 !important;
+  border: 2px solid #FECC00 !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-halad:hover {
+  background-color: #990000 !important;
+  color: #ffffff !important;
+  border-color: #990000 !important;
+  transform: scale(1.03) !important;
+  box-shadow: 0 10px 25px rgba(153, 0, 0, 0.45) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif), "Josefin Sans", sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-serif), "Josefin Sans", sans-serif !important;
+}
+
+.font-sans {
+  font-family: var(--font-sans), "Lato", sans-serif !important;
+}
+
+/* Phase 2 Type-Scale Token System */
+@layer utilities {
+  .text-display {
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .text-h1 {
+    font-size: clamp(2rem, 4vw + 0.5rem, 3.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+  .text-h2 {
+    font-size: clamp(1.5rem, 3vw + 0.5rem, 2.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .text-h3 {
+    font-size: clamp(1.25rem, 2vw + 0.5rem, 1.75rem);
+    line-height: 1.3;
+  }
+  .text-body-large {
+    font-size: clamp(1rem, 1.2vw + 0.5rem, 1.25rem);
+    line-height: 1.6;
+  }
+  .text-body {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  .text-small {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  .text-eyebrow {
+    font-size: 0.75rem;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
 }

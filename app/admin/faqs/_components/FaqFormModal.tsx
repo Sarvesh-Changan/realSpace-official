@@ -12,6 +12,7 @@ export interface FaqItemData {
     answer: string;
     sortOrder: number;
     isPublished: boolean;
+    isFeatured?: boolean;
 }
 
 interface FaqFormModalProps {
@@ -45,6 +46,7 @@ export function FaqFormModal({
             answer: "",
             sortOrder: 0,
             isPublished: true,
+            isFeatured: false,
         },
     });
 
@@ -56,6 +58,7 @@ export function FaqFormModal({
                     answer: initialData.answer,
                     sortOrder: initialData.sortOrder,
                     isPublished: initialData.isPublished,
+                    isFeatured: initialData.isFeatured ?? false,
                 });
             } else {
                 reset({
@@ -63,6 +66,7 @@ export function FaqFormModal({
                     answer: "",
                     sortOrder: 0,
                     isPublished: true,
+                    isFeatured: false,
                 });
             }
         }
@@ -79,6 +83,7 @@ export function FaqFormModal({
                 answer: data.answer as string,
                 sortOrder: Number(data.sortOrder) || 0,
                 isPublished: Boolean(data.isPublished),
+                isFeatured: Boolean(data.isFeatured),
             });
         } catch (err: unknown) {
             console.error("Form submit error:", err);
@@ -155,31 +160,32 @@ export function FaqFormModal({
                         )}
                     </div>
 
-                    {/* Sort Order & Publish Switch Row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-neutral-100">
-                        <div>
-                            <label htmlFor="faq-sortOrder" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">
-                                Sort Order
-                            </label>
-                            <input
-                                id="faq-sortOrder"
-                                type="number"
-                                {...register("sortOrder")}
-                                className="w-full px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 font-mono"
-                            />
-                            <p className="mt-1 text-[11px] text-neutral-400">
-                                Lower numbers appear first on the FAQ page.
+                    {/* Sort Order Field */}
+                    <div className="pt-2 border-t border-neutral-100">
+                        <label htmlFor="faq-sortOrder" className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">
+                            Sort Order
+                        </label>
+                        <input
+                            id="faq-sortOrder"
+                            type="number"
+                            {...register("sortOrder")}
+                            className="w-full sm:w-1/2 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm border border-neutral-300 rounded-md shadow-xs focus:ring-1 focus:ring-brand-red focus:border-brand-red text-neutral-900 font-mono"
+                        />
+                        <p className="mt-1 text-[11px] text-neutral-400">
+                            Lower numbers appear first on the FAQ lists.
+                        </p>
+                        {errors.sortOrder && (
+                            <p className="mt-1 text-xs text-brand-red font-medium">
+                                {errors.sortOrder.message}
                             </p>
-                            {errors.sortOrder && (
-                                <p className="mt-1 text-xs text-brand-red font-medium">
-                                    {errors.sortOrder.message}
-                                </p>
-                            )}
-                        </div>
+                        )}
+                    </div>
 
-                        <div className="flex flex-col justify-center min-h-[44px]">
+                    {/* Options Row: Published & Featured */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-neutral-100">
+                        <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200/80">
                             <span className="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-2">
-                                Visibility Status
+                                Website Visibility
                             </span>
                             <label className="inline-flex items-center gap-3 cursor-pointer min-h-[38px]">
                                 <input
@@ -189,9 +195,28 @@ export function FaqFormModal({
                                 />
                                 <div className="relative w-10 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
                                 <span className="text-xs sm:text-sm font-medium text-neutral-800">
-                                    Published on website
+                                    Published on Website
                                 </span>
                             </label>
+                            <p className="text-[11px] text-neutral-500 mt-1">Controls visibility on main /faq page.</p>
+                        </div>
+
+                        <div className="p-3 bg-amber-50/50 rounded-lg border border-amber-200/60">
+                            <span className="block text-xs font-semibold text-amber-900 uppercase tracking-wider mb-2">
+                                Home Page Display
+                            </span>
+                            <label className="inline-flex items-center gap-3 cursor-pointer min-h-[38px]">
+                                <input
+                                    type="checkbox"
+                                    {...register("isFeatured")}
+                                    className="sr-only peer"
+                                />
+                                <div className="relative w-10 h-5 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                                <span className="text-xs sm:text-sm font-medium text-neutral-800">
+                                    Featured on Home Page
+                                </span>
+                            </label>
+                            <p className="text-[11px] text-neutral-500 mt-1">Shows in compact Home page FAQ preview (requires Published status).</p>
                         </div>
                     </div>
 

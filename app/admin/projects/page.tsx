@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, FolderOpen } from "lucide-react";
+import { Plus, FolderOpen, Play } from "lucide-react";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { ProjectToggles, ProjectActions } from "./_components/ProjectTableClient";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 export default async function AdminProjectsPage() {
   const session = await auth();
@@ -75,18 +76,53 @@ export default async function AdminProjectsPage() {
                   const coverImage =
                     project.images.find((img) => img.isCoverImage) || project.images[0];
 
+                  const isVideo =
+                    coverImage?.mediaType === "VIDEO" ||
+                    Boolean(coverImage?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+                    Boolean(coverImage?.url?.includes("/video/upload/"));
+
+                  const coverThumbUrl = isVideo
+                    ? coverImage?.thumbnailUrl || (coverImage?.url ? getVideoThumbnailUrl(coverImage.url, "VIDEO") : null)
+                    : coverImage?.url;
+
+                  const hasValidThumb = coverThumbUrl && !coverThumbUrl.match(/\.(mp4|mov|webm|ogv|m4v)/i);
+
                   return (
                     <tr key={project.id} className="hover:bg-neutral-50/50 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden flex-shrink-0">
-                            {coverImage?.url ? (
-                              <Image
-                                src={coverImage.url}
-                                alt={coverImage.altText || project.title}
-                                fill
-                                className="object-cover"
-                              />
+                            {coverImage ? (
+                              isVideo ? (
+                                hasValidThumb ? (
+                                  <div className="relative w-full h-full">
+                                    <Image
+                                      src={coverThumbUrl}
+                                      alt={coverImage.altText || project.title}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-black/35 flex items-center justify-center">
+                                      <div className="w-5 h-5 rounded-full bg-brand-red text-white flex items-center justify-center shadow">
+                                        <Play className="w-2.5 h-2.5 fill-current ml-0.5" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-white">
+                                    <div className="w-6 h-6 rounded-full bg-brand-red/90 flex items-center justify-center shadow">
+                                      <Play className="w-3 h-3 fill-current ml-0.5 text-white" />
+                                    </div>
+                                  </div>
+                                )
+                              ) : (
+                                <Image
+                                  src={coverImage.url}
+                                  alt={coverImage.altText || project.title}
+                                  fill
+                                  className="object-cover"
+                                />
+                              )
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-xs text-neutral-400">
                                 No img

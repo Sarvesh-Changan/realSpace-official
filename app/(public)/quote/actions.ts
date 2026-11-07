@@ -4,36 +4,41 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { headers } from 'next/headers';
-import { LeadSource, LeadStatus } from '@prisma/client';
+import { LeadSource, LeadStatus, PricingTier } from '@prisma/client';
 import { sendLeadNotification } from '@/lib/email';
 
 const ROOM_MAP = [
   { key: 'kitchens', groupKeys: ['kitchen'], fallbackLabel: 'Kitchens' },
-  { key: 'livingRooms', groupKeys: ['hall', 'living_room'], fallbackLabel: 'Living Rooms / Halls' },
+  { key: 'livingRooms', groupKeys: ['hall', 'living_room'], fallbackLabel: 'Living Rooms' },
   { key: 'bedrooms', groupKeys: ['bedroom'], fallbackLabel: 'Bedrooms' },
   { key: 'bathrooms', groupKeys: ['bathroom'], fallbackLabel: 'Bathrooms' },
 ];
 
+const COMPONENT_MAPPING = [
+  { roomKey: 'kitchens', componentKey: 'kitchen', singular: 'Kitchen', plural: 'Kitchens' },
+  { roomKey: 'livingRooms', componentKey: 'living_room', singular: 'Living Room', plural: 'Living Rooms' },
+  { roomKey: 'bedrooms', componentKey: 'bedroom', singular: 'Bedroom', plural: 'Bedrooms' },
+  { roomKey: 'bathrooms', componentKey: 'bathroom', singular: 'Bathroom', plural: 'Bathrooms' },
+];
+
 export async function getActiveRoomTypesAction() {
   try {
-    const activePricingOptions = await prisma.pricingOption.findMany({
-      where: {
-        isActive: true,
-        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom'] },
-      },
-      orderBy: { sortOrder: 'asc' },
-    });
+    const activeComponentPricings = prisma.componentPricing
+      ? await prisma.componentPricing.findMany({
+          where: { isActive: true },
+          select: { componentKey: true },
+        })
+      : [];
+
+    const activeKeys = new Set(activeComponentPricings.map((cp) => cp.componentKey));
 
     const activeRoomTypes = ROOM_MAP.filter((roomDef) =>
-      activePricingOptions.some((opt: { groupKey: string }) => roomDef.groupKeys.includes(opt.groupKey))
-    ).map((roomDef) => {
-      const matchingOpt = activePricingOptions.find((opt: { groupKey: string; label: string | null }) => roomDef.groupKeys.includes(opt.groupKey));
-      return {
-        key: roomDef.key,
-        groupKeys: roomDef.groupKeys,
-        label: matchingOpt?.label || roomDef.fallbackLabel,
-      };
-    });
+      roomDef.groupKeys.some((gk) => activeKeys.has(gk))
+    ).map((roomDef) => ({
+      key: roomDef.key,
+      groupKeys: roomDef.groupKeys,
+      label: roomDef.fallbackLabel,
+    }));
 
     return { success: true, activeRoomTypes };
   } catch (error) {
@@ -44,26 +49,22 @@ export async function getActiveRoomTypesAction() {
 
 export async function getBhkRoomDefaultsAction(bhkLabel: string) {
   try {
-    const activePricingOptions = await prisma.pricingOption.findMany({
-      where: {
-        isActive: true,
-        groupKey: { in: ['kitchen', 'hall', 'living_room', 'bedroom', 'bathroom'] },
-      },
-      orderBy: { sortOrder: 'asc' },
-    });
+    const activeComponentPricings = prisma.componentPricing
+      ? await prisma.componentPricing.findMany({
+          where: { isActive: true },
+          select: { componentKey: true },
+        })
+      : [];
 
-    const activeGroupKeys = new Set(activePricingOptions.map((o: { groupKey: string }) => o.groupKey));
+    const activeKeys = new Set(activeComponentPricings.map((cp) => cp.componentKey));
 
     const activeRoomTypes = ROOM_MAP.filter((roomDef) =>
-      activePricingOptions.some((opt: { groupKey: string }) => roomDef.groupKeys.includes(opt.groupKey))
-    ).map((roomDef) => {
-      const matchingOpt = activePricingOptions.find((opt: { groupKey: string; label: string | null }) => roomDef.groupKeys.includes(opt.groupKey));
-      return {
-        key: roomDef.key,
-        groupKeys: roomDef.groupKeys,
-        label: matchingOpt?.label || roomDef.fallbackLabel,
-      };
-    });
+      roomDef.groupKeys.some((gk) => activeKeys.has(gk))
+    ).map((roomDef) => ({
+      key: roomDef.key,
+      groupKeys: roomDef.groupKeys,
+      label: roomDef.fallbackLabel,
+    }));
 
     if (!bhkLabel || bhkLabel === 'Commercial & Others') {
       return { success: true, activeRoomTypes, defaults: [] };
@@ -81,7 +82,9 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
       where: { bhkOptionId: bhkOpt.id },
     });
 
-    const filteredDefaults = defaults.filter((d: { roomGroupKey: string }) => activeGroupKeys.has(d.roomGroupKey));
+    const filteredDefaults = defaults.filter((d: { roomGroupKey: string }) =>
+      activeKeys.has(d.roomGroupKey) || (d.roomGroupKey === 'hall' && activeKeys.has('living_room'))
+    );
 
     return {
       success: true,
@@ -102,7 +105,12 @@ export async function getBhkRoomDefaultsAction(bhkLabel: string) {
 
 const quoteSelectionSchema = z.object({
   bhkType: z.string().min(1, 'BHK type is required'),
-  rooms: z.record(z.string(), z.number().min(0)),
+  isCommercialFlow: z.boolean().optional(),
+  businessType: z.string().optional(),
+  approxAreaSqft: z.number().optional(),
+  description: z.string().optional().or(z.literal('')),
+  budgetRangeLabel: z.string().optional().or(z.literal('')),
+  rooms: z.record(z.string(), z.number().min(0)).optional().default({}),
   spaceDescription: z.string().optional().or(z.literal('')),
   requirements: z.object({
     interior: z.boolean(),
@@ -126,8 +134,9 @@ type QuoteActionResult = {
   success: boolean;
   error?: string;
   data?: {
-    estimatedBudgetLow: number;
-    estimatedBudgetHigh: number;
+    estimatedBudget: number | null;
+    estimatedBudgetLow: number | null;
+    estimatedBudgetHigh: number | null;
     breakdown: Array<{ label: string; amount: number }>;
     leadId?: string;
   };
@@ -167,89 +176,15 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       return {
         success: true,
         data: {
-          estimatedBudgetLow: 0,
-          estimatedBudgetHigh: 0,
+          estimatedBudget: null,
+          estimatedBudgetLow: null,
+          estimatedBudgetHigh: null,
           breakdown: [],
         },
       };
     }
 
-    // 4. Query PricingOption table for all active options by groupKey
-    const activeOptions = await prisma.pricingOption.findMany({
-      where: { isActive: true },
-    });
-
-    // 5. Calculate estimated price range (low/high) & breakdown
-    let totalBase = 0;
-    const breakdown: Array<{ label: string; amount: number }> = [];
-
-    // (a) BHK Type
-    if (input.bhkType) {
-      const bhkOpt = activeOptions.find(
-        (o: { groupKey: string; label: string }) => o.groupKey === 'bhk_type' && o.label === input.bhkType
-      );
-      if (bhkOpt) {
-        const base = Number(bhkOpt.basePrice);
-        const perUnit = bhkOpt.perUnitPrice ? Number(bhkOpt.perUnitPrice) : 0;
-        const cost = base + perUnit;
-        if (cost > 0) {
-          totalBase += cost;
-          breakdown.push({ label: `${bhkOpt.label} Base`, amount: cost });
-        }
-      }
-    }
-
-    // (b) Room Counts
-    for (const roomCfg of ROOM_MAP) {
-      const qty = input.rooms[roomCfg.key] || 0;
-      if (qty > 0) {
-        const opt = activeOptions.find((o: { groupKey: string }) => roomCfg.groupKeys.includes(o.groupKey));
-        if (opt) {
-          const base = Number(opt.basePrice);
-          const perUnit = opt.perUnitPrice ? Number(opt.perUnitPrice) : base;
-          const cost = opt.perUnitPrice ? base + perUnit * qty : base * qty;
-          totalBase += cost;
-          breakdown.push({
-            label: `${qty}x ${opt.label || roomCfg.fallbackLabel}`,
-            amount: cost,
-          });
-        }
-      }
-    }
-
-    // (c) Material Package Tier
-    if (input.packageTier) {
-      const pkgOpt = activeOptions.find(
-        (o: { groupKey: string; label: string }) => o.groupKey === 'material_tier' && o.label === input.packageTier
-      );
-      if (pkgOpt) {
-        const base = Number(pkgOpt.basePrice);
-        const perUnit = pkgOpt.perUnitPrice ? Number(pkgOpt.perUnitPrice) : 0;
-        const cost = base + perUnit;
-        totalBase += cost;
-        breakdown.push({ label: `${pkgOpt.label} Material Package`, amount: cost });
-      }
-    }
-
-    // (d) Exterior Service
-    if (input.requirements.exterior) {
-      const extOpt = activeOptions.find(
-        (o: { groupKey: string }) => o.groupKey === 'exterior_service' || o.groupKey === 'exterior'
-      );
-      if (extOpt) {
-        const base = Number(extOpt.basePrice);
-        const perUnit = extOpt.perUnitPrice ? Number(extOpt.perUnitPrice) : 0;
-        const cost = base + perUnit;
-        totalBase += cost;
-        breakdown.push({ label: extOpt.label || 'Exterior Architecture Base', amount: cost });
-      }
-    }
-
-    // Calculate low and high range estimates
-    const estimatedBudgetLow = Math.round(totalBase * 0.9);
-    const estimatedBudgetHigh = Math.round(totalBase * 1.15);
-
-    // 6. Verify Email OTP token before lead creation
+    // 4. Verify Email OTP token before lead creation (enforced for all flows)
     const submittedEmail = input.contact.email?.trim().toLowerCase();
     const verifiedToken = input.contact.verifiedToken?.trim();
 
@@ -279,6 +214,116 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       };
     }
 
+    // 5. Check if payload represents a Commercial & Others flow
+    const isCommercial =
+      input.isCommercialFlow === true || input.bhkType === 'Commercial & Others';
+
+    if (isCommercial) {
+      const spaceDesc = input.description || input.spaceDescription || null;
+      const requirementsText = [
+        spaceDesc ? `Space Details: ${spaceDesc}` : null,
+        input.contact.requirements ? `Notes: ${input.contact.requirements}` : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const selections = {
+        flowType: 'commercial',
+        bhkType: input.bhkType,
+        businessType: input.businessType || null,
+        approxAreaSqft: input.approxAreaSqft || null,
+        description: spaceDesc,
+        budgetRangeLabel: input.budgetRangeLabel || null,
+      };
+
+      const [lead] = await prisma.$transaction([
+        prisma.lead.create({
+          data: {
+            name: input.contact.name,
+            phone: input.contact.phone,
+            email: submittedEmail,
+            location: input.contact.location && input.contact.location.trim() !== '' ? input.contact.location : null,
+            requirements: requirementsText || null,
+            source: LeadSource.QUOTE_CALCULATOR,
+            selections,
+            estimatedBudget: null,
+            estimatedBudgetLow: null,
+            estimatedBudgetHigh: null,
+            status: LeadStatus.NEW,
+          },
+        }),
+        prisma.emailOtp.update({
+          where: { id: otpRecord.id },
+          data: { used: true },
+        }),
+      ]);
+
+      try {
+        await sendLeadNotification(lead);
+      } catch (emailErr) {
+        console.error('Failed to send lead notification email for commercial quote submission:', emailErr);
+      }
+
+      return {
+        success: true,
+        data: {
+          estimatedBudget: null,
+          estimatedBudgetLow: null,
+          estimatedBudgetHigh: null,
+          breakdown: [],
+          leadId: lead.id,
+        },
+      };
+    }
+
+    // 6. Residential Flow: Per-component per-tier pricing via ComponentPricing
+    const rawTier = (input.packageTier || 'STANDARD').trim().toUpperCase();
+    const selectedTier: PricingTier =
+      rawTier.includes('BUDGET') ? 'BUDGET' :
+      rawTier.includes('PREMIUM') ? 'PREMIUM' :
+      rawTier.includes('LUXURY') ? 'LUXURY' : 'STANDARD';
+
+    const componentPricings = prisma.componentPricing
+      ? await prisma.componentPricing.findMany({
+          where: {
+            tier: selectedTier,
+            isActive: true,
+          },
+        })
+      : [];
+
+    let totalBase = 0;
+    const breakdown: Array<{ label: string; amount: number }> = [];
+
+    const tierDisplayLabel =
+      selectedTier === 'BUDGET' ? 'Budget' :
+      selectedTier === 'PREMIUM' ? 'Premium' :
+      selectedTier === 'LUXURY' ? 'Luxury' : 'Standard';
+
+    // Calculate cost for each of the 4 room components
+    for (const comp of COMPONENT_MAPPING) {
+      const qty = input.rooms[comp.roomKey] || 0;
+      if (qty > 0) {
+        const pricing = componentPricings.find((p) => p.componentKey === comp.componentKey);
+        if (pricing) {
+          const unitPrice = Number(pricing.pricePerUnit);
+          const lineTotal = qty * unitPrice;
+          totalBase += lineTotal;
+
+          const labelName = qty === 1 ? comp.singular : comp.plural;
+          breakdown.push({
+            label: `${qty} ${labelName} (${tierDisplayLabel})`,
+            amount: lineTotal,
+          });
+        }
+      }
+    }
+
+    // Calculate exact price as well as low/high range estimates for historical backwards compatibility
+    const estimatedBudget = Math.round(totalBase);
+    const estimatedBudgetLow = Math.round(totalBase * 0.9);
+    const estimatedBudgetHigh = Math.round(totalBase * 1.15);
+
     const requirementsText = [
       input.spaceDescription ? `Space Details: ${input.spaceDescription}` : null,
       input.contact.requirements ? `Notes: ${input.contact.requirements}` : null,
@@ -286,7 +331,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       .filter(Boolean)
       .join('\n');
 
-    // 7. Create Lead row and mark EmailOtp token as used in a single database transaction
+    // Create Lead row and mark EmailOtp token as used in a single database transaction
     const [lead] = await prisma.$transaction([
       prisma.lead.create({
         data: {
@@ -304,6 +349,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
             packageTier: input.packageTier,
             breakdown,
           },
+          estimatedBudget,
           estimatedBudgetLow,
           estimatedBudgetHigh,
           status: LeadStatus.NEW,
@@ -315,7 +361,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
       }),
     ]);
 
-    // 8. Send lead notification email to admin (non-blocking)
+    // Send lead notification email to admin (non-blocking)
     try {
       await sendLeadNotification(lead);
     } catch (emailErr) {
@@ -325,6 +371,7 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     return {
       success: true,
       data: {
+        estimatedBudget,
         estimatedBudgetLow,
         estimatedBudgetHigh,
         breakdown,
@@ -339,3 +386,4 @@ export async function submitQuoteAction(rawInput: unknown): Promise<QuoteActionR
     };
   }
 }
+

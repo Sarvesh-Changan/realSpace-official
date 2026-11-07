@@ -86,7 +86,7 @@ export default function QuoteCalculator() {
         return;
       }
       if (res.data) {
-        setCalculationResult(res.data);
+        setCalculationResult(res.data as any);
       }
       setIsSubmitted(true);
     } catch (err) {
@@ -117,6 +117,14 @@ export default function QuoteCalculator() {
   };
 
   if (isSubmitted) {
+    const isCommercial =
+      (state as any).isCommercialFlow ?? (state.bhkType === 'Commercial & Others');
+
+    const hasValidEstimate =
+      (calculationResult?.estimatedBudget != null ||
+        (calculationResult?.estimatedBudgetLow != null && calculationResult?.estimatedBudgetHigh != null)) &&
+      !isCommercial;
+
     return (
       <div className="w-full max-w-4xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 text-center border border-[#E8E2DA] shadow-sm">
         <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#C8A96A]/10 text-[#C8A96A] rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
@@ -126,16 +134,20 @@ export default function QuoteCalculator() {
         </div>
         <h2 className="text-2xl sm:text-3xl font-serif text-[#1C1C1C] mb-2 sm:mb-3">Quote Request Submitted</h2>
         <p className="text-sm sm:text-base text-[#6D6A66] max-w-lg mx-auto leading-relaxed mb-6 sm:mb-8">
-          Thank you, <span className="font-semibold text-[#1C1C1C]">{state.contact.name || 'there'}</span>. 
-          Here is your real-time calculated estimate range based on active database pricing.
+          Thank you, <span className="font-semibold text-[#1C1C1C]">{state.contact.name || 'there'}</span>.
+          {hasValidEstimate
+            ? 'Here is your real-time calculated estimate based on active database pricing.'
+            : 'Our team will review your requirements and follow up with a detailed, custom quote within 24–48 hours.'}
         </p>
 
-        {calculationResult && (
+        {hasValidEstimate && calculationResult ? (
           <div className="max-w-2xl mx-auto bg-[#F8F5F1] p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-[#E8E2DA] text-left mb-6 sm:mb-8 space-y-4 sm:space-y-6">
             <div>
-              <div className="text-[#C8A96A] font-medium tracking-wider text-xs uppercase mb-1">Calculated Budget Range</div>
+              <div className="text-[#C8A96A] font-medium tracking-wider text-xs uppercase mb-1">Calculated Estimate</div>
               <div className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#1C1C1C]">
-                {formatCurrency(calculationResult.estimatedBudgetLow)} – {formatCurrency(calculationResult.estimatedBudgetHigh)}
+                {calculationResult.estimatedBudget != null
+                  ? formatCurrency(calculationResult.estimatedBudget)
+                  : `${formatCurrency(calculationResult.estimatedBudgetLow!)} – ${formatCurrency(calculationResult.estimatedBudgetHigh!)}`}
               </div>
             </div>
 
@@ -153,11 +165,47 @@ export default function QuoteCalculator() {
               </div>
             )}
           </div>
-        )}
+        ) : isCommercial ? (
+          <div className="max-w-2xl mx-auto bg-[#F8F5F1] p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-[#E8E2DA] text-left mb-6 sm:mb-8 space-y-3">
+            <h3 className="text-xs font-bold text-[#C8A96A] tracking-wider uppercase mb-2">Submitted Qualification Details</h3>
+            <div className="space-y-2 text-xs sm:text-sm text-[#1C1C1C]">
+              <div className="flex justify-between border-b border-[#E8E2DA] pb-2 gap-2">
+                <span className="text-[#6D6A66]">Property Type</span>
+                <span className="font-semibold text-right">{state.bhkType}</span>
+              </div>
+              {(state as any).businessType && (
+                <div className="flex justify-between border-b border-[#E8E2DA] pb-2 gap-2">
+                  <span className="text-[#6D6A66]">Business / Space Type</span>
+                  <span className="font-semibold text-right">{(state as any).businessType}</span>
+                </div>
+              )}
+              {(state as any).approxAreaSqft && (
+                <div className="flex justify-between border-b border-[#E8E2DA] pb-2 gap-2">
+                  <span className="text-[#6D6A66]">Approximate Area</span>
+                  <span className="font-semibold text-right">{(state as any).approxAreaSqft} sq ft</span>
+                </div>
+              )}
+              {(state as any).budgetRangeLabel && (
+                <div className="flex justify-between border-b border-[#E8E2DA] pb-2 gap-2">
+                  <span className="text-[#6D6A66]">Rough Budget Range</span>
+                  <span className="font-semibold text-right">{(state as any).budgetRangeLabel}</span>
+                </div>
+              )}
+              {(state.spaceDescription || (state as any).description) && (
+                <div className="pt-1">
+                  <span className="text-[#6D6A66] block mb-1">Description</span>
+                  <p className="font-medium text-[#1C1C1C] whitespace-pre-wrap">
+                    {state.spaceDescription || (state as any).description}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : null}
 
-        <p className="text-xs text-[#6D6A66] italic max-w-lg mx-auto">
-          * Our design team will review your selections and contact you at {state.contact.phone} shortly to discuss fine details and exact site measurements.
-        </p>
+        <h4 className="text-xs font-bold text-[#1C1C1C] uppercase tracking-wider">
+          Our Design Team will review your Selections & contact you shortly Or You can contact us on <i>9869211777</i> for more information & schedule site visit as per your convenience.
+        </h4>
       </div>
     );
   }
@@ -174,7 +222,7 @@ export default function QuoteCalculator() {
           </div>
           {/* Step Progress Bar Track */}
           <div className="w-full bg-[#E8E2DA] h-2 rounded-full overflow-hidden flex">
-            <div 
+            <div
               className="bg-[#C8A96A] h-full transition-all duration-300 rounded-full"
               style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
             />
@@ -186,18 +234,18 @@ export default function QuoteCalculator() {
           <div className="flex justify-between items-center gap-4 relative">
             {/* Connecting Line */}
             <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#E8E2DA] -z-10 -translate-y-1/2" />
-            
+
             {STEPS.map((label, index) => {
               const stepNumber = index + 1;
               const isActive = stepNumber === currentStep;
               const isPast = stepNumber < currentStep;
-              
+
               return (
                 <div key={label} className="flex flex-col items-center flex-1 z-10">
                   <div className={clsx(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors mb-3",
-                    isActive ? "bg-[#C8A96A] text-white ring-4 ring-[#C8A96A]/20" : 
-                    isPast ? "bg-[#1C1C1C] text-white" : "bg-[#F8F5F1] text-[#6D6A66] border border-[#E8E2DA]"
+                    isActive ? "bg-[#C8A96A] text-white ring-4 ring-[#C8A96A]/20" :
+                      isPast ? "bg-[#1C1C1C] text-white" : "bg-[#F8F5F1] text-[#6D6A66] border border-[#E8E2DA]"
                   )}>
                     {isPast ? (
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -250,9 +298,9 @@ export default function QuoteCalculator() {
               )}
               {currentStep === 3 && <Step3Package state={state} updateState={updateState} />}
               {currentStep === 4 && (
-                <Step4Quote 
-                  state={state} 
-                  updateState={updateState} 
+                <Step4Quote
+                  state={state}
+                  updateState={updateState}
                   onSubmit={handleSubmit}
                   isSubmitting={isSubmitting}
                   error={error}
@@ -276,7 +324,7 @@ export default function QuoteCalculator() {
             <ChevronLeft className="w-5 h-5" />
             Back
           </button>
-          
+
           {currentStep < 4 && (
             <button
               type="button"

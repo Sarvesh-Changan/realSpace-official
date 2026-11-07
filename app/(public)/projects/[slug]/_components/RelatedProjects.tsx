@@ -28,7 +28,6 @@ export function RelatedProjects({ projects }: { projects: RelatedProjectData[] }
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
-                unoptimized={!project.imageUrl?.includes("res.cloudinary.com")}
               />
               <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
                 <span className="bg-white/90 backdrop-blur-sm text-brand-text text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2.5 sm:px-3 py-1 rounded-full">

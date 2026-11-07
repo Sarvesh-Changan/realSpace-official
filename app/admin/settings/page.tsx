@@ -33,6 +33,9 @@ export default async function AdminSettingsPage() {
     facebook: socialLinks.facebook ?? "",
     youtube: socialLinks.youtube ?? "",
     linkedin: socialLinks.linkedin ?? "",
+    ownerPortraitUrl: settings?.ownerPortraitUrl ?? "",
+    ownerPortraitPublicId: settings?.ownerPortraitPublicId ?? "",
+    showOwnerPortrait: settings?.showOwnerPortrait ?? true,
   };
 
   return (

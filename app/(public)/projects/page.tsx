@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 import {
   ProjectFilterGrid,
   type ProjectCardData,
@@ -42,22 +43,37 @@ export default async function ProjectsPage() {
       ],
     });
 
-    formattedProjects = rawProjects.map((project) => ({
-      id: project.id,
-      title: project.title,
-      slug: project.slug,
-      designType: project.designType,
-      propertyType: project.propertyType,
-      category: project.category,
-      location: project.location,
-      description: project.description,
-      carpetAreaSqFt: project.carpetAreaSqFt,
-      completionYear: project.completionYear,
-      coverImageUrl:
-        project.images[0]?.url ||
-        "/images/placeholder-image.png",
-      altText: project.images[0]?.altText || project.title,
-    }));
+    formattedProjects = rawProjects.map((project) => {
+      const coverImage =
+        project.images.find((image) => image.isCoverImage) ||
+        project.images[0];
+
+      const isVideo =
+        coverImage?.mediaType === "VIDEO" ||
+        Boolean(coverImage?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+        Boolean(coverImage?.url?.includes("/video/upload/"));
+
+      const coverImageUrl = coverImage
+        ? isVideo
+          ? coverImage.thumbnailUrl || getVideoThumbnailUrl(coverImage.url, "VIDEO")
+          : coverImage.url
+        : "/images/placeholder-image.png";
+
+      return {
+        id: project.id,
+        title: project.title,
+        slug: project.slug,
+        designType: project.designType,
+        propertyType: project.propertyType,
+        category: project.category,
+        location: project.location,
+        description: project.description,
+        carpetAreaSqFt: project.carpetAreaSqFt,
+        completionYear: project.completionYear,
+        coverImageUrl,
+        altText: coverImage?.altText || project.title,
+      };
+    });
   } catch (error) {
     console.error("Error fetching projects from Prisma:", error);
     // Graceful fallback to empty array if query fails

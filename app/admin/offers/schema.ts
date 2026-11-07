@@ -4,7 +4,7 @@ const imagePathOrUrl = z
   .string()
   .refine(
     (val) => {
-      if (!val) return true;
+      if (!val || val.trim() === "") return true;
       if (val.startsWith("/")) return true;
       try {
         const parsed = new URL(val);
@@ -19,13 +19,14 @@ const imagePathOrUrl = z
   .nullable();
 
 export const offerSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  title: z.string().min(1, "Offer title is required"),
+  description: z.string().optional().nullable(),
   imageUrl: imagePathOrUrl,
   imagePublicId: z.string().optional().nullable(),
   ctaLabel: z.string().min(1, "CTA Label is required"),
   ctaLink: z.string().min(1, "CTA Link is required"),
   isActive: z.boolean().default(true),
+  showOnHome: z.boolean().default(false).optional().nullable(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
   sortOrder: z.coerce.number().int().default(0),

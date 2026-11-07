@@ -39,6 +39,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
       ctaLabel: initialData?.ctaLabel || "Claim Offer",
       ctaLink: initialData?.ctaLink || "/contact",
       isActive: initialData?.isActive ?? true,
+      showOnHome: initialData?.showOnHome ?? false,
       startDate: initialData?.startDate || "",
       endDate: initialData?.endDate || "",
       sortOrder: initialData?.sortOrder ?? 0,
@@ -47,9 +48,18 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
 
   const currentImageUrl = watch("imageUrl");
 
+  const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
   const handleDirectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setServerError(`Image "${file.name}" (${sizeMB}MB) exceeds the 100MB size limit.`);
+      e.target.value = "";
+      return;
+    }
 
     setIsUploading(true);
     setServerError(null);
@@ -141,6 +151,7 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
         {/* Title */}
         <div className="md:col-span-2">
           <label htmlFor="title" className="block text-sm font-medium text-neutral-900 mb-1">
@@ -151,24 +162,9 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
             type="text"
             {...register("title")}
             className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm"
-            placeholder="e.g., Free Modular Kitchen Consultation"
+            placeholder="e.g., Get 10% Off Your Next Order"
           />
           {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>}
-        </div>
-
-        {/* Description */}
-        <div className="md:col-span-2">
-          <label htmlFor="description" className="block text-sm font-medium text-neutral-900 mb-1">
-            Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="description"
-            rows={3}
-            {...register("description")}
-            className="block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-neutral-900 focus:border-brand-red focus:ring-1 focus:ring-brand-red focus:outline-none text-base sm:text-sm resize-y"
-            placeholder="Detailed description of the offer and its benefits..."
-          />
-          {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
         </div>
 
         {/* Image Upload / Preview Section */}
@@ -214,7 +210,9 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
                   className="sr-only"
                 />
               </label>
-
+              <span className="text-xs text-neutral-500">
+                (Optional) No image required for text-only offers or top announcement strips.
+              </span>
             </div>
           )}
 
@@ -296,20 +294,39 @@ export function OfferForm({ mode, offerId, initialData }: OfferFormProps) {
         </div>
         
         {/* Is Active Toggle */}
-        <div className="flex items-center pt-2 sm:pt-6 min-h-[44px]">
-          <div className="flex items-center h-5">
-            <input
-              id="isActive"
-              type="checkbox"
-              {...register("isActive")}
-              className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
-            />
+        <div className="flex flex-col sm:flex-row gap-6 pt-2 sm:pt-6">
+          <div className="flex items-center min-h-[44px]">
+            <div className="flex items-center h-5">
+              <input
+                id="isActive"
+                type="checkbox"
+                {...register("isActive")}
+                className="h-5 w-5 rounded border-neutral-300 text-brand-red focus:ring-brand-red cursor-pointer"
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label htmlFor="isActive" className="font-medium text-neutral-900 cursor-pointer">
+                Active Status
+              </label>
+              <p className="text-neutral-500 text-xs">If unchecked, this offer is hidden from all public sites.</p>
+            </div>
           </div>
-          <div className="ml-3 text-sm">
-            <label htmlFor="isActive" className="font-medium text-neutral-900 cursor-pointer">
-              Active Status
-            </label>
-            <p className="text-neutral-500 text-xs">If unchecked, this offer is hidden from the public site.</p>
+
+          <div className="flex items-center min-h-[44px]">
+            <div className="flex items-center h-5">
+              <input
+                id="showOnHome"
+                type="checkbox"
+                {...register("showOnHome")}
+                className="h-5 w-5 rounded border-neutral-300 text-amber-600 focus:ring-amber-600 cursor-pointer"
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label htmlFor="showOnHome" className="font-medium text-neutral-900 cursor-pointer">
+                Show on Home Page Strip
+              </label>
+              <p className="text-neutral-500 text-xs">If checked, featured on the top announcement strip on Home page.</p>
+            </div>
           </div>
         </div>
       </div>

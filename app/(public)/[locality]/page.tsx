@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 import { Hero } from "../_components/home/Hero";
 import { ActiveOffers, type OfferType } from "../_components/home/ActiveOffers";
 import { TrustStats } from "../_components/home/TrustStats";
-import { Positioning } from "../_components/home/Positioning";
 import { Projects, type ProjectType } from "../_components/home/Projects";
-import { Services } from "../_components/home/Services";
 import { GalleryTeaser, type GalleryTeaserItem } from "../_components/home/GalleryTeaser";
 import { Testimonials } from "../_components/home/Testimonials";
 import { FinalCta } from "../_components/home/FinalCta";
@@ -102,8 +101,8 @@ export default async function LocalityPage({
 
   let rawOffers: Array<{
     id: string;
-    title: string;
-    description: string;
+    title: string | null;
+    description: string | null;
     imageUrl: string | null;
     ctaLabel: string;
     ctaLink: string;
@@ -114,7 +113,7 @@ export default async function LocalityPage({
     title: string;
     location: string;
     category: string;
-    images: Array<{ url: string }>;
+    images: Array<{ url: string; isCoverImage: boolean; mediaType?: "IMAGE" | "VIDEO"; thumbnailUrl?: string | null }>;
   }> = [];
   let rawExteriorProjects: Array<{
     id: string;
@@ -122,13 +121,7 @@ export default async function LocalityPage({
     title: string;
     location: string;
     category: string;
-    images: Array<{ url: string }>;
-  }> = [];
-  let services: Array<{
-    id: string;
-    title: string;
-    description: string;
-    iconKey?: string | null;
+    images: Array<{ url: string; isCoverImage: boolean; mediaType?: "IMAGE" | "VIDEO"; thumbnailUrl?: string | null }>;
   }> = [];
   let testimonials: Array<{
     id: string;
@@ -153,7 +146,6 @@ export default async function LocalityPage({
       fetchedOffers,
       fetchedInterior,
       fetchedExterior,
-      fetchedServices,
       fetchedTestimonials,
       fetchedGalleryImages,
     ] = await Promise.all([
@@ -175,7 +167,10 @@ export default async function LocalityPage({
         },
         include: {
           images: {
-            orderBy: { sortOrder: "asc" },
+            orderBy: [
+              { isCoverImage: "desc" },
+              { sortOrder: "asc" },
+            ],
             take: 1,
           },
         },
@@ -190,17 +185,15 @@ export default async function LocalityPage({
         },
         include: {
           images: {
-            orderBy: { sortOrder: "asc" },
+            orderBy: [
+              { isCoverImage: "desc" },
+              { sortOrder: "asc" },
+            ],
             take: 1,
           },
         },
         orderBy: { sortOrder: "asc" },
         take: 3,
-      }),
-      prisma.service.findMany({
-        where: { isPublished: true },
-        orderBy: { sortOrder: "asc" },
-        take: 6,
       }),
       prisma.testimonial.findMany({
         where: { isPublished: true },
@@ -218,7 +211,6 @@ export default async function LocalityPage({
     rawOffers = fetchedOffers;
     rawInteriorProjects = fetchedInterior;
     rawExteriorProjects = fetchedExterior;
-    services = fetchedServices;
     testimonials = fetchedTestimonials;
     rawGalleryImages = fetchedGalleryImages;
   } catch (error) {
@@ -234,23 +226,51 @@ export default async function LocalityPage({
     ctaLink: o.ctaLink,
   }));
 
-  const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    category: formatCategory(p.category),
-    imageUrl: p.images[0]?.url || "/images/placeholder-image.png",
-  }));
+  const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => {
+    const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
+    const isVideo =
+      coverImage?.mediaType === "VIDEO" ||
+      Boolean(coverImage?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+      Boolean(coverImage?.url?.includes("/video/upload/"));
 
-  const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    category: formatCategory(p.category),
-    imageUrl: p.images[0]?.url || "/images/placeholder-image.png",
-  }));
+    const imageUrl = coverImage
+      ? isVideo
+        ? coverImage.thumbnailUrl || getVideoThumbnailUrl(coverImage.url, "VIDEO")
+        : coverImage.url
+      : "/images/placeholder-image.png";
+
+    return {
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      location: p.location,
+      category: formatCategory(p.category),
+      imageUrl,
+    };
+  });
+
+  const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => {
+    const coverImage = p.images.find((image) => image.isCoverImage) || p.images[0];
+    const isVideo =
+      coverImage?.mediaType === "VIDEO" ||
+      Boolean(coverImage?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+      Boolean(coverImage?.url?.includes("/video/upload/"));
+
+    const imageUrl = coverImage
+      ? isVideo
+        ? coverImage.thumbnailUrl || getVideoThumbnailUrl(coverImage.url, "VIDEO")
+        : coverImage.url
+      : "/images/placeholder-image.png";
+
+    return {
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      location: p.location,
+      category: formatCategory(p.category),
+      imageUrl,
+    };
+  });
 
   const galleryTeaserItems: GalleryTeaserItem[] = rawGalleryImages.map((img) => ({
     id: img.id,
@@ -267,7 +287,6 @@ export default async function LocalityPage({
       />
       <ActiveOffers offers={offers} />
       <TrustStats />
-      <Positioning />
       <Projects
         title={`Selected Interior Projects in ${locality.name}`}
         subtitle="Explore our curated portfolio of bespoke interior transformations."
@@ -280,7 +299,6 @@ export default async function LocalityPage({
         projects={exteriorProjects}
         viewAllLink="/projects?type=exterior"
       />
-      <Services services={services} />
       <GalleryTeaser items={galleryTeaserItems} />
       <Testimonials testimonials={testimonials} />
       <FinalCta />

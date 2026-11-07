@@ -24,16 +24,37 @@ export function getCloudinaryUrl(
 
   // If it's a full Cloudinary URL
   if (urlOrPublicId.includes("res.cloudinary.com")) {
-    if (urlOrPublicId.includes("/upload/f_auto") || urlOrPublicId.includes("/upload/q_auto")) {
-      return urlOrPublicId;
-    }
-    const transformParts = [`f_${format}`, `q_${quality}`];
-    if (crop) transformParts.push(`c_${crop}`);
-    if (width) transformParts.push(`w_${width}`);
-    if (height) transformParts.push(`h_${height}`);
-    const transformString = transformParts.join(",");
+    const uploadMarker = "/upload/";
+    const uploadIndex = urlOrPublicId.indexOf(uploadMarker);
 
-    return urlOrPublicId.replace("/upload/", `/upload/${transformString}/`);
+    if (uploadIndex !== -1) {
+      const prefix = urlOrPublicId.slice(0, uploadIndex + uploadMarker.length);
+      const uploadPath = urlOrPublicId.slice(uploadIndex + uploadMarker.length);
+      const pathSegments = uploadPath.split("/");
+      const existingTransform = pathSegments[0];
+      const hasExistingTransform =
+        existingTransform.includes(",") ||
+        /^(?:f_|q_|c_|w_|h_|so_|vc_|fl_|ar_|g_|e_|dpr_|t_)/.test(existingTransform);
+
+      // Preserve an already-complete URL when no additional sizing is requested.
+      if (hasExistingTransform && !width && !height) {
+        return urlOrPublicId;
+      }
+
+      const preservedTransforms = hasExistingTransform
+        ? existingTransform.split(",").filter(
+            (part) => !["f_", "q_", "c_", "w_", "h_"].some((prefix) => part.startsWith(prefix))
+          )
+        : [];
+      const transformParts = [`f_${format}`, `q_${quality}`];
+      if (crop) transformParts.push(`c_${crop}`);
+      if (width) transformParts.push(`w_${width}`);
+      if (height) transformParts.push(`h_${height}`);
+
+      const nextTransform = [...preservedTransforms, ...transformParts].join(",");
+      const remainingPath = hasExistingTransform ? pathSegments.slice(1).join("/") : uploadPath;
+      return `${prefix}${nextTransform}/${remainingPath}`;
+    }
   }
 
   // If it's a public_id (not starting with http/https)
@@ -94,4 +115,3 @@ export function getVideoThumbnailUrl(
 
   return url;
 }
-

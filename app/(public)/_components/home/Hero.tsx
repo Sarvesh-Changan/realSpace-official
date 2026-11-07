@@ -1,135 +1,138 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 import { useIdleAttention } from "@/hooks/useIdleAttention";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SocialBrandIcon, type SocialPlatform } from "@/components/ui/SocialBrandIcons";
 
 export interface HeroProps {
   heroHeadline?: string;
   heroSubhead?: string;
   ctaText?: string;
+  socialLinks?: {
+    instagram?: string | null;
+    facebook?: string | null;
+    youtube?: string | null;
+    linkedin?: string | null;
+    linkedinUrl?: string | null;
+  } | null;
 }
 
-function HeroImage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [canHover, setCanHover] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const shouldReduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const updateHoverCapability = () => setCanHover(mediaQuery.matches && shouldReduceMotion !== true);
-    updateHoverCapability();
-    mediaQuery.addEventListener("change", updateHoverCapability);
-
-    return () => mediaQuery.removeEventListener("change", updateHoverCapability);
-  }, [shouldReduceMotion]);
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!canHover || shouldReduceMotion) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    setOffset({ x: -x * 7, y: -y * 7 });
-  };
-
-  return (
-    <div
-      ref={containerRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={() => setOffset({ x: 0, y: 0 })}
-      className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-bgAlt shadow-lg"
-    >
-      <Image
-        src="/images/hero-living-room.png"
-        alt="Elegant REALSPACE living room interior"
-        fill
-        priority
-        sizes="(max-width: 1024px) 100vw, 42vw"
-        className="object-cover"
-        style={{
-          transform: `translate(${offset.x}px, ${offset.y}px) scale(${canHover ? 1.06 : 1})`,
-          transition: shouldReduceMotion ? "none" : "transform 450ms ease-out",
-        }}
-      />
-    </div>
-  );
-}
-
-export function Hero({ heroHeadline, heroSubhead, ctaText }: HeroProps) {
+export function Hero({ heroHeadline, heroSubhead, ctaText, socialLinks }: HeroProps) {
   const isIdle = useIdleAttention(5000);
+  const shouldReduceMotion = useReducedMotion();
   const headline = heroHeadline || "Your Space, Reimagined.";
   const subhead =
     heroSubhead ||
     "Interior and exterior design for Thane homes and offices that begins where your walls, beams, and budget actually are. Personal attention. Exceptional results.";
   const buttonCta = ctaText || "Get Free Quote";
+  const socialPlatforms = [
+    { name: "Instagram" as const, url: socialLinks?.instagram },
+    { name: "Facebook" as const, url: socialLinks?.facebook },
+    { name: "YouTube" as const, url: socialLinks?.youtube },
+    { name: "LinkedIn" as const, url: socialLinks?.linkedin || socialLinks?.linkedinUrl },
+  ].filter((platform) => Boolean(platform.url?.trim()));
 
   return (
-    <section className="relative overflow-hidden bg-brand-bg pt-16 pb-12 sm:pt-20 sm:pb-16 md:pt-28 md:pb-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8 items-center">
-          
-          {/* Left Column: Headline, Subheadline, CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-7 text-center lg:text-left space-y-4 sm:space-y-6"
-          >
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-brand-text leading-tight sm:leading-tight">
+    <section className="group relative isolate min-h-[700px] sm:min-h-[780px] overflow-hidden bg-brand-dark select-none">
+      {/* Background Image with smooth scale hover */}
+      <div className="absolute inset-0 -z-20">
+        <Image
+          src="/images/home/home-1.jpeg"
+          alt="A refined REALSPACE interior design project"
+          fill
+          priority
+          sizes="100vw"
+          quality={85}
+          className="object-cover object-center transition-transform duration-[1600ms] ease-out motion-safe:group-hover:scale-[1.03]"
+        />
+      </div>
+
+      {/* Scoped left-side dark gradient scrim behind text content column for 100% effortless legibility */}
+      <div
+        className="absolute inset-y-0 left-0 -z-10 w-full sm:w-[70%] lg:w-[55%] bg-gradient-to-r from-black/95 via-black/75 to-transparent pointer-events-none"
+        aria-hidden="true"
+      />
+
+      {/* Content Container */}
+      <div className="mx-auto flex min-h-[700px] sm:min-h-[780px] max-w-standard items-end px-5 pb-16 pt-32 sm:px-8 sm:pb-24 lg:px-12">
+        <div className="max-w-3xl text-white">
+          {/* Headline */}
+          <ScrollReveal direction="left" distance={36} delay={0.09}>
+            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08] [text-shadow:_0_2px_12px_rgba(0,0,0,1),_0_4px_24px_rgba(0,0,0,0.95)]">
               {headline}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-brand-text/75 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+          </ScrollReveal>
+
+          {/* Lead Subtitle */}
+          <ScrollReveal direction="left" distance={32} delay={0.16}>
+            <p className="mt-4 text-lg sm:text-xl font-bold text-brand-yellow leading-snug [text-shadow:_0_1px_4px_rgba(0,0,0,1),_0_2px_10px_rgba(0,0,0,0.95)]">
               {subhead}
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full">
+          </ScrollReveal>
+
+          {/* Body Copy */}
+          <ScrollReveal direction="left" distance={32} delay={0.22}>
+            <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-white font-sans text-justify [text-shadow:_0_1px_4px_rgba(0,0,0,1),_0_2px_8px_rgba(0,0,0,0.95)]">
+              At REALSPACE, we’re all about ensuring every bit of a home reflects the personality and style of the people living there. By designing your house with dedication, we ensure each corner of your living space echoes the quality of a house that’s designed well and a place you can call home.
+            </p>
+          </ScrollReveal>
+
+          {/* Social Links */}
+          <ScrollReveal direction="left" distance={32} delay={0.28}>
+            {socialPlatforms.length > 0 && (
+              <nav aria-label="Social media links" className="mt-6 flex items-center gap-3.5">
+                {socialPlatforms.map(({ name, url }) => (
+                  <a
+                    key={name}
+                    href={url as string}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={name}
+                    className="inline-flex rounded-lg transition-transform duration-200 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-yellow"
+                  >
+                    <SocialBrandIcon platform={name} idPrefix={`hero-${name.toLowerCase()}`} />
+                  </a>
+                ))}
+              </nav>
+            )}
+          </ScrollReveal>
+
+          {/* CTA Buttons */}
+          <ScrollReveal direction="up" distance={32} delay={0.34}>
+            <div className="mt-8 flex w-full flex-col gap-4 sm:w-auto sm:flex-row items-center">
               <Link href="/projects" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full min-h-[48px] shadow-md cursor-pointer">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="min-h-[52px] w-full px-8 text-base font-bold sm:w-auto"
+                >
                   View Our Work
                 </Button>
               </Link>
-              <Link href="/quote" className="w-full sm:w-auto relative inline-block">
-                {isIdle && (
+              <Link href="/quote" className="relative w-full sm:w-auto">
+                {isIdle && !shouldReduceMotion && (
                   <motion.span
-                    initial={{ scale: 1, opacity: 0.75 }}
-                    animate={{ scale: 1.12, opacity: 0 }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut",
-                    }}
-                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
+                    initial={{ scale: 1, opacity: 0.65 }}
+                    animate={{ scale: 1.08, opacity: 0 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                    className="pointer-events-none absolute -inset-1 rounded-xl border border-brand-yellow"
                   />
                 )}
-                <Button variant="secondary" size="lg" className="w-full min-h-[48px] cursor-pointer relative z-10">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="relative z-10 min-h-[52px] w-full px-8 text-base font-bold sm:w-auto"
+                >
                   {buttonCta}
                 </Button>
               </Link>
             </div>
-          </motion.div>
-
-          {/* Right Column: Static Hero Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="lg:col-span-5 w-full max-w-lg mx-auto lg:max-w-none"
-          >
-            <HeroImage />
-          </motion.div>
-
+          </ScrollReveal>
         </div>
-      </div>
-
-      {/* Subtle Background Accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-full -z-10 opacity-30 pointer-events-none">
-        <div className="absolute top-10 right-10 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-brand-bgAlt rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
       </div>
     </section>
   );

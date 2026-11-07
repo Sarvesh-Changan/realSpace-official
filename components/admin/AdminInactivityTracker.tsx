@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { adminLogoutAction } from "@/app/admin/actions";
 import { AlertTriangle, Clock, LogOut } from "lucide-react";
 
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes (300,000 ms)
-const WARNING_TIMEOUT_MS = 4.5 * 60 * 1000; // 4 minutes 30 seconds (270,000 ms)
+const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes (1,800,000 ms)
+const WARNING_TIMEOUT_MS = 29.5 * 60 * 1000; // 29 minutes 30 seconds (1,770,000 ms)
 const COUNTDOWN_SECONDS = 30; // 30 seconds warning countdown
 
 export function AdminInactivityTracker() {
@@ -142,7 +142,7 @@ export function AdminInactivityTracker() {
               Session Expiring Soon
             </h3>
             <p className="mt-2 text-sm text-neutral-600 leading-relaxed">
-              You have been inactive for over 4.5 minutes. For security, your admin session will automatically log out in:
+              You have been inactive for over 29.5 minutes. For security, your admin session will automatically log out in:
             </p>
             <div className="mt-4 flex items-center justify-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg py-2.5 px-4 font-mono font-bold text-lg">
               <Clock className="h-5 w-5 text-amber-600 animate-pulse" />

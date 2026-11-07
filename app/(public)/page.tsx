@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
+import { Button } from "@/components/ui/Button";
 import { Hero } from "./_components/home/Hero";
-import { ActiveOffers, type OfferType } from "./_components/home/ActiveOffers";
-import { TrustStats } from "./_components/home/TrustStats";
-import { Positioning } from "./_components/home/Positioning";
-import { Projects, type ProjectType } from "./_components/home/Projects";
-import { Services } from "./_components/home/Services";
-import { GalleryTeaser, type GalleryTeaserItem } from "./_components/home/GalleryTeaser";
+import { HomeOfferStrip } from "./_components/home/HomeOfferStrip";
+import { WelcomeIntro } from "./_components/home/WelcomeIntro";
+import { OwnerPortrait } from "./_components/home/OwnerPortrait";
+import { KeyFeatures } from "./_components/home/KeyFeatures";
+import { WhyRealspace } from "./_components/home/WhyRealspace";
+import { GallerySlider, type GallerySliderItem } from "./_components/home/GallerySlider";
 import { VideoTestimonials, type VideoTestimonialItem } from "./_components/home/VideoTestimonials";
-import { FinalCta } from "./_components/home/FinalCta";
+import { HomeFaqPreview, type HomeFaqItem } from "./_components/home/HomeFaqPreview";
 
 export const revalidate = 60; // Revalidate static cache every 60 seconds
 
@@ -37,33 +40,11 @@ export default async function HomePage() {
   let siteSettings = null;
   let rawOffers: Array<{
     id: string;
-    title: string;
-    description: string;
+    title: string | null;
+    description: string | null;
     imageUrl: string | null;
     ctaLabel: string;
     ctaLink: string;
-  }> = [];
-  let rawInteriorProjects: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    location: string;
-    category: string;
-    images: Array<{ url: string }>;
-  }> = [];
-  let rawExteriorProjects: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    location: string;
-    category: string;
-    images: Array<{ url: string }>;
-  }> = [];
-  let services: Array<{
-    id: string;
-    title: string;
-    description: string;
-    iconKey?: string | null;
   }> = [];
   let rawVideoTestimonials: Array<{
     id: string;
@@ -72,34 +53,39 @@ export default async function HomePage() {
     location: string | null;
     slug: string | null;
     videoUrl: string | null;
+    imageUrl: string | null;
     thumbnailUrl: string | null;
   }> = [];
-  let rawGalleryImages: Array<{
+  let rawHomeGalleryImages: Array<{
     id: string;
     title: string;
+    altText: string | null;
     url: string;
-    category: { name: string } | null;
+  }> = [];
+  let rawFaqs: Array<{
+    id: string;
+    question: string;
+    answer: string;
   }> = [];
 
   try {
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    const startOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+    const endOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
 
     // Fetch all home page data safely
     const [
       fetchedSettings,
       fetchedOffers,
-      fetchedInterior,
-      fetchedExterior,
-      fetchedServices,
       fetchedVideoTestimonials,
-      fetchedGalleryImages,
+      fetchedHomeGalleryImages,
+      fetchedFaqs,
     ] = await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
       prisma.offer.findMany({
         where: {
           isActive: true,
+          showOnHome: true,
           AND: [
             { OR: [{ startDate: null }, { startDate: { lte: endOfToday } }] },
             { OR: [{ endDate: null }, { endDate: { gte: startOfToday } }] },
@@ -107,45 +93,9 @@ export default async function HomePage() {
         },
         orderBy: { sortOrder: "asc" },
       }),
-      prisma.project.findMany({
-        where: {
-          designType: "INTERIOR",
-          isFeatured: true,
-          isPublished: true,
-        },
-        include: {
-          images: {
-            orderBy: { sortOrder: "asc" },
-            take: 1,
-          },
-        },
-        orderBy: { sortOrder: "asc" },
-        take: 3,
-      }),
-      prisma.project.findMany({
-        where: {
-          designType: "EXTERIOR",
-          isFeatured: true,
-          isPublished: true,
-        },
-        include: {
-          images: {
-            orderBy: { sortOrder: "asc" },
-            take: 1,
-          },
-        },
-        orderBy: { sortOrder: "asc" },
-        take: 3,
-      }),
-      prisma.service.findMany({
-        where: { isPublished: true },
-        orderBy: { sortOrder: "asc" },
-        take: 6,
-      }),
       prisma.testimonial.findMany({
         where: {
           isPublished: true,
-          videoUrl: { not: null },
         },
         select: {
           id: true,
@@ -154,74 +104,58 @@ export default async function HomePage() {
           location: true,
           slug: true,
           videoUrl: true,
+          imageUrl: true,
           thumbnailUrl: true,
         },
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
-      prisma.galleryImage.findMany({
+      prisma.homeGalleryImage.findMany({
         where: { isPublished: true },
-        include: { category: true },
-        orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
-        take: 8,
+        select: {
+          id: true,
+          title: true,
+          altText: true,
+          url: true,
+        },
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        take: 15,
+      }),
+      prisma.fAQ.findMany({
+        where: {
+          isPublished: true,
+          isFeatured: true,
+        },
+        select: {
+          id: true,
+          question: true,
+          answer: true,
+        },
+        orderBy: { sortOrder: "asc" },
+        take: 9,
       }),
     ]);
 
     siteSettings = fetchedSettings;
     rawOffers = fetchedOffers;
-    rawInteriorProjects = fetchedInterior;
-    rawExteriorProjects = fetchedExterior;
-    services = fetchedServices;
     rawVideoTestimonials = fetchedVideoTestimonials;
-    rawGalleryImages = fetchedGalleryImages;
+    rawHomeGalleryImages = fetchedHomeGalleryImages;
+    rawFaqs = fetchedFaqs;
   } catch (error) {
     console.error("Error loading home page data from Prisma:", error);
     // Graceful fallback: empty states will be rendered by subcomponents
   }
 
-  // Map database offer models to OfferType props for subcomponent
-  const offers: OfferType[] = rawOffers.map((o) => ({
-    id: o.id,
-    title: o.title,
-    description: o.description,
-    imageUrl: o.imageUrl,
-    ctaLabel: o.ctaLabel,
-    ctaLink: o.ctaLink,
-  }));
-
-  // Map database project models to ProjectType props for subcomponents
-  const interiorProjects: ProjectType[] = rawInteriorProjects.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    category: formatCategory(p.category),
-    imageUrl:
-      p.images[0]?.url ||
-      "/images/placeholder-image.png",
-  }));
-
-  const exteriorProjects: ProjectType[] = rawExteriorProjects.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    category: formatCategory(p.category),
-    imageUrl:
-      p.images[0]?.url ||
-      "/images/placeholder-image.png",
-  }));
-
-  // Map database gallery image models to GalleryTeaserItem props
-  const galleryTeaserItems: GalleryTeaserItem[] = rawGalleryImages.map((img) => ({
+  // Map database home gallery image models to GallerySliderItem props
+  const gallerySliderItems: GallerySliderItem[] = rawHomeGalleryImages.map((img) => ({
     id: img.id,
     title: img.title,
-    category: img.category?.name || "Gallery",
+    altText: img.altText || `${img.title} — REALSPACE interior design`,
     imageUrl: img.url,
   }));
 
   const videoTestimonialItems: VideoTestimonialItem[] = rawVideoTestimonials.flatMap((item) => {
-    if (!item.videoUrl) return [];
+    if (!item.videoUrl && !item.imageUrl && !item.thumbnailUrl) return [];
     return [{
       id: item.id,
       title: item.projectType || "A REALSPACE design story",
@@ -229,9 +163,16 @@ export default async function HomePage() {
       location: item.location,
       slug: item.slug,
       videoUrl: item.videoUrl,
+      imageUrl: item.imageUrl,
       thumbnailUrl: item.thumbnailUrl,
     }];
   });
+
+  const homeFaqItems: HomeFaqItem[] = rawFaqs.map((faq) => ({
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer,
+  }));
 
   return (
     <>
@@ -239,26 +180,38 @@ export default async function HomePage() {
         heroHeadline={siteSettings?.heroHeadline}
         heroSubhead={siteSettings?.heroSubhead}
         ctaText={siteSettings?.ctaText}
+        socialLinks={siteSettings?.socialLinks as {
+          instagram?: string | null;
+          facebook?: string | null;
+          youtube?: string | null;
+          linkedin?: string | null;
+          linkedinUrl?: string | null;
+        } | null}
       />
-      <ActiveOffers offers={offers} />
-      <TrustStats />
-      <Positioning />
-      <Projects
-        title="Selected Interior Projects"
-        subtitle="Explore our curated portfolio of bespoke interior transformations."
-        projects={interiorProjects}
-        viewAllLink="/projects?type=interior"
+      <HomeOfferStrip offers={rawOffers} />
+      <WelcomeIntro intro={siteSettings?.heroSubhead} />
+      <OwnerPortrait
+        portraitUrl={siteSettings?.ownerPortraitUrl}
+        showOwnerPortrait={siteSettings?.showOwnerPortrait}
       />
-      <Projects
-        title="Selected Exterior Projects"
-        subtitle="Discover our striking architectural facades and outdoor spaces."
-        projects={exteriorProjects}
-        viewAllLink="/projects?type=exterior"
-      />
-      <Services services={services} />
-      <GalleryTeaser items={galleryTeaserItems} />
+      <KeyFeatures />
+      <WhyRealspace />
+      <GallerySlider items={gallerySliderItems} />
       <VideoTestimonials testimonials={videoTestimonialItems} />
-      <FinalCta ctaText={siteSettings?.ctaText} />
+      <HomeFaqPreview faqs={homeFaqItems} />
+      <section className="bg-brand-cream px-4 py-14 sm:py-20">
+        <div className="flex justify-center">
+          <Link href="/quote">
+            <Button
+              size="lg"
+              className="group min-h-[52px] gap-3 rounded-full border border-brand-red bg-brand-red px-8 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-brand-dark hover:bg-brand-dark hover:shadow-xl sm:px-10"
+            >
+              Get Free Quote
+              <ArrowUpRight className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Button>
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

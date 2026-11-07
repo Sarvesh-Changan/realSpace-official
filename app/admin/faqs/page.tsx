@@ -21,6 +21,7 @@ export default async function AdminFaqsPage() {
     answer: faq.answer,
     sortOrder: faq.sortOrder,
     isPublished: faq.isPublished,
+    isFeatured: faq.isFeatured,
     createdAt: faq.createdAt,
     updatedAt: faq.updatedAt,
   }));

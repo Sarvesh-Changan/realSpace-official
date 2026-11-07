@@ -9,7 +9,7 @@ export function QuickActions() {
       <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
         <Plus className="w-4 h-4 text-brand-red" /> Quick Actions
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link
           href="/admin/projects/new"
           className="flex items-center justify-between p-3.5 bg-neutral-50 hover:bg-red-50/70 border border-neutral-200 hover:border-red-200 rounded-md group transition-all"
@@ -23,21 +23,6 @@ export function QuickActions() {
             </span>
           </div>
           <Plus className="w-4 h-4 text-neutral-400 group-hover:text-brand-red" />
-        </Link>
-
-        <Link
-          href="/admin/services/new"
-          className="flex items-center justify-between p-3.5 bg-neutral-50 hover:bg-blue-50/70 border border-neutral-200 hover:border-blue-200 rounded-md group transition-all"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white rounded border border-neutral-200 text-blue-600 group-hover:scale-105 transition-transform">
-              <Layers className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-semibold text-neutral-800 group-hover:text-blue-600">
-              Add Service
-            </span>
-          </div>
-          <Plus className="w-4 h-4 text-neutral-400 group-hover:text-blue-600" />
         </Link>
 
         <Link

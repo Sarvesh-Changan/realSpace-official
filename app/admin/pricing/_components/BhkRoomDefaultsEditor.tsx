@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Info, Save, Check, AlertCircle } from "lucide-react";
 import { upsertBhkRoomDefaults } from "../actions";
 
-export type RoomType = "Kitchen" | "Hall" | "Bedroom" | "Bathroom";
+export type RoomType = "Kitchen" | "Living Room" | "Bedroom" | "Bathroom";
 
 export interface RoomConfig {
   defaultQty: number;
@@ -38,24 +38,25 @@ type BhkConfigMap = Record<string, Record<RoomType, RoomConfig>>;
 
 const DEFAULT_ROOM_CONFIG: Record<RoomType, RoomConfig> = {
   Kitchen: { defaultQty: 1, minQty: 1, maxQty: 1, isFixedFloor: true },
-  Hall: { defaultQty: 1, minQty: 1, maxQty: 2, isFixedFloor: true },
+  "Living Room": { defaultQty: 1, minQty: 1, maxQty: 2, isFixedFloor: true },
   Bedroom: { defaultQty: 1, minQty: 1, maxQty: null, isFixedFloor: false },
   Bathroom: { defaultQty: 1, minQty: 1, maxQty: null, isFixedFloor: false },
 };
 
-const ROOM_TYPES: RoomType[] = ["Kitchen", "Hall", "Bedroom", "Bathroom"];
+const ROOM_TYPES: RoomType[] = ["Kitchen", "Living Room", "Bedroom", "Bathroom"];
 
 const ROOM_MAP: Record<RoomType, string> = {
   Kitchen: "kitchen",
-  Hall: "hall",
+  "Living Room": "living_room",
   Bedroom: "bedroom",
   Bathroom: "bathroom",
 };
 
 export default function BhkRoomDefaultsEditor({
-  bhkOptions,
+  bhkOptions: rawBhkOptions,
   initialDefaults,
 }: BhkRoomDefaultsEditorProps) {
+  const bhkOptions = rawBhkOptions.filter((b) => b.label !== "Commercial & Others");
   const [selectedBhkId, setSelectedBhkId] = useState<string>(
     bhkOptions[0]?.id || ""
   );
@@ -75,7 +76,9 @@ export default function BhkRoomDefaultsEditor({
 
       ROOM_TYPES.forEach((room) => {
         const groupKey = ROOM_MAP[room];
-        const dbMatch = dbRows.find((r) => r.roomGroupKey === groupKey);
+        const dbMatch = dbRows.find(
+          (r) => r.roomGroupKey === groupKey || (groupKey === "living_room" && r.roomGroupKey === "hall")
+        );
 
         if (dbMatch) {
           initial[bhk.id][room] = {
@@ -89,7 +92,7 @@ export default function BhkRoomDefaultsEditor({
           const bedrooms = parseInt(bhk.label.charAt(0)) || 1;
           initial[bhk.id][room] = {
             Kitchen: { ...DEFAULT_ROOM_CONFIG.Kitchen },
-            Hall: { ...DEFAULT_ROOM_CONFIG.Hall },
+            "Living Room": { ...DEFAULT_ROOM_CONFIG["Living Room"] },
             Bedroom: { ...DEFAULT_ROOM_CONFIG.Bedroom, defaultQty: bedrooms, minQty: bedrooms },
             Bathroom: { ...DEFAULT_ROOM_CONFIG.Bathroom, defaultQty: bedrooms, minQty: bedrooms },
           }[room];
@@ -103,7 +106,7 @@ export default function BhkRoomDefaultsEditor({
   const selectedBhk = bhkOptions.find((b) => b.id === selectedBhkId) || bhkOptions[0];
   const currentConfig = configs[selectedBhkId] || {
     Kitchen: { ...DEFAULT_ROOM_CONFIG.Kitchen },
-    Hall: { ...DEFAULT_ROOM_CONFIG.Hall },
+    "Living Room": { ...DEFAULT_ROOM_CONFIG["Living Room"] },
     Bedroom: { ...DEFAULT_ROOM_CONFIG.Bedroom },
     Bathroom: { ...DEFAULT_ROOM_CONFIG.Bathroom },
   };

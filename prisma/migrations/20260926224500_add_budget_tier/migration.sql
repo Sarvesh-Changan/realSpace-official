@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "PricingTier" ADD VALUE 'BUDGET' BEFORE 'STANDARD';

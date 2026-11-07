@@ -6,6 +6,7 @@ export const faqSchema = z.object({
   answer: z.string().min(1, "Answer is required"),
   sortOrder: z.coerce.number().default(0),
   isPublished: z.boolean().default(true),
+  isFeatured: z.boolean().default(false),
 });
 
 export type FaqFormValues = z.infer<typeof faqSchema>;

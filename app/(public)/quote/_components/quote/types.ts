@@ -38,6 +38,7 @@ export interface QuoteBreakdownItem {
 }
 
 export interface QuoteCalculationResult {
+  estimatedBudget?: number | null;
   estimatedBudgetLow: number;
   estimatedBudgetHigh: number;
   breakdown: QuoteBreakdownItem[];

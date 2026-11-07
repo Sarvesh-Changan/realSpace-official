@@ -3,123 +3,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import type { PricingConfigFormValues } from "./_components/PricingOptionForm";
-import { pricingOptionSchema, bhkRoomDefaultsSchema } from "./schema";
-
-export async function createPricingOption(data: PricingConfigFormValues) {
-  const session = await auth();
-  if (!session?.user) {
-    return { success: false, error: "Unauthorized: Admin session required." };
-  }
-
-  const parsed = pricingOptionSchema.safeParse(data);
-  if (!parsed.success) {
-    const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
-    return { success: false, error: errorMsg || "Invalid pricing option data." };
-  }
-
-  const optionData = parsed.data;
-
-  try {
-    const option = await prisma.pricingOption.create({
-      data: {
-        groupKey: optionData.groupKey,
-        label: optionData.label,
-        designType: optionData.designType || null,
-        basePrice: optionData.basePrice,
-        perUnitPrice: optionData.perUnitPrice ?? null,
-        isActive: optionData.isActive,
-        sortOrder: optionData.sortOrder,
-      },
-    });
-
-    revalidatePath("/admin/pricing");
-    revalidatePath("/quote");
-    return { success: true, id: option.id };
-  } catch (error) {
-    console.error("Failed to create pricing option:", error);
-    return { success: false, error: "Failed to create pricing option in database." };
-  }
-}
-
-export async function updatePricingOption(id: string, data: PricingConfigFormValues) {
-  const session = await auth();
-  if (!session?.user) {
-    return { success: false, error: "Unauthorized: Admin session required." };
-  }
-
-  const parsed = pricingOptionSchema.safeParse(data);
-  if (!parsed.success) {
-    const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
-    return { success: false, error: errorMsg || "Invalid pricing option data." };
-  }
-
-  const optionData = parsed.data;
-
-  try {
-    await prisma.pricingOption.update({
-      where: { id },
-      data: {
-        groupKey: optionData.groupKey,
-        label: optionData.label,
-        designType: optionData.designType || null,
-        basePrice: optionData.basePrice,
-        perUnitPrice: optionData.perUnitPrice ?? null,
-        isActive: optionData.isActive,
-        sortOrder: optionData.sortOrder,
-      },
-    });
-
-    revalidatePath("/admin/pricing");
-    revalidatePath(`/admin/pricing/${id}`);
-    revalidatePath("/quote");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to update pricing option:", error);
-    return { success: false, error: "Failed to update pricing option in database." };
-  }
-}
-
-export async function deletePricingOption(id: string) {
-  const session = await auth();
-  if (!session?.user) {
-    return { success: false, error: "Unauthorized: Admin session required." };
-  }
-
-  try {
-    await prisma.pricingOption.delete({
-      where: { id },
-    });
-
-    revalidatePath("/admin/pricing");
-    revalidatePath("/quote");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to delete pricing option:", error);
-    return { success: false, error: "Failed to delete pricing option." };
-  }
-}
-
-export async function togglePricingOptionActive(id: string, isActive: boolean) {
-  const session = await auth();
-  if (!session?.user) {
-    return { success: false, error: "Unauthorized: Admin session required." };
-  }
-
-  try {
-    await prisma.pricingOption.update({
-      where: { id },
-      data: { isActive },
-    });
-
-    revalidatePath("/admin/pricing");
-    revalidatePath("/quote");
-    return { success: true };
-  } catch (error) {
-    console.error("Failed to toggle pricing option active:", error);
-    return { success: false, error: "Failed to update active state." };
-  }
-}
+import { bhkRoomDefaultsSchema, componentPricingMatrixSchema } from "./schema";
 
 export async function upsertBhkRoomDefaults(
   bhkOptionId: string,
@@ -180,3 +64,59 @@ export async function upsertBhkRoomDefaults(
     return { success: false, error: "Failed to save BHK room defaults." };
   }
 }
+
+export async function updateComponentPricingMatrix(
+  items: Array<{
+    componentKey: "kitchen" | "living_room" | "bedroom" | "bathroom";
+    tier: "BUDGET" | "STANDARD" | "PREMIUM" | "LUXURY";
+    pricePerUnit: number;
+    isActive: boolean;
+  }>
+) {
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: "Unauthorized: Admin session required." };
+  }
+
+  const parsed = componentPricingMatrixSchema.safeParse({ items });
+  if (!parsed.success) {
+    const errorMsg = parsed.error.issues.map((i) => i.message).join(", ");
+    return { success: false, error: errorMsg || "Invalid pricing matrix data." };
+  }
+
+  const validatedItems = parsed.data.items;
+
+  try {
+    await Promise.all(
+      validatedItems.map((item) =>
+        prisma.componentPricing.upsert({
+          where: {
+            componentKey_tier: {
+              componentKey: item.componentKey,
+              tier: item.tier,
+            },
+          },
+          create: {
+            componentKey: item.componentKey,
+            tier: item.tier,
+            pricePerUnit: item.pricePerUnit,
+            isActive: item.isActive,
+          },
+          update: {
+            pricePerUnit: item.pricePerUnit,
+            isActive: item.isActive,
+          },
+        })
+      )
+    );
+
+    revalidatePath("/admin/pricing");
+    revalidatePath("/quote");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update component pricing matrix:", error);
+    return { success: false, error: "Failed to update component pricing matrix in database." };
+  }
+}
+
+

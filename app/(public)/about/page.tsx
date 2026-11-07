@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
-import { AboutHero } from "../_components/about/AboutHero";
-import { TrustIndicators } from "../_components/about/TrustIndicators";
-import { MeetFounder } from "../_components/about/MeetFounder";
-import { ProcessTimeline } from "./_components/ProcessTimeline";
-import { Certifications, type CertificationData } from "./_components/Certifications";
+import { AboutEditorial } from "./_components/AboutEditorial";
+import type { CertificationData } from "./_components/Certifications";
 
 export const revalidate = 60;
 
@@ -20,34 +17,32 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const defaultProcessSteps = [
-  {
-    title: "1. Initial Consultation & Site Visit",
-    description: "We meet at your space to assess architectural layout, structural beams, natural light, and understand your lifestyle requirements.",
-  },
-  {
-    title: "2. Space Planning & 3D Visualization",
-    description: "Our design team crafts detailed 2D layouts and realistic 3D renderings so you can experience your future home before construction.",
-  },
-  {
-    title: "3. Material Selection & Transparent Quote",
-    description: "Select from curated laminates, veneers, hardware, and finishes with a clear, itemized quote — zero hidden charges.",
-  },
-  {
-    title: "4. On-site Execution & Quality Checks",
-    description: "Our experienced craftsmen execute civil, electrical, plumbing, and carpentry work under constant site supervision.",
-  },
-  {
-    title: "5. Custom Joinery & Finishing Touches",
-    description: "Precision-engineered modular factory units and custom site joinery are installed with strict quality inspections.",
-  },
-  {
-    title: "6. Final Handover & Warranty Walkthrough",
-    description: "A thorough deep-cleaning, final polish, joint walkthrough, and key handover along with our post-handover support commitment.",
-  },
-];
 
 export default async function AboutPage() {
+  let certifications: CertificationData[] = [];
+
+  try {
+    const dbCertifications = await prisma.certification.findMany({
+      where: { isPublished: true },
+      orderBy: { sortOrder: "asc" },
+    });
+
+    certifications = dbCertifications.map((cert) => ({
+      id: cert.id,
+      title: cert.title,
+      badgeLabel: cert.badgeLabel,
+      issuingBody: cert.issuingBody,
+      imageUrl: cert.imageUrl || "/images/certifications/cadpro.png",
+      certificateUrl: null,
+      showCertificateButton: false,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch certifications:", error);
+  }
+
+  return <AboutEditorial certifications={certifications} />;
+
+  /*
   let certifications: CertificationData[] = [];
 
   try {
@@ -71,9 +66,9 @@ export default async function AboutPage() {
 
   // Pending client confirmation for exact stats
   const trustStats = [
-    { label: "Years of Experience", value: "8+" },
-    { label: "Projects Completed", value: "150+" },
-    { label: "Client Rating", value: "4.5★" },
+    { label: "Years of Experience", value: "27+" },
+    { label: "Client Rating", value: "5★" },
+    { value: "Thane, Navi Mumbai", label: "& Mumbai Regions" },
   ];
 
   return (
@@ -92,9 +87,8 @@ export default async function AboutPage() {
         imageUrl="/images/owner_image.jpeg"
       />
 
-      <ProcessTimeline title="Our 6-Step Design & Execution Process" steps={defaultProcessSteps} />
-
       <Certifications certifications={certifications} />
     </div>
   );
+  */
 }

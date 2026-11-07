@@ -14,7 +14,6 @@ import {
 export interface DashboardStats {
   totalProjects: number;
   publishedProjects: number;
-  totalServices: number;
   totalTestimonials: number;
   newLeadsCount: number;
   totalLeadsCount: number;
@@ -22,7 +21,7 @@ export interface DashboardStats {
 
 export function StatCards({ stats }: { stats: DashboardStats }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
       {/* Card 1: New Leads (Actionable / Highlighted) */}
       <div
         className={`p-5 rounded-lg border transition-all shadow-sm relative overflow-hidden ${
@@ -85,35 +84,6 @@ export function StatCards({ stats }: { stats: DashboardStats }) {
           <span>Portfolio Showcase</span>
           <Link
             href="/admin/projects"
-            className="text-neutral-700 font-medium hover:text-brand-red transition-colors inline-flex items-center gap-0.5"
-          >
-            Manage <ArrowRight className="w-3 h-3" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Card 3: Services */}
-      <div className="bg-white p-5 rounded-lg border border-neutral-200 shadow-sm hover:border-neutral-300 transition-all">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-            Active Services
-          </span>
-          <div className="p-2 bg-blue-50 rounded-md text-blue-600">
-            <Layers className="w-5 h-5" />
-          </div>
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-extrabold text-neutral-900">
-            {stats.totalServices}
-          </span>
-          <span className="text-xs font-medium text-neutral-500">
-            Interior & Exterior
-          </span>
-        </div>
-        <div className="mt-3 text-xs text-neutral-500 pt-3 border-t border-neutral-100 flex items-center justify-between">
-          <span>Service Catalog</span>
-          <Link
-            href="/admin/services"
             className="text-neutral-700 font-medium hover:text-brand-red transition-colors inline-flex items-center gap-0.5"
           >
             Manage <ArrowRight className="w-3 h-3" />

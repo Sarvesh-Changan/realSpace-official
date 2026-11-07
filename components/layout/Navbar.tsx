@@ -3,7 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/Button";
 import { useIdleAttention } from "@/hooks/useIdleAttention";
 
@@ -18,72 +19,124 @@ export const Navbar: React.FC<NavbarProps> = ({
   isMobileMenuOpen: controlledIsOpen,
   onToggleMobileMenu: controlledOnToggle,
 }) => {
+  const pathname = usePathname();
   const [internalIsOpen, setInternalIsOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
   const isIdle = useIdleAttention(5000);
+  const isHome = pathname === "/";
+  const isTransparentHome = isHome && !isScrolled;
 
   const isMobileMenuOpen = controlledIsOpen ?? internalIsOpen;
   const handleToggle =
     controlledOnToggle ?? (() => setInternalIsOpen((prev) => !prev));
 
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Auto-close mobile menu on route change
+  React.useEffect(() => {
+    if (controlledIsOpen === undefined) {
+      setInternalIsOpen(false);
+    }
+  }, [pathname, controlledIsOpen]);
+
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: "Gallery", href: "/gallery" },
-    { label: "Services", href: "/services" },
     { label: "Testimonials", href: "/testimonials" },
+    { label: "Events", href: "/events" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-brand-bgAlt bg-brand-bg/95 backdrop-blur supports-[backdrop-filter]:bg-brand-bg/80 transition-colors">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
+    <header
+      className={`${isHome ? "absolute top-0" : "relative"} z-50 w-full transition-all duration-300 ${isHome
+          ? "border-b border-transparent bg-gradient-to-b from-black/85 via-black/50 to-transparent py-3 sm:py-4"
+          : "border-b border-brand-border/60 bg-white py-3 sm:py-4 shadow-sm"
+        }`}
+    >
+      <div className="mx-auto max-w-standard px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center group">
               <Image
-                src="/images/realspace_logo.png"
-                alt="REALSPACE logo"
+                src="/images/updated-realspace_logo.png"
+                alt={`${logoText} logo`}
                 width={300}
                 height={60}
-                className="h-14 sm:h-16 w-auto max-h-16"
+                sizes="(max-width: 640px) 160px, 180px"
+                className={`w-auto transition-all duration-300 ${isScrolled ? "h-12 sm:h-14" : "h-14 sm:h-16"
+                  }`}
                 style={{ width: "auto" }}
                 priority
               />
             </Link>
           </div>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-brand-text/80 hover:text-brand-red transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Desktop Nav Links */}
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href);
+
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`relative px-3 py-2 text-xs lg:text-sm font-semibold uppercase tracking-wider transition-colors duration-200 ${isActive
+                      ? isHome
+                        ? "font-bold text-brand-yellow drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]"
+                        : "font-bold text-brand-red"
+                      : isHome
+                        ? "text-white hover:text-brand-yellow drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] [text-shadow:_0_1px_4px_rgba(0,0,0,0.9)]"
+                        : "text-brand-text/80 hover:text-brand-red"
+                    }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${isHome ? "bg-brand-yellow" : "bg-brand-red"}`}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </nav>
 
-          {/* CTA & Mobile Toggle */}
+          {/* CTA & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
               <Link href="/quote" tabIndex={-1} className="relative inline-block">
                 {isIdle && (
                   <motion.span
                     initial={{ scale: 1, opacity: 0.75 }}
-                    animate={{ scale: 1.15, opacity: 0 }}
+                    animate={{ scale: 1.12, opacity: 0 }}
                     transition={{
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeOut",
                     }}
-                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
+                    className="absolute -inset-1 rounded-lg border-2 border-brand-yellow bg-brand-yellow/20 pointer-events-none z-0"
                   />
                 )}
-                <Button variant="primary" size="sm" className="relative z-10">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="relative z-10 font-bold"
+                >
                   Get Free Quote
                 </Button>
               </Link>
@@ -92,16 +145,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-brand-text hover:bg-brand-bgAlt focus:outline-none focus:ring-2 focus:ring-brand-yellow transition-colors"
+              className={`inline-flex items-center justify-center rounded-lg p-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-red md:hidden ${isHome ? "text-white hover:bg-white/10" : "text-brand-text hover:bg-brand-bgAlt"}`}
               onClick={handleToggle}
               aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle navigation menu"
             >
               <span className="sr-only">Open main menu</span>
               <svg
                 className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
-                strokeWidth="1.5"
+                strokeWidth="1.75"
                 stroke="currentColor"
                 aria-hidden="true"
               >
@@ -124,44 +178,70 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Mobile Nav Dropdown */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-brand-bgAlt bg-brand-bg">
-          <div className="space-y-1 px-4 pb-6 pt-4 sm:px-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => {
-                  if (controlledIsOpen === undefined) setInternalIsOpen(false);
-                }}
-                className="block rounded-md px-3 py-3 text-base font-medium text-brand-text hover:bg-brand-bgAlt hover:text-brand-red transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-4 pb-2">
-              <Link href="/quote" tabIndex={-1} className="relative block w-full">
-                {isIdle && (
-                  <motion.span
-                    initial={{ scale: 1, opacity: 0.75 }}
-                    animate={{ scale: 1.08, opacity: 0 }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeOut",
+      {/* Animated Mobile Dropdown Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className={`overflow-hidden border-t backdrop-blur-md shadow-lg md:hidden ${isHome ? "border-white/15 bg-brand-dark/95" : "border-brand-border/60 bg-white/98"}`}
+          >
+            <div className="space-y-1 px-4 pb-6 pt-3 sm:px-6">
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
+
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => {
+                      if (controlledIsOpen === undefined) setInternalIsOpen(false);
                     }}
-                    className="absolute -inset-1 rounded-md border-2 border-[#FECC00] bg-[#FECC00]/20 pointer-events-none z-0"
-                  />
-                )}
-                <Button variant="primary" size="md" className="w-full relative z-10">
-                  Get Free Quote
-                </Button>
-              </Link>
+                    className={`block rounded-lg px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${isActive
+                        ? isHome
+                          ? "bg-white/10 font-bold text-brand-yellow"
+                          : "bg-brand-red/10 font-bold text-brand-red"
+                        : isHome
+                          ? "text-white hover:bg-white/10 hover:text-brand-yellow"
+                          : "text-brand-text hover:bg-brand-bgAlt hover:text-brand-red"
+                      }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+              <div className="pt-4 pb-2">
+                <Link href="/quote" tabIndex={-1} className="relative block w-full">
+                  {isIdle && (
+                    <motion.span
+                      initial={{ scale: 1, opacity: 0.75 }}
+                      animate={{ scale: 1.06, opacity: 0 }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeOut",
+                      }}
+                      className="absolute -inset-1 rounded-lg border-2 border-brand-yellow bg-brand-yellow/20 pointer-events-none z-0"
+                    />
+                  )}
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="w-full relative z-10 font-semibold text-center"
+                  >
+                    Get Free Quote
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

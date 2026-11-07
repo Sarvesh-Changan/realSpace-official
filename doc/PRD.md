@@ -85,7 +85,6 @@ The rebuild replaces this with a dynamic, admin-managed Next.js application that
 | Module | Capabilities |
 |---|---|
 | Projects | Create/Read/Update/Delete; set Interior/Exterior, project type, location, description, multiple Cloudinary images/videos, "Featured" flag |
-| Services | CRUD |
 | Testimonials | CRUD |
 | FAQs | CRUD |
 | Quote Calculator Config | Configure BHK pricing, kitchen/hall/bedroom/wardrobe pricing, interior packages, exterior services, material/package tiers, additional services — all versioned and effective-dated |

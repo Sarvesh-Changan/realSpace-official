@@ -6,6 +6,8 @@ export const projectImageSchema = z.object({
   cloudinaryId: z.string().min(1, "Cloudinary ID is required"),
   altText: z.string().min(1, "Alt text is required for accessibility"),
   mediaType: z.enum(["IMAGE", "VIDEO"]).optional(),
+  thumbnailUrl: z.string().nullable().optional(),
+  thumbnailPublicId: z.string().nullable().optional(),
   isCoverImage: z.boolean(),
   sortOrder: z.number(),
 });

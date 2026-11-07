@@ -23,8 +23,14 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    // If request comes from next-cloudinary CldUploadWidget (contains paramsToSign)
-    if (body.paramsToSign) {
+    // If request comes from next-cloudinary CldUploadWidget (contains paramsToSign).
+    // An empty object is used by the direct-upload form and must use the full
+    // response below, including the timestamp required by Cloudinary.
+    if (
+      body.paramsToSign &&
+      typeof body.paramsToSign === "object" &&
+      Object.keys(body.paramsToSign).length > 0
+    ) {
       const signature = cloudinary.utils.api_sign_request(
         body.paramsToSign,
         process.env.CLOUDINARY_API_SECRET || ""
@@ -41,6 +47,8 @@ export async function POST(request: Request) {
       "realspace-certifications",
       "certifications",
       "testimonials",
+      "realspace-events",
+      "events",
     ];
     const requestedFolder = body.folder;
     const folder = allowedFolders.includes(requestedFolder)
@@ -55,22 +63,36 @@ export async function POST(request: Request) {
     };
 
     const isTestimonialUpload = folder === "testimonials";
-    const resourceType = isTestimonialUpload && body.resourceType === "image" ? "image" : isTestimonialUpload ? "video" : "image";
+    const isEventsUpload = folder === "events" || folder === "realspace-events";
+    const isProjectsUpload = folder === "realspace-projects";
+    const isGalleryUpload = folder === "realspace-gallery";
+
+    const isVideoSupportedFolder =
+      isTestimonialUpload || isEventsUpload || isProjectsUpload || isGalleryUpload;
+
+    let resourceType = "image";
+    if (isVideoSupportedFolder) {
+      resourceType = body.resourceType === "video" ? "video" : "image";
+    }
 
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
       process.env.CLOUDINARY_API_SECRET || ""
     );
 
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB limit
+
     return NextResponse.json({
       signature,
       timestamp,
       folder,
       resourceType,
-      allowedFormats: isTestimonialUpload
-        ? resourceType === "video" ? ["mp4", "webm", "mov"] : ["jpg", "jpeg", "png", "webp"]
+      allowedFormats: isVideoSupportedFolder
+        ? resourceType === "video"
+          ? ["mp4", "webm", "mov"]
+          : ["jpg", "jpeg", "png", "webp", "avif"]
         : undefined,
-      maxFileSize: isTestimonialUpload ? 100 * 1024 * 1024 : undefined,
+      maxFileSize: isVideoSupportedFolder ? MAX_FILE_SIZE : undefined,
       cloudName:
         process.env.CLOUDINARY_CLOUD_NAME ||
         process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,

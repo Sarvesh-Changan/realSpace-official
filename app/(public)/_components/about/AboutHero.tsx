@@ -26,7 +26,6 @@ export function AboutHero({ headline, body, imageUrl }: AboutHeroProps) {
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="w-full h-full object-cover"
-                unoptimized={!imageUrl.includes("res.cloudinary.com")}
               />
             </div>
           )}

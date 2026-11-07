@@ -5,12 +5,16 @@ import { ProjectHeader } from "./_components/ProjectHeader";
 import { ProjectDescription } from "./_components/ProjectDescription";
 import { ProjectDetails } from "./_components/ProjectDetails";
 import { RelatedProjects } from "./_components/RelatedProjects";
+import { getVideoThumbnailUrl } from "@/lib/cloudinary";
 
 export interface ProjectImage {
   id: string;
   url: string;
   altText: string;
   mediaType?: "IMAGE" | "VIDEO";
+  thumbnailUrl?: string | null;
+  thumbnailPublicId?: string | null;
+  isCoverImage?: boolean;
 }
 
 export interface ProjectData {
@@ -100,7 +104,7 @@ export default async function ProjectDetailPage({
     slug: string;
     title: string;
     category: string;
-    images: Array<{ url: string; altText: string }>;
+    images: Array<{ url: string; altText: string; mediaType?: "IMAGE" | "VIDEO"; thumbnailUrl?: string | null }>;
   }> = [];
 
   try {
@@ -144,11 +148,14 @@ export default async function ProjectDetailPage({
   }
 
   // Map main project images
-  const projectImages: ProjectImage[] = project.images.map((img: any) => ({
+  const projectImages: ProjectImage[] = project.images.map((img) => ({
     id: img.id,
     url: img.url,
     altText: img.altText || project.title,
     mediaType: img.mediaType,
+    thumbnailUrl: img.thumbnailUrl,
+    thumbnailPublicId: img.thumbnailPublicId,
+    isCoverImage: img.isCoverImage,
   }));
 
   // Fallback image if project has no image records
@@ -176,15 +183,27 @@ export default async function ProjectDetailPage({
   };
 
   const relatedProjects: RelatedProjectData[] = relatedProjectsRaw.map(
-    (p) => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      category: formatCategory(p.category),
-      imageUrl:
-        p.images[0]?.url ||
-        "/images/placeholder-image.png",
-    })
+    (p) => {
+      const coverImg = p.images[0];
+      const isVideo =
+        coverImg?.mediaType === "VIDEO" ||
+        Boolean(coverImg?.url?.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+        Boolean(coverImg?.url?.includes("/video/upload/"));
+
+      const imageUrl = coverImg
+        ? isVideo
+          ? coverImg.thumbnailUrl || getVideoThumbnailUrl(coverImg.url, "VIDEO")
+          : coverImg.url
+        : "/images/placeholder-image.png";
+
+      return {
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        category: formatCategory(p.category),
+        imageUrl,
+      };
+    }
   );
 
   return (

@@ -12,12 +12,14 @@ import {
     Eye,
     EyeOff,
     Search,
+    Star,
 } from "lucide-react";
 import {
     createFaq,
     updateFaq,
     deleteFaq,
     toggleFaqPublish,
+    toggleFaqFeatured,
     reorderFaq,
     updateFaqSortOrder,
 } from "../actions";
@@ -30,6 +32,7 @@ export interface FaqRecord {
     answer: string;
     sortOrder: number;
     isPublished: boolean;
+    isFeatured: boolean;
     createdAt?: string | Date;
     updatedAt?: string | Date;
 }
@@ -49,7 +52,7 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
     const [editingFaq, setEditingFaq] = useState<FaqRecord | null>(null);
 
     // Sync if initialFaqs change from server
-    if (JSON.stringify(initialFaqs.map(f => f.id)) !== JSON.stringify(faqsList.map(f => f.id))) {
+    if (JSON.stringify(initialFaqs.map(f => `${f.id}-${f.isPublished}-${f.isFeatured}`)) !== JSON.stringify(faqsList.map(f => `${f.id}-${f.isPublished}-${f.isFeatured}`))) {
         setFaqsList(initialFaqs);
     }
 
@@ -147,6 +150,23 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
         });
     };
 
+    const handleToggleFeatured = async (id: string, currentStatus: boolean) => {
+        const nextStatus = !currentStatus;
+        setFaqsList((prev) =>
+            prev.map((f) => (f.id === id ? { ...f, isFeatured: nextStatus } : f))
+        );
+
+        startTransition(async () => {
+            const res = await toggleFaqFeatured(id, nextStatus);
+            if (!res.success) {
+                alert(res.error || "Failed to toggle featured status.");
+                router.refresh();
+            } else {
+                router.refresh();
+            }
+        });
+    };
+
     const handleReorder = async (id: string, direction: "up" | "down") => {
         const index = faqsList.findIndex((f) => f.id === id);
         if (index === -1) return;
@@ -203,7 +223,7 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
                         <HelpCircle className="w-5 h-5 text-brand-red" /> FAQ Management
                     </h1>
                     <p className="text-xs text-neutral-500 mt-1">
-                        Manage client questions & answers displayed on the public FAQ page.
+                        Manage client questions & answers displayed on the public FAQ page and Home page preview.
                     </p>
                 </div>
                 <button
@@ -237,14 +257,15 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
                     }`}
             >
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[640px]">
+                    <table className="w-full text-left border-collapse min-w-[720px]">
                         <thead>
                             <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold uppercase tracking-wider text-neutral-500">
                                 <th className="py-3.5 px-4 w-16 text-center">Order</th>
-                                <th className="py-3.5 px-4 w-2/5">Question</th>
-                                <th className="py-3.5 px-4 w-2/5">Answer Preview</th>
-                                <th className="py-3.5 px-4 text-center w-24">Status</th>
-                                <th className="py-3.5 px-4 text-right w-28">Actions</th>
+                                <th className="py-3.5 px-4 w-1/3">Question</th>
+                                <th className="py-3.5 px-4 w-1/3">Answer Preview</th>
+                                <th className="py-3.5 px-4 text-center w-28">Status</th>
+                                <th className="py-3.5 px-4 text-center w-28">Home Featured</th>
+                                <th className="py-3.5 px-4 text-right w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-200 text-sm">
@@ -333,19 +354,41 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
                                         </button>
                                     </td>
 
+                                    {/* Featured Toggle Column */}
+                                    <td className="py-3 px-4 text-center">
+                                        <button
+                                            onClick={() => handleToggleFeatured(faq.id, faq.isFeatured)}
+                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer ${faq.isFeatured
+                                                    ? "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
+                                                    : "bg-neutral-50 text-neutral-400 border-neutral-200 hover:bg-neutral-100 hover:text-neutral-600"
+                                                }`}
+                                            title={
+                                                faq.isFeatured
+                                                    ? "Click to remove from Home page preview"
+                                                    : "Click to feature on Home page preview"
+                                            }
+                                        >
+                                            <Star
+                                                className={`w-3 h-3 ${faq.isFeatured ? "fill-amber-500 text-amber-600" : "text-neutral-400"
+                                                    }`}
+                                            />
+                                            {faq.isFeatured ? "Featured" : "Off"}
+                                        </button>
+                                    </td>
+
                                     {/* Actions Column */}
                                     <td className="py-3 px-4 text-right">
                                         <div className="flex items-center justify-end gap-1">
                                             <button
                                                 onClick={() => handleOpenEditModal(faq)}
-                                                className="p-1.5 rounded text-neutral-500 hover:text-brand-red hover:bg-red-50 transition-colors"
+                                                className="p-1.5 rounded text-neutral-500 hover:text-brand-red hover:bg-red-50 transition-colors cursor-pointer"
                                                 title="Edit FAQ"
                                             >
                                                 <Edit2 className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(faq.id, faq.question)}
-                                                className="p-1.5 rounded text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                className="p-1.5 rounded text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                                                 title="Delete FAQ"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -357,7 +400,7 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
 
                             {filteredFaqs.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="py-12 text-center text-neutral-500">
+                                    <td colSpan={6} className="py-12 text-center text-neutral-500">
                                         <HelpCircle className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
                                         <p className="text-sm font-medium">No FAQs found.</p>
                                         <p className="text-xs text-neutral-400 mt-1">
@@ -386,6 +429,7 @@ export function FaqTableClient({ faqs: initialFaqs }: FaqTableClientProps) {
                             answer: editingFaq.answer,
                             sortOrder: editingFaq.sortOrder,
                             isPublished: editingFaq.isPublished,
+                            isFeatured: editingFaq.isFeatured,
                         }
                         : null
                 }

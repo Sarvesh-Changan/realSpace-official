@@ -59,6 +59,13 @@ enum CertificationType {
   REGISTRATION
 }
 
+enum PricingTier {
+  BUDGET
+  STANDARD
+  PREMIUM
+  LUXURY
+}
+
 // ---------- Core content ----------
 
 model Project {
@@ -85,16 +92,18 @@ model Project {
 }
 
 model ProjectImage {
-  id           String    @id @default(cuid())
-  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId    String
-  cloudinaryId String // public_id for transformations
-  url          String
-  mediaType    MediaType @default(IMAGE)
-  altText      String // required at input level for accessibility + SEO
-  sortOrder    Int       @default(0)
-  isCoverImage Boolean   @default(false)
-  createdAt    DateTime  @default(now())
+  id                String    @id @default(cuid())
+  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId         String
+  cloudinaryId      String // public_id for transformations
+  url               String
+  mediaType         MediaType @default(IMAGE)
+  thumbnailUrl      String?
+  thumbnailPublicId String?
+  altText           String // required at input level for accessibility + SEO
+  sortOrder         Int       @default(0)
+  isCoverImage      Boolean   @default(false)
+  createdAt         DateTime  @default(now())
 
   @@index([projectId])
 }
@@ -117,10 +126,18 @@ model Testimonial {
   clientName        String
   clientRole        String? // e.g. "Homeowner, Bhandup" — first name + locality only, per privacy norms
   quote             String   @db.Text
+  imageUrl          String?
+  imagePublicId     String?
+  imageUrls         String[] @default([])
+  imagePublicIds    String[] @default([])
   videoUrl          String?
   videoPublicId     String?
+  videoUrls         String[] @default([])
+  videoPublicIds    String[] @default([])
   thumbnailUrl      String?
   thumbnailPublicId String?
+  thumbnailUrls     String[] @default([])
+  thumbnailPublicIds String[] @default([])
   slug              String?  @unique
   location          String?
   projectType       String?
@@ -136,6 +153,7 @@ model FAQ {
   answer      String   @db.Text
   sortOrder   Int      @default(0)
   isPublished Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -197,6 +215,18 @@ model BhkRoomDefault {
   @@index([bhkOptionId])
 }
 
+model ComponentPricing {
+  id           String      @id @default(cuid())
+  componentKey String
+  tier         PricingTier
+  pricePerUnit Decimal     @db.Decimal(10, 2)
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([componentKey, tier])
+}
+
 model Lead {
   id                  String     @id @default(cuid())
   name                String
@@ -206,6 +236,7 @@ model Lead {
   requirements        String?    @db.Text
   source              LeadSource
   selections          Json? // snapshot of quote calculator selections at submission time
+  estimatedBudget     Int?
   estimatedBudgetLow  Int?
   estimatedBudgetHigh Int?
   status              LeadStatus @default(NEW)
@@ -230,17 +261,20 @@ model AdminUser {
 
 // Singleton row — enforced at the application layer (always id = "singleton")
 model SiteSettings {
-  id           String   @id @default("singleton")
-  companyName  String   @default("REALSPACE")
-  phone        String
-  whatsapp     String
-  email        String
-  address      String
-  socialLinks  Json? // { instagram, facebook, youtube }
-  heroHeadline String
-  heroSubhead  String
-  ctaText      String
-  updatedAt    DateTime @updatedAt
+  id                    String   @id @default("singleton")
+  companyName           String   @default("REALSPACE")
+  phone                 String
+  whatsapp              String
+  email                 String
+  address               String
+  socialLinks           Json? // { instagram, facebook, youtube }
+  heroHeadline          String
+  heroSubhead           String
+  ctaText               String
+  ownerPortraitUrl      String?
+  ownerPortraitPublicId String?
+  showOwnerPortrait     Boolean? @default(true)
+  updatedAt             DateTime @updatedAt
 }
 
 // ---------- OTP & Verification ----------
@@ -265,13 +299,14 @@ model EmailOtp {
 
 model Offer {
   id            String    @id @default(cuid())
-  title         String
-  description   String    @db.Text
+  title         String?
+  description   String?   @db.Text
   imageUrl      String?
   imagePublicId String?
   ctaLabel      String
   ctaLink       String
   isActive      Boolean   @default(true)
+  showOnHome    Boolean?  @default(false)
   startDate     DateTime?
   endDate       DateTime?
   sortOrder     Int       @default(0)
@@ -298,6 +333,8 @@ model GalleryImage {
   mediaType         MediaType       @default(IMAGE)
   cloudinaryId      String
   url               String
+  fileSizeBytes     Int?
+  cloudinaryEtag    String?
   theme             String?
   approxBudgetLabel String?
   description       String?         @db.Text
@@ -311,4 +348,46 @@ model GalleryImage {
   @@index([categoryId])
   @@index([designType, categoryId])
   @@index([isFeatured, isPublished])
+  @@index([cloudinaryEtag])
 }
+
+model Event {
+  id                 String       @id @default(cuid())
+  title              String
+  slug               String       @unique
+  coverImageUrl      String
+  coverImagePublicId String?
+  isPublished        Boolean      @default(true)
+  sortOrder          Int          @default(0)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  media              EventMedia[]
+}
+
+model EventMedia {
+  id            String    @id @default(cuid())
+  eventId       String
+  event         Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  mediaUrl      String
+  mediaPublicId String?
+  mediaType     MediaType
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  @@index([eventId])
+}
+
+model HomeGalleryImage {
+  id           String    @id @default(cuid())
+  title        String
+  altText      String?
+  url          String
+  cloudinaryId String?
+  sortOrder    Int       @default(0)
+  isPublished  Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([isPublished, sortOrder])
+}
+

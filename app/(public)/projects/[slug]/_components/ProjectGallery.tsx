@@ -10,9 +10,17 @@ const FALLBACK_IMAGE_URL =
   "/images/placeholder-image.png";
 
 export function ProjectGallery({ images }: { images: ProjectImage[] }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const coverIndex = images.findIndex((image) => image.isCoverImage);
+    return coverIndex >= 0 ? coverIndex : 0;
+  });
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [failedImageIds, setFailedImageIds] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const coverIndex = images.findIndex((image) => image.isCoverImage);
+    setActiveIndex(coverIndex >= 0 ? coverIndex : 0);
+  }, [images]);
 
   // Ensure activeIndex is within bounds if images change
   const currentMediaIndex = Math.min(activeIndex, Math.max(0, images.length - 1));
@@ -52,7 +60,7 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
       img.url?.match(/\.(mp4|mov|webm|ogv|m4v)(\?.*)?$/i);
 
     if (isVideo) {
-      return getVideoThumbnailUrl(img.url, img.mediaType);
+      return img.thumbnailUrl || getVideoThumbnailUrl(img.url, img.mediaType);
     }
 
     return getCloudinaryUrl(img.url, { width: isThumbnail ? 400 : 1600 });
@@ -98,7 +106,6 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
               sizes="(max-width: 1280px) 100vw, 1280px"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               onError={() => handleImageError(activeMedia.id, activeMedia.url)}
-              unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
             />
             {/* Expand Overlay Badge */}
             <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-black/60 backdrop-blur-md text-white text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full flex items-center gap-1.5 opacity-90 sm:opacity-80 sm:group-hover:opacity-100 transition-opacity">
@@ -156,7 +163,6 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
                   sizes="(max-width: 768px) 25vw, 12vw"
                   className="object-cover"
                   onError={() => handleImageError(img.id, img.url)}
-                  unoptimized={!img.url?.includes("res.cloudinary.com")}
                 />
                 {isVideo && (
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -221,7 +227,6 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
                   sizes="100vw"
                   className="object-contain"
                   onError={() => handleImageError(activeMedia.id, activeMedia.url)}
-                  unoptimized={!activeMedia?.url?.includes("res.cloudinary.com")}
                 />
               )}
             </div>
@@ -258,7 +263,6 @@ export function ProjectGallery({ images }: { images: ProjectImage[] }) {
                     sizes="56px"
                     className="object-cover"
                     onError={() => handleImageError(img.id, img.url)}
-                    unoptimized={!img.url?.includes("res.cloudinary.com")}
                   />
                 </button>
               ))}

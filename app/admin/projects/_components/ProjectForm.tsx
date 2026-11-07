@@ -1,16 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Plus, Trash2, GripVertical, Image as ImageIcon, Upload, Loader2 } from "lucide-react";
+import { Plus, Trash2, GripVertical, Image as ImageIcon, Upload, Loader2, Play } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/Button";
 import { projectSchema, type ProjectInput } from "../schema";
 import { getCloudinaryUrl, getVideoThumbnailUrl } from "@/lib/cloudinary";
-import { Play } from "lucide-react";
 
 export function ProjectForm({
     initialData,
@@ -23,6 +22,14 @@ export function ProjectForm({
     const [serverError, setServerError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [uploadingThumbIndex, setUploadingThumbIndex] = useState<number | null>(null);
+    const [activeThumbIndex, setActiveThumbIndex] = useState<number | null>(null);
+    const thumbFileInputRef = useRef<HTMLInputElement>(null);
+
+    const [coverImageIndex, setCoverImageIndex] = useState(() => {
+        const initialCoverIndex = initialData?.images.findIndex((image) => image.isCoverImage) ?? -1;
+        return initialCoverIndex >= 0 ? initialCoverIndex : 0;
+    });
 
     const {
         register,
@@ -76,10 +83,86 @@ export function ProjectForm({
         setValue("servicesUsed", servicesUsed.filter((t) => t !== tag), { shouldValidate: true });
     };
 
+    const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB limit
+
+    // Per-video Thumbnail Upload handler
+    const handleUploadVideoThumbnail = async (file: File, index: number) => {
+        if (!file.type.startsWith("image/")) {
+            setServerError("Please select a valid image file for thumbnail.");
+            return;
+        }
+        setUploadingThumbIndex(index);
+        setServerError(null);
+        try {
+            const signRes = await fetch("/api/cloudinary/sign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    folder: "realspace-projects",
+                    resourceType: "image",
+                }),
+            });
+
+            if (!signRes.ok) {
+                const errJson = await signRes.json().catch(() => ({}));
+                throw new Error(errJson.error || "Failed to get upload signature.");
+            }
+
+            const signData = await signRes.json();
+            const { signature, timestamp, folder, cloudName, apiKey } = signData;
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("api_key", apiKey || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "");
+            formData.append("timestamp", String(timestamp));
+            formData.append("signature", signature);
+            formData.append("folder", folder || "realspace-projects");
+
+            const targetCloud = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
+            const uploadRes = await fetch(
+                `https://api.cloudinary.com/v1_1/${targetCloud}/image/upload`,
+                { method: "POST", body: formData }
+            );
+
+            if (!uploadRes.ok) {
+                const uploadErr = await uploadRes.json().catch(() => ({}));
+                throw new Error(uploadErr.error?.message || "Thumbnail upload failed.");
+            }
+
+            const uploadData = await uploadRes.json();
+            setValue(`images.${index}.thumbnailUrl`, uploadData.secure_url || uploadData.url, { shouldDirty: true, shouldValidate: true });
+            setValue(`images.${index}.thumbnailPublicId`, uploadData.public_id, { shouldDirty: true, shouldValidate: true });
+        } catch (err: any) {
+            console.error("Thumbnail upload error:", err);
+            setServerError(err.message || "Failed to upload video thumbnail.");
+        } finally {
+            setUploadingThumbIndex(null);
+            setActiveThumbIndex(null);
+        }
+    };
+
+    const handleRemoveVideoThumbnail = (index: number) => {
+        setValue(`images.${index}.thumbnailUrl`, undefined, { shouldDirty: true, shouldValidate: true });
+        setValue(`images.${index}.thumbnailPublicId`, undefined, { shouldDirty: true, shouldValidate: true });
+    };
+
     // Direct Signed Cloudinary File Upload handler
     const handleDirectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
+
+        // Pre-upload validation: Check all files against 100MB limit BEFORE upload begins
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                const errMsg = `File "${file.name}" (${sizeMB}MB) exceeds the 100MB limit — please compress the video or choose a shorter clip.`;
+                setServerError(errMsg);
+                e.target.value = "";
+                document.getElementById("cloudinary-media-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
+        }
 
         setIsUploading(true);
         setServerError(null);
@@ -87,12 +170,18 @@ export function ProjectForm({
         try {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
+                const isVideo =
+                  file.type.startsWith("video/") ||
+                  Boolean(file.name.match(/\.(mp4|mov|webm|ogv|m4v)$/i));
 
                 // 1. Fetch signature from API endpoint per SECURITY.md §4
                 const signRes = await fetch("/api/cloudinary/sign", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ paramsToSign: {} }),
+                    body: JSON.stringify({
+                        folder: "realspace-projects",
+                        resourceType: isVideo ? "video" : "image",
+                    }),
                 });
 
                 if (!signRes.ok) {
@@ -100,19 +189,24 @@ export function ProjectForm({
                     throw new Error(errJson.error || "Failed to get upload signature from server.");
                 }
 
-                const { signature, timestamp, folder, cloudName, apiKey } = await signRes.json();
+                const signData = await signRes.json();
+                const { signature, timestamp, folder, cloudName, apiKey } = signData;
+
+                if (!signature || !timestamp) {
+                    throw new Error(
+                        signData.error ||
+                        "Cloudinary signing failed: the server did not return a signature and timestamp."
+                    );
+                }
 
                 // 2. Upload file directly from browser to Cloudinary
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("api_key", apiKey || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "");
-                formData.append("timestamp", timestamp.toString());
+                formData.append("timestamp", String(timestamp));
                 formData.append("signature", signature);
                 formData.append("folder", folder || "realspace-projects");
 
-                const isVideo =
-                  file.type.startsWith("video/") ||
-                  Boolean(file.name.match(/\.(mp4|mov|webm|ogv|m4v)$/i));
                 const resourceType = isVideo ? "video" : "auto";
 
                 const targetCloud = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
@@ -144,7 +238,9 @@ export function ProjectForm({
             }
         } catch (err: any) {
             console.error("Direct upload error:", err);
-            setServerError(err.message || "Failed to upload image to Cloudinary.");
+            const errMsg = err.message || "Failed to upload image to Cloudinary.";
+            setServerError(errMsg);
+            document.getElementById("cloudinary-media-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
         } finally {
             setIsUploading(false);
             e.target.value = "";
@@ -155,12 +251,17 @@ export function ProjectForm({
         setServerError(null);
         setIsSubmitting(true);
 
+        const normalizedImages = data.images.map((image, index) => ({
+            ...image,
+            isCoverImage: index === coverImageIndex,
+        }));
+
         if (!data.slug) {
             data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         }
 
         try {
-            const result = await onSubmitAction(data);
+            const result = await onSubmitAction({ ...data, images: normalizedImages });
             if (!result.success) {
                 setServerError(result.error || "Failed to save project.");
             } else {
@@ -177,6 +278,21 @@ export function ProjectForm({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
+            {/* Hidden Single-Image File Picker for Per-Video Thumbnail */}
+            <input
+                ref={thumbFileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && activeThumbIndex !== null) {
+                        void handleUploadVideoThumbnail(file, activeThumbIndex);
+                    }
+                    e.target.value = "";
+                }}
+            />
+
             {serverError && (
                 <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200 text-sm">
                     {serverError}
@@ -345,14 +461,19 @@ export function ProjectForm({
             </div>
 
             {/* Cloudinary Media Section */}
-            <div className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm space-y-4">
+            <div id="cloudinary-media-section" className="bg-white p-6 rounded-lg border border-neutral-200 shadow-sm space-y-4">
+                {serverError && (
+                    <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200 text-sm font-medium">
+                        {serverError}
+                    </div>
+                )}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 pb-4">
                     <div>
                         <h2 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
                             <ImageIcon className="w-5 h-5 text-brand-red" /> Cloudinary Media Handling
                         </h2>
                         <p className="text-xs text-neutral-500 mt-0.5">
-                            Direct signed upload to Cloudinary folder <code className="bg-neutral-100 px-1 py-0.5 rounded text-neutral-700 font-mono">realspace-projects</code>.
+                            Direct signed upload to Cloudinary folder <code className="bg-neutral-100 px-1 py-0.5 rounded text-neutral-700 font-mono">realspace-projects</code> (Max file size: 100MB).
                         </p>
                     </div>
 
@@ -382,8 +503,10 @@ export function ProjectForm({
                                 sources: ["local", "url"],
                                 folder: "realspace-projects",
                                 clientAllowedFormats: ["png", "jpg", "jpeg", "webp", "avif", "mp4", "mov"],
+                                maxFileSize: MAX_FILE_SIZE_BYTES,
                             }}
                             onSuccess={(result: any) => {
+                                setServerError(null);
                                 if (result?.info) {
                                     append({
                                         url: result.info.secure_url || result.info.url,
@@ -394,6 +517,14 @@ export function ProjectForm({
                                         sortOrder: fields.length,
                                     });
                                 }
+                            }}
+                            onError={(error: any) => {
+                                console.error("Cloudinary widget error:", error);
+                                const errorMsg = typeof error === "string"
+                                    ? error
+                                    : error?.statusText || error?.message || "Cloudinary widget upload failed. Please ensure file size is under 100MB.";
+                                setServerError(`Upload failed: ${errorMsg}`);
+                                document.getElementById("cloudinary-media-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
                             }}
                         >
                             {({ open }) => (
@@ -418,8 +549,13 @@ export function ProjectForm({
                 <div className="space-y-4">
                     {fields.map((field, index) => {
                         const currentUrl = watchedImages[index]?.url || field.url;
-                        const currentCloudinaryId = watchedImages[index]?.cloudinaryId || field.cloudinaryId;
-                        const isCover = watchedImages[index]?.isCoverImage ?? field.isCoverImage;
+                        const currentThumbUrl = watchedImages[index]?.thumbnailUrl ?? field.thumbnailUrl;
+                        const isCover = coverImageIndex === index;
+                        const isVideo =
+                            watchedImages[index]?.mediaType === "VIDEO" ||
+                            field.mediaType === "VIDEO" ||
+                            Boolean(currentUrl.match(/\.(mp4|mov|webm|ogv|m4v)/i)) ||
+                            currentUrl.includes("/video/upload/");
 
                         return (
                             <div key={field.id} className="flex flex-col md:flex-row items-start gap-4 p-4 border border-neutral-200 rounded-md bg-neutral-50/50">
@@ -433,16 +569,16 @@ export function ProjectForm({
                                         <>
                                             <Image
                                                 src={
-                                                    (watchedImages[index]?.mediaType === "VIDEO" || field.mediaType === "VIDEO" || currentUrl.match(/\.(mp4|mov|webm|ogv|m4v)/i) || currentUrl.includes("/video/upload/"))
-                                                        ? getVideoThumbnailUrl(currentUrl, "VIDEO")
+                                                    isVideo
+                                                        ? (currentThumbUrl || getVideoThumbnailUrl(currentUrl, "VIDEO"))
                                                         : getCloudinaryUrl(currentUrl, { width: 200, height: 200, crop: "fill" })
                                                 }
                                                 alt="Preview"
                                                 fill
                                                 className="object-cover"
-                                                unoptimized={!currentUrl.includes("res.cloudinary.com")}
+                                                unoptimized={!currentUrl.includes("res.cloudinary.com") && !currentThumbUrl?.includes("res.cloudinary.com")}
                                             />
-                                            {(watchedImages[index]?.mediaType === "VIDEO" || field.mediaType === "VIDEO" || currentUrl.match(/\.(mp4|mov|webm|ogv|m4v)/i) || currentUrl.includes("/video/upload/")) && (
+                                            {isVideo && (
                                                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
                                                     <div className="w-7 h-7 rounded-full bg-brand-red text-white flex items-center justify-center shadow">
                                                         <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
@@ -487,16 +623,113 @@ export function ProjectForm({
                                     </div>
 
                                     <input type="hidden" {...register(`images.${index}.url`)} />
+                                    <input type="hidden" {...register(`images.${index}.mediaType`)} />
+                                    <input type="hidden" {...register(`images.${index}.thumbnailUrl`)} />
+                                    <input type="hidden" {...register(`images.${index}.thumbnailPublicId`)} />
                                     <input type="hidden" {...register(`images.${index}.sortOrder`, { valueAsNumber: true })} />
+
+                                    {/* Per-Video Thumbnail Control Section */}
+                                    {isVideo && (
+                                        <div className="md:col-span-2 mt-1 p-3 rounded-md border text-xs bg-white space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="font-semibold text-neutral-800 flex items-center gap-1.5">
+                                                    <Play className="w-3.5 h-3.5 text-brand-red fill-current" /> Video Thumbnail
+                                                </span>
+                                                {currentThumbUrl ? (
+                                                    <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                                        Custom Thumbnail Attached
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[11px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
+                                                        ⚠️ No thumbnail — add one
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {currentThumbUrl ? (
+                                                <div className="flex items-center justify-between gap-3 pt-1 border-t border-neutral-100">
+                                                    <div className="flex items-center gap-2 min-w-0">
+                                                        <div className="relative w-10 h-10 rounded border overflow-hidden flex-shrink-0 bg-neutral-100">
+                                                            <Image
+                                                                src={currentThumbUrl}
+                                                                alt="Video Thumbnail"
+                                                                fill
+                                                                className="object-cover"
+                                                            />
+                                                        </div>
+                                                        <span className="truncate text-neutral-600 font-mono text-[11px]" title={currentThumbUrl}>
+                                                            {currentThumbUrl}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                                        <button
+                                                            type="button"
+                                                            disabled={uploadingThumbIndex === index}
+                                                            onClick={() => {
+                                                                setActiveThumbIndex(index);
+                                                                thumbFileInputRef.current?.click();
+                                                            }}
+                                                            className="px-2.5 py-1 text-[11px] font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded border border-neutral-300 transition-colors cursor-pointer"
+                                                        >
+                                                            {uploadingThumbIndex === index ? "Uploading..." : "Change Thumbnail"}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveVideoThumbnail(index)}
+                                                            className="px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-between gap-2 pt-1 border-t border-amber-100/80 bg-amber-50/50 p-2 rounded">
+                                                    <p className="text-[11px] text-amber-800">
+                                                        No thumbnail attached yet. Add a custom thumbnail for video cards across the site.
+                                                    </p>
+                                                    <button
+                                                        type="button"
+                                                        disabled={uploadingThumbIndex === index}
+                                                        onClick={() => {
+                                                            setActiveThumbIndex(index);
+                                                            thumbFileInputRef.current?.click();
+                                                        }}
+                                                        className="px-3 py-1 text-[11px] font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded shadow-xs transition-colors flex-shrink-0 flex items-center gap-1 cursor-pointer"
+                                                    >
+                                                        {uploadingThumbIndex === index ? (
+                                                            <>
+                                                                <Loader2 className="w-3 h-3 animate-spin" /> Uploading...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Upload className="w-3 h-3" /> Add Thumbnail
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     <div className="md:col-span-2 flex items-center justify-between pt-2 border-t border-neutral-200/60">
                                         <label className="flex items-center gap-2 cursor-pointer text-sm">
                                             <input
                                                 type="radio"
                                                 name="coverImageRadio"
-                                                checked={Boolean(isCover)}
+                                                checked={coverImageIndex === index}
                                                 onChange={() => {
-                                                    fields.forEach((_, i) => setValue(`images.${i}.isCoverImage`, i === index));
+                                                    setCoverImageIndex(index);
+                                                    setValue(
+                                                        "images",
+                                                        watchedImages.map((image, i) => ({
+                                                            ...image,
+                                                            isCoverImage: i === index,
+                                                        })),
+                                                        {
+                                                            shouldDirty: true,
+                                                            shouldValidate: true,
+                                                        }
+                                                    );
                                                 }}
                                                 className="text-brand-red focus:ring-brand-red"
                                             />
@@ -507,7 +740,16 @@ export function ProjectForm({
 
                                         <button
                                             type="button"
-                                            onClick={() => remove(index)}
+                                            onClick={() => {
+                                                remove(index);
+                                                setCoverImageIndex((currentIndex) =>
+                                                    currentIndex === index
+                                                        ? Math.max(0, index - 1)
+                                                        : currentIndex > index
+                                                            ? currentIndex - 1
+                                                            : currentIndex
+                                                );
+                                            }}
                                             className="text-neutral-500 hover:text-red-600 flex items-center gap-1 text-xs font-medium transition-colors"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" /> Remove Image

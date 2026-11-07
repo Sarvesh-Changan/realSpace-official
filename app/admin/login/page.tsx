@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { loginSchema, type LoginInput } from "./schema";
 import { loginServerAction } from "./actions";
-import { ResetPasswordFlow } from "./reset-password/page";
+import { ResetPasswordFlow } from "./reset-password/ResetPasswordFlow";
 
 export default function AdminLoginPage() {
   const [serverError, setServerError] = useState<string | null>(null);

@@ -391,3 +391,195 @@ model HomeGalleryImage {
   @@index([isPublished, sortOrder])
 }
 
+// ==========================================
+// RERA SUB-SITE ENUMS & MODELS
+// ==========================================
+
+enum ReraListingType {
+  SALE
+  RENT
+}
+
+enum ReraPropertyType {
+  APARTMENT
+  VILLA
+  COMMERCIAL
+  PLOT
+  OTHER
+}
+
+enum ReraInterest {
+  BUY
+  SELL
+  RENT
+  OTHER
+}
+
+enum ReraGalleryCategory {
+  RESIDENTIAL
+  COMMERCIAL
+  ONGOING
+  HANDOVER
+  OTHER
+}
+
+enum ReraEnquirySource {
+  CONTACT_FORM
+  CALLBACK
+  PROPERTY_ENQUIRY
+}
+
+// Singleton row (id = "singleton"), same pattern as SiteSettings
+model ReraSettings {
+  id                   String   @id @default("singleton")
+  brokerName           String   @default("")
+  tagline              String?
+  reraRegistrationNo   String?  // shown publicly ONLY when non-empty
+  reraRegisteredName   String?
+  reraVerifyUrl        String?
+  phone                String?
+  altPhone             String?
+  whatsapp             String?
+  email                String?
+  address              String?  @db.Text
+  officeHours          String?
+  socialLinks          Json?    // { instagram, facebook, youtube, linkedin }
+  heroHeadline         String   @default("Find Your Dream Home in Thane")
+  heroSubhead          String?  @db.Text
+  heroImageUrl         String?
+  heroImagePublicId    String?
+  welcomeTitle         String?
+  welcomeBody          String?  @db.Text
+  aboutTitle           String?
+  aboutBody            String?  @db.Text
+  founderName          String?
+  founderRole          String?
+  founderImageUrl      String?
+  founderImagePublicId String?
+  yearsExperience      Int?
+  happyFamilies        Int?
+  propertiesClosed     Int?
+  areasServed          String[] @default([])
+  updatedAt            DateTime @updatedAt
+}
+
+model ReraService {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  iconKey     String?  // maps to a predefined icon set
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// "Popular Configurations" cards, e.g. 2 BHK starting from ...
+model ReraConfiguration {
+  id                 String   @id @default(cuid())
+  label              String   // "2 BHK"
+  startingPriceLabel String   // "Starting from 67 Lakh"
+  carpetAreaLabel    String?  // "Carpet 650 sq ft"
+  imageUrl           String?
+  imagePublicId      String?
+  sortOrder          Int      @default(0)
+  isPublished        Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model ReraProperty {
+  id                 String              @id @default(cuid())
+  title              String
+  slug               String              @unique
+  listingType        ReraListingType     @default(SALE)
+  propertyType       ReraPropertyType    @default(APARTMENT)
+  bhkLabel           String?             // "2 BHK"
+  carpetAreaSqFt     Int?
+  priceLabel         String              // display text, e.g. "67 Lakh" or "25,000 / month"
+  locality           String
+  city               String              @default("Thane")
+  projectName        String?
+  builderName        String?
+  projectReraNo      String?             // shown on the card when present
+  possession         String?
+  description        String?             @db.Text
+  coverImageUrl      String?
+  coverImagePublicId String?
+  isFeatured         Boolean             @default(false)
+  isPublished        Boolean             @default(true)
+  sortOrder          Int                 @default(0)
+  images             ReraPropertyImage[]
+  enquiries          ReraEnquiry[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([isPublished, isFeatured])
+  @@index([listingType, propertyType])
+}
+
+model ReraPropertyImage {
+  id         String       @id @default(cuid())
+  property   ReraProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+  url        String
+  publicId   String?
+  mediaType  MediaType    @default(IMAGE)
+  altText    String
+  sortOrder  Int          @default(0)
+  createdAt  DateTime     @default(now())
+
+  @@index([propertyId])
+}
+
+model ReraBuilderPartner {
+  id           String   @id @default(cuid())
+  name         String
+  logoUrl      String
+  logoPublicId String?
+  websiteUrl   String?
+  sortOrder    Int      @default(0)
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model ReraGalleryItem {
+  id                String              @id @default(cuid())
+  title             String
+  category          ReraGalleryCategory @default(RESIDENTIAL)
+  mediaType         MediaType           @default(IMAGE)
+  url               String
+  publicId          String?
+  thumbnailUrl      String?             // poster for videos
+  thumbnailPublicId String?
+  fileSizeBytes     Int?
+  cloudinaryEtag    String?             // duplicate detection, same idea as GalleryImage
+  sortOrder         Int                 @default(0)
+  isPublished       Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+
+  @@index([category, isPublished])
+}
+
+model ReraEnquiry {
+  id           String            @id @default(cuid())
+  name         String
+  phone        String
+  email        String?
+  interestedIn ReraInterest      @default(BUY)
+  budgetLabel  String?
+  locality     String?
+  message      String?           @db.Text
+  source       ReraEnquirySource @default(CONTACT_FORM)
+  property     ReraProperty?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  propertyId   String?
+  status       LeadStatus        @default(NEW)
+  notes        String?           @db.Text
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+

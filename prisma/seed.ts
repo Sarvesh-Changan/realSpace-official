@@ -253,6 +253,59 @@ async function main() {
 
   console.log(`Seeded ${galleryCategories.length} gallery categories.`);
 
+  // 8. Seed ReraSettings (singleton if does not exist)
+  const existingReraSettings = await prisma.reraSettings.findUnique({
+    where: { id: "singleton" },
+  });
+
+  if (!existingReraSettings) {
+    await prisma.reraSettings.create({
+      data: {
+        id: "singleton",
+        brokerName: "",
+        heroHeadline: "Find Your Dream Home in Thane",
+        reraRegistrationNo: null,
+      },
+    });
+    console.log("Seeded ReraSettings singleton.");
+  } else {
+    console.log("ReraSettings singleton already exists.");
+  }
+
+  // 9. Seed ReraServices (three rows if none exist)
+  const reraServicesCount = await prisma.reraService.count();
+  if (reraServicesCount === 0) {
+    const reraServices = [
+      {
+        title: "Buying a Property",
+        description: "Expert guidance to help you find and purchase verified RERA-approved properties in Thane.",
+        sortOrder: 0,
+        isPublished: true,
+      },
+      {
+        title: "Selling a Property",
+        description: "Seamless assistance to list, market, and sell your property at the best market value.",
+        sortOrder: 1,
+        isPublished: true,
+      },
+      {
+        title: "Renting a Property",
+        description: "Comprehensive support to find trusted tenants or rent quality residential and commercial spaces.",
+        sortOrder: 2,
+        isPublished: true,
+      },
+    ];
+
+    for (const service of reraServices) {
+      await prisma.reraService.create({
+        data: service,
+      });
+    }
+    console.log(`Seeded ${reraServices.length} default RERA services.`);
+  } else {
+    console.log(`ReraService rows already exist (${reraServicesCount} found).`);
+  }
+
   console.log("Database seeding completed successfully.");
 }
 

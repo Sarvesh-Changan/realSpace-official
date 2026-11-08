@@ -49,6 +49,10 @@ export async function POST(request: Request) {
       "testimonials",
       "realspace-events",
       "events",
+      // RERA sub-site folders
+      "rera-properties",
+      "rera-gallery",
+      "rera-general",
     ];
     const requestedFolder = body.folder;
     const folder = allowedFolders.includes(requestedFolder)
@@ -66,9 +70,16 @@ export async function POST(request: Request) {
     const isEventsUpload = folder === "events" || folder === "realspace-events";
     const isProjectsUpload = folder === "realspace-projects";
     const isGalleryUpload = folder === "realspace-gallery";
+    const isReraPropertiesUpload = folder === "rera-properties";
+    const isReraGalleryUpload = folder === "rera-gallery";
 
     const isVideoSupportedFolder =
-      isTestimonialUpload || isEventsUpload || isProjectsUpload || isGalleryUpload;
+      isTestimonialUpload ||
+      isEventsUpload ||
+      isProjectsUpload ||
+      isGalleryUpload ||
+      isReraPropertiesUpload ||
+      isReraGalleryUpload;
 
     let resourceType = "image";
     if (isVideoSupportedFolder) {

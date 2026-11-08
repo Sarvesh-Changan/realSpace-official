@@ -1,0 +1,88 @@
+import { Testimonial } from '@/types';
+
+export const testimonialsData: Testimonial[] = [
+  {
+    id: 'test-1',
+    author: 'Rajesh & Sonal Mehta',
+    role: 'Vice President, Financial Services',
+    society: 'Godrej Alive',
+    location: 'Teen Hath Naka, Thane',
+    propertyOrProject: '3 BHK Sky Deck Penthouse',
+    rating: 5,
+    comment:
+      'Vijay Chawan and the Arnav Properties team made our dream home purchase seamless. From negotiating exceptional pricing with the builder to managing all MahaRERA documentation and executing an Italian marble interior fitout through REALSPACE, their attention to craft is extraordinary.',
+    serviceType: 'Property Buying',
+    date: 'February 2026',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    id: 'test-2',
+    author: 'Dr. Ananya Deshmukh',
+    role: 'Senior Consultant Surgeon',
+    society: 'Lodha Crown',
+    location: 'Majiwada, Thane',
+    propertyOrProject: '2 BHK Luxury Residence',
+    rating: 5,
+    comment:
+      'Finding an honest real estate partner in Thane can be difficult, but Arnav Properties operates with radical transparency. No hidden charges, strict compliance with RERA standards, and the REALSPACE modular kitchen design was delivered right on time in 40 days!',
+    serviceType: 'Interior Fitout',
+    date: 'January 2026',
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    id: 'test-3',
+    author: 'Vikramaditya Kulkarni',
+    role: 'Managing Director, CloudTech Solutions',
+    society: 'O22 Business Park',
+    location: 'Wagle Estate, Thane',
+    propertyOrProject: '3,800 sq.ft Corporate Office',
+    rating: 5,
+    comment:
+      'We leased our regional headquarters at O22 Business Park through Arnav Properties. Their commercial team understood our power, parking, and floor plate needs instantly. REALSPACE also designed our executive boardroom and acoustic workstations. Outstanding professionalism!',
+    serviceType: 'Commercial Office',
+    date: 'December 2025',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    id: 'test-4',
+    author: 'Pooja & Sameer Nadkarni',
+    role: 'Software Architect & UX Director',
+    society: 'ACE Homes',
+    location: 'Kasarvadavli Lake, Ghodbunder Road',
+    propertyOrProject: '2 BHK Lake-Facing Apartment',
+    rating: 5,
+    comment:
+      'We booked our lake-view flat at ACE Homes through Arnav Properties with zero brokerage. Vijay Chawan guided us on the future metro connectivity and value appreciation. They also assisted with SBI home loan approval within 48 hours.',
+    serviceType: 'Property Buying',
+    date: 'November 2025',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    id: 'test-5',
+    author: 'Prashant Iyer',
+    role: 'NRI Investor (Singapore)',
+    society: 'Lodha Splendora',
+    location: 'Ghodbunder Road, Thane',
+    propertyOrProject: 'Riverfront Investment Apartment',
+    rating: 5,
+    comment:
+      'Managing properties remotely from Singapore seemed daunting until I partnered with Arnav Properties. They secured high-quality corporate tenants, drafted the registered leave & license agreement, and oversee all regular property upkeep with video logs.',
+    serviceType: 'Rental & Lease',
+    date: 'October 2025',
+    avatarUrl: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    id: 'test-6',
+    author: 'Kavita Singhal',
+    role: 'Art Collector & Entrepreneur',
+    society: 'Sheth Avalon',
+    location: 'Viviana Mall Junction, Thane',
+    propertyOrProject: 'Duplex Penthouse Interior Architecture',
+    rating: 5,
+    comment:
+      'Vijay Chawan’s design vocabulary for REALSPACE is world-class. From fluted brass details to bespoke lighting and curved stone countertops, our penthouse feels like a 5-star European boutique hotel. Truly master craftsmanship.',
+    serviceType: 'Interior Fitout',
+    date: 'September 2025',
+    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80',
+  },
+];

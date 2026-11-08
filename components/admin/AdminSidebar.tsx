@@ -16,11 +16,18 @@ import {
   Users,
   Calendar,
   Settings,
+  Building2,
+  MapPin,
+  Wrench,
+  FileText,
+  BarChart3,
+  Home,
 } from "lucide-react";
 import clsx from "clsx";
 
-const navItems = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+const dashboardItem = { name: "Dashboard", href: "/admin", icon: LayoutDashboard };
+
+const interiorItems = [
   { name: "Projects", href: "/admin/projects", icon: FolderOpen },
   { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
   { name: "Certifications", href: "/admin/certifications", icon: Award },
@@ -34,6 +41,16 @@ const navItems = [
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
+const reraItems = [
+  { name: "Settings", href: "/admin/rera/settings", icon: Settings },
+  { name: "Properties", href: "/admin/rera/properties", icon: Home },
+  { name: "Services", href: "/admin/rera/services", icon: Wrench },
+  { name: "Configurations", href: "/admin/rera/configurations", icon: Layers },
+  { name: "Builder Partners", href: "/admin/rera/builders", icon: Building2 },
+  { name: "Gallery", href: "/admin/rera/gallery", icon: ImageIcon },
+  { name: "Enquiries", href: "/admin/rera/enquiries", icon: FileText },
+];
+
 import { X } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -44,36 +61,65 @@ interface AdminSidebarProps {
 export function AdminSidebar({ mobileOpen = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
 
+  const isItemActive = (href: string) =>
+    href === "/admin"
+      ? pathname === "/admin"
+      : pathname.startsWith(href);
+
+  const renderNavItem = (item: { name: string; href: string; icon: React.ElementType }) => {
+    const isActive = isItemActive(item.href);
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={onClose}
+        className={clsx(
+          "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]",
+          isActive
+            ? "bg-red-50 text-brand-red font-semibold"
+            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
+        )}
+      >
+        <Icon
+          className={clsx(
+            "mr-3 flex-shrink-0 h-5 w-5",
+            isActive ? "text-brand-red" : "text-neutral-400"
+          )}
+        />
+        {item.name}
+      </Link>
+    );
+  };
+
   const renderNav = () => (
     <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-      {navItems.map((item) => {
-        const isActive =
-          item.href === "/admin"
-            ? pathname === "/admin"
-            : pathname.startsWith(item.href);
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.name}
-            href={item.href}
-            onClick={onClose}
-            className={clsx(
-              "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]",
-              isActive
-                ? "bg-red-50 text-brand-red font-semibold"
-                : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
-            )}
-          >
-            <Icon
-              className={clsx(
-                "mr-3 flex-shrink-0 h-5 w-5",
-                isActive ? "text-brand-red" : "text-neutral-400"
-              )}
-            />
-            {item.name}
-          </Link>
-        );
-      })}
+      {/* Dashboard — always at top */}
+      {renderNavItem(dashboardItem)}
+
+      {/* Interior Design group */}
+      <div className="pt-4">
+        <div className="px-3 pb-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+            Interior Design
+          </span>
+        </div>
+        <div className="space-y-0.5">
+          {interiorItems.map(renderNavItem)}
+        </div>
+      </div>
+
+      {/* RERA Realty group */}
+      <div className="pt-4">
+        <div className="px-3 pb-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+            RERA Realty
+          </span>
+        </div>
+        <div className="space-y-0.5">
+          {reraItems.map(renderNavItem)}
+        </div>
+      </div>
     </nav>
   );
 

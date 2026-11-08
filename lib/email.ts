@@ -124,3 +124,90 @@ export async function sendOtpEmail(
     };
   }
 }
+
+export interface ReraEnquiryNotificationData {
+  name: string;
+  phone: string;
+  email?: string | null;
+  interestedIn: string;
+  budgetLabel?: string | null;
+  locality?: string | null;
+  message?: string | null;
+  source: string;
+  propertyTitle?: string | null;
+  details?: Record<string, string> | null;
+  createdAt?: Date | string;
+}
+
+/**
+ * Sends a notification email to admins when a new RERA enquiry is submitted.
+ * Recipient: ReraSettings.email, falling back to SiteSettings.email.
+ */
+export async function sendReraEnquiryNotification(
+  enquiry: ReraEnquiryNotificationData
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const [reraSettings, siteSettings] = await Promise.all([
+      prisma.reraSettings.findUnique({ where: { id: "singleton" } }),
+      prisma.siteSettings.findFirst(),
+    ]);
+
+    const adminEmail =
+      process.env.RESEND_TO_EMAIL?.trim() ||
+      reraSettings?.email?.trim() ||
+      siteSettings?.email?.trim();
+
+    if (!adminEmail) {
+      console.warn("RERA enquiry notification warning: Admin email address not configured.");
+      return { success: false, error: "Recipient email not configured." };
+    }
+
+    const timestamp = enquiry.createdAt
+      ? typeof enquiry.createdAt === "string"
+        ? enquiry.createdAt
+        : enquiry.createdAt.toISOString()
+      : new Date().toISOString();
+
+    let detailsText = "";
+    if (enquiry.details && Object.keys(enquiry.details).length > 0) {
+      detailsText =
+        "\nAdditional Details:\n" +
+        Object.entries(enquiry.details)
+          .map(([k, v]) => `  ${k}: ${v}`)
+          .join("\n");
+    }
+
+    const bodyText = `New RERA Enquiry Received
+
+Source: ${enquiry.source}
+Submitted At: ${timestamp}
+${enquiry.propertyTitle ? `Property: ${enquiry.propertyTitle}\n` : ""}
+Name: ${enquiry.name}
+Phone: ${enquiry.phone}
+Email: ${enquiry.email || "Not provided"}
+Interested In: ${enquiry.interestedIn}
+Locality: ${enquiry.locality || "Not specified"}
+Budget: ${enquiry.budgetLabel || "Not specified"}
+${enquiry.message ? `\nMessage:\n${enquiry.message}\n` : ""}${detailsText}
+`;
+
+    const fromAddress = process.env.GMAIL_USER
+      ? `REALSPACE RERA <${process.env.GMAIL_USER}>`
+      : "REALSPACE RERA <noreply@gmail.com>";
+
+    await transporter.sendMail({
+      from: fromAddress,
+      to: adminEmail,
+      subject: `New RERA Enquiry [${enquiry.source}]: ${enquiry.name}`,
+      text: bodyText,
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Gmail SMTP error sending RERA enquiry notification:", error instanceof Error ? error.message : "Unknown error");
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}

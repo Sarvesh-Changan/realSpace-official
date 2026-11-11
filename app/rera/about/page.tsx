@@ -6,9 +6,6 @@ import {
   Award,
   MapPin,
   ArrowRight,
-  ExternalLink,
-  Building,
-  Users,
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
@@ -75,7 +72,6 @@ export default async function AboutPage() {
       ];
 
   const areasServed = settings?.areasServed ?? [];
-  const verifyUrl = settings?.reraVerifyUrl || 'https://maharera.mahaonline.gov.in';
 
   return (
     <div className="w-full bg-[#F8F5F1]">
@@ -235,67 +231,6 @@ export default async function AboutPage() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 04. Statutory MahaRERA Registration Card (ONLY when reraRegistrationNo is set) */}
-      {reraRegNo && (
-        <section id="maharera" className="bg-[#EEE6DD] border-b border-[#E8E2DA] py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-8">
-            <div className="bg-white border border-[#E8E2DA] p-8 md:p-12 shadow-sm">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <div className="lg:col-span-8 space-y-4">
-                  <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C8A96A]">
-                    <ShieldCheck className="w-5 h-5" />
-                    Statutory MahaRERA Registration
-                  </div>
-                  <h3 className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
-                    Official Registration No: {reraRegNo}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#444444] leading-relaxed">
-                    Maharashtra Real Estate Regulatory Authority (MahaRERA) mandates strict
-                    compliance for brokers and real estate agents. We adhere to rigorous disclosure
-                    guidelines, ensuring you receive true pricing, validated carpet areas, approved
-                    master plans, and legal title certifications.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 pt-2 text-xs">
-                    <a
-                      href={verifyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-[#0088CC] font-semibold hover:underline"
-                    >
-                      <span>Verify on official MahaRERA Portal</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    {settings?.reraRegisteredName && (
-                      <>
-                        <span className="text-[#A39E98]">|</span>
-                        <span className="text-[#6D6A66]">
-                          Registered Name: {settings.reraRegisteredName}
-                        </span>
-                      </>
-                    )}
-                    <span className="text-[#A39E98]">|</span>
-                    <span className="text-[#6D6A66]">Jurisdiction: Maharashtra</span>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-4 p-6 bg-[#F8F5F1] border border-[#E8E2DA] text-center space-y-3">
-                  <div className="font-heading text-3xl font-bold text-[#C8A96A] tabular-nums">
-                    100%
-                  </div>
-                  <div className="text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider">
-                    RERA Compliance Mandate
-                  </div>
-                  <p className="text-[11px] text-[#6D6A66] leading-relaxed">
-                    Every residential project, floor layout, and commercial unit presented has
-                    passed statutory legal title checks.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </section>

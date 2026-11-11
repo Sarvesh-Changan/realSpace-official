@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
-import { EMICalculator } from '@/components/rera/EMICalculator';
 
 interface SerializedService {
   id: string;
@@ -186,12 +185,7 @@ export default async function ServicesPage() {
         </section>
       )}
 
-      {/* 03. Embedded EMI Loan Calculator Section */}
-      <section id="calculator" className="max-w-7xl mx-auto px-4 sm:px-8 py-20">
-        <EMICalculator />
-      </section>
-
-      {/* 04. Assistance Action Strip */}
+      {/* 03. Assistance Action Strip */}
       <section className="bg-[#EEE6DD] border-t border-[#E8E2DA] py-14">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C] mb-3">

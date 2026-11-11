@@ -155,6 +155,27 @@ export default async function HomePage() {
       ? settings.reraRegistrationNo
       : null;
 
+  const heroSlides = (() => {
+    if (!settings?.heroSlidesJson) return [];
+    try {
+      const parsed: unknown = JSON.parse(settings.heroSlidesJson);
+      return Array.isArray(parsed)
+        ? parsed.filter((slide): slide is { imageUrl: string; heading?: string; subheading?: string; buttonText?: string; slug?: string } =>
+            Boolean(slide && typeof slide.imageUrl === 'string' && slide.imageUrl.trim())
+          )
+        : [];
+    } catch {
+      return [];
+    }
+  })();
+
+  const bhkShowcase = [
+    settings?.bhk1ImageUrl ? { label: settings.bhk1Type, image: settings.bhk1ImageUrl, price: settings.bhk1Price } : null,
+    settings?.bhk2ImageUrl ? { label: settings.bhk2Type, image: settings.bhk2ImageUrl, price: settings.bhk2Price } : null,
+    settings?.bhk3ImageUrl ? { label: settings.bhk3Type, image: settings.bhk3ImageUrl, price: settings.bhk3Price } : null,
+  ];
+  const [oneBhk, twoBhk, threeBhk] = bhkShowcase;
+
   return (
     <div className="w-full">
       {/* Hero Showcase Section */}
@@ -162,6 +183,8 @@ export default async function HomePage() {
         heroHeadline={settings?.heroHeadline ?? null}
         heroSubhead={settings?.heroSubhead ?? null}
         heroImageUrl={settings?.heroImageUrl ?? null}
+        heroSlides={heroSlides}
+        heroSlideInterval={settings?.heroSlideInterval ?? 8}
         reraRegistrationNo={reraRegNo}
         brokerName={settings?.brokerName ?? null}
         founderName={settings?.founderName ?? null}
@@ -411,42 +434,75 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 03. Interior Design by REALSPACE Teaser */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 py-20">
-        <div className="bg-[#1C1C1C] text-white p-8 md:p-12 lg:p-16 relative overflow-hidden">
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#C8A96A] mb-3">
-                <Sparkles className="w-4 h-4" />
-                Interior Design by REALSPACE
-              </div>
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-normal leading-tight mb-4">
-                Bespoke Interior Architecture by {settings?.founderName || 'Vijay Chawan'}.
-              </h2>
-              <p className="text-sm sm:text-base text-[#EEE6DD]/90 leading-relaxed font-body mb-6">
-                From precision 3D architectural renders to German modular cabinetry and Italian marble execution, REALSPACE transforms bare shells into bespoke luxury living spaces.
-              </p>
+      {/* 03. BHK Residence Showcase */}
+      {oneBhk && twoBhk && threeBhk && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:grid-rows-2 sm:aspect-[2/1]">
+            <Link
+              href={reraPath('/properties')}
+              className="group relative min-h-[260px] overflow-hidden sm:row-span-2 sm:min-h-0"
+            >
+              <Image
+                src={oneBhk.image}
+                alt={`${oneBhk.label} floor plan`}
+                fill
+                sizes="(max-width: 640px) 100vw, 33vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-sky-500/0 transition-colors duration-300 group-hover:bg-sky-500/65 group-focus-visible:bg-sky-500/65" />
+              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/65 to-transparent px-5 pb-5 pt-16 text-center text-xl font-semibold text-white">
+                {oneBhk.label} FLAT
+                {oneBhk.price && <span className="mt-1 block text-sm font-medium">Starts from {oneBhk.price}</span>}
+              </span>
+            </Link>
 
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  href="/"
-                  className="px-6 py-3 bg-[#C8A96A] hover:bg-[#B78A47] text-[#1C1C1C] font-semibold text-xs uppercase tracking-wider transition-colors inline-flex items-center gap-2"
-                >
-                  <span>Visit REALSPACE Interiors</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
+            <Link
+              href={reraPath('/properties')}
+              className="group relative min-h-[220px] overflow-hidden sm:col-span-2 sm:min-h-0"
+            >
+              <Image
+                src={twoBhk.image}
+                alt={`${twoBhk.label} floor plan`}
+                fill
+                sizes="(max-width: 640px) 100vw, 67vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-sky-500/0 transition-colors duration-300 group-hover:bg-sky-500/65 group-focus-visible:bg-sky-500/65" />
+              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/65 to-transparent px-5 pb-5 pt-16 text-center text-xl font-semibold text-white">
+                {twoBhk.label} FLAT
+                {twoBhk.price && <span className="mt-1 block text-sm font-medium">Starts from {twoBhk.price}</span>}
+              </span>
+            </Link>
 
-            <div className="relative aspect-[4/3] w-full border border-[#333333] overflow-hidden bg-[#2A2A2A] flex items-center justify-center">
-              <div className="text-center space-y-2 opacity-40">
-                <Sparkles className="w-12 h-12 text-[#C8A96A] mx-auto" />
-                <p className="text-xs text-[#EEE6DD] uppercase tracking-widest font-semibold">Interior Architecture</p>
+            <div tabIndex={0} className="group relative min-h-[240px] overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500 sm:col-span-2 sm:min-h-0">
+              <Image
+                src={threeBhk.image}
+                alt={`${threeBhk.label} floor plan`}
+                fill
+                sizes="(max-width: 640px) 100vw, 67vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-sky-500/0 px-5 text-center text-white transition-colors duration-300 group-hover:bg-sky-500/75 group-focus-within:bg-sky-500/75 sm:flex-row sm:gap-8">
+                <span className="text-2xl font-bold sm:max-w-32 sm:text-left sm:text-3xl">
+                  {threeBhk.label} FLAT
+                </span>
+                <span className="hidden h-16 border-l-2 border-white/80 sm:block" />
+                <div>
+                  <p className="text-xs uppercase tracking-wider sm:text-base">
+                    {threeBhk.price && <>Starts from <strong className="text-2xl sm:text-3xl">{threeBhk.price}</strong></>}
+                  </p>
+                  <Link
+                    href={reraPath(`/contact?configuration=${encodeURIComponent(threeBhk.label)}`)}
+                    className="mt-4 inline-flex items-center gap-4 border border-[#102A56] bg-[#102A56] px-6 py-3 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#0B1E3D]"
+                  >
+                    Book Now <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 04. Client Reviews & Proof */}
       <TestimonialsSection items={testimonials} />

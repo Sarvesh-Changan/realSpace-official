@@ -257,33 +257,43 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                 {/* Card Media Header */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EEE6DD]">
                   {property.coverImageUrl ? (
-                    <Image
-                      src={property.coverImageUrl}
-                      alt={property.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
-                    />
+                    <Link
+                      href={`${reraPath('/properties')}/${property.slug}`}
+                      className="absolute inset-0"
+                      aria-label={`View ${property.title}`}
+                    >
+                      <Image
+                        src={property.coverImageUrl}
+                        alt={property.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        referrerPolicy="no-referrer"
+                      />
+                    </Link>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#A39E98] text-xs uppercase tracking-wider">
+                    <Link
+                      href={`${reraPath('/properties')}/${property.slug}`}
+                      className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-wider text-[#A39E98]"
+                      aria-label={`View ${property.title}`}
+                    >
                       {property.locality}
-                    </div>
+                    </Link>
                   )}
 
-                  <div className="absolute top-3 left-3 bg-[#1C1C1C]/85 backdrop-blur-sm text-[#C8A96A] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1">
+                  <div className="pointer-events-none absolute top-3 left-3 bg-[#1C1C1C]/85 backdrop-blur-sm text-[#C8A96A] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1">
                     {property.locality}
                   </div>
 
                   {property.projectReraNo && (
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-[#1C1C1C] text-[10px] font-semibold uppercase tracking-wider px-2 py-1">
+                    <div className="pointer-events-none absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-[#1C1C1C] text-[10px] font-semibold uppercase tracking-wider px-2 py-1">
                       RERA: {property.projectReraNo}
                     </div>
                   )}
 
                   <button
                     onClick={() => setSelectedProperty(property)}
-                    className="absolute bottom-3 right-3 p-2 bg-[#1C1C1C]/70 hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] transition-colors rounded-sm"
+                    className="absolute bottom-3 right-3 z-10 p-2 bg-[#1C1C1C]/70 hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] transition-colors rounded-sm"
                     aria-label={`Preview ${property.title}`}
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
@@ -335,17 +345,11 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setSelectedProperty(property)}
-                        className="px-3 py-1.5 bg-[#F8F5F1] hover:bg-[#EEE6DD] text-[#1C1C1C] border border-[#E8E2DA] text-xs font-semibold uppercase tracking-wider transition-colors"
-                      >
-                        Quick View
-                      </button>
                       <Link
                         href={`${reraPath('/properties')}/${property.slug}`}
                         className="px-3 py-1.5 bg-[#1C1C1C] hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] text-xs font-semibold uppercase tracking-wider transition-colors"
                       >
-                        Details
+                        View Details
                       </Link>
                     </div>
                   </div>

@@ -50,6 +50,16 @@ input, textarea, button, select {
   font-family: var(--font-sans), "Lato", sans-serif;
 }
 
+button:not(:disabled) {
+  transition: scale 180ms ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):hover {
+    scale: 1.04;
+  }
+}
+
 /* Custom Kunku Red (#990000) & Halad Yellow (#FECC00) Button Classes */
 .btn-kunku {
   background-color: #990000 !important;
@@ -83,6 +93,31 @@ input, textarea, button, select {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif), "Josefin Sans", sans-serif;
+}
+
+@keyframes hero-heading-enter {
+  from { opacity: 0; transform: translateY(-2rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-button-enter {
+  from { opacity: 0; transform: translateY(2rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-background-enter {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+.animate-hero-heading { animation: hero-heading-enter 700ms cubic-bezier(.2,.7,.2,1) both; }
+.animate-hero-button { animation: hero-button-enter 700ms cubic-bezier(.2,.7,.2,1) 120ms both; }
+.animate-hero-background { animation: hero-background-enter 900ms ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-heading,
+  .animate-hero-button,
+  .animate-hero-background { animation: none; }
 }
 
 .font-serif {

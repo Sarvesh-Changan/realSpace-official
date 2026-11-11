@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useFieldArray, type FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import {
@@ -21,8 +22,10 @@ export function ReraSettingsForm({
   initialData: ReraSettingsInput;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploadingHero, setIsUploadingHero] = useState(false);
   const [isUploadingFounder, setIsUploadingFounder] = useState(false);
+  const [uploadingBhk, setUploadingBhk] = useState<number | null>(null);
+  const founderFileInputRef = useRef<HTMLInputElement>(null);
+  const bhkFileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -34,15 +37,21 @@ export function ReraSettingsForm({
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<ReraSettingsInput>({
     resolver: zodResolver(reraSettingsSchema),
     defaultValues: initialData,
   });
+  const { fields: heroSlides, append: appendHeroSlide, remove: removeHeroSlide } = useFieldArray({
+    control,
+    name: "heroSlides",
+  });
 
   const reraRegistrationNo = watch("reraRegistrationNo");
-  const heroImageUrl = watch("heroImageUrl");
+  const heroSlideInterval = watch("heroSlideInterval");
   const founderImageUrl = watch("founderImageUrl");
+  const bhkImageUrls = [watch("bhk1ImageUrl"), watch("bhk2ImageUrl"), watch("bhk3ImageUrl")];
   const areasServedRaw = watch("areasServedRaw") || "";
 
   // Parse areas into an array for tag display
@@ -77,8 +86,8 @@ export function ReraSettingsForm({
 
   const handleFileUpload = async (
     file: File,
-    fieldUrl: "heroImageUrl" | "founderImageUrl",
-    fieldPublicId: "heroImagePublicId" | "founderImagePublicId",
+    fieldUrl: FieldPath<ReraSettingsInput>,
+    fieldPublicId: FieldPath<ReraSettingsInput>,
     setLoading: (val: boolean) => void
   ) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
@@ -139,10 +148,10 @@ export function ReraSettingsForm({
 
       const uploadData = await uploadRes.json();
 
-      setValue(fieldUrl, uploadData.secure_url || uploadData.url, {
+      (setValue as unknown as (path: FieldPath<ReraSettingsInput>, value: string, options?: { shouldDirty?: boolean }) => void)(fieldUrl, uploadData.secure_url || uploadData.url, {
         shouldDirty: true,
       });
-      setValue(fieldPublicId, uploadData.public_id, { shouldDirty: true });
+      (setValue as unknown as (path: FieldPath<ReraSettingsInput>, value: string, options?: { shouldDirty?: boolean }) => void)(fieldPublicId, uploadData.public_id, { shouldDirty: true });
     } catch (err: unknown) {
       console.error("Upload error:", err);
       const errMsg =
@@ -485,107 +494,207 @@ export function ReraSettingsForm({
         {/* Section: Hero Section */}
         <div className="sm:col-span-2 mt-4">
           <h2 className="text-lg font-semibold text-neutral-900 border-b border-neutral-200 pb-2 mb-4">
-            Hero Section
+            Hero Slideshow
           </h2>
         </div>
 
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-neutral-700">
-            Hero Headline
-          </label>
-          <input
-            type="text"
-            {...register("heroHeadline")}
-            className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-          />
-          {errors.heroHeadline && (
-            <p className="mt-1 text-xs text-red-500">
-              {errors.heroHeadline.message}
-            </p>
-          )}
-        </div>
+        <div className="sm:col-span-2 space-y-4">
+        <input type="hidden" {...register("heroHeadline")} />
+        <input type="hidden" {...register("heroSubhead")} />
 
-        <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-neutral-700">
-            Hero Subhead
-          </label>
-          <textarea
-            {...register("heroSubhead")}
-            rows={2}
-            className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-base sm:text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-          />
-          {errors.heroSubhead && (
-            <p className="mt-1 text-xs text-red-500">
-              {errors.heroSubhead.message}
-            </p>
-          )}
-        </div>
-
-        {/* Hero Image Upload */}
-        <div className="sm:col-span-2 space-y-3">
-          <label className="block text-sm font-medium text-neutral-700">
-            Hero Background Image
-          </label>
-          <p className="text-xs text-neutral-500">
-            Recommended: high-resolution landscape photo (1920×1080), max 100MB.
-          </p>
-
-          {heroImageUrl ? (
-            <div className="p-4 border border-neutral-200 rounded-lg bg-neutral-50 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="relative w-48 h-28 rounded-md overflow-hidden border border-neutral-200 shrink-0 bg-neutral-900">
-                <Image
-                  src={heroImageUrl}
-                  alt="Hero Image Preview"
-                  fill
-                  sizes="192px"
-                  className="object-cover"
-                  unoptimized={!heroImageUrl.includes("res.cloudinary.com")}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setValue("heroImageUrl", "", { shouldDirty: true });
-                  setValue("heroImagePublicId", "", { shouldDirty: true });
-                }}
-                disabled={isUploadingHero || isSubmitting}
-                className="inline-flex items-center gap-2 px-3.5 py-2 min-h-[40px] bg-white border border-red-200 text-red-600 text-sm font-medium rounded-md hover:bg-red-50 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
-              >
-                <Trash2 className="w-4 h-4" /> Remove Image
-              </button>
-            </div>
-          ) : (
-            <div>
-              <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50">
-                {isUploadingHero ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Upload className="w-4 h-4" />
-                )}
-                {isUploadingHero ? "Uploading Hero Image..." : "Upload Hero Image"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleFileUpload(
-                        file,
-                        "heroImageUrl",
-                        "heroImagePublicId",
-                        setIsUploadingHero
-                      );
-                    }
-                    e.target.value = "";
-                  }}
-                  disabled={isUploadingHero || isSubmitting}
-                  className="sr-only"
-                />
-              </label>
-            </div>
-          )}
           <input type="hidden" {...register("heroImageUrl")} />
           <input type="hidden" {...register("heroImagePublicId")} />
+
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h3 className="text-base font-semibold text-neutral-900">Slides</h3>
+                <p className="mt-1 text-xs text-neutral-500">Upload at least 3 images, with up to 5 slides. Each slide has its own heading, sub-heading, and button text.</p>
+              </div>
+              <div className="w-44">
+                <label className="block text-sm font-medium text-neutral-700">Change image every</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={5}
+                    max={15}
+                    {...register("heroSlideInterval", { valueAsNumber: true })}
+                    className="block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm"
+                  />
+                  <span className="text-sm text-neutral-600">seconds</span>
+                </div>
+                {errors.heroSlideInterval && <p className="mt-1 text-xs text-red-500">Choose a value from 5 to 15 seconds.</p>}
+              </div>
+            </div>
+
+            {heroSlides.map((slide, index) => {
+              const imagePath = `heroSlides.${index}.imageUrl` as FieldPath<ReraSettingsInput>;
+              const publicIdPath = `heroSlides.${index}.imagePublicId` as FieldPath<ReraSettingsInput>;
+              const imageUrl = watch(imagePath) as string | undefined;
+              const isUploading = uploadingBhk === 10 + index;
+              return (
+                <div key={slide.id} className="space-y-4 rounded-lg border border-neutral-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-neutral-800">Slide {index + 1}</h4>
+                    {heroSlides.length > 3 && (
+                      <button type="button" onClick={() => removeHeroSlide(index)} className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-700">
+                        <Trash2 className="h-4 w-4" /> Remove slide
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-3 sm:row-span-3">
+                      <label className="block text-sm font-medium text-neutral-700">Background image</label>
+                      {imageUrl ? (
+                        <div className="space-y-3">
+                          <div className="relative h-32 w-full overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+                            <Image src={imageUrl} alt={`Hero slide ${index + 1} preview`} fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover" unoptimized={!imageUrl.includes("res.cloudinary.com")} />
+                          </div>
+                          <button type="button" onClick={() => {
+                            (setValue as unknown as (path: FieldPath<ReraSettingsInput>, value: string, options?: { shouldDirty?: boolean }) => void)(imagePath, "", { shouldDirty: true });
+                            (setValue as unknown as (path: FieldPath<ReraSettingsInput>, value: string, options?: { shouldDirty?: boolean }) => void)(publicIdPath, "", { shouldDirty: true });
+                          }} className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                            <Trash2 className="h-4 w-4" /> Remove image
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <button type="button" onClick={() => document.getElementById(`hero-slide-file-${index}`)?.click()} disabled={isUploading || isSubmitting} className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50">
+                            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                            {isUploading ? "Uploading..." : "Upload slide image"}
+                          </button>
+                          <input id={`hero-slide-file-${index}`} type="file" accept="image/*" className="sr-only" aria-label={`Choose hero slide ${index + 1} image`} disabled={isUploading || isSubmitting} onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) {
+                              setUploadingBhk(10 + index);
+                              void handleFileUpload(file, imagePath, publicIdPath, () => {}).finally(() => setUploadingBhk(null));
+                            }
+                            event.target.value = "";
+                          }} />
+                        </>
+                      )}
+                      <input type="hidden" {...register(imagePath)} />
+                      <input type="hidden" {...register(publicIdPath)} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700">Heading</label>
+                      <input {...register(`heroSlides.${index}.heading` as FieldPath<ReraSettingsInput>)} placeholder="Main heading" className="mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700">Sub-heading</label>
+                      <input {...register(`heroSlides.${index}.subheading` as FieldPath<ReraSettingsInput>)} placeholder="Short line below the heading" className="mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700">Button text</label>
+                      <input {...register(`heroSlides.${index}.buttonText` as FieldPath<ReraSettingsInput>)} placeholder="e.g. Explore Now" className="mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700">Button destination slug</label>
+                      <input {...register(`heroSlides.${index}.slug` as FieldPath<ReraSettingsInput>)} placeholder="e.g. properties/luxury-apartment" className="mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm" />
+                      <p className="mt-1 text-xs text-neutral-500">Enter a site path such as properties/luxury-apartment or about. Leave blank to scroll to properties.</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {heroSlides.length < 5 && (
+              <button type="button" onClick={() => appendHeroSlide({ imageUrl: "", imagePublicId: "", heading: "", subheading: "", buttonText: "", slug: "" })} className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-4 py-2.5 text-sm font-medium text-neutral-800 hover:bg-neutral-50">
+                <Plus className="h-4 w-4" /> Add slide ({heroSlides.length}/5)
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* BHK Showcase Images */}
+        <div className="sm:col-span-2 mt-4 space-y-4">
+          <div>
+            <h2 className="text-lg font-semibold text-neutral-900 border-b border-neutral-200 pb-2 mb-2">
+              Homepage BHK Showcase
+            </h2>
+            <p className="text-xs text-neutral-500">
+              Upload one image for each tile and set its BHK type and starting price.
+            </p>
+          </div>
+          {([
+            { number: 1, imageUrlKey: "bhk1ImageUrl", publicIdKey: "bhk1ImagePublicId", typeKey: "bhk1Type", priceKey: "bhk1Price" },
+            { number: 2, imageUrlKey: "bhk2ImageUrl", publicIdKey: "bhk2ImagePublicId", typeKey: "bhk2Type", priceKey: "bhk2Price" },
+            { number: 3, imageUrlKey: "bhk3ImageUrl", publicIdKey: "bhk3ImagePublicId", typeKey: "bhk3Type", priceKey: "bhk3Price" },
+          ] as const).map(({ number, imageUrlKey, publicIdKey, typeKey, priceKey }) => {
+            const imageUrl = bhkImageUrls[number - 1];
+            const isUploading = uploadingBhk === number;
+
+            return (
+              <div key={number} className="grid grid-cols-1 gap-4 rounded-lg border border-neutral-200 p-4 sm:grid-cols-2">
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-neutral-700">Tile {number} image</label>
+                  {imageUrl ? (
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-24 w-36 shrink-0 overflow-hidden rounded border border-neutral-200 bg-neutral-100">
+                        <Image src={imageUrl} alt={`BHK tile ${number} preview`} fill sizes="144px" className="object-cover" unoptimized={!imageUrl.includes("res.cloudinary.com")} />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setValue(imageUrlKey, "", { shouldDirty: true });
+                          setValue(publicIdKey, "", { shouldDirty: true });
+                        }}
+                        disabled={isUploading || isSubmitting}
+                        className="inline-flex min-h-[40px] items-center gap-2 rounded-md border border-red-200 bg-white px-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-4 w-4" /> Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => bhkFileInputRefs.current[number - 1]?.click()}
+                        disabled={isUploading || isSubmitting}
+                        className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+                      >
+                        {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                        {isUploading ? "Uploading..." : "Upload image"}
+                      </button>
+                      <input
+                        ref={(element) => { bhkFileInputRefs.current[number - 1] = element; }}
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        aria-label={`Choose image for BHK tile ${number}`}
+                        disabled={isUploading || isSubmitting}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          if (file) {
+                            setUploadingBhk(number);
+                            void handleFileUpload(file, imageUrlKey, publicIdKey, () => {}).finally(() => {
+                              setUploadingBhk(null);
+                            });
+                          }
+                          event.target.value = "";
+                        }}
+                      />
+                    </>
+                  )}
+                  <input type="hidden" {...register(imageUrlKey)} />
+                  <input type="hidden" {...register(publicIdKey)} />
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700">BHK type</label>
+                    <select {...register(typeKey)} className="mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm">
+                      <option>1 BHK</option>
+                      <option>2 BHK</option>
+                      <option>3 BHK</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700">Price</label>
+                    <input {...register(priceKey)} placeholder="e.g. 1.66 Crore" className="mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Section: Welcome Section */}
@@ -736,7 +845,12 @@ export function ReraSettingsForm({
             </div>
           ) : (
             <div>
-              <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50">
+              <button
+                type="button"
+                onClick={() => founderFileInputRef.current?.click()}
+                disabled={isUploadingFounder || isSubmitting}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50"
+              >
                 {isUploadingFounder ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
@@ -745,25 +859,27 @@ export function ReraSettingsForm({
                 {isUploadingFounder
                   ? "Uploading Founder Photo..."
                   : "Upload Founder Photo"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleFileUpload(
-                        file,
-                        "founderImageUrl",
-                        "founderImagePublicId",
-                        setIsUploadingFounder
-                      );
-                    }
-                    e.target.value = "";
-                  }}
-                  disabled={isUploadingFounder || isSubmitting}
-                  className="sr-only"
-                />
-              </label>
+              </button>
+              <input
+                ref={founderFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleFileUpload(
+                      file,
+                      "founderImageUrl",
+                      "founderImagePublicId",
+                      setIsUploadingFounder
+                    );
+                  }
+                  e.target.value = "";
+                }}
+                disabled={isUploadingFounder || isSubmitting}
+                className="sr-only"
+                aria-label="Choose founder photo"
+              />
             </div>
           )}
           <input type="hidden" {...register("founderImageUrl")} />
@@ -903,7 +1019,7 @@ export function ReraSettingsForm({
       <div className="pt-6 border-t border-neutral-200 flex justify-end">
         <button
           type="submit"
-          disabled={isSubmitting || isUploadingHero || isUploadingFounder}
+          disabled={isSubmitting || isUploadingFounder || uploadingBhk !== null}
           className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-neutral-900 text-white font-medium text-sm rounded-md hover:bg-neutral-800 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? "Saving RERA Settings..." : "Save RERA Settings"}

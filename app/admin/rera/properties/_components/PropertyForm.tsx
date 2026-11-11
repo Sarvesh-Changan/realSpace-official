@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -49,6 +49,8 @@ export function PropertyForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const galleryFileInputRef = useRef<HTMLInputElement>(null);
   const [batchProgress, setBatchProgress] = useState<{
     current: number;
     total: number;
@@ -770,17 +772,24 @@ export function PropertyForm({
           </div>
         ) : (
           <div>
-            <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50">
+            <button
+              type="button"
+              onClick={() => coverFileInputRef.current?.click()}
+              disabled={isUploadingCover || isSubmitting}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[44px] bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors disabled:opacity-50"
+            >
               {isUploadingCover ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               {isUploadingCover ? "Uploading Cover..." : "Upload Cover Image"}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleCoverUpload}
-                disabled={isUploadingCover || isSubmitting}
-                className="sr-only"
-              />
-            </label>
+            </button>
+            <input
+              ref={coverFileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverUpload}
+              disabled={isUploadingCover || isSubmitting}
+              className="sr-only"
+              aria-label="Choose cover image"
+            />
           </div>
         )}
         <input type="hidden" {...register("coverImageUrl")} />
@@ -799,18 +808,25 @@ export function PropertyForm({
             </p>
           </div>
 
-          <label className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-900 text-white text-xs font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors shadow-xs shrink-0 disabled:opacity-50">
+          <button
+            type="button"
+            onClick={() => galleryFileInputRef.current?.click()}
+            disabled={isUploadingGallery || isSubmitting}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-900 text-white text-xs font-medium rounded-md hover:bg-neutral-800 cursor-pointer transition-colors shadow-xs shrink-0 disabled:opacity-50"
+          >
             {isUploadingGallery ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
             {isUploadingGallery ? "Uploading..." : "Add Images & Videos"}
-            <input
-              type="file"
-              multiple
-              accept="image/*,video/*"
-              onChange={handleGalleryUpload}
-              disabled={isUploadingGallery || isSubmitting}
-              className="sr-only"
-            />
-          </label>
+          </button>
+          <input
+            ref={galleryFileInputRef}
+            type="file"
+            multiple
+            accept="image/*,video/*"
+            onChange={handleGalleryUpload}
+            disabled={isUploadingGallery || isSubmitting}
+            className="sr-only"
+            aria-label="Choose gallery images and videos"
+          />
         </div>
 
         {/* Batch Upload Progress Indicator */}

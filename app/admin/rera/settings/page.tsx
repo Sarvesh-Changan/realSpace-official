@@ -23,6 +23,23 @@ export default async function AdminReraSettingsPage() {
     linkedin?: string;
   };
 
+  const savedHeroSlides = (() => {
+    if (!settings?.heroSlidesJson) return [];
+    try {
+      const slides: unknown = JSON.parse(settings.heroSlidesJson);
+      return Array.isArray(slides) ? slides as ReraSettingsInput["heroSlides"] : [];
+    } catch {
+      return [];
+    }
+  })();
+  const heroSlides = savedHeroSlides.length
+    ? savedHeroSlides
+    : [
+        { imageUrl: "", imagePublicId: "", heading: "", subheading: "", buttonText: "", slug: "" },
+        { imageUrl: "", imagePublicId: "", heading: "", subheading: "", buttonText: "", slug: "" },
+        { imageUrl: "", imagePublicId: "", heading: "", subheading: "", buttonText: "", slug: "" },
+      ];
+
   const initialData: ReraSettingsInput = {
     brokerName: settings?.brokerName ?? "REALSPACE & Arnav Properties",
     tagline: settings?.tagline ?? "",
@@ -44,6 +61,20 @@ export default async function AdminReraSettingsPage() {
     heroSubhead: settings?.heroSubhead ?? "",
     heroImageUrl: settings?.heroImageUrl ?? "",
     heroImagePublicId: settings?.heroImagePublicId ?? "",
+    heroSlides,
+    heroSlideInterval: settings?.heroSlideInterval ?? 8,
+    bhk1ImageUrl: settings?.bhk1ImageUrl ?? "",
+    bhk1ImagePublicId: settings?.bhk1ImagePublicId ?? "",
+    bhk1Type: (settings?.bhk1Type ?? "1 BHK") as "1 BHK" | "2 BHK" | "3 BHK",
+    bhk1Price: settings?.bhk1Price ?? "",
+    bhk2ImageUrl: settings?.bhk2ImageUrl ?? "",
+    bhk2ImagePublicId: settings?.bhk2ImagePublicId ?? "",
+    bhk2Type: (settings?.bhk2Type ?? "2 BHK") as "1 BHK" | "2 BHK" | "3 BHK",
+    bhk2Price: settings?.bhk2Price ?? "",
+    bhk3ImageUrl: settings?.bhk3ImageUrl ?? "",
+    bhk3ImagePublicId: settings?.bhk3ImagePublicId ?? "",
+    bhk3Type: (settings?.bhk3Type ?? "3 BHK") as "1 BHK" | "2 BHK" | "3 BHK",
+    bhk3Price: settings?.bhk3Price ?? "",
     welcomeTitle: settings?.welcomeTitle ?? "",
     welcomeBody: settings?.welcomeBody ?? "",
     aboutTitle: settings?.aboutTitle ?? "",

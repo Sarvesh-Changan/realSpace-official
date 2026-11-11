@@ -66,7 +66,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               Appointment Request Received
             </h3>
             <p className="text-sm text-[#6D6A66] max-w-sm mx-auto mb-6 leading-relaxed">
-              Thank you, <span className="font-semibold text-[#1C1C1C]">{fullName}</span>. Vijay Chawan and the senior advisory team at Arnav Properties will reach out to you within 2 hours.
+              Thank you, <span className="font-semibold text-[#1C1C1C]">{fullName}</span>. Vijay Chawan and the senior advisory team at Arnav Properties will reach out to you soon.
             </p>
 
             <div className="p-4 bg-[#F8F5F1] border border-[#E8E2DA] mb-6 text-xs text-left text-[#6D6A66] space-y-1">

@@ -47,6 +47,32 @@ export const reraSettingsSchema = z.object({
   heroSubhead: z.string().trim().max(1000).optional().or(z.literal("")),
   heroImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),
   heroImagePublicId: z.string().trim().optional().or(z.literal("")).nullable(),
+  heroSlides: z.array(z.object({
+    imageUrl: z.string().trim().optional().or(z.literal("")),
+    imagePublicId: z.string().trim().optional().or(z.literal("")),
+    heading: z.string().trim().max(300).optional().or(z.literal("")),
+    subheading: z.string().trim().max(500).optional().or(z.literal("")),
+    buttonText: z.string().trim().max(100).optional().or(z.literal("")),
+    slug: z.string().trim().max(300).optional().or(z.literal("")),
+  })).min(3, "Keep at least 3 hero slide entries").max(5, "You can add up to 5 hero slides").superRefine((slides, ctx) => {
+    const uploadedCount = slides.filter((slide) => slide.imageUrl?.trim()).length;
+    if (uploadedCount > 0 && uploadedCount < 3) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Upload images for at least 3 hero slides before saving the slideshow." });
+    }
+  }),
+  heroSlideInterval: z.number().int().min(5).max(15),
+  bhk1ImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),
+  bhk1ImagePublicId: z.string().trim().optional().or(z.literal("")).nullable(),
+  bhk1Type: z.enum(["1 BHK", "2 BHK", "3 BHK"]),
+  bhk1Price: z.string().trim().max(100).optional().or(z.literal("")),
+  bhk2ImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),
+  bhk2ImagePublicId: z.string().trim().optional().or(z.literal("")).nullable(),
+  bhk2Type: z.enum(["1 BHK", "2 BHK", "3 BHK"]),
+  bhk2Price: z.string().trim().max(100).optional().or(z.literal("")),
+  bhk3ImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),
+  bhk3ImagePublicId: z.string().trim().optional().or(z.literal("")).nullable(),
+  bhk3Type: z.enum(["1 BHK", "2 BHK", "3 BHK"]),
+  bhk3Price: z.string().trim().max(100).optional().or(z.literal("")),
   // Welcome section
   welcomeTitle: z.string().trim().max(300).optional().or(z.literal("")),
   welcomeBody: z.string().trim().max(5000).optional().or(z.literal("")),

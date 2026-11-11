@@ -450,6 +450,20 @@ model ReraSettings {
   heroSubhead          String?  @db.Text
   heroImageUrl         String?
   heroImagePublicId    String?
+  heroSlidesJson       String?  @db.Text
+  heroSlideInterval    Int      @default(8)
+  bhk1ImageUrl         String?
+  bhk1ImagePublicId    String?
+  bhk1Type             String   @default("1 BHK")
+  bhk1Price            String?
+  bhk2ImageUrl         String?
+  bhk2ImagePublicId    String?
+  bhk2Type             String   @default("2 BHK")
+  bhk2Price            String?
+  bhk3ImageUrl         String?
+  bhk3ImagePublicId    String?
+  bhk3Type             String   @default("3 BHK")
+  bhk3Price            String?
   welcomeTitle         String?
   welcomeBody          String?  @db.Text
   aboutTitle           String?

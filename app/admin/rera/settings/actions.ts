@@ -49,6 +49,20 @@ export async function updateReraSettings(
     linkedin,
     heroImageUrl,
     heroImagePublicId,
+    heroSlides,
+    heroSlideInterval,
+    bhk1ImageUrl,
+    bhk1ImagePublicId,
+    bhk1Type,
+    bhk1Price,
+    bhk2ImageUrl,
+    bhk2ImagePublicId,
+    bhk2Type,
+    bhk2Price,
+    bhk3ImageUrl,
+    bhk3ImagePublicId,
+    bhk3Type,
+    bhk3Price,
     founderImageUrl,
     founderImagePublicId,
     yearsExperience,
@@ -104,12 +118,59 @@ export async function updateReraSettings(
       await deleteCloudinaryAsset(existing.founderImagePublicId);
     }
 
+    let previousHeroSlides: Array<{ imagePublicId?: string }> = [];
+    if (existing?.heroSlidesJson) {
+      try {
+        previousHeroSlides = JSON.parse(existing.heroSlidesJson);
+      } catch {
+        previousHeroSlides = [];
+      }
+    }
+    const currentHeroPublicIds = new Set(heroSlides.map((slide) => slide.imagePublicId).filter(Boolean));
+    for (const oldSlide of previousHeroSlides) {
+      if (oldSlide.imagePublicId && !currentHeroPublicIds.has(oldSlide.imagePublicId)) {
+        await deleteCloudinaryAsset(oldSlide.imagePublicId);
+      }
+    }
+
+    const showcaseUploads = [
+      { oldId: existing?.bhk1ImagePublicId, newId: bhk1ImagePublicId },
+      { oldId: existing?.bhk2ImagePublicId, newId: bhk2ImagePublicId },
+      { oldId: existing?.bhk3ImagePublicId, newId: bhk3ImagePublicId },
+    ];
+    for (const upload of showcaseUploads) {
+      if (upload.oldId && upload.oldId !== upload.newId) {
+        await deleteCloudinaryAsset(upload.oldId);
+      }
+    }
+
     const payload = {
       ...rest,
       heroImageUrl: cleanHeroUrl,
       heroImagePublicId: cleanHeroPublicId,
+      heroSlidesJson: JSON.stringify(heroSlides.map((slide) => ({
+        imageUrl: slide.imageUrl?.trim() || "",
+        imagePublicId: slide.imagePublicId?.trim() || "",
+        heading: slide.heading?.trim() || "",
+        subheading: slide.subheading?.trim() || "",
+        buttonText: slide.buttonText?.trim() || "",
+        slug: slide.slug?.trim() || "",
+      }))),
+      heroSlideInterval,
       founderImageUrl: cleanFounderUrl,
       founderImagePublicId: cleanFounderPublicId,
+      bhk1ImageUrl: bhk1ImageUrl?.trim() || null,
+      bhk1ImagePublicId: bhk1ImagePublicId?.trim() || null,
+      bhk1Type,
+      bhk1Price: bhk1Price?.trim() || null,
+      bhk2ImageUrl: bhk2ImageUrl?.trim() || null,
+      bhk2ImagePublicId: bhk2ImagePublicId?.trim() || null,
+      bhk2Type,
+      bhk2Price: bhk2Price?.trim() || null,
+      bhk3ImageUrl: bhk3ImageUrl?.trim() || null,
+      bhk3ImagePublicId: bhk3ImagePublicId?.trim() || null,
+      bhk3Type,
+      bhk3Price: bhk3Price?.trim() || null,
       yearsExperience: cleanYearsExp,
       happyFamilies: cleanHappyFam,
       propertiesClosed: cleanPropsClosed,

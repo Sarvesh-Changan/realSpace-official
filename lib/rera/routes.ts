@@ -38,8 +38,6 @@ export const navLinks: ReraNavLink[] = [
   { label: 'ABOUT US', href: reraPath('/about') },
   { label: 'SERVICES', href: reraPath('/services') },
   { label: 'PROPERTIES', href: reraPath('/properties') },
-  { label: 'GALLERY', href: reraPath('/gallery') },
-  { label: 'POST PROPERTY', href: reraPath('/post-property') },
   { label: 'CONTACT', href: reraPath('/contact') },
 ];
 

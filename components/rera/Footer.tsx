@@ -16,7 +16,6 @@ const quickLinksLeft = [
   { label: 'Home',           href: reraPath('/') },
   { label: 'About Us',       href: reraPath('/about') },
   { label: 'Services',       href: reraPath('/services') },
-  { label: 'Post Property',  href: reraPath('/post-property') },
 ];
 
 const quickLinksRight = [
@@ -26,10 +25,6 @@ const quickLinksRight = [
 ];
 
 // --- Fallback contact values (shown when RERA Settings aren't filled in admin) ---
-const FB_ADDRESS  = 'Raymond Realty Jekegram\nPokhran Road No 1\nThane (w), Maharashtra, India - 400606';
-const FB_PHONE    = '+91 98692 11777';
-const FB_EMAIL    = 'realspace.org@gmail.com';
-const FB_HOURS    = '24x7 Support';
 
 // Social icon SVGs (lucide-react v1 doesn't export brand icons)
 function IgIcon() {
@@ -62,20 +57,20 @@ function LiIcon() {
 }
 
 export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
-  const brokerName = shellProps.brokerName || 'REALSPACE';
-
-  // Use DB value → fall back to hardcoded constant
-  const address     = shellProps.address     || FB_ADDRESS;
-  const phone       = shellProps.phone       || FB_PHONE;
+  const brokerName = 'REALSPACE';
+  const address     = shellProps.address;
+  const phone       = shellProps.phone;
   const altPhone    = shellProps.altPhone    || '';
-  const email       = shellProps.email       || FB_EMAIL;
-  const officeHours = shellProps.officeHours || FB_HOURS;
+  const email       = shellProps.email;
+  const officeHours = shellProps.officeHours;
 
   // Social links from DB (always render the icons; link to '#' when not configured)
-  const ig = shellProps.socialLinks?.instagram || '#';
-  const fb = shellProps.socialLinks?.facebook  || '#';
-  const yt = shellProps.socialLinks?.youtube   || '#';
-  const li = shellProps.socialLinks?.linkedin  || '#';
+  const socials = [
+    shellProps.socialLinks?.instagram ? { label: 'Instagram', href: shellProps.socialLinks.instagram, icon: <IgIcon /> } : null,
+    shellProps.socialLinks?.facebook ? { label: 'Facebook', href: shellProps.socialLinks.facebook, icon: <FbIcon /> } : null,
+    shellProps.socialLinks?.youtube ? { label: 'YouTube', href: shellProps.socialLinks.youtube, icon: <YtIcon /> } : null,
+    shellProps.socialLinks?.linkedin ? { label: 'LinkedIn', href: shellProps.socialLinks.linkedin, icon: <LiIcon /> } : null,
+  ].filter((item) => item !== null);
 
   return (
     <footer className="w-full bg-[#141414] text-white border-t border-[#2A2A2A]">
@@ -139,22 +134,22 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
             </h4>
             <ul className="space-y-3.5 text-sm text-white/75">
               {/* Address */}
-              <li className="flex items-start gap-3">
+              {address && <li className="flex items-start gap-3">
                 <span className="mt-0.5 w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
                   <MapPin className="w-3.5 h-3.5 text-white" />
                 </span>
                 <span className="whitespace-pre-line leading-snug">{address}</span>
-              </li>
+              </li>}
 
               {/* Primary phone */}
-              <li className="flex items-center gap-3">
+              {phone && <li className="flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
                   <Phone className="w-3.5 h-3.5 text-white" />
                 </span>
                 <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">
                   {phone}
                 </a>
-              </li>
+              </li>}
 
               {/* Alt phone (only if set in DB) */}
               {altPhone && (
@@ -169,22 +164,22 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
               )}
 
               {/* Email */}
-              <li className="flex items-center gap-3">
+              {email && <li className="flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
                   <Mail className="w-3.5 h-3.5 text-white" />
                 </span>
                 <a href={`mailto:${email}`} className="hover:text-white transition-colors">
                   {email}
                 </a>
-              </li>
+              </li>}
 
               {/* Office hours / 24x7 */}
-              <li className="flex items-center gap-3">
+              {officeHours && <li className="flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
                   <Clock className="w-3.5 h-3.5 text-white" />
                 </span>
                 <span>{officeHours}</span>
-              </li>
+              </li>}
             </ul>
           </div>
         </div>
@@ -195,45 +190,9 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
             © {new Date().getFullYear()} {brokerName}. All rights reserved.
           </span>
 
-          {/* Social icons — always rendered; link to '#' until admin fills Social Links */}
-          <div className="flex items-center gap-3">
-            <a
-              href={ig}
-              target={ig === '#' ? undefined : '_blank'}
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="w-9 h-9 rounded-full bg-gradient-to-br from-[#E1306C] to-[#833AB4] flex items-center justify-center hover:opacity-90 transition-opacity text-white"
-            >
-              <IgIcon />
-            </a>
-            <a
-              href={fb}
-              target={fb === '#' ? undefined : '_blank'}
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="w-9 h-9 rounded-full bg-[#1877F2] flex items-center justify-center hover:opacity-90 transition-opacity text-white"
-            >
-              <FbIcon />
-            </a>
-            <a
-              href={yt}
-              target={yt === '#' ? undefined : '_blank'}
-              rel="noopener noreferrer"
-              aria-label="YouTube"
-              className="w-9 h-9 rounded-full bg-[#FF0000] flex items-center justify-center hover:opacity-90 transition-opacity text-white"
-            >
-              <YtIcon />
-            </a>
-            <a
-              href={li}
-              target={li === '#' ? undefined : '_blank'}
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="w-9 h-9 rounded-full bg-[#0A66C2] flex items-center justify-center hover:opacity-90 transition-opacity text-white"
-            >
-              <LiIcon />
-            </a>
-          </div>
+          {socials.length > 0 && <div className="flex items-center gap-3">
+            {socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#C8A96A] hover:text-[#1C1C1C] transition-colors text-white">{social.icon}</a>)}
+          </div>}
         </div>
 
       </div>

@@ -37,6 +37,16 @@ export default async function EditReraServicePage({
     highlights: service.highlights,
     sortOrder: service.sortOrder,
     isPublished: service.isPublished,
+    slug: service.slug ?? "",
+    shortDescription: service.shortDescription ?? "",
+    pageHeading: service.pageHeading ?? "",
+    bannerImageUrl: service.bannerImageUrl ?? "",
+    bannerImagePublicId: service.bannerImagePublicId ?? "",
+    bannerImageAlt: service.bannerImageAlt ?? "",
+    contentImages: Array.isArray(service.contentImages) ? service.contentImages as ReraServiceInput["contentImages"] : [],
+    sections: Array.isArray(service.sections) ? service.sections as ReraServiceInput["sections"] : [],
+    ctaText: service.ctaText ?? "Contact Us",
+    ctaUrl: service.ctaUrl ?? "/contact",
   };
 
   const handleUpdate = async (data: ReraServiceInput) => {

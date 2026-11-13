@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { Plus, X, Loader2, AlertTriangle, Building2, Sparkles, Briefcase, ShieldCheck, Calculator, KeyRound } from "lucide-react";
+import Image from "next/image";
+import { Plus, X, Loader2, AlertTriangle, Building2, Sparkles, Briefcase, ShieldCheck, Calculator, KeyRound, ImagePlus } from "lucide-react";
 import { reraServiceSchema, type ReraServiceInput, SERVICE_ICONS } from "../schema";
 
 const ICON_COMPONENTS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -29,6 +30,9 @@ export function ServiceForm({
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [highlightInput, setHighlightInput] = useState("");
+  const [contentImagesJson, setContentImagesJson] = useState(() => JSON.stringify(initialData?.contentImages ?? [], null, 2));
+  const [sectionsJson, setSectionsJson] = useState(() => JSON.stringify(initialData?.sections ?? [], null, 2));
+  const [uploading, setUploading] = useState(false);
 
   const {
     register,
@@ -45,6 +49,16 @@ export function ServiceForm({
       highlights: [],
       sortOrder: 0,
       isPublished: true,
+      slug: "",
+      shortDescription: "",
+      pageHeading: "",
+      bannerImageUrl: "",
+      bannerImagePublicId: "",
+      bannerImageAlt: "",
+      contentImages: [],
+      sections: [],
+      ctaText: "Contact Us",
+      ctaUrl: "/contact",
     },
   });
 
@@ -70,10 +84,53 @@ export function ServiceForm({
     );
   };
 
-  const onSubmit = async (data: ReraServiceInput) => {
+  const uploadImages = async (files: FileList | null, mode: "banner" | "gallery") => {
+    if (!files?.length) return;
+    setUploading(true);
+    setServerError(null);
+    try {
+      const currentImages = JSON.parse(contentImagesJson) as NonNullable<ReraServiceInput["contentImages"]>;
+      for (const file of Array.from(files)) {
+        const signRes = await fetch("/api/cloudinary/sign", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ folder: "rera-services", resourceType: "image" }) });
+        if (!signRes.ok) throw new Error("Could not prepare Cloudinary upload.");
+        const sign = await signRes.json();
+        const body = new FormData();
+        body.append("file", file);
+        body.append("api_key", sign.apiKey || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "");
+        body.append("timestamp", String(sign.timestamp));
+        body.append("signature", sign.signature);
+        body.append("folder", sign.folder || "rera-services");
+        const cloud = sign.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+        const upload = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, { method: "POST", body });
+        const result = await upload.json();
+        if (!upload.ok) throw new Error(result.error?.message || "Image upload failed.");
+        if (mode === "banner") {
+          setValue("bannerImageUrl", result.secure_url, { shouldDirty: true });
+          setValue("bannerImagePublicId", result.public_id, { shouldDirty: true });
+          setValue("bannerImageAlt", file.name.replace(/\.[^.]+$/, ""), { shouldDirty: true });
+        } else currentImages.push({ url: result.secure_url, publicId: result.public_id, alt: file.name.replace(/\.[^.]+$/, ""), order: currentImages.length });
+      }
+      if (mode === "gallery") {
+        const json = JSON.stringify(currentImages, null, 2);
+        setContentImagesJson(json);
+        setValue("contentImages", currentImages, { shouldDirty: true });
+      }
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : "Image upload failed.");
+    } finally { setUploading(false); }
+  };
+
+  const onSubmit = async (formData: ReraServiceInput) => {
     setIsSubmitting(true);
     setServerError(null);
-
+    let data: ReraServiceInput;
+    try {
+      data = { ...formData, contentImages: JSON.parse(contentImagesJson), sections: JSON.parse(sectionsJson) };
+    } catch {
+      setServerError("Gallery images and content sections must contain valid JSON.");
+      setIsSubmitting(false);
+      return;
+    }
     const result = await onSubmitAction(data);
 
     if (result.success) {
@@ -113,6 +170,33 @@ export function ServiceForm({
           <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>
         )}
       </div>
+
+      <details open className="rounded-md border border-neutral-200 p-4 sm:p-5">
+        <summary className="cursor-pointer font-semibold text-neutral-900">Public service page content</summary>
+        <div className="mt-5 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="text-sm font-medium text-neutral-700">Page slug <span className="text-red-500">*</span><input {...register("slug")} placeholder="buying" className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" />{errors.slug && <span className="mt-1 block text-xs text-red-600">{errors.slug.message}</span>}</label>
+            <label className="text-sm font-medium text-neutral-700">Page heading<input {...register("pageHeading")} placeholder="Buying Property" className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
+          </div>
+          <label className="block text-sm font-medium text-neutral-700">Short introduction<textarea rows={3} {...register("shortDescription")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
+          <label className="block text-sm font-medium text-neutral-700">Banner image URL<input {...register("bannerImageUrl")} placeholder="Upload or paste an image URL" className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm"><ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Upload banner"}<input type="file" accept="image/*" className="sr-only" disabled={uploading} onChange={(event) => { void uploadImages(event.target.files, "banner"); event.target.value = ""; }} /></label>
+            {watch("bannerImageUrl") && <Image src={watch("bannerImageUrl") || ""} alt={watch("bannerImageAlt") || "Banner preview"} width={112} height={64} unoptimized className="h-16 w-28 rounded object-cover" />}
+          </div>
+          <label className="block text-sm font-medium text-neutral-700">Banner alt text<input {...register("bannerImageAlt")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="text-sm font-medium text-neutral-700">CTA label<input {...register("ctaText")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
+            <label className="text-sm font-medium text-neutral-700">CTA destination<input {...register("ctaUrl")} placeholder="/contact" className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700">Main content images (JSON list: url, publicId, alt, order)</label>
+            <textarea rows={5} value={contentImagesJson} onChange={(e) => setContentImagesJson(e.target.value)} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs" />
+            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm"><ImagePlus className="h-4 w-4" />Upload gallery images<input type="file" accept="image/*" multiple className="sr-only" disabled={uploading} onChange={(event) => { void uploadImages(event.target.files, "gallery"); event.target.value = ""; }} /></label>
+          </div>
+          <label className="block text-sm font-medium text-neutral-700">Content sections JSON (heading, description, imageUrl, items). Use items for benefits or amenities; avoid unverified claims/prices.<textarea rows={9} value={sectionsJson} onChange={(e) => setSectionsJson(e.target.value)} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 font-mono text-xs" placeholder={'[{"heading":"How it works","description":"...","items":[{"title":"Step 1","description":"..."}]}]'} /></label>
+        </div>
+      </details>
 
       <div>
         <label className="block text-sm font-medium text-neutral-700">

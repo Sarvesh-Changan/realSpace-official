@@ -8,13 +8,14 @@ import type { ReraGalleryDisplayItem } from './CategoryChips';
 interface GalleryGridProps {
   items: ReraGalleryDisplayItem[];
   onOpen: (item: ReraGalleryDisplayItem) => void;
+  emptyMessage: string;
 }
 
-export default function GalleryGrid({ items, onOpen }: GalleryGridProps) {
+export default function GalleryGrid({ items, onOpen, emptyMessage }: GalleryGridProps) {
   if (items.length === 0) {
     return (
       <p className="col-span-full py-16 text-center text-sm text-[#6D6A66]">
-        No items in this category yet.
+        {emptyMessage}
       </p>
     );
   }

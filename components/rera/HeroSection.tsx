@@ -42,7 +42,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   propertiesClosed,
 }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
-  const hasSlideshow = heroSlides.length >= 3;
+  const hasSlideshow = heroSlides.length > 1;
 
   useEffect(() => {
     if (!hasSlideshow || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -127,11 +127,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </span>
           ) : (
             <span className="text-[#C8A96A] font-semibold">
-              {brokerName || 'Thane & Mumbai Prime Real Estate'}
+              {brokerName || 'REALSPACE'}
             </span>
           )}
           <span className="text-[#6D6A66]">·</span>
-          <span className="text-[#EEE6DD]/80">Thane &amp; Mumbai MMR</span>
         </div>
 
         {/* Hero Headline */}
@@ -206,6 +205,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
         )}
       </div>
+      {hasSlideshow && (
+        <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2" aria-label="Hero slides">
+          {heroSlides.map((slide, index) => (
+            <button key={`${slide.imageUrl}-${index}`} type="button" onClick={() => setActiveSlideIndex(index)} aria-label={`Show slide ${index + 1}`} aria-current={index === activeSlideIndex} className={`h-1.5 rounded-full transition-all ${index === activeSlideIndex ? 'w-8 bg-[#C8A96A]' : 'w-3 bg-white/60 hover:bg-white'}`} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

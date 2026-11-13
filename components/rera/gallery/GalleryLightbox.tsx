@@ -1,15 +1,17 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { ReraGalleryDisplayItem } from './CategoryChips';
 
 interface GalleryLightboxProps {
   item: ReraGalleryDisplayItem | null;
+  items: ReraGalleryDisplayItem[];
+  onChange: (item: ReraGalleryDisplayItem) => void;
   onClose: () => void;
 }
 
-export default function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
+export default function GalleryLightbox({ item, items, onChange, onClose }: GalleryLightboxProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -18,10 +20,16 @@ export default function GalleryLightbox({ item, onClose }: GalleryLightboxProps)
     if (!item) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
+      if (items.length > 1 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.preventDefault();
+        const currentIndex = items.findIndex((entry) => entry.id === item.id);
+        const direction = e.key === 'ArrowRight' ? 1 : -1;
+        onChange(items[(currentIndex + direction + items.length) % items.length]);
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [item, onClose]);
+  }, [item, items, onChange, onClose]);
 
   // Focus the close button on mount for keyboard accessibility
   useEffect(() => {
@@ -107,6 +115,33 @@ export default function GalleryLightbox({ item, onClose }: GalleryLightboxProps)
               className="max-h-[85vh] w-auto max-w-full object-contain rounded-md"
             />
           </div>
+        )}
+
+        {items.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                const index = items.findIndex((entry) => entry.id === item.id);
+                onChange(items[(index - 1 + items.length) % items.length]);
+              }}
+              aria-label="Previous gallery image"
+              className="fixed left-3 sm:left-6 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C8A96A]"
+            >
+              <ChevronLeft className="h-7 w-7" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const index = items.findIndex((entry) => entry.id === item.id);
+                onChange(items[(index + 1) % items.length]);
+              }}
+              aria-label="Next gallery image"
+              className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C8A96A]"
+            >
+              <ChevronRight className="h-7 w-7" />
+            </button>
+          </>
         )}
 
         {/* Caption / Title */}

@@ -16,6 +16,12 @@ export interface QuickSearchFilterProps {
   onSearchChange: (q: string) => void;
   distinctLocalities: string[];
   distinctBhkLabels: string[];
+  distinctPossessions: string[];
+  distinctPropertyTypes: string[];
+  possession: string;
+  onPossessionChange: (value: string) => void;
+  propertyType: string;
+  onPropertyTypeChange: (value: string) => void;
   totalResultsCount: number;
   phone?: string | null;
   onReset?: () => void;
@@ -34,6 +40,12 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
   onSearchChange,
   distinctLocalities,
   distinctBhkLabels,
+  distinctPossessions,
+  distinctPropertyTypes,
+  possession,
+  onPossessionChange,
+  propertyType,
+  onPropertyTypeChange,
   totalResultsCount,
   phone,
   onReset,
@@ -76,17 +88,6 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
           >
             Rent Residences
           </button>
-          <button
-            type="button"
-            onClick={() => onTransactionChange('commercial')}
-            className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
-              transactionType === 'commercial'
-                ? 'bg-[#1C1C1C] text-[#C8A96A]'
-                : 'text-[#6D6A66] hover:text-[#1C1C1C] hover:bg-[#F8F5F1]'
-            }`}
-          >
-            Commercial &amp; IT Parks
-          </button>
         </div>
 
         {onReset && (
@@ -102,7 +103,7 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
       </div>
 
       {/* 4/5-Column Filter Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {/* Locality (from distinct localities of published properties) */}
         <div>
           <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66] mb-1.5 flex items-center gap-1.5">
@@ -127,6 +128,41 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
             </div>
           </div>
         </div>
+
+        {distinctPropertyTypes.length > 0 && (
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66] mb-1.5 flex items-center gap-1.5">
+              <Home className="w-3.5 h-3.5 text-[#C8A96A]" />
+              Property Type
+            </label>
+            <select
+              value={propertyType}
+              onChange={(event) => onPropertyTypeChange(event.target.value)}
+              className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs font-medium text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] cursor-pointer"
+            >
+              <option value="all">All Property Types</option>
+              {distinctPropertyTypes.map((type) => (
+                <option key={type} value={type}>{type.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {distinctPossessions.length > 0 && (
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66]">
+              Possession
+            </label>
+            <select
+              value={possession}
+              onChange={(event) => onPossessionChange(event.target.value)}
+              className="h-11 w-full cursor-pointer border border-[#E8E2DA] bg-[#F8F5F1] px-3.5 text-xs font-medium text-[#1C1C1C] focus:border-[#C8A96A] focus:outline-none"
+            >
+              <option value="all">Any possession</option>
+              {distinctPossessions.map((value) => <option key={value} value={value}>{value}</option>)}
+            </select>
+          </div>
+        )}
 
         {/* BHK (from bhkLabel) */}
         <div>
@@ -195,7 +231,7 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
           <div className="relative">
             <input
               type="text"
-              placeholder="Title, locality, project..."
+              placeholder="Title, city, locality, description..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="w-full h-11 pl-9 pr-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
@@ -208,9 +244,9 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
       {/* Dynamic Status Strip */}
       <div className="pt-3 border-t border-[#E8E2DA]/60 flex items-center justify-between text-xs text-[#6D6A66]">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-[#1C1C1C]">{totalResultsCount} Verified Listings</span>
+          <span className="font-semibold text-[#1C1C1C]">{totalResultsCount} Listings</span>
           <span>·</span>
-          <span>MahaRERA compliant</span>
+          <span>REALSPACE RERA</span>
         </div>
 
         {phone && (

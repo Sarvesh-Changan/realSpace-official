@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FolderOpen,
-  Layers,
   MessageSquare,
   Award,
   HelpCircle,
@@ -16,11 +15,8 @@ import {
   Users,
   Calendar,
   Settings,
-  Building2,
-  MapPin,
   Wrench,
   FileText,
-  BarChart3,
   Home,
 } from "lucide-react";
 import clsx from "clsx";
@@ -45,8 +41,6 @@ const reraItems = [
   { name: "Settings", href: "/admin/rera/settings", icon: Settings },
   { name: "Properties", href: "/admin/rera/properties", icon: Home },
   { name: "Services", href: "/admin/rera/services", icon: Wrench },
-  { name: "Configurations", href: "/admin/rera/configurations", icon: Layers },
-  { name: "Builder Partners", href: "/admin/rera/builders", icon: Building2 },
   { name: "Gallery", href: "/admin/rera/gallery", icon: ImageIcon },
   { name: "Enquiries", href: "/admin/rera/enquiries", icon: FileText },
 ];

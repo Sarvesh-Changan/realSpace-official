@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
@@ -16,6 +15,7 @@ import {
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import { PropertyBookingCard } from '@/components/rera/PropertyBookingCard';
+import PropertyImageGallery from '@/components/rera/PropertyImageGallery';
 
 interface PropertyPageProps {
   params: Promise<{
@@ -171,70 +171,12 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Gallery & Details */}
           <div className="lg:col-span-8 space-y-8">
-            {/* Primary Cover / Hero Media */}
-            <div className="relative aspect-[16/10] w-full border border-[#E8E2DA] overflow-hidden bg-[#EEE6DD] shadow-md">
-              {mediaList[0]?.mediaType === 'VIDEO' ? (
-                <video
-                  controls
-                  poster={property.coverImageUrl || undefined}
-                  className="w-full h-full object-contain"
-                  key={mediaList[0].url}
-                >
-                  <source src={mediaList[0].url} />
-                  Your browser does not support the video tag.
-                </video>
-              ) : mediaList[0] ? (
-                <Image
-                  src={mediaList[0].url}
-                  alt={mediaList[0].altText || property.title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 66vw"
-                  className="object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-[#A39E98] text-sm">
-                  {property.title}
-                </div>
-              )}
-              {property.bhkLabel && (
-                <div className="absolute top-4 left-4 bg-[#1C1C1C]/90 backdrop-blur-sm text-[#C8A96A] text-xs font-semibold uppercase tracking-wider px-3 py-1">
-                  {property.bhkLabel}
-                </div>
-              )}
-            </div>
-
-            {/* Additional Gallery Items */}
-            {mediaList.length > 1 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {mediaList.slice(1).map((media, idx) => (
-                  <div
-                    key={media.id || idx}
-                    className="relative aspect-[16/10] border border-[#E8E2DA] overflow-hidden bg-[#EEE6DD]"
-                  >
-                    {media.mediaType === 'VIDEO' ? (
-                      <video
-                        controls
-                        poster={property.coverImageUrl || undefined}
-                        className="w-full h-full object-cover"
-                      >
-                        <source src={media.url} />
-                      </video>
-                    ) : (
-                      <Image
-                        src={media.url}
-                        alt={media.altText || `${property.title} detail ${idx + 1}`}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            <PropertyImageGallery
+              media={mediaList}
+              propertyTitle={property.title}
+              coverImageUrl={property.coverImageUrl}
+              bhkLabel={property.bhkLabel}
+            />
 
             {/* Property Narrative & Details */}
             <div className="bg-white border border-[#E8E2DA] p-6 sm:p-8 space-y-6">

@@ -326,12 +326,6 @@ export function PropertyBookingCard({
           </a>
         )}
       </div>
-
-      <div className="pt-2 text-[11px] text-[#6D6A66] space-y-1">
-        <div>✓ Verified statutory RERA documentation</div>
-        <div>✓ Accompanied site visit support in Thane</div>
-        <div>✓ Zero spam commitment</div>
-      </div>
     </div>
   );
 }

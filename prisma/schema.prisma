@@ -480,15 +480,25 @@ model ReraSettings {
 }
 
 model ReraService {
-  id          String   @id @default(cuid())
-  title       String
-  description String   @db.Text
-  iconKey     String?  // maps to a predefined icon set
-  highlights  String[] @default([])
-  sortOrder   Int      @default(0)
-  isPublished Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  title                String
+  description          String   @db.Text
+  iconKey              String?  // maps to a predefined icon set
+  highlights           String[] @default([])
+  sortOrder            Int      @default(0)
+  isPublished          Boolean  @default(true)
+  slug                 String?  @unique
+  shortDescription     String?
+  pageHeading          String?
+  bannerImageUrl       String?
+  bannerImagePublicId  String?
+  bannerImageAlt       String?
+  contentImages        Json?
+  sections             Json?
+  ctaText              String?
+  ctaUrl               String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }
 
 // "Popular Configurations" cards, e.g. 2 BHK starting from ...

@@ -12,7 +12,7 @@ interface CallbackStripProps {
 
 export function CallbackStrip({
   heading = 'Request a Quick Callback',
-  subheading = 'Speak with a verified RERA real estate advisor in Thane. We call back within 15 minutes.',
+  subheading = 'Share your contact details and enquiry. The REALSPACE team will follow up.',
   className = '',
 }: CallbackStripProps) {
   const [name, setName] = useState('');
@@ -69,9 +69,8 @@ export function CallbackStrip({
               Callback Requested Successfully
             </h3>
             <p className="text-xs text-[#EEE6DD]/80 leading-relaxed max-w-md mx-auto mb-4">
-              Thank you, <span className="font-semibold text-white">{name}</span>. Our senior Thane
-              property consultant has received your request and will call you at{' '}
-              <strong className="text-[#C8A96A]">{phone}</strong> shortly.
+              Thank you, <span className="font-semibold text-white">{name}</span>. Your request has been received. The team will contact you at{' '}
+              <strong className="text-[#C8A96A]">{phone}</strong>.
             </p>
             <button
               type="button"
@@ -180,11 +179,9 @@ export function CallbackStrip({
                 </div>
 
                 <div className="text-[10px] text-[#777777] flex items-center gap-2">
-                  <span>✓ 100% Privacy guaranteed</span>
+                  <span>Enquiry details are used to respond to your request.</span>
                   <span>•</span>
-                  <span>✓ No unsolicited spam</span>
-                  <span>•</span>
-                  <span>✓ MahaRERA compliance guidance</span>
+                  <span>REALSPACE</span>
                 </div>
               </form>
             </div>

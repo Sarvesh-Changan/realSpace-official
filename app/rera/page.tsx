@@ -1,12 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  MapPin,
-  ShieldCheck,
-  ArrowRight,
-  Sparkles,
-} from 'lucide-react';
+import { MapPin, ShieldCheck, ArrowRight, Sparkles, Building2, Briefcase, KeyRound } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import { HeroSection } from '@/components/rera/HeroSection';
@@ -14,6 +9,7 @@ import { TrustStatsStrip } from '@/components/rera/TrustStatsStrip';
 import { FAQSection } from '@/components/rera/FAQSection';
 import { TestimonialsSection } from '@/components/rera/TestimonialsSection';
 import { CallbackStrip } from '@/components/rera/CallbackStrip';
+import { HomeContactSection } from '@/components/rera/HomeContactSection';
 
 interface SerializedProperty {
   id: string;
@@ -46,7 +42,7 @@ interface SerializedNewLaunch {
 
 async function getHomeData() {
   try {
-    const [settings, featuredPropertiesRaw, newLaunchPropertiesRaw, testimonialsRaw, faqsRaw] =
+    const [settings, featuredPropertiesRaw, newLaunchPropertiesRaw, testimonialsRaw, faqsRaw, servicesRaw, branchRaw] =
       await Promise.all([
         prisma.reraSettings.findUnique({ where: { id: 'singleton' } }),
         prisma.reraProperty.findMany({
@@ -76,6 +72,15 @@ async function getHomeData() {
           where: { isPublished: true },
           take: 6,
           orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+        }),
+        prisma.reraService.findMany({
+          where: { isPublished: true },
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+        }),
+        prisma.reraBranch.findFirst({
+          where: { isPublished: true },
+          orderBy: { sortOrder: 'asc' },
+          select: { id: true, name: true, address: true, phone: true, mapUrl: true },
         }),
       ]);
 
@@ -123,12 +128,21 @@ async function getHomeData() {
       answer: f.answer,
     }));
 
+    const services = servicesRaw.map((service) => ({
+      id: service.id,
+      title: service.title,
+      description: service.description,
+      iconKey: service.iconKey,
+    }));
+
     return {
       settings,
       featuredProperties,
       newLaunchProperties,
       testimonials,
       faqs,
+      services,
+      branch: branchRaw,
     };
   } catch {
     return {
@@ -137,6 +151,8 @@ async function getHomeData() {
       newLaunchProperties: [],
       testimonials: [],
       faqs: [],
+      services: [],
+      branch: null,
     };
   }
 }
@@ -148,6 +164,8 @@ export default async function HomePage() {
     newLaunchProperties,
     testimonials,
     faqs,
+    services,
+    branch,
   } = await getHomeData();
 
   const reraRegNo =
@@ -186,7 +204,7 @@ export default async function HomePage() {
         heroSlides={heroSlides}
         heroSlideInterval={settings?.heroSlideInterval ?? 8}
         reraRegistrationNo={reraRegNo}
-        brokerName={settings?.brokerName ?? null}
+        brokerName="REALSPACE"
         founderName={settings?.founderName ?? null}
         yearsExperience={settings?.yearsExperience ?? null}
         propertiesClosed={settings?.propertiesClosed ?? null}
@@ -201,22 +219,37 @@ export default async function HomePage() {
       />
 
       {/* Welcome Blurb */}
-      {(settings?.welcomeTitle || settings?.welcomeBody) && (
-        <section className="max-w-4xl mx-auto px-4 sm:px-8 py-16 text-center">
-          {settings.welcomeTitle && (
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C] mb-4">
-              {settings.welcomeTitle}
-            </h2>
-          )}
-          {settings.welcomeBody && (
-            <div className="text-sm sm:text-base text-[#6D6A66] leading-relaxed space-y-4">
-              {settings.welcomeBody.split(/\n\s*\n/).map((para, idx) => (
-                <p key={idx}>{para.trim()}</p>
-              ))}
-            </div>
-          )}
+      {(settings?.welcomeTitle || settings?.welcomeBody || settings?.founderImageUrl) && (
+        <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:py-20">
+          {settings.founderImageUrl && <div className="relative min-h-[280px] overflow-hidden bg-[#EEE6DD] sm:min-h-[380px]">
+            <Image src={settings.founderImageUrl} alt={settings.founderName || 'REALSPACE'} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
+          </div>}
+          <div className={settings.founderImageUrl ? '' : 'mx-auto max-w-3xl text-center'}>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#9A7539]">About REALSPACE</p>
+            {settings.welcomeTitle && <h2 className="mb-4 font-heading text-2xl font-bold text-[#1C1C1C] sm:text-3xl">{settings.welcomeTitle}</h2>}
+            {settings.welcomeBody && <div className="space-y-4 text-sm leading-7 text-[#6D6A66] sm:text-base">{settings.welcomeBody.split(/\n\s*\n/).map((para, idx) => <p key={idx}>{para.trim()}</p>)}</div>}
+            <Link href={reraPath('/about')} className="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">Read about us <ArrowRight className="h-4 w-4" /></Link>
+          </div>
         </section>
       )}
+
+      {services.length > 0 && <section className="bg-white py-16 sm:py-20" aria-labelledby="rera-home-services-title">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+          <div className="mb-9 flex flex-col justify-between gap-4 border-b border-[#E8E2DA] pb-5 sm:flex-row sm:items-end">
+            <div><p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#9A7539]">What we do</p><h2 id="rera-home-services-title" className="font-heading text-2xl font-bold text-[#1C1C1C] sm:text-3xl">Our Services</h2></div>
+            <Link href={reraPath('/services')} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">All services <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{services.map((service, index) => {
+            const Icon = service.iconKey?.toLowerCase().includes('key') ? KeyRound : service.iconKey?.toLowerCase().includes('briefcase') ? Briefcase : Building2;
+            return <article key={service.id} className="group flex min-h-[240px] flex-col border border-[#E8E2DA] bg-[#F8F5F1] p-6 transition hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-lg sm:p-7">
+              <div className="mb-5 flex items-center justify-between"><span className="flex h-12 w-12 items-center justify-center bg-[#EEE6DD] text-[#9A7539] transition group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C]"><Icon className="h-6 w-6" /></span><span className="font-heading text-2xl text-[#D6CEC3]">{String(index + 1).padStart(2, '0')}</span></div>
+              <h3 className="font-heading text-xl font-bold text-[#1C1C1C]">{service.title}</h3>
+              <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-[#6D6A66]">{service.description}</p>
+              <Link href={reraPath('/services')} className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">View service <ArrowRight className="h-4 w-4" /></Link>
+            </article>;
+          })}</div>
+        </div>
+      </section>}
 
       {/* 01. Featured Properties Inventory */}
       {featuredProperties.length > 0 && (
@@ -449,8 +482,8 @@ export default async function HomePage() {
                 sizes="(max-width: 640px) 100vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-sky-500/0 transition-colors duration-300 group-hover:bg-sky-500/65 group-focus-visible:bg-sky-500/65" />
-              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/65 to-transparent px-5 pb-5 pt-16 text-center text-xl font-semibold text-white">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#1C1C1C]/0 transition-colors duration-300 group-hover:bg-[#1C1C1C]/40 group-focus-visible:bg-[#1C1C1C]/40" />
+              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 to-transparent px-5 pb-5 pt-16 text-center font-heading text-xl font-semibold text-white">
                 {oneBhk.label} FLAT
                 {oneBhk.price && <span className="mt-1 block text-sm font-medium">Starts from {oneBhk.price}</span>}
               </span>
@@ -467,14 +500,14 @@ export default async function HomePage() {
                 sizes="(max-width: 640px) 100vw, 67vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-sky-500/0 transition-colors duration-300 group-hover:bg-sky-500/65 group-focus-visible:bg-sky-500/65" />
-              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/65 to-transparent px-5 pb-5 pt-16 text-center text-xl font-semibold text-white">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#1C1C1C]/0 transition-colors duration-300 group-hover:bg-[#1C1C1C]/40 group-focus-visible:bg-[#1C1C1C]/40" />
+              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 to-transparent px-5 pb-5 pt-16 text-center font-heading text-xl font-semibold text-white">
                 {twoBhk.label} FLAT
                 {twoBhk.price && <span className="mt-1 block text-sm font-medium">Starts from {twoBhk.price}</span>}
               </span>
             </Link>
 
-            <div tabIndex={0} className="group relative min-h-[240px] overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500 sm:col-span-2 sm:min-h-0">
+              <div tabIndex={0} className="group relative min-h-[240px] overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#C8A96A] sm:col-span-2 sm:min-h-0">
               <Image
                 src={threeBhk.image}
                 alt={`${threeBhk.label} floor plan`}
@@ -482,7 +515,7 @@ export default async function HomePage() {
                 sizes="(max-width: 640px) 100vw, 67vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-sky-500/0 px-5 text-center text-white transition-colors duration-300 group-hover:bg-sky-500/75 group-focus-within:bg-sky-500/75 sm:flex-row sm:gap-8">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#1C1C1C]/0 px-5 text-center text-white transition-colors duration-300 group-hover:bg-[#1C1C1C]/75 group-focus-within:bg-[#1C1C1C]/75 sm:flex-row sm:gap-8">
                 <span className="text-2xl font-bold sm:max-w-32 sm:text-left sm:text-3xl">
                   {threeBhk.label} FLAT
                 </span>
@@ -507,8 +540,15 @@ export default async function HomePage() {
       {/* 04. Client Reviews & Proof */}
       <TestimonialsSection items={testimonials} />
 
+      {/* Gallery carousel hidden from the homepage; the standalone RERA gallery remains available. */}
+
       {/* Callback Strip */}
       <CallbackStrip />
+
+      <HomeContactSection
+        settings={{ address: settings?.address ?? null, phone: settings?.phone ?? null, email: settings?.email ?? null }}
+        branch={branch ? { ...branch, phone: branch.phone ?? null, mapUrl: branch.mapUrl ?? null } : null}
+      />
 
       {/* 05. Frequently Asked Questions Accordion */}
       <FAQSection items={faqs} />

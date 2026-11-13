@@ -4,19 +4,30 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ShieldCheck,
   MapPin,
   Maximize2,
+  ArrowUpRight,
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import { PropertyDetailModal, type ReraPropertyDetailData } from './PropertyDetailModal';
 import { QuickSearchFilter } from './QuickSearchFilter';
 
+type PropertyListingData = ReraPropertyDetailData & {
+  listingType: string;
+  propertyType: string;
+  isFeatured: boolean;
+  sortOrder: number;
+  createdAt: string;
+};
+
 export interface PropertiesExplorerProps {
-  initialProperties: ReraPropertyDetailData[];
+  initialProperties: PropertyListingData[];
+  propertyFetchFailed?: boolean;
+  bannerImageUrl?: string | null;
   distinctLocalities: string[];
   distinctBhkLabels: string[];
   distinctPossessions: string[];
+  distinctPropertyTypes: string[];
   initialInterest?: string;
   initialLocality?: string;
   initialBudget?: string;
@@ -26,9 +37,12 @@ export interface PropertiesExplorerProps {
 
 export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   initialProperties,
+  propertyFetchFailed = false,
+  bannerImageUrl,
   distinctLocalities,
   distinctBhkLabels,
   distinctPossessions,
+  distinctPropertyTypes,
   initialInterest = 'all',
   initialLocality = 'all',
   initialBudget = 'all',
@@ -41,32 +55,21 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   const [selectedBhk, setSelectedBhk] = useState<string>('all');
   const [selectedBudget, setSelectedBudget] = useState<string>(initialBudget);
   const [selectedPossession, setSelectedPossession] = useState<string>('all');
+  const [selectedPropertyType, setSelectedPropertyType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'featured' | 'price_asc' | 'price_desc' | 'area_desc'>('featured');
 
   // Modal State
-  const [selectedProperty, setSelectedProperty] = useState<ReraPropertyDetailData | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<PropertyListingData | null>(null);
 
   // Client-side Filtering & Sorting
   const filteredListings = useMemo(() => {
     return initialProperties
       .filter((item) => {
-        // 1. Transaction Type (Buy / Rent / Commercial)
-        if (transactionType !== 'all') {
-          const isCommercial =
-            item.title.toLowerCase().includes('commercial') ||
-            (item.bhkLabel && item.bhkLabel.toLowerCase().includes('commercial')) ||
-            item.description.toLowerCase().includes('office') ||
-            item.description.toLowerCase().includes('retail');
+        if (transactionType === 'buy' && item.listingType !== 'SALE') return false;
+        if (transactionType === 'rent' && item.listingType !== 'RENT') return false;
 
-          if (transactionType === 'commercial') {
-            if (!isCommercial) return false;
-          } else if (transactionType === 'buy') {
-            if (isCommercial) return false;
-          } else if (transactionType === 'rent') {
-            if (isCommercial) return false;
-          }
-        }
+        if (selectedPropertyType !== 'all' && item.propertyType !== selectedPropertyType) return false;
 
         // 2. Locality filter
         if (selectedLocality !== 'all') {
@@ -106,14 +109,14 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
           }
         }
 
-        // 6. Keyword search over title, locality, projectName and builderName
+        // Search all public-facing identifying text without relying on hidden metadata.
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
-          const matchesTitle = item.title.toLowerCase().includes(q);
-          const matchesLoc = item.locality.toLowerCase().includes(q);
-          const matchesProj = item.projectName?.toLowerCase().includes(q) ?? false;
-          const matchesBuilder = item.builderName?.toLowerCase().includes(q) ?? false;
-          if (!matchesTitle && !matchesLoc && !matchesProj && !matchesBuilder) return false;
+          const searchable = [item.title, item.locality, item.city, item.description, item.projectName, item.builderName]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+          if (!searchable.includes(q)) return false;
         }
 
         return true;
@@ -137,7 +140,9 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
           const areaB = b.carpetAreaSqFt ?? 0;
           return areaB - areaA;
         }
-        return 0;
+        return Number(b.isFeatured) - Number(a.isFeatured) ||
+          a.sortOrder - b.sortOrder ||
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
   }, [
     initialProperties,
@@ -146,6 +151,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
     selectedBhk,
     selectedBudget,
     selectedPossession,
+    selectedPropertyType,
     searchQuery,
     sortBy,
   ]);
@@ -156,6 +162,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
     setSelectedBhk('all');
     setSelectedBudget('all');
     setSelectedPossession('all');
+    setSelectedPropertyType('all');
     setSearchQuery('');
     setSortBy('featured');
   };
@@ -163,19 +170,17 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   return (
     <div className="w-full bg-[#F8F5F1] min-h-screen">
       {/* 01. Hero Banner */}
-      <section className="bg-[#1C1C1C] text-white py-14 px-4 sm:px-8 border-b border-[#333333]">
-        <div className="max-w-7xl mx-auto">
-          <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#C8A96A] mb-3 font-semibold">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Statutory Real Estate Portfolio · Thane MMR</span>
-          </div>
-          <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-normal text-white mb-4">
-            Curated Thane Properties
-          </h1>
-          <p className="text-sm sm:text-base text-[#EEE6DD]/90 max-w-2xl leading-relaxed">
-            Verified residential developments, luxury penthouses, and prime commercial spaces with
-            transparent documentation.
-          </p>
+      <section className="relative isolate overflow-hidden bg-[#24211d] text-white">
+        {bannerImageUrl && <Image src={bannerImageUrl} alt="REALSPACE property listings" fill priority sizes="100vw" className="z-0 object-cover" />}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/75 via-black/50 to-black/25" />
+        <div className="relative z-10 mx-auto flex min-h-[230px] max-w-7xl flex-col justify-end px-4 pb-9 pt-16 sm:min-h-[290px] sm:px-8 sm:pb-12">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#FECC00]">REALSPACE RERA</p>
+          <h1 className="font-heading text-3xl font-normal sm:text-4xl lg:text-5xl">Properties</h1>
+          <nav aria-label="Breadcrumb" className="mt-4 text-xs text-white/80">
+            <Link href={reraPath('/')} className="transition-colors hover:text-[#FECC00]">Home</Link>
+            <span className="px-2 text-white/50">/</span>
+            <span aria-current="page" className="text-white">Properties</span>
+          </nav>
         </div>
       </section>
 
@@ -194,6 +199,12 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
           onSearchChange={setSearchQuery}
           distinctLocalities={distinctLocalities}
           distinctBhkLabels={distinctBhkLabels}
+          distinctPossessions={distinctPossessions}
+          distinctPropertyTypes={distinctPropertyTypes}
+          possession={selectedPossession}
+          onPossessionChange={setSelectedPossession}
+          propertyType={selectedPropertyType}
+          onPropertyTypeChange={setSelectedPropertyType}
           totalResultsCount={filteredListings.length}
           phone={phone}
           onReset={handleResetFilters}
@@ -208,7 +219,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
               {filteredListings.length} {filteredListings.length === 1 ? 'Property' : 'Properties'} Available
             </h2>
             <p className="text-xs text-[#6D6A66] mt-0.5">
-              Verified inventory matching your search criteria
+              Browse available listings and use the filters to narrow your search.
             </p>
           </div>
 
@@ -232,13 +243,18 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
 
       {/* 04. Properties Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 pb-20">
-        {filteredListings.length === 0 ? (
+        {propertyFetchFailed ? (
+          <div role="alert" className="mx-auto max-w-xl border border-red-200 bg-white p-8 py-16 text-center">
+            <h3 className="font-heading mb-2 text-xl font-bold text-[#1C1C1C]">Properties are temporarily unavailable</h3>
+            <p className="text-sm text-[#6D6A66]">We could not load the property listings right now. Please try again in a little while.</p>
+          </div>
+        ) : filteredListings.length === 0 ? (
           <div className="py-20 text-center bg-white border border-[#E8E2DA] p-8 max-w-xl mx-auto">
             <h3 className="font-heading text-xl font-bold text-[#1C1C1C] mb-2">
-              No matching properties found
+              {initialProperties.length === 0 ? 'No properties are currently listed' : 'No matching properties found'}
             </h3>
             <p className="text-xs text-[#6D6A66] mb-6">
-              Try adjusting your filters or search keywords to view other available inventory in Thane.
+              {initialProperties.length === 0 ? 'Please check back later for available properties.' : 'Try adjusting your filters or search keywords.'}
             </p>
             <button
               onClick={handleResetFilters}
@@ -334,7 +350,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                   </div>
 
                   {/* Card Footer Actions */}
-                  <div className="pt-3 border-t border-[#E8E2DA] flex items-center justify-between">
+                    <div className="pt-3 border-t border-[#E8E2DA] flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="text-[10px] uppercase tracking-wider text-[#A39E98] font-semibold">
                         Pricing
@@ -345,6 +361,12 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <Link
+                        href={`${reraPath('/contact')}?property=${encodeURIComponent(property.slug)}`}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#C8A96A] text-[#1C1C1C] hover:bg-[#F8F5F1] text-xs font-semibold uppercase tracking-wider transition-colors"
+                      >
+                        Enquire <ArrowUpRight className="h-3.5 w-3.5" />
+                      </Link>
                       <Link
                         href={`${reraPath('/properties')}/${property.slug}`}
                         className="px-3 py-1.5 bg-[#1C1C1C] hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] text-xs font-semibold uppercase tracking-wider transition-colors"

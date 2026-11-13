@@ -11,13 +11,11 @@ export const navLinks: NavLink[] = [
   { label: 'SERVICES', href: reraPath('/services') },
   { label: 'PROPERTIES', href: reraPath('/properties') },
   { label: 'GALLERY', href: reraPath('/gallery') },
-  { label: 'POST PROPERTY', href: reraPath('/post-property') },
   { label: 'CONTACT', href: reraPath('/contact') },
 ];
 
 export const footerQuickLinks: NavLink[] = [
   { label: 'Featured Properties', href: reraPath('/properties') },
-  { label: 'Post Your Property (Free)', href: reraPath('/post-property') },
   { label: 'REALSPACE Luxury Interiors', href: '/' },
   { label: 'Residential Projects', href: reraPath('/properties?category=residential') },
   { label: 'Commercial & IT Parks', href: reraPath('/properties?category=commercial') },

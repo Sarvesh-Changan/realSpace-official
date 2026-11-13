@@ -8,19 +8,23 @@ interface ContactFormProps {
   initialPropertySlug?: string;
   initialService?: string;
   whatsapp?: string | null;
+  services?: string[];
+  localities?: string[];
 }
 
 export function ContactForm({
   initialPropertySlug = '',
-  initialService = 'Property Purchase & Site Visit',
+  initialService = '',
   whatsapp = '',
+  services = [],
+  localities = [],
 }: ContactFormProps) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [service, setService] = useState(initialService);
-  const [locality, setLocality] = useState('Ghodbunder Road');
-  const [budget, setBudget] = useState('₹75 Lakhs - ₹1.5 Cr');
+  const [locality, setLocality] = useState('');
+  const [budget, setBudget] = useState('');
   const [message, setMessage] = useState('');
   const [honeypot, setHoneypot] = useState('');
 
@@ -81,25 +85,24 @@ export function ContactForm({
           <CheckCircle2 className="w-9 h-9" />
         </div>
         <h3 className="font-heading text-2xl font-bold text-[#1C1C1C] mb-2">
-          Inquiry Dispatched Successfully
+          Enquiry received
         </h3>
         <p className="text-xs sm:text-sm text-[#6D6A66] max-w-md mx-auto mb-6 leading-relaxed">
-          Thank you, <span className="font-semibold text-[#1C1C1C]">{name}</span>. Our senior
-          advisory desk has received your requirements for{' '}
-          <strong className="text-[#1C1C1C]">{service}</strong>. We will contact you at{' '}
-          <strong className="text-[#1C1C1C]">{phone}</strong> shortly.
+          Thank you, <span className="font-semibold text-[#1C1C1C]">{name}</span>. Your enquiry
+          has been saved. This confirms that it was stored; email notification is handled
+          separately and is not guaranteed.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {whatsapp && (
             <a
-              href={`https://wa.me/${whatsapp}?text=Hi%2C%20I%20have%20submitted%20my%20contact%20inquiry%20for%20${encodeURIComponent(service)}.`}
+              href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I have submitted my contact enquiry${service ? ` for ${service}` : ''}.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
-              <span>Instant WhatsApp Follow-up</span>
+              <span>Continue on WhatsApp</span>
             </a>
           )}
           <button
@@ -108,6 +111,9 @@ export function ContactForm({
               setName('');
               setPhone('');
               setEmail('');
+              setService('');
+              setLocality('');
+              setBudget('');
               setMessage('');
               setHoneypot('');
             }}
@@ -124,13 +130,13 @@ export function ContactForm({
     <div>
       <div className="border-b border-[#E8E2DA] pb-4 mb-6">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-[#C8A96A]">
-          Direct Inquiry
+          Contact REALSPACE
         </span>
         <h2 className="font-heading text-2xl font-bold text-[#1C1C1C]">
-          Send Us Your Property Requirements
+          Send an Enquiry
         </h2>
         <p className="text-xs text-[#6D6A66] mt-1">
-          Fill in the details below and an advisor will coordinate a site visit or consultation.
+          Complete the form and submit your enquiry.
         </p>
       </div>
 
@@ -210,21 +216,15 @@ export function ContactForm({
 
           <div>
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-              Service Required
+              Service (optional)
             </label>
             <select
               value={service}
               onChange={(e) => setService(e.target.value)}
               className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
             >
-              <option value="Property Purchase & Site Visit">Property Purchase &amp; Site Visit</option>
-              <option value="Commercial Office / Retail Lease">Commercial Office / Retail Lease</option>
-              <option value="Resale & Property Management">Resale &amp; Property Management</option>
-              <option value="Home Loan Financing Assistance">Home Loan Financing Assistance</option>
-              <option value="MahaRERA Due Diligence">MahaRERA Due Diligence</option>
-              <option value="REALSPACE Turnkey Luxury Interiors">
-                REALSPACE Turnkey Luxury Interiors
-              </option>
+              <option value="">Select a service (optional)</option>
+              {services.map((title) => <option key={title} value={title}>{title}</option>)}
             </select>
           </div>
         </div>
@@ -232,38 +232,30 @@ export function ContactForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-              Preferred Thane Locality
+              Locality (optional)
             </label>
-            <select
-              value={locality}
-              onChange={(e) => setLocality(e.target.value)}
-              className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
-            >
-              <option value="Ghodbunder Road">Ghodbunder Road</option>
-              <option value="Majiwada / Lodha Crown">Majiwada / Lodha Crown</option>
-              <option value="Teen Hath Naka / LBS Marg">Teen Hath Naka / LBS Marg</option>
-              <option value="Pokhran Road 1 & 2">Pokhran Road 1 &amp; 2</option>
-              <option value="Kolshet Road">Kolshet Road</option>
-              <option value="Wagle Industrial Estate">Wagle Industrial Estate</option>
-              <option value="Kasarvadavli Lake">Kasarvadavli Lake</option>
-            </select>
+            {localities.length > 0 ? (
+              <select value={locality} onChange={(e) => setLocality(e.target.value)} className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]">
+                <option value="">Select a locality (optional)</option>
+                {localities.map((value) => <option key={value} value={value}>{value}</option>)}
+              </select>
+            ) : (
+              <input type="text" value={locality} onChange={(e) => setLocality(e.target.value)} maxLength={100} placeholder="Enter a locality (optional)" className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]" />
+            )}
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-              Estimated Budget
+              Budget (optional)
             </label>
-            <select
+            <input
+              type="text"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
+              maxLength={100}
+              placeholder="Enter a budget (optional)"
               className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
-            >
-              <option value="Under ₹80 Lakhs">Under ₹80 Lakhs</option>
-              <option value="₹75 Lakhs - ₹1.5 Cr">₹75 Lakhs - ₹1.50 Cr</option>
-              <option value="₹1.5 Cr - ₹3.0 Cr">₹1.50 Cr - ₹3.00 Cr</option>
-              <option value="Above ₹3.0 Cr (Luxury)">Above ₹3.00 Cr (Luxury)</option>
-              <option value="Commercial Lease (Monthly)">Commercial Lease (Monthly)</option>
-            </select>
+            />
           </div>
         </div>
 
@@ -275,7 +267,7 @@ export function ContactForm({
             rows={3}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Please mention specific towers, floor preferences, or questions..."
+            placeholder="Add any details or questions (optional)"
             className={`w-full p-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
               fieldErrors.message ? 'border-red-500' : 'border-[#E8E2DA]'
             }`}
@@ -307,7 +299,7 @@ export function ContactForm({
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                <span>Submit Inquiry</span>
+                <span>Send Enquiry</span>
               </>
             )}
           </button>

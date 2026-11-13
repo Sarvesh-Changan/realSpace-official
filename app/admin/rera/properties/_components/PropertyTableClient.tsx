@@ -47,36 +47,36 @@ export function PropertyToggles({
   };
 
   return (
-    <div className="flex flex-col gap-1.5 py-1 text-xs">
-      <label className="flex items-center gap-2 cursor-pointer font-medium text-neutral-700 select-none">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] leading-tight">
+      <label className="flex items-center gap-1 cursor-pointer font-medium text-neutral-700 select-none">
         <input
           type="checkbox"
           checked={isPublished}
           onChange={handlePublishToggle}
           disabled={isPending}
-          className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 disabled:opacity-50 cursor-pointer"
+          className="h-3.5 w-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 disabled:opacity-50 cursor-pointer"
         />
         <span>Published</span>
       </label>
 
-      <label className="flex items-center gap-2 cursor-pointer text-neutral-600 select-none">
+      <label className="flex items-center gap-1 cursor-pointer text-neutral-600 select-none">
         <input
           type="checkbox"
           checked={isFeatured}
           onChange={handleFeatureToggle}
           disabled={isPending}
-          className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 disabled:opacity-50 cursor-pointer"
+          className="h-3.5 w-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 disabled:opacity-50 cursor-pointer"
         />
         <span>Featured</span>
       </label>
 
-      <label className="flex items-center gap-2 cursor-pointer text-neutral-600 select-none">
+      <label className="flex items-center gap-1 cursor-pointer text-neutral-600 select-none">
         <input
           type="checkbox"
           checked={isNewLaunch}
           onChange={handleNewLaunchToggle}
           disabled={isPending}
-          className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 disabled:opacity-50 cursor-pointer"
+          className="h-3.5 w-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 disabled:opacity-50 cursor-pointer"
         />
         <span>New Launch</span>
       </label>

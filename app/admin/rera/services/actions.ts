@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { reraServiceSchema, type ReraServiceInput } from "./schema";
 
 export async function createService(data: ReraServiceInput): Promise<{ success: boolean; id?: string; error?: string }> {
@@ -17,7 +18,8 @@ export async function createService(data: ReraServiceInput): Promise<{ success: 
     return { success: false, error: errorMsg || "Invalid service data." };
   }
 
-  const { title, description, iconKey, highlights, sortOrder, isPublished } = parsed.data;
+  const { title, description, iconKey, highlights, sortOrder, isPublished, ...page } = parsed.data;
+  const slug = normalizeSlug(page.slug);
 
   try {
     const service = await prisma.reraService.create({
@@ -28,6 +30,7 @@ export async function createService(data: ReraServiceInput): Promise<{ success: 
         highlights,
         sortOrder,
         isPublished,
+        ...pageData(page, slug),
       },
     });
 
@@ -53,7 +56,8 @@ export async function updateService(id: string, data: ReraServiceInput): Promise
     return { success: false, error: errorMsg || "Invalid service data." };
   }
 
-  const { title, description, iconKey, highlights, sortOrder, isPublished } = parsed.data;
+  const { title, description, iconKey, highlights, sortOrder, isPublished, ...page } = parsed.data;
+  const slug = normalizeSlug(page.slug);
 
   try {
     await prisma.reraService.update({
@@ -65,10 +69,13 @@ export async function updateService(id: string, data: ReraServiceInput): Promise
         highlights,
         sortOrder,
         isPublished,
+        ...pageData(page, slug),
       },
     });
 
     revalidatePath("/rera", "layout");
+    revalidatePath("/rera/services");
+    if (slug) revalidatePath(`/rera/services/${slug}`);
     revalidatePath("/admin/rera/services");
     revalidatePath(`/admin/rera/services/${id}/edit`);
 
@@ -77,6 +84,25 @@ export async function updateService(id: string, data: ReraServiceInput): Promise
     console.error("Failed to update RERA service:", error);
     return { success: false, error: "Failed to update service in database." };
   }
+}
+
+function normalizeSlug(value: string | null | undefined) {
+  return value?.trim().toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || null;
+}
+
+function pageData(page: Omit<import("./schema").ReraServiceInput, "id" | "title" | "description" | "iconKey" | "highlights" | "sortOrder" | "isPublished">, slug: string | null) {
+  return {
+    slug,
+    shortDescription: page.shortDescription || null,
+    pageHeading: page.pageHeading || null,
+    bannerImageUrl: page.bannerImageUrl || null,
+    bannerImagePublicId: page.bannerImagePublicId || null,
+    bannerImageAlt: page.bannerImageAlt || null,
+    contentImages: page.contentImages === undefined ? Prisma.DbNull : page.contentImages as Prisma.InputJsonValue,
+    sections: page.sections === undefined ? Prisma.DbNull : page.sections as Prisma.InputJsonValue,
+    ctaText: page.ctaText || null,
+    ctaUrl: page.ctaUrl || null,
+  };
 }
 
 export async function deleteService(id: string): Promise<{ success: boolean; error?: string }> {

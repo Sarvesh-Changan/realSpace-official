@@ -28,11 +28,11 @@ export default async function AdminReraPropertiesPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-neutral-800" /> RERA Properties
+          <h1 className="text-xl font-bold text-neutral-900 flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-neutral-800" /> RERA Properties
           </h1>
           <p className="text-sm text-neutral-500 mt-1">
             Manage residential, commercial, and new launch listings for the RERA sub-site.
@@ -40,7 +40,7 @@ export default async function AdminReraPropertiesPage() {
         </div>
         <Link
           href="/admin/rera/properties/new"
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-900 text-white font-medium text-sm rounded-md hover:bg-neutral-800 transition-colors shadow-sm self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-neutral-900 text-white font-medium text-sm rounded-md hover:bg-neutral-800 transition-colors shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" /> Add Property
         </Link>
@@ -66,16 +66,24 @@ export default async function AdminReraPropertiesPage() {
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div className="w-full">
+            <table className="w-full table-fixed text-left border-collapse">
+              <colgroup>
+                <col className="w-[23%]" />
+                <col className="w-[17%]" />
+                <col className="w-[20%]" />
+                <col className="w-[14%]" />
+                <col className="w-[16%]" />
+                <col className="w-[10%]" />
+              </colgroup>
               <thead>
                 <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-                  <th className="py-3.5 px-4">Property</th>
-                  <th className="py-3.5 px-4">Type & BHK</th>
-                  <th className="py-3.5 px-4">Locality</th>
-                  <th className="py-3.5 px-4">Price</th>
-                  <th className="py-3.5 px-4">Visibility</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-2.5 px-3">Property</th>
+                  <th className="py-2.5 px-3">Type & BHK</th>
+                  <th className="py-2.5 px-3">Locality</th>
+                  <th className="py-2.5 px-3">Price</th>
+                  <th className="py-2.5 px-3">Visibility</th>
+                  <th className="py-2.5 px-2 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 text-sm">
@@ -101,9 +109,9 @@ export default async function AdminReraPropertiesPage() {
                       className="hover:bg-neutral-50/50 transition-colors"
                     >
                       {/* Cover Thumbnail & Title */}
-                      <td className="py-4 px-4 min-w-[240px]">
+                      <td className="py-2.5 px-3 min-w-0">
                         <div className="flex items-start gap-3">
-                          <div className="w-14 h-14 rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden shrink-0 mt-0.5">
+                          <div className="w-12 h-12 rounded bg-neutral-100 border border-neutral-200 relative overflow-hidden shrink-0 mt-0.5">
                             {thumbUrl ? (
                               isVideo ? (
                                 <div className="relative w-full h-full bg-neutral-900 flex items-center justify-center">
@@ -116,7 +124,7 @@ export default async function AdminReraPropertiesPage() {
                                   src={thumbUrl}
                                   alt={prop.title}
                                   fill
-                                  sizes="56px"
+                                  sizes="48px"
                                   className="object-cover"
                                   unoptimized={!thumbUrl.includes("res.cloudinary.com")}
                                 />
@@ -127,11 +135,11 @@ export default async function AdminReraPropertiesPage() {
                               </div>
                             )}
                           </div>
-                          <div className="space-y-1">
+                          <div className="space-y-1 min-w-0">
                             <div className="font-semibold text-neutral-900 line-clamp-1">
                               {prop.title}
                             </div>
-                            <div className="text-xs text-neutral-400 font-mono">
+                            <div className="text-[11px] text-neutral-400 font-mono truncate">
                               /{prop.slug}
                             </div>
                             {/* Project RERA warning badge */}
@@ -146,9 +154,9 @@ export default async function AdminReraPropertiesPage() {
                       </td>
 
                       {/* Listing Type & Property Type */}
-                      <td className="py-4 px-4 whitespace-nowrap">
+                      <td className="py-2.5 px-3 min-w-0">
                         <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-neutral-100 text-neutral-800 border border-neutral-200">
                               {prop.listingType}
                             </span>
@@ -165,23 +173,23 @@ export default async function AdminReraPropertiesPage() {
                       </td>
 
                       {/* Locality */}
-                      <td className="py-4 px-4 whitespace-nowrap text-neutral-700">
-                        <div className="font-medium">{prop.locality}</div>
+                      <td className="py-2.5 px-3 min-w-0 text-neutral-700">
+                        <div className="font-medium line-clamp-2 break-words">{prop.locality}</div>
                         {prop.projectName && (
-                          <div className="text-xs text-neutral-400">
+                          <div className="text-xs text-neutral-400 truncate">
                             {prop.projectName}
                           </div>
                         )}
                       </td>
 
                       {/* Price Label & Price Amount warning */}
-                      <td className="py-4 px-4 whitespace-nowrap">
+                      <td className="py-2.5 px-3 min-w-0">
                         <div className="space-y-1">
-                          <div className="font-semibold text-neutral-900">
+                          <div className="font-semibold text-neutral-900 break-words">
                             {prop.priceLabel}
                           </div>
                           {hasNoPriceAmount && (
-                            <div className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded leading-tight w-fit">
+                            <div className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded leading-tight w-fit max-w-full">
                               ⚠️ Won&apos;t appear in budget filters
                             </div>
                           )}
@@ -189,7 +197,7 @@ export default async function AdminReraPropertiesPage() {
                       </td>
 
                       {/* Visibility Toggles */}
-                      <td className="py-4 px-4 whitespace-nowrap">
+                      <td className="py-2.5 px-3">
                         <PropertyToggles
                           id={prop.id}
                           isFeatured={prop.isFeatured}
@@ -199,7 +207,7 @@ export default async function AdminReraPropertiesPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="py-4 px-4 whitespace-nowrap text-right">
+                      <td className="py-2.5 px-2 text-right">
                         <PropertyActions
                           id={prop.id}
                           slug={prop.slug}

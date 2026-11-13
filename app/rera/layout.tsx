@@ -109,29 +109,12 @@ async function fetchShellProps(): Promise<ReraShellProps> {
 // ---------------------------------------------------------------------------
 
 export async function generateMetadata(): Promise<Metadata> {
-  let brokerName = '';
-  try {
-    const settings = await prisma.reraSettings.findUnique({
-      where: { id: 'singleton' },
-      select: { brokerName: true },
-    });
-    brokerName = settings?.brokerName?.trim() ?? '';
-  } catch {
-    // fall through to default
-  }
-
-  const displayName =
-    brokerName !== ''
-      ? brokerName
-      : 'REALSPACE & Arnav Properties';
-
   return {
     title: {
-      template: `%s | ${displayName} — Property Dealer in Thane`,
-      default: `${displayName} — Property Dealer in Thane`,
+      template: '%s | REALSPACE',
+      default: 'REALSPACE',
     },
-    description:
-      'Premier real estate consultancy in Thane & Mumbai. MahaRERA registered broker.',
+    description: 'REALSPACE real estate website.',
     robots: {
       index: false,
       follow: false,

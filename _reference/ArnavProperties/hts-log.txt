@@ -1,0 +1,23 @@
+HTTrack3.51-0 launched on Thu, 12 Nov 2026 17:33:11 at https://www.arnavproperties.com/ +*.png +*.gif +*.jpg +*.jpeg +*.webp +*.avif +*.svg +*.css +*.js +*.woff2 +*.woff +*.ttf +*.otf +*.mp4 +*.webm -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2%f0#f -F "Mozilla/5.0 (compatible; HTTrack/3.x; +https://www.httrack.com/)" -%F "<!-- Mirrored from {url} by HTTrack Website Copier/3.x [XR&CO], {date} -->" -%l "en, *" https://www.arnavproperties.com/ -O1 "C:\Vivo Y50\RealSpace-rera\ArnavProperties" +*.png +*.gif +*.jpg +*.jpeg +*.webp +*.avif +*.svg +*.css +*.js +*.woff2 +*.woff +*.ttf +*.otf +*.mp4 +*.webm -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+17:33:49	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/images//apple-touch-icon-114x114-precomposed.png (from https://www.arnavproperties.com/)
+17:33:49	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/images//apple-touch-icon-72x72-precomposed.png (from https://www.arnavproperties.com/)
+17:33:49	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/images//apple-touch-icon-57x57-precomposed.png (from https://www.arnavproperties.com/)
+17:35:34	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/libraries/owl.video.play.png (from https://www.arnavproperties.com/libraries/lib.css)
+17:35:34	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/libraries/images/ui-bg_diagonals-thick_18_b81900_40x40.png (from https://www.arnavproperties.com/libraries/lib.css)
+17:35:34	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/libraries/images/ui-icons_ffd27a_256x240.png (from https://www.arnavproperties.com/libraries/lib.css)
+17:35:34	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/libraries/images/ui-bg_diagonals-thick_20_666666_40x40.png (from https://www.arnavproperties.com/libraries/lib.css)
+17:35:34	Error: 	"Read error when decompressing" (-1) at link https://www.arnavproperties.com/libraries/images/ui-bg_flat_10_000000_40x100.png (from https://www.arnavproperties.com/libraries/lib.css)
+17:39:28	Info: 	Retry after error 409 (Conflict) at link https://www.arnavproperties.com/contact.php (from https://www.arnavproperties.com/contact-us.html)
+17:39:28	Info: 	Retry after error 409 (Conflict) at link https://www.arnavproperties.com/contact.php (from https://www.arnavproperties.com/contact-us.html)
+17:39:29	Error: 	"Conflict" (409) after 2 retries at link https://www.arnavproperties.com/contact.php (from https://www.arnavproperties.com/contact-us.html)
+
+HTTrack Website Copier/3.51-0 mirror complete in 6 minutes 18 seconds : 234 links scanned, 221 files written (145441429 bytes overall) [144644953 bytes received at 382658 bytes/sec], 1318227 bytes transferred using HTTP compression in 35 files, ratio 31%, 2.4 requests per connection
+(9 errors, 0 warnings, 2 messages)
+(8 links failed to transfer, so the mirror is incomplete)

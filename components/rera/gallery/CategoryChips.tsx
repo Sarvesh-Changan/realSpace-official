@@ -29,6 +29,7 @@ const CHIPS: { label: string; value: GalleryCategoryFilter }[] = [
   { label: 'Commercial', value: 'COMMERCIAL' },
   { label: 'Ongoing Projects', value: 'ONGOING' },
   { label: 'Handovers', value: 'HANDOVER' },
+  { label: 'Other', value: 'OTHER' },
 ];
 
 export default function CategoryChips({ active, onChange }: CategoryChipsProps) {
@@ -37,6 +38,8 @@ export default function CategoryChips({ active, onChange }: CategoryChipsProps) 
       {CHIPS.map((chip) => (
         <button
           key={chip.value}
+          type="button"
+          aria-pressed={active === chip.value}
           onClick={() => onChange(chip.value)}
           className={
             active === chip.value

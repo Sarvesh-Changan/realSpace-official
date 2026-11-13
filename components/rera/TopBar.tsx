@@ -11,7 +11,6 @@ import {
   Menu,
   X,
   ArrowRight,
-  MapPin,
 } from 'lucide-react';
 import { reraPath, navLinks } from '@/lib/rera/routes';
 import type { ReraShellProps } from '@/types/rera';
@@ -45,25 +44,11 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Left: MahaRERA Registration (only when reraRegistrationNo is non-empty) */}
           <div className="flex items-center gap-3 text-xs tracking-wide">
-            {shellProps.reraRegistrationNo ? (
+            {shellProps.reraRegistrationNo && (
               <span className="flex items-center gap-1.5 text-[#C8A96A] font-medium">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                MahaRERA Registered Broker — Reg. No. {shellProps.reraRegistrationNo}
+                MahaRERA Reg. No. {shellProps.reraRegistrationNo}
               </span>
-            ) : (
-              <span className="flex items-center gap-1.5 text-[#A39E98]">
-                <MapPin className="w-3 h-3 text-[#C8A96A]" />
-                Thane West &amp; Mumbai MMR
-              </span>
-            )}
-            {shellProps.reraRegistrationNo && (
-              <>
-                <span className="text-[#6D6A66] hidden sm:inline">|</span>
-                <span className="text-[#A39E98] hidden sm:flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-[#C8A96A]" />
-                  Thane West &amp; Mumbai MMR
-                </span>
-              </>
             )}
           </div>
 
@@ -119,13 +104,9 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
             </div>
             <div className="flex flex-col">
               <span className="font-heading font-bold text-lg tracking-wide text-[#1C1C1C] leading-none">
-                {shellProps.brokerName || 'REALSPACE'}
+                REALSPACE
               </span>
-              {shellProps.tagline && (
-                <span className="text-[10px] uppercase tracking-widest text-[#6D6A66] font-medium leading-tight">
-                  {shellProps.tagline}
-                </span>
-              )}
+              <span className="text-[10px] uppercase tracking-[0.24em] text-[#6D6A66] font-medium leading-tight">Real Estate</span>
             </div>
           </Link>
 

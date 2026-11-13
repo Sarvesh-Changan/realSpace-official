@@ -70,7 +70,7 @@ export default async function AboutPage() {
     <div className="w-full bg-[#F8F5F1] text-[#1C1C1C]">
       <section
         className="relative isolate flex min-h-[260px] items-end overflow-hidden bg-[#1C1C1C] bg-cover bg-center sm:min-h-[320px] lg:min-h-[370px]"
-        style={{ backgroundImage: "linear-gradient(90deg, rgba(18,18,18,.76), rgba(18,18,18,.18)), url('/images/hero-living-room.png')" }}
+        style={{ backgroundImage: "linear-gradient(90deg, rgba(18,18,18,.76), rgba(18,18,18,.18)), url('/arnav/images/about-banner.jpg')" }}
         aria-labelledby="about-page-title"
       >
         <div className="absolute inset-0 -z-10 bg-[#1C1C1C]/20" />
@@ -97,8 +97,8 @@ export default async function AboutPage() {
           <div className="relative mx-auto w-full max-w-[620px]">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#E6E0D8] shadow-[0_22px_60px_rgba(28,28,28,.14)] sm:aspect-[5/4]">
               <Image
-                src="/images/hero-living-room.png"
-                alt="Contemporary living room interior"
+                src="/arnav/images/booking/waiter-right2.jpg"
+                alt="Residential property exterior"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"

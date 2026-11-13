@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
   MapPin,
   Maximize2,
   ArrowUpRight,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import { PropertyDetailModal, type ReraPropertyDetailData } from './PropertyDetailModal';
@@ -19,6 +20,8 @@ type PropertyListingData = ReraPropertyDetailData & {
   sortOrder: number;
   createdAt: string;
 };
+
+const FALLBACK_BANNER_IMAGE = '/images/home/behind-project-exterior.png';
 
 export interface PropertiesExplorerProps {
   initialProperties: PropertyListingData[];
@@ -58,6 +61,12 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   const [selectedPropertyType, setSelectedPropertyType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'featured' | 'price_asc' | 'price_desc' | 'area_desc'>('featured');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [activeBannerImage, setActiveBannerImage] = useState(bannerImageUrl || FALLBACK_BANNER_IMAGE);
+
+  useEffect(() => {
+    setActiveBannerImage(bannerImageUrl || FALLBACK_BANNER_IMAGE);
+  }, [bannerImageUrl]);
 
   // Modal State
   const [selectedProperty, setSelectedProperty] = useState<PropertyListingData | null>(null);
@@ -167,11 +176,34 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
     setSortBy('featured');
   };
 
+  const activeFilterCount = [
+    transactionType !== 'all',
+    selectedLocality !== 'all',
+    selectedBhk !== 'all',
+    selectedBudget !== 'all',
+    selectedPossession !== 'all',
+    selectedPropertyType !== 'all',
+    Boolean(searchQuery.trim()),
+  ].filter(Boolean).length;
+
   return (
     <div className="w-full bg-[#F8F5F1] min-h-screen">
       {/* 01. Hero Banner */}
       <section className="relative isolate overflow-hidden bg-[#24211d] text-white">
-        {bannerImageUrl && <Image src={bannerImageUrl} alt="REALSPACE property listings" fill priority sizes="100vw" className="z-0 object-cover" />}
+        {activeBannerImage && <Image
+          key={activeBannerImage}
+          src={activeBannerImage}
+          alt="REALSPACE property listings"
+          fill
+          priority
+          sizes="100vw"
+          className="z-0 object-cover"
+          onError={() => {
+            if (activeBannerImage !== FALLBACK_BANNER_IMAGE) {
+              setActiveBannerImage(FALLBACK_BANNER_IMAGE);
+            }
+          }}
+        />}
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/75 via-black/50 to-black/25" />
         <div className="relative z-10 mx-auto flex min-h-[230px] max-w-7xl flex-col justify-end px-4 pb-9 pt-16 sm:min-h-[290px] sm:px-8 sm:pb-12">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#FECC00]">REALSPACE RERA</p>
@@ -186,29 +218,50 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
 
       {/* 02. Interactive Search & Filter Console (Ported QuickSearchFilter) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-6 relative z-20">
-        <QuickSearchFilter
-          transactionType={transactionType}
-          onTransactionChange={setTransactionType}
-          locality={selectedLocality}
-          onLocalityChange={setSelectedLocality}
-          bhk={selectedBhk}
-          onBhkChange={setSelectedBhk}
-          budget={selectedBudget}
-          onBudgetChange={setSelectedBudget}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          distinctLocalities={distinctLocalities}
-          distinctBhkLabels={distinctBhkLabels}
-          distinctPossessions={distinctPossessions}
-          distinctPropertyTypes={distinctPropertyTypes}
-          possession={selectedPossession}
-          onPossessionChange={setSelectedPossession}
-          propertyType={selectedPropertyType}
-          onPropertyTypeChange={setSelectedPropertyType}
-          totalResultsCount={filteredListings.length}
-          phone={phone}
-          onReset={handleResetFilters}
-        />
+        <div className="inline-flex max-w-full flex-col items-start gap-3">
+          <button
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-controls="rera-property-filters"
+            onClick={() => setFiltersOpen((open) => !open)}
+            className="inline-flex min-h-11 items-center gap-2 border border-[#E8E2DA] bg-white px-4 py-2 text-sm font-semibold text-[#1C1C1C] shadow-lg transition-colors hover:border-[#C8A96A] hover:text-[#8D6A2F]"
+          >
+            <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+            <span>{filtersOpen ? 'Hide Filters' : 'Filters'}</span>
+            {activeFilterCount > 0 && (
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#1C1C1C] px-1 text-[11px] text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+          {filtersOpen && (
+            <div id="rera-property-filters" className="w-full min-w-0 sm:min-w-[min(100%,720px)]">
+              <QuickSearchFilter
+                transactionType={transactionType}
+                onTransactionChange={setTransactionType}
+                locality={selectedLocality}
+                onLocalityChange={setSelectedLocality}
+                bhk={selectedBhk}
+                onBhkChange={setSelectedBhk}
+                budget={selectedBudget}
+                onBudgetChange={setSelectedBudget}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                distinctLocalities={distinctLocalities}
+                distinctBhkLabels={distinctBhkLabels}
+                distinctPossessions={distinctPossessions}
+                distinctPropertyTypes={distinctPropertyTypes}
+                possession={selectedPossession}
+                onPossessionChange={setSelectedPossession}
+                propertyType={selectedPropertyType}
+                onPropertyTypeChange={setSelectedPropertyType}
+                totalResultsCount={filteredListings.length}
+                phone={phone}
+                onReset={handleResetFilters}
+              />
+            </div>
+          )}
+        </div>
       </section>
 
       {/* 03. Results Header & Sorting Bar */}

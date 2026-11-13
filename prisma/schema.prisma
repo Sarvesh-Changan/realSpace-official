@@ -274,7 +274,73 @@ model SiteSettings {
   ownerPortraitUrl      String?
   ownerPortraitPublicId String?
   showOwnerPortrait     Boolean? @default(true)
+  logoUrl               String?
+  logoPublicId          String?
+  faviconUrl            String?
+  faviconPublicId       String?
+  footerContent         String?
+  copyrightText         String?
+  headerCtaText         String?
+  headerCtaUrl          String?
+  navigationJson        String?
   updatedAt             DateTime @updatedAt
+}
+
+// Canonical website-content models mapped to the existing legacy tables.
+// No additional tables are created by this mapping.
+model WebsitePage {
+  id                   String               @id @default(cuid())
+  slug                 String               @unique
+  title                String
+  description          String?
+  isPublished          Boolean              @default(true)
+  sortOrder            Int                  @default(0)
+  publishedContentJson String?
+  updatedAt            DateTime             @updatedAt
+  createdAt            DateTime             @default(now())
+  sections             WebsitePageSection[]
+
+  @@map("ArnavPage")
+}
+
+model WebsitePageSection {
+  id            String      @id @default(cuid())
+  pageId        String
+  page          WebsitePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  sectionKey    String
+  heading       String?
+  body          String?
+  imageUrl      String?
+  imagePublicId String?
+  imageAlt      String?
+  mediaAssetId  String?
+  buttonLabel   String?
+  buttonUrl     String?
+  isEnabled     Boolean     @default(true)
+  sortOrder     Int         @default(0)
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([pageId, sectionKey])
+  @@index([pageId, sortOrder])
+  @@map("ArnavPageSection")
+}
+
+model MediaAsset {
+  id            String   @id @default(cuid())
+  url           String
+  cloudinaryId  String?
+  altText       String   @default("")
+  sortOrder     Int      @default(0)
+  category      String   @default("general")
+  format        String?
+  width         Int?
+  height        Int?
+  fileSizeBytes Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category, sortOrder])
+  @@map("ArnavMedia")
 }
 
 // ---------- OTP & Verification ----------

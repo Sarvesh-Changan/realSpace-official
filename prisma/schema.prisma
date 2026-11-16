@@ -635,6 +635,7 @@ model ReraPropertyImage {
 model ReraBuilderPartner {
   id           String   @id @default(cuid())
   name         String
+  description  String?  @db.Text
   logoUrl      String
   logoPublicId String?
   websiteUrl   String?

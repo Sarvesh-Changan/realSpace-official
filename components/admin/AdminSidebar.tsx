@@ -18,6 +18,7 @@ import {
   Wrench,
   FileText,
   Home,
+  Handshake,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -41,6 +42,7 @@ const reraItems = [
   { name: "Settings", href: "/admin/rera/settings", icon: Settings },
   { name: "Properties", href: "/admin/rera/properties", icon: Home },
   { name: "Services", href: "/admin/rera/services", icon: Wrench },
+  { name: "Partners", href: "/admin/rera/partners", icon: Handshake },
   { name: "Gallery", href: "/admin/rera/gallery", icon: ImageIcon },
   { name: "Enquiries", href: "/admin/rera/enquiries", icon: FileText },
 ];

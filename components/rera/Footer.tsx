@@ -20,7 +20,6 @@ const quickLinksLeft = [
 
 const quickLinksRight = [
   { label: 'Properties', href: reraPath('/properties') },
-  { label: 'Gallery',    href: reraPath('/gallery') },
   { label: 'Contact',    href: reraPath('/contact') },
 ];
 
@@ -29,40 +28,66 @@ const quickLinksRight = [
 // Social icon SVGs (lucide-react v1 doesn't export brand icons)
 function IgIcon() {
   return (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+    <svg className="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs>
+        <radialGradient id="rera-footer-ig-grad" cx="30%" cy="107%" r="130%">
+          <stop offset="0%" stopColor="#fdf497" /><stop offset="5%" stopColor="#fdf497" /><stop offset="45%" stopColor="#fd5949" /><stop offset="60%" stopColor="#d6249f" /><stop offset="100%" stopColor="#285AEB" />
+        </radialGradient>
+        <linearGradient id="rera-footer-ig-shine" x1="4" y1="3" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FFFFFF" stopOpacity="0.28" /><stop offset="0.42" stopColor="#FFFFFF" stopOpacity="0" />
+        </linearGradient>
+        <filter id="rera-footer-ig-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="1.2" stdDeviation="0.9" floodColor="#000000" floodOpacity="0.4" /></filter>
+      </defs>
+      <rect width="24" height="24" rx="6.5" fill="url(#rera-footer-ig-grad)" filter="url(#rera-footer-ig-shadow)" />
+      <rect width="24" height="24" rx="6.5" fill="url(#rera-footer-ig-shine)" />
+      <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#FFFFFF" strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="#FFFFFF" strokeWidth="1.8" /><circle cx="17.2" cy="6.8" r="1.1" fill="#FFFFFF" />
     </svg>
   );
 }
 function FbIcon() {
   return (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
+    <svg className="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="rera-footer-facebook-grad" x1="7" y1="2" x2="17" y2="22" gradientUnits="userSpaceOnUse"><stop stopColor="#42A5F5" /><stop offset="0.5" stopColor="#0866FF" /><stop offset="1" stopColor="#0052CC" /></linearGradient>
+        <filter id="rera-footer-facebook-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="1.2" stdDeviation="0.9" floodColor="#000000" floodOpacity="0.4" /></filter>
+      </defs>
+      <circle cx="12" cy="12" r="12" fill="url(#rera-footer-facebook-grad)" filter="url(#rera-footer-facebook-shadow)" />
+      <path d="M13.5 21V12.75H16.25L16.7 9.5H13.5V7.5C13.5 6.6 13.8 6 15.1 6H16.8V3.15C16.5 3.1 15.5 3 14.3 3C11.8 3 10.1 4.5 10.1 7.3V9.5H7.3V12.75H10.1V21H13.5Z" fill="#FFFFFF" />
     </svg>
   );
 }
 function YtIcon() {
   return (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
+    <svg className="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="rera-footer-youtube-grad" x1="4" y1="4" x2="20" y2="20" gradientUnits="userSpaceOnUse"><stop stopColor="#FF4B55" /><stop offset="0.5" stopColor="#FF0000" /><stop offset="1" stopColor="#D90000" /></linearGradient>
+        <filter id="rera-footer-youtube-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="1.2" stdDeviation="0.9" floodColor="#000000" floodOpacity="0.4" /></filter>
+      </defs>
+      <rect x="1" y="4" width="22" height="16" rx="4.5" fill="url(#rera-footer-youtube-grad)" filter="url(#rera-footer-youtube-shadow)" /><path d="M9.75 8.25L15.75 12L9.75 15.75V8.25Z" fill="#FFFFFF" />
     </svg>
   );
 }
 function LiIcon() {
   return (
-    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    <svg className="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="rera-footer-linkedin-grad" x1="5" y1="2" x2="19" y2="22" gradientUnits="userSpaceOnUse"><stop stopColor="#35A7E8" /><stop offset="0.5" stopColor="#0A66C2" /><stop offset="1" stopColor="#004182" /></linearGradient>
+        <filter id="rera-footer-linkedin-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="1.2" stdDeviation="0.9" floodColor="#000000" floodOpacity="0.4" /></filter>
+      </defs>
+      <rect width="24" height="24" rx="4.5" fill="url(#rera-footer-linkedin-grad)" filter="url(#rera-footer-linkedin-shadow)" />
+      <path d="M5.2 8.8H8.3V18.8H5.2V8.8ZM6.75 5.2C5.75 5.2 5 5.95 5 6.95C5 7.95 5.75 8.7 6.75 8.7C7.75 8.7 8.5 7.95 8.5 6.95C8.5 5.95 7.75 5.2 6.75 5.2ZM15.8 8.8C14.1 8.8 13.3 9.7 12.9 10.3V8.8H9.8V18.8H12.9V13.6C12.9 12.2 13.2 11.2 14.8 11.2C16.4 11.2 16.4 12.7 16.4 13.7V18.8H19.5V13.1C19.5 10.3 18.9 8.8 15.8 8.8Z" fill="#FFFFFF" />
     </svg>
   );
 }
 
 export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
   const brokerName = 'REALSPACE';
-  const address     = shellProps.address;
-  const phone       = shellProps.phone;
+  const address     = shellProps.address || 'Raymond Realty Jekegram\nPokhran Road No 1\nThane (w), Maharashtra, India - 400606';
+  const phone       = shellProps.phone || '+91 98692 11777';
   const altPhone    = shellProps.altPhone    || '';
-  const email       = shellProps.email;
-  const officeHours = shellProps.officeHours;
+  const email       = shellProps.email || 'realspace.org@gmail.com';
+  const officeHours = shellProps.officeHours || '24x7 Support';
 
   // Social links from DB (always render the icons; link to '#' when not configured)
   const socials = [
@@ -133,54 +158,29 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
               Contact Us
             </h4>
             <ul className="space-y-3.5 text-sm text-white/75">
-              {/* Address */}
-              {address && <li className="flex items-start gap-3">
-                <span className="mt-0.5 w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
-                  <MapPin className="w-3.5 h-3.5 text-white" />
-                </span>
-                <span className="whitespace-pre-line leading-snug">{address}</span>
-              </li>}
-
-              {/* Primary phone */}
-              {phone && <li className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
-                  <Phone className="w-3.5 h-3.5 text-white" />
-                </span>
-                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">
-                  {phone}
-                </a>
-              </li>}
-
-              {/* Alt phone (only if set in DB) */}
-              {altPhone && (
-                <li className="flex items-center gap-3">
-                  <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
-                    <Phone className="w-3.5 h-3.5 text-white" />
+              {[
+                { icon: MapPin, value: address, kind: 'address' as const },
+                { icon: Phone, value: phone, kind: 'phone' as const },
+                { icon: Mail, value: email, kind: 'email' as const },
+                { icon: Clock, value: officeHours, kind: 'hours' as const },
+              ].map(({ icon: Icon, value, kind }) => (
+                <li key={kind} className="flex items-start gap-3.5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-red-600 shadow-inner">
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <a href={`tel:${altPhone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">
-                    {altPhone}
-                  </a>
+                  {kind === 'address' ? (
+                    <span className="whitespace-pre-line pt-0.5 leading-[1.65] text-white/70">{value}</span>
+                  ) : kind === 'phone' ? (
+                    <a href={`tel:${value.replace(/[^+\d]/g, '')}`} className="pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
+                  ) : kind === 'email' ? (
+                    <a href={`mailto:${value}`} className="pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
+                  ) : (
+                    <span className="pt-2 text-white/85">{value}</span>
+                  )}
                 </li>
-              )}
-
-              {/* Email */}
-              {email && <li className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
-                  <Mail className="w-3.5 h-3.5 text-white" />
-                </span>
-                <a href={`mailto:${email}`} className="hover:text-white transition-colors">
-                  {email}
-                </a>
-              </li>}
-
-              {/* Office hours / 24x7 */}
-              {officeHours && <li className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-red-700 flex items-center justify-center shrink-0">
-                  <Clock className="w-3.5 h-3.5 text-white" />
-                </span>
-                <span>{officeHours}</span>
-              </li>}
+              ))}
             </ul>
+              {altPhone && <a href={`tel:${altPhone.replace(/[^+\d]/g, '')}`} className="ml-[54px] -mt-1 block text-sm text-white/75 transition-colors hover:text-white">{altPhone}</a>}
           </div>
         </div>
 
@@ -189,9 +189,8 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
           <span suppressHydrationWarning>
             © {new Date().getFullYear()} {brokerName}. All rights reserved.
           </span>
-
           {socials.length > 0 && <div className="flex items-center gap-3">
-            {socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#C8A96A] hover:text-[#1C1C1C] transition-colors text-white">{social.icon}</a>)}
+            {socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="inline-flex rounded-full transition-transform duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C8A96A]">{social.icon}</a>)}
           </div>}
         </div>
 

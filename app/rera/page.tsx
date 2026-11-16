@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, ShieldCheck, ArrowRight, Sparkles, Building2, Briefcase, KeyRound } from 'lucide-react';
+import { MapPin, ShieldCheck, ArrowRight, ArrowUpRight, Sparkles, Building2, Briefcase, KeyRound } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import { HeroSection } from '@/components/rera/HeroSection';
@@ -42,7 +42,7 @@ interface SerializedNewLaunch {
 
 async function getHomeData() {
   try {
-    const [settings, featuredPropertiesRaw, newLaunchPropertiesRaw, testimonialsRaw, faqsRaw, servicesRaw, branchRaw] =
+    const [settings, featuredPropertiesRaw, newLaunchPropertiesRaw, testimonialsRaw, faqsRaw, servicesRaw, branchRaw, partnersRaw] =
       await Promise.all([
         prisma.reraSettings.findUnique({ where: { id: 'singleton' } }),
         prisma.reraProperty.findMany({
@@ -81,6 +81,13 @@ async function getHomeData() {
           where: { isPublished: true },
           orderBy: { sortOrder: 'asc' },
           select: { id: true, name: true, address: true, phone: true, mapUrl: true },
+        }),
+        prisma.reraBuilderPartner.findMany({
+          where: { isPublished: true },
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+        }).catch((error) => {
+          console.error('Failed to load RERA homepage partners:', error);
+          return [];
         }),
       ]);
 
@@ -130,6 +137,7 @@ async function getHomeData() {
 
     const services = servicesRaw.map((service) => ({
       id: service.id,
+      slug: service.slug,
       title: service.title,
       description: service.description,
       iconKey: service.iconKey,
@@ -143,6 +151,12 @@ async function getHomeData() {
       faqs,
       services,
       branch: branchRaw,
+      partners: partnersRaw.map((partner) => ({
+        id: partner.id,
+        name: partner.name,
+        description: partner.description ?? '',
+        logoUrl: partner.logoUrl,
+      })),
     };
   } catch {
     return {
@@ -153,8 +167,66 @@ async function getHomeData() {
       faqs: [],
       services: [],
       branch: null,
+      partners: [],
     };
   }
+}
+
+interface BhkShowcaseItem {
+  label: string;
+  image: string;
+  price: string | null;
+}
+
+function BhkShowcaseTile({
+  item,
+  className,
+  sizes,
+}: {
+  item: BhkShowcaseItem;
+  className: string;
+  sizes: string;
+}) {
+  const contactHref = reraPath(`/contact?configuration=${encodeURIComponent(item.label)}`);
+
+  return (
+    <div className={`group relative min-h-[240px] overflow-hidden ${className}`}>
+      <Link href={reraPath('/properties')} aria-label={`Browse ${item.label} properties`} className="absolute inset-0 z-0">
+        <Image
+          src={item.image}
+          alt={`${item.label} floor plan`}
+          fill
+          sizes={sizes}
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      </Link>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-10 bg-[#36A8D2]/85 opacity-100 transition-opacity duration-300 md:bg-[#36A8D2]/90 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
+      />
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/65 to-transparent px-5 pb-5 pt-16 text-center font-heading text-xl font-semibold text-white transition-opacity duration-200 md:group-hover:opacity-0 md:group-focus-within:opacity-0">
+        {item.label} FLAT
+      </span>
+      <div className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 px-4 text-center text-white opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+        <h3 className="font-heading text-2xl font-bold uppercase sm:text-3xl">{item.label} Flat</h3>
+        {item.price && (
+          <p className="text-xs font-medium uppercase tracking-wider sm:text-sm">
+            Starts from <strong className="text-xl sm:text-2xl">{item.price}</strong>
+          </p>
+        )}
+        <Link
+          href={contactHref}
+          className="group/book pointer-events-auto relative inline-flex min-h-12 items-stretch overflow-hidden border border-[#102A56] bg-transparent text-xs font-semibold uppercase tracking-wider text-[#102A56] transition-colors duration-300 hover:bg-[#102A56] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          <span className="relative z-10 flex items-center px-6">Book Now</span>
+          <span aria-hidden="true" className="relative z-10 flex w-14 items-center justify-center bg-[#102A56] text-white transition-colors duration-300 group-hover/book:bg-white group-hover/book:text-[#102A56]">
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/book:translate-x-1" />
+          </span>
+          <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-[-25%] z-0 w-8 -skew-x-[22deg] bg-[#36A8D2]/60 opacity-0 transition-all duration-500 group-hover/book:left-[110%] group-hover/book:opacity-100" />
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 export default async function HomePage() {
@@ -166,6 +238,7 @@ export default async function HomePage() {
     faqs,
     services,
     branch,
+    partners,
   } = await getHomeData();
 
   const reraRegNo =
@@ -239,13 +312,12 @@ export default async function HomePage() {
             <div><p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#9A7539]">What we do</p><h2 id="rera-home-services-title" className="font-heading text-2xl font-bold text-[#1C1C1C] sm:text-3xl">Our Services</h2></div>
             <Link href={reraPath('/services')} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">All services <ArrowRight className="h-4 w-4" /></Link>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{services.map((service, index) => {
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{services.map((service) => {
             const Icon = service.iconKey?.toLowerCase().includes('key') ? KeyRound : service.iconKey?.toLowerCase().includes('briefcase') ? Briefcase : Building2;
             return <article key={service.id} className="group flex min-h-[240px] flex-col border border-[#E8E2DA] bg-[#F8F5F1] p-6 transition hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-lg sm:p-7">
-              <div className="mb-5 flex items-center justify-between"><span className="flex h-12 w-12 items-center justify-center bg-[#EEE6DD] text-[#9A7539] transition group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C]"><Icon className="h-6 w-6" /></span><span className="font-heading text-2xl text-[#D6CEC3]">{String(index + 1).padStart(2, '0')}</span></div>
+              <div className="mb-5 flex items-center justify-between"><span className="flex h-12 w-12 items-center justify-center bg-[#EEE6DD] text-[#9A7539] transition group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C]"><Icon className="h-6 w-6" /></span><Link href={reraPath(`/services/${service.slug}`)} aria-label={`Go to ${service.title}`} className="flex h-10 w-10 items-center justify-center border border-[#E4DDD3] text-[#9A7539] transition-all duration-300 hover:translate-x-1 hover:-translate-y-1 hover:border-[#C8A96A] hover:bg-[#C8A96A] hover:text-[#1C1C1C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9A7539]"><ArrowUpRight aria-hidden="true" strokeWidth={3} className="h-6 w-6" /></Link></div>
               <h3 className="font-heading text-xl font-bold text-[#1C1C1C]">{service.title}</h3>
               <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-[#6D6A66]">{service.description}</p>
-              <Link href={reraPath('/services')} className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">View service <ArrowRight className="h-4 w-4" /></Link>
             </article>;
           })}</div>
         </div>
@@ -470,69 +542,23 @@ export default async function HomePage() {
       {/* 03. BHK Residence Showcase */}
       {oneBhk && twoBhk && threeBhk && (
         <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:grid-rows-2 sm:aspect-[2/1]">
-            <Link
-              href={reraPath('/properties')}
-              className="group relative min-h-[260px] overflow-hidden sm:row-span-2 sm:min-h-0"
-            >
-              <Image
-                src={oneBhk.image}
-                alt={`${oneBhk.label} floor plan`}
-                fill
-                sizes="(max-width: 640px) 100vw, 33vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#1C1C1C]/0 transition-colors duration-300 group-hover:bg-[#1C1C1C]/40 group-focus-visible:bg-[#1C1C1C]/40" />
-              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 to-transparent px-5 pb-5 pt-16 text-center font-heading text-xl font-semibold text-white">
-                {oneBhk.label} FLAT
-                {oneBhk.price && <span className="mt-1 block text-sm font-medium">Starts from {oneBhk.price}</span>}
-              </span>
-            </Link>
-
-            <Link
-              href={reraPath('/properties')}
-              className="group relative min-h-[220px] overflow-hidden sm:col-span-2 sm:min-h-0"
-            >
-              <Image
-                src={twoBhk.image}
-                alt={`${twoBhk.label} floor plan`}
-                fill
-                sizes="(max-width: 640px) 100vw, 67vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#1C1C1C]/0 transition-colors duration-300 group-hover:bg-[#1C1C1C]/40 group-focus-visible:bg-[#1C1C1C]/40" />
-              <span className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 to-transparent px-5 pb-5 pt-16 text-center font-heading text-xl font-semibold text-white">
-                {twoBhk.label} FLAT
-                {twoBhk.price && <span className="mt-1 block text-sm font-medium">Starts from {twoBhk.price}</span>}
-              </span>
-            </Link>
-
-              <div tabIndex={0} className="group relative min-h-[240px] overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#C8A96A] sm:col-span-2 sm:min-h-0">
-              <Image
-                src={threeBhk.image}
-                alt={`${threeBhk.label} floor plan`}
-                fill
-                sizes="(max-width: 640px) 100vw, 67vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#1C1C1C]/0 px-5 text-center text-white transition-colors duration-300 group-hover:bg-[#1C1C1C]/75 group-focus-within:bg-[#1C1C1C]/75 sm:flex-row sm:gap-8">
-                <span className="text-2xl font-bold sm:max-w-32 sm:text-left sm:text-3xl">
-                  {threeBhk.label} FLAT
-                </span>
-                <span className="hidden h-16 border-l-2 border-white/80 sm:block" />
-                <div>
-                  <p className="text-xs uppercase tracking-wider sm:text-base">
-                    {threeBhk.price && <>Starts from <strong className="text-2xl sm:text-3xl">{threeBhk.price}</strong></>}
-                  </p>
-                  <Link
-                    href={reraPath(`/contact?configuration=${encodeURIComponent(threeBhk.label)}`)}
-                    className="mt-4 inline-flex items-center gap-4 border border-[#102A56] bg-[#102A56] px-6 py-3 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#0B1E3D]"
-                  >
-                    Book Now <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
+          <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
+            <h2 className="font-heading text-2xl font-semibold uppercase tracking-[0.08em] text-[#1C1C1C] sm:text-3xl">
+              What We Offer
+            </h2>
+            <div aria-hidden="true" className="mx-auto my-6 flex w-36 items-center justify-center">
+              <span className="h-px flex-1 bg-[#D6D0C8]" />
+              <span className="mx-2 h-5 w-5 rounded-full border-2 border-[#D6D0C8]" />
+              <span className="h-px flex-1 bg-[#D6D0C8]" />
             </div>
+            <p className="text-sm leading-7 text-[#6D6A66] sm:text-base">
+              Explore available residential property options and configurations. View the details below and contact REALSPACE about a property that suits your requirements.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:grid-rows-2 sm:aspect-[2/1]">
+            <BhkShowcaseTile item={oneBhk} className="sm:row-span-2 sm:min-h-0" sizes="(max-width: 640px) 100vw, 33vw" />
+            <BhkShowcaseTile item={twoBhk} className="sm:col-span-2 sm:min-h-0" sizes="(max-width: 640px) 100vw, 67vw" />
+            <BhkShowcaseTile item={threeBhk} className="sm:col-span-2 sm:min-h-0" sizes="(max-width: 640px) 100vw, 67vw" />
           </div>
         </section>
       )}
@@ -552,6 +578,45 @@ export default async function HomePage() {
 
       {/* 05. Frequently Asked Questions Accordion */}
       <FAQSection items={faqs} />
+
+      {partners.length > 0 && (
+        <section className="relative overflow-hidden bg-[#102A56] px-4 py-16 sm:px-8 sm:py-20">
+          {heroSlides[0]?.imageUrl && <Image src={heroSlides[0].imageUrl} alt="" fill sizes="100vw" className="object-cover" aria-hidden="true" />}
+          <div aria-hidden="true" className="absolute inset-0 bg-[#102A56]/90" />
+          <div className="relative mx-auto max-w-7xl">
+            <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
+              <h2 className="font-heading text-2xl font-semibold uppercase tracking-[0.08em] text-white sm:text-3xl">Partners</h2>
+              <div aria-hidden="true" className="mx-auto mt-6 flex w-36 items-center justify-center">
+                <span className="h-px flex-1 bg-white/70" />
+                <span className="mx-2 h-5 w-5 rounded-full border-2 border-white/70" />
+                <span className="h-px flex-1 bg-white/70" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {partners.map((partner) => (
+                <div key={partner.id} className="[perspective:1000px]">
+                  <article
+                    tabIndex={0}
+                    aria-label={`${partner.name}. Hover or focus to view the description.`}
+                    className="group relative min-h-[300px] cursor-pointer outline-none [transform-style:preserve-3d] transition-transform duration-700 ease-in-out hover:[transform:rotateY(180deg)] focus:[transform:rotateY(180deg)] focus-visible:ring-2 focus-visible:ring-[#C8A96A] focus-visible:ring-offset-4 focus-visible:ring-offset-[#102A56] sm:min-h-[370px]"
+                  >
+                    <div className="absolute inset-0 flex flex-col bg-white p-5 text-center [backface-visibility:hidden] sm:p-6">
+                      <div className="relative mb-5 flex h-44 items-center justify-center overflow-hidden bg-white sm:h-56">
+                        <Image src={partner.logoUrl} alt={`${partner.name} logo`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-contain p-3" />
+                      </div>
+                      <h3 className="mt-auto text-lg font-semibold uppercase leading-tight text-neutral-950">{partner.name}</h3>
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white p-6 text-center [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
+                      <h3 className="text-lg font-semibold uppercase leading-tight text-neutral-950">{partner.name}</h3>
+                      {partner.description && <p className="mt-4 text-sm leading-6 text-neutral-600">{partner.description}</p>}
+                    </div>
+                  </article>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

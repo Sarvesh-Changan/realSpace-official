@@ -1,23 +1,23 @@
 /* Scoped RERA Sub-site Stylesheet */
 .rera-root {
-  --bg-primary: #F8F5F1;
-  --bg-secondary: #EEE6DD;
-  --text-primary: #1C1C1C;
-  --text-muted: #6D6A66;
-  --accent-gold: #C8A96A;
-  --accent-gold-hover: #B78A47;
-  --border-subtle: #E8E2DA;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F0F6FC;
+  --text-primary: #172B45;
+  --text-muted: #5D6D80;
+  --accent-gold: #0D2253;
+  --accent-gold-hover: #071738;
+  --border-subtle: #D9E5F1;
   --card-surface: #FFFFFF;
 
-  background-color: #F8F5F1;
-  color: #1C1C1C;
+  background-color: #FFFFFF;
+  color: #172B45;
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .rera-root ::selection {
-  background-color: #C8A96A;
+  background-color: #0D2253;
   color: #FFFFFF;
 }
 
@@ -32,31 +32,31 @@
 
 /* Luxury Accent Gradients & Borders */
 .rera-root .gold-gradient-text {
-  background: linear-gradient(135deg, #1C1C1C 0%, #C8A96A 60%, #B78A47 100%);
+  background: linear-gradient(135deg, #0D2253 0%, #1C3B73 60%, #071738 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .rera-root .gold-accent-gradient {
-  background: linear-gradient(135deg, #C8A96A 0%, #B78A47 100%);
+  background: linear-gradient(135deg, #0D2253 0%, #071738 100%);
 }
 
 .rera-root .gold-glass {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(200, 169, 106, 0.2);
+  border: 1px solid rgba(13, 34, 83, 0.2);
 }
 
 .rera-root .luxury-card {
   background-color: #FFFFFF;
-  border: 1px solid #E8E2DA;
+  border: 1px solid #D9E5F1;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rera-root .luxury-card:hover {
-  border-color: #C8A96A;
-  box-shadow: 0 12px 32px -8px rgba(28, 28, 28, 0.08);
+  border-color: #0D2253;
+  box-shadow: 0 12px 32px -8px rgba(13, 34, 83, 0.16);
   transform: translateY(-2px);
 }
 
@@ -67,15 +67,15 @@
 }
 
 .rera-root ::-webkit-scrollbar-track {
-  background: #F8F5F1;
+  background: #F0F6FC;
 }
 
 .rera-root ::-webkit-scrollbar-thumb {
-  background: #E8E2DA;
+  background: #C7D9EC;
   border-radius: 4px;
 }
 
 .rera-root ::-webkit-scrollbar-thumb:hover {
-  background: #C8A96A;
+  background: #0D2253;
 }
 

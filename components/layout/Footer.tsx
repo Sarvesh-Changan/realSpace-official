@@ -144,9 +144,8 @@ export async function Footer({ socialLinks: propSocialLinks }: FooterProps = {})
   ].filter((platform) => Boolean(platform.url && platform.url.length > 0));
 
   return (
-    <footer className="relative bg-[url('/images/home/behind-project.png')] bg-fixed bg-cover bg-center text-neutral-300 border-t border-white/10 pt-10 pb-6 sm:pt-12 sm:pb-8">
-      {/* Dark Overlay for High Contrast */}
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/92 via-brand-dark/85 to-brand-dark/95" aria-hidden="true" />
+    <footer className="relative bg-[#111111] text-neutral-300 border-t border-white/10 pt-10 pb-6 sm:pt-12 sm:pb-8">
+      <div className="absolute inset-0 bg-[url('/arnav/images/footer-bg-map.png')] bg-auto bg-center bg-no-repeat" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:gap-12 items-start justify-between">

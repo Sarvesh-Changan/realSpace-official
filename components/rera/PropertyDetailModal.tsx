@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -97,7 +98,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
     setActiveImageIndex(0);
   }, [property?.id]);
 
-  if (!property) return null;
+  if (!property || typeof document === 'undefined') return null;
 
   const phoneClean = (phone ?? '').replace(/\s+/g, '');
 
@@ -129,7 +130,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
     }
   }
 
-  return (
+  return createPortal((
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-3 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
@@ -141,7 +142,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
         {/* Sticky Close Header */}
         <div className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 bg-white/95 backdrop-blur-sm border-b border-[#E8E2DA]">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#1C1C1C] text-[#C8A96A]">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#1C1C1C] text-white">
               {property.locality}
             </span>
             {property.projectReraNo && (
@@ -391,7 +392,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
                   })
                 );
               }}
-              className="inline-flex items-center justify-center gap-2 border border-[#1C1C1C] px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:bg-[#1C1C1C] hover:text-[#C8A96A]"
+              className="inline-flex items-center justify-center gap-2 border border-[#1C1C1C] px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:bg-[#1C1C1C] hover:text-white"
             >
               <span>Enquire</span>
             </button>
@@ -423,5 +424,5 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 };

@@ -5,11 +5,10 @@ import { MapPin, ShieldCheck, ArrowRight, ArrowUpRight, Sparkles, Building2, Bri
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import { HeroSection } from '@/components/rera/HeroSection';
-import { TrustStatsStrip } from '@/components/rera/TrustStatsStrip';
 import { FAQSection } from '@/components/rera/FAQSection';
 import { TestimonialsSection } from '@/components/rera/TestimonialsSection';
-import { CallbackStrip } from '@/components/rera/CallbackStrip';
 import { HomeContactSection } from '@/components/rera/HomeContactSection';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 interface SerializedProperty {
   id: string;
@@ -268,7 +267,7 @@ export default async function HomePage() {
   const [oneBhk, twoBhk, threeBhk] = bhkShowcase;
 
   return (
-    <div className="w-full">
+    <ReraHomeMotion>
       {/* Hero Showcase Section */}
       <HeroSection
         heroHeadline={settings?.heroHeadline ?? null}
@@ -284,33 +283,46 @@ export default async function HomePage() {
         happyFamilies={settings?.happyFamilies ?? null}
       />
 
-      {/* Authority Quantitative Metrics */}
-      <TrustStatsStrip
-        yearsExperience={settings?.yearsExperience ?? null}
-        propertiesClosed={settings?.propertiesClosed ?? null}
-        happyFamilies={settings?.happyFamilies ?? null}
-      />
-
       {/* Welcome Blurb */}
-      {(settings?.welcomeTitle || settings?.welcomeBody || settings?.founderImageUrl) && (
-        <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:py-20">
-          {settings.founderImageUrl && <div className="relative min-h-[280px] overflow-hidden bg-[#EEE6DD] sm:min-h-[380px]">
-            <Image src={settings.founderImageUrl} alt={settings.founderName || 'REALSPACE'} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
-          </div>}
-          <div className={settings.founderImageUrl ? '' : 'mx-auto max-w-3xl text-center'}>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#9A7539]">About REALSPACE</p>
-            {settings.welcomeTitle && <h2 className="mb-4 font-heading text-2xl font-bold text-[#1C1C1C] sm:text-3xl">{settings.welcomeTitle}</h2>}
-            {settings.welcomeBody && <div className="space-y-4 text-sm leading-7 text-[#6D6A66] sm:text-base">{settings.welcomeBody.split(/\n\s*\n/).map((para, idx) => <p key={idx}>{para.trim()}</p>)}</div>}
-            <Link href={reraPath('/about')} className="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">Read about us <ArrowRight className="h-4 w-4" /></Link>
+      <section
+        className="grid min-h-[500px] overflow-hidden bg-white sm:min-h-[560px] lg:grid-cols-[48%_52%]"
+        aria-labelledby="rera-home-welcome-title"
+      >
+        <div className="flex items-center bg-white px-10 py-14 text-center sm:px-16 lg:px-24 xl:px-32">
+          <div className="mx-auto w-full max-w-3xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#1769AA]">About REALSPACE</p>
+            <h2 id="rera-home-welcome-title" className="mb-5 font-heading text-3xl font-bold uppercase leading-tight text-[#111827] sm:text-4xl">
+              {settings?.welcomeTitle?.trim() || 'Welcome to REALSPACE'}
+            </h2>
+            <div aria-hidden="true" className="mx-auto mb-8 h-[2px] w-36 bg-[#D8D4CE]" />
+            <div className="space-y-4 text-justify text-sm leading-7 text-[#555B63] sm:text-base">
+              {settings?.welcomeBody?.split(/\n\s*\n/).map((para, idx) => <p key={`welcome-${idx}`}>{para.trim()}</p>)}
+              <p>Owners of residential, commercial, or office space in Thane can contact REALSPACE about selling, renting, or leasing their property. We help owners explore suitable options and connect with prospective buyers or tenants based on the property details and their requirements.</p>
+            </div>
+            <Link href={reraPath('/about')} className="group mt-8 inline-flex items-center gap-5 border-2 border-[#102B57] px-7 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#102B57] transition-colors hover:bg-[#102B57] hover:text-white">
+              More About Us <span className="inline-flex items-center"><ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" /></span>
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+        <div className="relative min-h-[280px] sm:min-h-[360px] lg:min-h-full">
+          <Image
+            src="/arnav/images/welcome/welcome-bg.jpg"
+            alt="Modern residential building"
+            fill
+            sizes="(max-width: 1024px) 100vw, 52vw"
+            className="object-cover object-right"
+          />
+        </div>
+      </section>
 
       {services.length > 0 && <section className="bg-white py-16 sm:py-20" aria-labelledby="rera-home-services-title">
         <div className="mx-auto max-w-7xl px-4 sm:px-8">
-          <div className="mb-9 flex flex-col justify-between gap-4 border-b border-[#E8E2DA] pb-5 sm:flex-row sm:items-end">
-            <div><p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#9A7539]">What we do</p><h2 id="rera-home-services-title" className="font-heading text-2xl font-bold text-[#1C1C1C] sm:text-3xl">Our Services</h2></div>
-            <Link href={reraPath('/services')} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#9A7539]">All services <ArrowRight className="h-4 w-4" /></Link>
+          <div className="relative mb-10 flex flex-col items-center gap-5 text-center">
+            <h2 id="rera-home-services-title" className="font-sans text-3xl font-semibold uppercase tracking-wide text-[#111827] sm:text-4xl">Our Services</h2>
+            <div aria-hidden="true" className="relative h-px w-32 bg-[#D5DCE5]">
+              <span className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D5DCE5] bg-white" />
+            </div>
+            <Link href={reraPath('/services')} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#1769AA] sm:absolute sm:right-0 sm:top-1">All services <ArrowRight className="h-4 w-4" /></Link>
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{services.map((service) => {
             const Icon = service.iconKey?.toLowerCase().includes('key') ? KeyRound : service.iconKey?.toLowerCase().includes('briefcase') ? Briefcase : Building2;
@@ -569,7 +581,6 @@ export default async function HomePage() {
       {/* Gallery carousel hidden from the homepage; the standalone RERA gallery remains available. */}
 
       {/* Callback Strip */}
-      <CallbackStrip />
 
       <HomeContactSection
         settings={{ address: settings?.address ?? null, phone: settings?.phone ?? null, email: settings?.email ?? null }}
@@ -617,6 +628,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-    </div>
+    </ReraHomeMotion>
   );
 }

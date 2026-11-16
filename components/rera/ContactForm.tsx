@@ -129,13 +129,13 @@ export function ContactForm({
   return (
     <div>
       <div className="border-b border-[#E8E2DA] pb-4 mb-6">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#C8A96A]">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1769AA]">
           Contact REALSPACE
         </span>
         <h2 className="font-heading text-2xl font-bold text-[#1C1C1C]">
           Send an Enquiry
         </h2>
-        <p className="text-xs text-[#6D6A66] mt-1">
+        <p className="text-xs text-[#52647D] mt-1">
           Complete the form and submit your enquiry.
         </p>
       </div>
@@ -289,17 +289,18 @@ export function ContactForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full sm:flex-1 py-4 bg-[#C8A96A] hover:bg-[#B78A47] disabled:opacity-60 text-[#1C1C1C] hover:text-white font-semibold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
+            style={{ backgroundColor: '#1769AA', color: '#FFFFFF' }}
+            className="w-full sm:flex-1 py-4 disabled:opacity-60 disabled:cursor-not-allowed font-semibold text-xs uppercase tracking-wider transition-[filter,opacity,scale] hover:brightness-90 flex items-center justify-center gap-2 shadow-sm"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Submitting...</span>
+                <span className="text-inherit">Submitting...</span>
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                <span>Send Enquiry</span>
+                <span className="text-inherit">Send Enquiry</span>
               </>
             )}
           </button>

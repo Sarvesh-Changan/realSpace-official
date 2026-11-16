@@ -98,8 +98,9 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
   ].filter((item) => item !== null);
 
   return (
-    <footer className="w-full bg-[#141414] text-white border-t border-[#2A2A2A]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-6">
+    <footer className="relative w-full bg-[#111111] text-white border-t border-[#2A2A2A]">
+      <div className="absolute inset-0 bg-[url('/arnav/images/footer-bg-map.png')] bg-auto bg-center bg-no-repeat" aria-hidden="true" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-6">
 
         {/* ── Main Grid ───────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pb-10 border-b border-[#2A2A2A]">
@@ -127,9 +128,10 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
 
           {/* Col 2 — Quick Links (two sub-cols) */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A] mb-5">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-white mb-5">
               Quick Links
             </h4>
+            <div aria-hidden="true" className="-mt-3 mb-5 h-0.5 w-10 bg-[#A9CEF5]" />
             <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
               {quickLinksLeft.map((link) => (
                 <Link
@@ -154,9 +156,10 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
 
           {/* Col 3 — Contact Us */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-[#C8A96A] mb-5">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-white mb-5">
               Contact Us
             </h4>
+            <div aria-hidden="true" className="-mt-3 mb-5 h-0.5 w-10 bg-[#A9CEF5]" />
             <ul className="space-y-3.5 text-sm text-white/75">
               {[
                 { icon: MapPin, value: address, kind: 'address' as const },

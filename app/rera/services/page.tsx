@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 interface SerializedService {
   id: string;
@@ -81,10 +82,11 @@ export default async function ServicesPage() {
   const whatsappForLink = whatsapp.replace(/\D/g, '');
 
   return (
+    <ReraHomeMotion>
     <div className="w-full bg-[#F8F5F1] text-[#1C1C1C]">
       <section aria-labelledby="rera-services-title" className="relative isolate flex min-h-[260px] items-end overflow-hidden bg-[#1C1C1C] sm:min-h-[320px] lg:min-h-[370px]">
         <Image
-          src="/images/hero-living-room.png"
+          src="/arnav/images/slider/slide2.jpg"
           alt=""
           fill
           priority
@@ -212,12 +214,13 @@ export default async function ServicesPage() {
                 <MessageCircle aria-hidden="true" className="h-4 w-4" /> WhatsApp
               </a>
             )}
-            <Link href={reraPath('/contact')} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#1C1C1C] px-5 py-3 text-xs font-bold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:bg-[#1C1C1C] hover:text-white">
+            <Link href={reraPath('/contact')} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#102A56] bg-[#102A56] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:border-[#1769AA] hover:bg-[#1769AA] hover:text-white">
               Contact Us <ArrowRight aria-hidden="true" className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </section>
     </div>
+    </ReraHomeMotion>
   );
 }

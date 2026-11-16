@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, MapPin, ShieldCheck } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 interface SerializedBranch {
   id: string;
@@ -67,15 +68,24 @@ export default async function AboutPage() {
   const registrationNumber = cleanText(settings?.reraRegistrationNo);
 
   return (
+    <ReraHomeMotion>
     <div className="w-full bg-[#F8F5F1] text-[#1C1C1C]">
       <section
-        className="relative isolate flex min-h-[260px] items-end overflow-hidden bg-[#1C1C1C] bg-cover bg-center sm:min-h-[320px] lg:min-h-[370px]"
-        style={{ backgroundImage: "linear-gradient(90deg, rgba(18,18,18,.76), rgba(18,18,18,.18)), url('/arnav/images/about-banner.jpg')" }}
+        className="relative isolate flex min-h-[260px] items-end overflow-hidden bg-[#102A56] sm:min-h-[320px] lg:min-h-[370px]"
         aria-labelledby="about-page-title"
       >
-        <div className="absolute inset-0 -z-10 bg-[#1C1C1C]/20" />
-        <div className="mx-auto w-full max-w-7xl px-5 pb-10 pt-24 sm:px-8 sm:pb-12 lg:pb-14">
-          <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.2em] text-[#FECC00]">
+        <Image
+          src="/arnav/images/accommodation/accommodation-bg.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+          aria-hidden="true"
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-[#071A36]/70" />
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-10 pt-24 sm:px-8 sm:pb-12 lg:pb-14">
+          <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.2em] text-white">
             {registrationNumber ? <ShieldCheck aria-hidden="true" className="h-4 w-4" /> : null}
             {registrationNumber ? `RERA ${registrationNumber}` : 'REALSPACE'}
           </div>
@@ -84,7 +94,7 @@ export default async function AboutPage() {
           </h1>
           <nav aria-label="Breadcrumb" className="mt-4 text-sm text-white/85">
             <ol className="flex flex-wrap items-center gap-2">
-              <li><Link href={reraPath('/')} className="transition-colors hover:text-[#FECC00]">Home</Link></li>
+              <li><Link href={reraPath('/')} className="text-white transition-colors hover:text-[#A9CEF5]">Home</Link></li>
               <li aria-hidden="true" className="text-white/50">/</li>
               <li aria-current="page" className="text-white">About</li>
             </ol>
@@ -232,5 +242,6 @@ export default async function AboutPage() {
         </div>
       </section>
     </div>
+    </ReraHomeMotion>
   );
 }

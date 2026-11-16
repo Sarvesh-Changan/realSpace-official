@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { PropertiesExplorer } from '@/components/rera/PropertiesExplorer';
 import type { ReraPropertyDetailData } from '@/components/rera/PropertyDetailModal';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 export const metadata: Metadata = {
   title: 'Properties | REALSPACE',
@@ -91,6 +92,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   const validBudgets = ['under_80L', '80L_150L', '150L_300L', 'above_300L'];
 
   return (
+    <ReraHomeMotion>
     <PropertiesExplorer
       initialProperties={initialProperties}
       propertyFetchFailed={propertyFetchFailed}
@@ -105,5 +107,6 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
       phone={settings?.phone ?? null}
       whatsapp={settings?.whatsapp ?? null}
     />
+    </ReraHomeMotion>
   );
 }

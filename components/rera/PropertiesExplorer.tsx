@@ -350,16 +350,6 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                     </Link>
                   )}
 
-                  <div className="pointer-events-none absolute top-3 left-3 bg-[#1C1C1C]/85 backdrop-blur-sm text-[#C8A96A] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1">
-                    {property.locality}
-                  </div>
-
-                  {property.projectReraNo && (
-                    <div className="pointer-events-none absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-[#1C1C1C] text-[10px] font-semibold uppercase tracking-wider px-2 py-1">
-                      RERA: {property.projectReraNo}
-                    </div>
-                  )}
-
                   <button
                     onClick={() => setSelectedProperty(property)}
                     className="absolute bottom-3 right-3 z-10 p-2 bg-[#1C1C1C]/70 hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] transition-colors rounded-sm"

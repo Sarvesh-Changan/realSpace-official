@@ -74,7 +74,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const primaryButtonSlug = activeSlide?.slug?.trim();
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#1C1C1C] text-white">
+    <section className="relative h-[calc(100vh-7rem)] min-h-[580px] w-full overflow-hidden bg-[#1C1C1C] text-white supports-[height:100svh]:h-[calc(100svh-7rem)]">
       {/* Background image (neutral fallback when missing) */}
       <div className="absolute inset-0 z-0">
         {backgroundImage ? (
@@ -117,7 +117,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
       )}
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 py-20 md:py-28 lg:py-32 flex flex-col justify-center min-h-[580px] [text-shadow:0_2px_12px_rgba(0,0,0,0.55)]">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col justify-center px-4 py-20 [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:px-8 md:py-28 lg:py-32">
         {/* Editorial Trust Kicker with Typographic Separator */}
         <div className="inline-flex items-center gap-2.5 text-xs uppercase tracking-widest text-[#C8A96A] mb-5">
           {reraRegistrationNo ? (

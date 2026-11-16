@@ -135,7 +135,7 @@ export default async function ReraLayout({
 
   return (
     <div
-      className={`rera-root ${playfair.variable} ${inter.variable} min-h-screen flex flex-col bg-[#F8F5F1] text-[#1C1C1C]`}
+      className={`rera-root rera-blue-theme ${playfair.variable} ${inter.variable} min-h-screen flex flex-col bg-[#F8F5F1] text-[#1C1C1C]`}
     >
       <AppShell shellProps={shellProps}>{children}</AppShell>
     </div>

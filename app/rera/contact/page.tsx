@@ -11,6 +11,7 @@ import {
 import prisma from '@/lib/prisma';
 import { ContactForm } from '@/components/rera/ContactForm';
 import { reraPath } from '@/lib/rera/routes';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 export const metadata: Metadata = {
   title: 'Contact Us | REALSPACE',
@@ -79,38 +80,45 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
       : null;
 
   return (
+    <ReraHomeMotion>
     <div className="w-full bg-[#F8F5F1]">
-      <section className="bg-[#1C1C1C] text-white py-14 md:py-20 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#D6D0C8] mb-7">
-            <Link href={reraPath('/')} className="hover:text-[#C8A96A] transition-colors">Home</Link>
-            <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
-            <span className="text-white" aria-current="page">Contact</span>
-          </nav>
-          <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#C8A96A] mb-3 font-semibold">
-            {reraRegNo ? (
-              <>
-                <ShieldCheck className="w-4 h-4" />
-                <span>MahaRERA Reg. No. {reraRegNo}</span>
-              </>
-            ) : (
-              <span>REALSPACE</span>
-            )}
+      <section
+        className="relative z-10 bg-[#EFF5FB] pb-12 text-white md:pb-16"
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-[410px] bg-[#1C1C1C] bg-cover bg-center md:h-[460px]"
+          style={{
+            backgroundImage: "linear-gradient(90deg, rgba(8, 18, 39, 0.88), rgba(13, 34, 83, 0.78)), url('/arnav/images/events/events-bg.jpg')",
+          }}
+        />
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 sm:px-8 lg:grid-cols-12 lg:gap-12">
+          <div className="min-w-0 pt-12 sm:pt-16 lg:col-span-5 lg:pt-[125px] lg:pr-8">
+            <nav aria-label="Breadcrumb" className="mb-7 flex items-center gap-2 text-xs text-white/90">
+              <Link href={reraPath('/')} className="!text-white transition-colors hover:!text-[#C8A96A]">Home</Link>
+              <ChevronRight className="h-3.5 w-3.5 text-white/75" aria-hidden="true" />
+              <span className="text-white" aria-current="page">Contact</span>
+            </nav>
+            <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#C8A96A] mb-3 font-semibold">
+              {reraRegNo ? (
+                <>
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>MahaRERA Reg. No. {reraRegNo}</span>
+                </>
+              ) : (
+                <span>REALSPACE</span>
+              )}
+            </div>
+            <h1 className="max-w-full font-heading text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] text-white font-normal leading-[1.05] mb-6">
+              <span className="block">Contact</span>
+              <span className="block">REALSPACE</span>
+            </h1>
+            <p className="max-w-md text-base sm:text-lg text-white leading-relaxed font-body">
+              Send us an enquiry using the form below.
+            </p>
           </div>
-          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-normal leading-tight max-w-3xl mb-6">
-            Contact REALSPACE
-          </h1>
-          <p className="text-base sm:text-lg text-[#EEE6DD]/90 max-w-2xl leading-relaxed font-body">
-            Send us an enquiry using the form below.
-          </p>
-        </div>
-      </section>
 
-      {/* 02. Interactive Form & Quick Contact Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Interactive Contact Form (Wired to Database) */}
-          <div className="lg:col-span-7 bg-white border border-[#E8E2DA] p-6 sm:p-10 shadow-sm">
+          <div className="border border-[#D7E3EF] bg-white p-5 text-[#172B50] shadow-[0_18px_45px_rgba(0,0,0,0.22)] sm:p-8 lg:col-span-7 lg:mt-[60px]">
             <ContactForm
               initialPropertySlug={initialPropertySlug}
               initialService={initialService}
@@ -119,9 +127,14 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               whatsapp={whatsapp}
             />
           </div>
+        </div>
+      </section>
 
+      {/* 02. Interactive Form & Quick Contact Grid */}
+      {(phone || altPhone || whatsapp || email || address || officeHours) && <section className="max-w-7xl mx-auto px-4 sm:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 gap-6 items-start">
           {/* Configured contact details */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="space-y-6">
             {(phone || altPhone || whatsapp || email || address) && (
               <div className="bg-[#1C1C1C] text-white p-6 border border-[#333333]">
                 <h2 className="font-heading text-xl font-bold mb-4">REALSPACE Contact Details</h2>
@@ -186,7 +199,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
             </div>}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* 03. Published Branch Addresses Grid */}
       {branches.length > 0 && (
@@ -224,6 +237,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
         </section>
       )}
     </div>
+    </ReraHomeMotion>
   );
 }
 

@@ -36,13 +36,13 @@ export default async function ReraServiceDetailPage({ params }: { params: Promis
 
   return (
     <main className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C]">
-      <section className="relative isolate flex min-h-[270px] items-end overflow-hidden bg-[#24201C] sm:min-h-[340px] lg:min-h-[390px]">
+      <section className="rera-service-detail-hero relative isolate flex min-h-[270px] items-end overflow-hidden bg-[#24201C] sm:min-h-[340px] lg:min-h-[390px]">
         {service.bannerImageUrl && <Image src={service.bannerImageUrl} alt={service.bannerImageAlt || ""} fill priority sizes="100vw" className="-z-20 object-cover object-center" unoptimized={!service.bannerImageUrl.includes("res.cloudinary.com")} />}
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/55 to-black/20" />
         <div className="mx-auto w-full max-w-7xl px-5 pb-10 pt-24 sm:px-8 sm:pb-14">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[.2em] text-[#FECC00]">REALSPACE RERA · SERVICES</p>
+          <p className="rera-service-detail-eyebrow mb-3 text-xs font-bold uppercase tracking-[.2em]">REALSPACE RERA · SERVICES</p>
           <h1 className="font-heading text-4xl font-semibold leading-tight text-white sm:text-5xl">{heading}</h1>
-          <nav aria-label="Breadcrumb" className="mt-4 text-sm text-white/85"><ol className="flex flex-wrap items-center gap-2"><li><Link href={reraPath("/")} className="hover:text-[#FECC00]">Home</Link></li><li aria-hidden="true">/</li><li><Link href={reraPath("/services")} className="hover:text-[#FECC00]">Services</Link></li><li aria-hidden="true">/</li><li aria-current="page">{service.title}</li></ol></nav>
+          <nav aria-label="Breadcrumb" className="rera-service-detail-breadcrumb mt-4 text-sm"><ol className="flex flex-wrap items-center gap-2"><li><Link href={reraPath("/")}>Home</Link></li><li aria-hidden="true">/</li><li><Link href={reraPath("/services")}>Services</Link></li><li aria-hidden="true">/</li><li aria-current="page">{service.title}</li></ol></nav>
         </div>
       </section>
 

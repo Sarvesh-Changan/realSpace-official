@@ -16,6 +16,7 @@ import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import { PropertyBookingCard } from '@/components/rera/PropertyBookingCard';
 import PropertyImageGallery from '@/components/rera/PropertyImageGallery';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 interface PropertyPageProps {
   params: Promise<{
@@ -141,6 +142,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
   }
 
   return (
+    <ReraHomeMotion>
     <div className="w-full bg-[#F8F5F1]">
       {/* Top Breadcrumb Navigation */}
       <div className="bg-white border-b border-[#E8E2DA] py-3.5 px-4 sm:px-8">
@@ -319,5 +321,6 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
         </div>
       </section>
     </div>
+    </ReraHomeMotion>
   );
 }

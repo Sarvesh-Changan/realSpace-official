@@ -60,6 +60,53 @@
   transform: translateY(-2px);
 }
 
+@keyframes rera-card-enter {
+  from {
+    opacity: 0;
+    translate: 0 42px;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+.rera-root .rera-motion-card {
+  animation: rera-card-enter 760ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.rera-root .rera-motion-grid > .rera-motion-card:nth-child(4n + 2) {
+  animation-delay: 90ms;
+}
+
+.rera-root .rera-motion-grid > .rera-motion-card:nth-child(4n + 3) {
+  animation-delay: 180ms;
+}
+
+.rera-root .rera-motion-grid > .rera-motion-card:nth-child(4n + 4) {
+  animation-delay: 270ms;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .rera-root .rera-motion-card {
+    transition: transform 320ms cubic-bezier(0.2, 0.75, 0.25, 1), box-shadow 320ms ease;
+  }
+
+  .rera-root .rera-motion-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 20px 42px -16px rgba(13, 34, 83, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rera-root .rera-motion-card {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* Custom Scrollbar scoped strictly to .rera-root */
 .rera-root ::-webkit-scrollbar {
   width: 8px;
@@ -77,5 +124,19 @@
 
 .rera-root ::-webkit-scrollbar-thumb:hover {
   background: #0D2253;
+}
+
+/* Keep service-detail banner text readable over its dark image overlay. */
+.rera-root.rera-blue-theme .rera-service-detail-hero .rera-service-detail-eyebrow {
+  color: #bfdbfe !important;
+}
+
+.rera-root.rera-blue-theme .rera-service-detail-hero .rera-service-detail-breadcrumb,
+.rera-root.rera-blue-theme .rera-service-detail-hero .rera-service-detail-breadcrumb a {
+  color: #ffffff !important;
+}
+
+.rera-root.rera-blue-theme .rera-service-detail-hero .rera-service-detail-breadcrumb a:hover {
+  color: #bfdbfe !important;
 }
 

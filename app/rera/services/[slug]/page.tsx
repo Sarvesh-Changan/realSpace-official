@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { reraPath } from "@/lib/rera/routes";
+import ReraHomeMotion from "@/components/rera/ReraHomeMotion";
 
 type ContentImage = { url: string; publicId?: string; alt?: string; altText?: string; order?: number; sortOrder?: number };
 type SectionItem = { title?: string; description?: string; imageUrl?: string; imageAlt?: string };
@@ -35,6 +36,7 @@ export default async function ReraServiceDetailPage({ params }: { params: Promis
   const ctaHref = ctaUrl.startsWith("http") || ctaUrl.startsWith("tel:") || ctaUrl.startsWith("mailto:") ? ctaUrl : reraPath(ctaUrl);
 
   return (
+    <ReraHomeMotion>
     <main className="min-h-screen bg-[#F8F5F1] text-[#1C1C1C]">
       <section className="rera-service-detail-hero relative isolate flex min-h-[270px] items-end overflow-hidden bg-[#24201C] sm:min-h-[340px] lg:min-h-[390px]">
         {service.bannerImageUrl && <Image src={service.bannerImageUrl} alt={service.bannerImageAlt || ""} fill priority sizes="100vw" className="-z-20 object-cover object-center" unoptimized={!service.bannerImageUrl.includes("res.cloudinary.com")} />}
@@ -65,5 +67,6 @@ export default async function ReraServiceDetailPage({ params }: { params: Promis
 
       {related.length > 0 && <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16"><h2 className="font-heading text-2xl font-semibold sm:text-3xl">Other Services</h2><div className="mt-5 flex flex-wrap gap-3">{related.map((item) => <Link key={item.id} href={reraPath(`/services/${item.slug}`)} className="inline-flex min-h-11 items-center gap-2 border border-[#D7CFC4] bg-white px-4 py-3 text-sm font-semibold hover:border-[#990000] hover:text-[#990000]">{item.title}<ArrowRight className="h-4 w-4" /></Link>)}</div></section>}
     </main>
+    </ReraHomeMotion>
   );
 }

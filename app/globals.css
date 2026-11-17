@@ -128,59 +128,6 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans), "Lato", sans-serif !important;
 }
 
-/* Public RealSpace and RERA sites use a white and blue palette. These scoped
-   tokens deliberately do not affect /admin or its dashboard components. */
-.public-blue-theme {
-  --color-brand-red: #0d2253;
-  --color-brand-redHover: #071738;
-  --color-brand-redMuted: #eaf0f8;
-  --color-brand-yellow: #0d2253;
-  --color-brand-yellowMuted: #edf3fa;
-  --color-brand-bg: #ffffff;
-  --color-brand-bgAlt: #f5f8fc;
-  --color-brand-warmWhite: #ffffff;
-  --color-brand-cream: #f5f8fc;
-  --color-brand-text: #14243d;
-  --color-brand-dark: #0d2253;
-  --color-brand-muted: #5d6d80;
-  --color-brand-lightMuted: #7b8b9c;
-  --color-brand-border: #dce5f0;
-  --color-brand-borderLight: #edf2f8;
-}
-
-.public-blue-theme .btn-kunku {
-  background-color: #0d2253 !important;
-  border-color: #0d2253 !important;
-  color: #ffffff !important;
-}
-.public-blue-theme .btn-kunku:hover {
-  background-color: #071738 !important;
-  border-color: #071738 !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 25px rgb(13 34 83 / 24%) !important;
-}
-.public-blue-theme .btn-halad {
-  background-color: #eaf0f8 !important;
-  border-color: #0d2253 !important;
-  color: #0d2253 !important;
-}
-.public-blue-theme .btn-halad:hover {
-  background-color: #0d2253 !important;
-  border-color: #0d2253 !important;
-  color: #ffffff !important;
-  box-shadow: 0 10px 25px rgb(13 34 83 / 24%) !important;
-}
-.public-blue-theme [class*="text-[#D6342C]"] { color: #0d2253 !important; }
-.public-blue-theme [class*="bg-[#D6342C]"] { background-color: #0d2253 !important; }
-.public-blue-theme [class*="border-[#D6342C]"] { border-color: #0d2253 !important; }
-.public-blue-theme [class*="bg-brand-red"][class*="text-white"],
-.public-blue-theme [class*="bg-brand-yellow"][class*="text-brand-dark"] { color: #ffffff !important; }
-.public-blue-theme [class*="bg-brand-dark"] [class*="text-brand-yellow"] { color: #a9cef5 !important; }
-.public-blue-theme [class*="bg-[#1769B0]"],
-.public-blue-theme [class*="bg-[#155AA8]"] { background-color: #0d2253 !important; }
-.public-blue-theme [class*="text-[#1769B0]"],
-.public-blue-theme [class*="text-[#155AA8]"] { color: #0d2253 !important; }
-
 /* The RERA UI predates the shared brand tokens and uses literal utility colors.
    Remap those literals only inside its route-group wrapper. */
 .rera-blue-theme {
@@ -244,6 +191,8 @@ h1, h2, h3, h4, h5, h6 {
 .rera-blue-theme [class*="hover:text-[#C8A96A]"]:hover,
 .rera-blue-theme [class*="hover:text-[#FECC00]"]:hover,
 .rera-blue-theme [class*="hover:text-[#990000]"]:hover { color: #071738 !important; }
+.rera-blue-theme .rera-properties-breadcrumb a { color: #ffffff !important; }
+.rera-blue-theme .rera-properties-breadcrumb a:hover { color: #a9cef5 !important; }
 .rera-blue-theme [class*="accent-[#C8A96A]"] { accent-color: #0d2253 !important; }
 .rera-blue-theme .gold-gradient-text {
   background-image: linear-gradient(135deg, #0d2253 0%, #1c3b73 60%, #071738 100%);
@@ -267,6 +216,8 @@ h1, h2, h3, h4, h5, h6 {
 .rera-blue-theme [class*="hover:bg-[#B78A47]"][class*="hover:text-[#1C1C1C]"]:hover,
 .rera-blue-theme [class*="hover:bg-[#FECC00]"][class*="hover:text-[#1C1C1C]"]:hover,
 .rera-blue-theme .group:hover [class*="group-hover:bg-[#C8A96A]"][class*="group-hover:text-[#1C1C1C]"] { color: #ffffff !important; }
+.rera-blue-theme [class*="bg-[#1C1C1C]"][class*="text-[#C8A96A]"],
+.rera-blue-theme [class*="bg-[#1C1C1C]"][class*="text-[#FECC00]"] { color: #ffffff !important; }
 .rera-blue-theme [class*="bg-[#1C1C1C]"] [class*="bg-[#C8A96A]"],
 .rera-blue-theme [class*="bg-[#141414]"] [class*="bg-[#C8A96A]"] { background-color: #ffffff !important; color: #0d2253 !important; }
 .rera-blue-theme [class*="bg-[#1C1C1C]"] [class*="text-[#C8A96A]"],

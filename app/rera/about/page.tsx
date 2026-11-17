@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, MapPin, ShieldCheck } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
@@ -65,8 +65,6 @@ export default async function AboutPage() {
   );
 
   const areasServed = (settings?.areasServed ?? []).map((area) => area.trim()).filter(Boolean);
-  const registrationNumber = cleanText(settings?.reraRegistrationNo);
-
   return (
     <ReraHomeMotion>
     <div className="w-full bg-[#F8F5F1] text-[#1C1C1C]">
@@ -85,10 +83,6 @@ export default async function AboutPage() {
         />
         <div aria-hidden="true" className="absolute inset-0 bg-[#071A36]/70" />
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-10 pt-24 sm:px-8 sm:pb-12 lg:pb-14">
-          <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.2em] text-white">
-            {registrationNumber ? <ShieldCheck aria-hidden="true" className="h-4 w-4" /> : null}
-            {registrationNumber ? `RERA ${registrationNumber}` : 'REALSPACE'}
-          </div>
           <h1 id="about-page-title" className="font-heading text-4xl font-semibold leading-tight text-white sm:text-5xl">
             About Us
           </h1>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight, ShieldCheck, Award, Building, Users } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Award, Building, Users } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 
 export interface HeroSectionProps {
@@ -20,9 +20,6 @@ export interface HeroSectionProps {
     slug?: string;
   }>;
   heroSlideInterval?: number;
-  reraRegistrationNo?: string | null;
-  brokerName?: string | null;
-  founderName?: string | null;
   yearsExperience?: number | string | null;
   happyFamilies?: number | string | null;
   propertiesClosed?: number | string | null;
@@ -35,8 +32,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   heroImageUrl,
   heroSlides = [],
   heroSlideInterval = 8,
-  reraRegistrationNo,
-  brokerName,
   yearsExperience,
   happyFamilies,
   propertiesClosed,
@@ -118,21 +113,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       )}
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col justify-center px-4 py-20 [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:px-8 md:py-28 lg:py-32">
-        {/* Editorial Trust Kicker with Typographic Separator */}
-        <div className="inline-flex items-center gap-2.5 text-xs uppercase tracking-widest text-[#C8A96A] mb-5">
-          {reraRegistrationNo ? (
-            <span className="flex items-center gap-1.5 font-semibold">
-              <ShieldCheck className="w-4 h-4 text-[#C8A96A]" />
-              MahaRERA: {reraRegistrationNo}
-            </span>
-          ) : (
-            <span className="text-[#C8A96A] font-semibold">
-              {brokerName || 'REALSPACE'}
-            </span>
-          )}
-          <span className="text-[#6D6A66]">·</span>
-        </div>
-
         {/* Hero Headline */}
         <h1
           key={`hero-heading-${activeSlideIndex}`}

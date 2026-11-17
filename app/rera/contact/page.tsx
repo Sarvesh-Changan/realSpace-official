@@ -118,7 +118,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
             </p>
           </div>
 
-          <div className="border border-[#D7E3EF] bg-white p-5 text-[#172B50] shadow-[0_18px_45px_rgba(0,0,0,0.22)] sm:p-8 lg:col-span-7 lg:mt-[60px]">
+          <div className="rera-motion-card border border-[#D7E3EF] bg-white p-5 text-[#172B50] shadow-[0_18px_45px_rgba(0,0,0,0.22)] sm:p-8 lg:col-span-7 lg:mt-[60px]">
             <ContactForm
               initialPropertySlug={initialPropertySlug}
               initialService={initialService}
@@ -136,7 +136,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
           {/* Configured contact details */}
           <div className="space-y-6">
             {(phone || altPhone || whatsapp || email || address) && (
-              <div className="bg-[#1C1C1C] text-white p-6 border border-[#333333]">
+              <div className="rera-motion-card bg-[#1C1C1C] text-white p-6 border border-[#333333]">
                 <h2 className="font-heading text-xl font-bold mb-4">REALSPACE Contact Details</h2>
                 <div className="space-y-3 text-xs border-t border-[#333333] pt-4">
                 {phone && (
@@ -190,7 +190,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               </div>
             )}
 
-            {officeHours && <div className="bg-white border border-[#E8E2DA] p-6 space-y-3">
+            {officeHours && <div className="rera-motion-card bg-white border border-[#E8E2DA] p-6 space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#1C1C1C]">
                 <Clock className="w-4 h-4 text-[#C8A96A]" />
                 Operating Hours
@@ -209,9 +209,9 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 <h2 className="font-heading text-2xl font-bold text-[#1C1C1C]">Published Branches</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="rera-motion-grid grid grid-cols-1 md:grid-cols-3 gap-6">
               {branches.map((b, idx) => (
-                <div key={b.id} className="bg-white border border-[#E8E2DA] p-6 space-y-3">
+                <div key={b.id} className="rera-motion-card bg-white border border-[#E8E2DA] p-6 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C8A96A]">
                     <MapPin className="w-4 h-4" />
                     Branch {idx + 1}

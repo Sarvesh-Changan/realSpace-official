@@ -206,9 +206,8 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
         />}
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/75 via-black/50 to-black/25" />
         <div className="relative z-10 mx-auto flex min-h-[230px] max-w-7xl flex-col justify-end px-4 pb-9 pt-16 sm:min-h-[290px] sm:px-8 sm:pb-12">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#FECC00]">REALSPACE RERA</p>
           <h1 className="font-heading text-3xl font-normal sm:text-4xl lg:text-5xl">Properties</h1>
-          <nav aria-label="Breadcrumb" className="mt-4 text-xs text-white/80">
+          <nav aria-label="Breadcrumb" className="rera-properties-breadcrumb mt-4 text-xs text-white/80">
             <Link href={reraPath('/')} className="transition-colors hover:text-[#FECC00]">Home</Link>
             <span className="px-2 text-white/50">/</span>
             <span aria-current="page" className="text-white">Properties</span>
@@ -317,11 +316,11 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+          <div className="rera-motion-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
             {filteredListings.map((property) => (
               <div
                 key={property.id}
-                className="luxury-card flex flex-col group overflow-hidden bg-white border border-[#E8E2DA] shadow-sm hover:border-[#C8A96A] transition-all"
+                className="rera-motion-card luxury-card flex flex-col group overflow-hidden bg-white border border-[#E8E2DA] shadow-sm hover:border-[#C8A96A] transition-all"
               >
                 {/* Card Media Header */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EEE6DD]">

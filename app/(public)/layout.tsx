@@ -56,7 +56,7 @@ export default async function PublicLayout({
   };
 
   return (
-    <div className="public-blue-theme flex min-h-screen flex-col bg-brand-bg text-brand-text">
+    <div className="flex min-h-screen flex-col bg-brand-bg text-brand-text">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

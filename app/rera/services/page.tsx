@@ -95,9 +95,6 @@ export default async function ServicesPage() {
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-[#171717]/90 via-[#171717]/70 to-[#171717]/25" />
         <div className="mx-auto w-full max-w-7xl px-5 pb-10 pt-24 sm:px-8 sm:pb-12 lg:pb-14">
-          <p className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.2em] text-[#FECC00]">
-            <Sparkles aria-hidden="true" className="h-4 w-4" /> REALSPACE RERA
-          </p>
           <h1 id="rera-services-title" className="font-heading text-4xl font-semibold leading-tight text-white sm:text-5xl">
             Our Services
           </h1>
@@ -123,7 +120,7 @@ export default async function ServicesPage() {
         </div>
 
         {services.length > 0 ? (
-          <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-7">
+          <div className="rera-motion-grid mt-9 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-7">
             {services.map((service, index) => {
               const Icon = getServiceIcon(service.iconKey);
               const enquiryHref = reraPath(`/contact?service=${encodeURIComponent(service.title)}`);
@@ -132,10 +129,10 @@ export default async function ServicesPage() {
               return (
                 <article
                   key={service.id}
-                  className="group flex min-w-0 flex-col border border-[#E6DED3] bg-white p-5 shadow-[0_7px_24px_rgba(28,28,28,.04)] transition duration-300 hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-[0_18px_42px_rgba(28,28,28,.12)] sm:p-7"
+                  className="rera-motion-card group flex min-w-0 flex-col border border-[#E6DED3] bg-white p-5 shadow-[0_7px_24px_rgba(28,28,28,.04)] transition duration-300 hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-[0_18px_42px_rgba(28,28,28,.12)] sm:p-7"
                 >
                   <div className="mb-5 flex items-start justify-between gap-4">
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-[#F4EFE8] text-[#990000] transition-colors duration-300 group-hover:bg-[#FECC00] group-hover:text-[#1C1C1C] sm:h-14 sm:w-14">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-[#F4EFE8] text-[#990000] transition duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-[#FECC00] group-hover:text-[#1C1C1C] sm:h-14 sm:w-14">
                       <Icon aria-hidden="true" className="h-6 w-6" />
                     </span>
                     <span aria-hidden="true" className="font-heading text-2xl font-semibold text-[#D9D1C6]">

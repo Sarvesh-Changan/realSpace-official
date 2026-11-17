@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import GalleryExplorer from '@/components/rera/gallery/GalleryExplorer';
+import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 import Link from 'next/link';
 import { reraPath } from '@/lib/rera/routes';
 import type {
@@ -59,7 +60,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
     : 'ALL';
 
   return (
-    <>
+    <ReraHomeMotion>
       {/* Hero banner */}
       <section className="relative isolate overflow-hidden bg-[#1C1C1C] px-4 py-14 text-white sm:px-6 sm:py-20 lg:px-8">
         <div aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 w-1/2 bg-[radial-gradient(ellipse_at_80%_50%,rgba(254,204,0,0.13),transparent_65%)]" />
@@ -87,6 +88,6 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
           </Link>
         </div>
       </section>
-    </>
+    </ReraHomeMotion>
   );
 }

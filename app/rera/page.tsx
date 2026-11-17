@@ -240,11 +240,6 @@ export default async function HomePage() {
     partners,
   } = await getHomeData();
 
-  const reraRegNo =
-    settings?.reraRegistrationNo && settings.reraRegistrationNo.trim() !== ''
-      ? settings.reraRegistrationNo
-      : null;
-
   const heroSlides = (() => {
     if (!settings?.heroSlidesJson) return [];
     try {
@@ -275,9 +270,6 @@ export default async function HomePage() {
         heroImageUrl={settings?.heroImageUrl ?? null}
         heroSlides={heroSlides}
         heroSlideInterval={settings?.heroSlideInterval ?? 8}
-        reraRegistrationNo={reraRegNo}
-        brokerName="REALSPACE"
-        founderName={settings?.founderName ?? null}
         yearsExperience={settings?.yearsExperience ?? null}
         propertiesClosed={settings?.propertiesClosed ?? null}
         happyFamilies={settings?.happyFamilies ?? null}
@@ -285,6 +277,7 @@ export default async function HomePage() {
 
       {/* Welcome Blurb */}
       <section
+        data-rera-home-motion-panels
         className="grid min-h-[500px] overflow-hidden bg-white sm:min-h-[560px] lg:grid-cols-[48%_52%]"
         aria-labelledby="rera-home-welcome-title"
       >

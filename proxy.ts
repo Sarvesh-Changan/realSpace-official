@@ -12,6 +12,6 @@ export function proxy(request: NextRequest) {
   });
 }
 
-export const config = {
+export const config = {git branch --show-current
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

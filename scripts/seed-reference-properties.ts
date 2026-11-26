@@ -219,7 +219,7 @@ const properties = [
     ],
     imageFiles: ["blog-post34.jpg"],
   },
-].map((property, index) => ({
+].map(({ specifications: _legacySpecifications, ...property }, index) => ({
   ...property,
   city: "Thane",
   sortOrder: index,
@@ -228,7 +228,6 @@ const properties = [
   isNewLaunch: false,
   isPublished: true,
   amenities: property.amenities ?? [],
-  specifications: property.specifications ?? [],
   images: property.imageFiles.map((file, sortOrder) => ({
     url: `/arnav/images/blog/${file}`,
     altText: `${property.title} property image ${sortOrder + 1}`,

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight, Award, Building, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 
 export interface HeroSectionProps {
@@ -20,9 +20,6 @@ export interface HeroSectionProps {
     slug?: string;
   }>;
   heroSlideInterval?: number;
-  yearsExperience?: number | string | null;
-  happyFamilies?: number | string | null;
-  propertiesClosed?: number | string | null;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -32,9 +29,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   heroImageUrl,
   heroSlides = [],
   heroSlideInterval = 8,
-  yearsExperience,
-  happyFamilies,
-  propertiesClosed,
 }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const hasSlideshow = heroSlides.length > 1;
@@ -137,53 +131,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <Link
               key={`hero-button-${activeSlideIndex}`}
               href={reraPath(primaryButtonSlug)}
-              className="animate-hero-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#C8A96A] hover:bg-[#B78A47] text-[#1C1C1C] font-semibold text-xs uppercase tracking-wider transition-all duration-200 shadow-md group"
+              className="realspace-cta animate-hero-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 font-semibold text-xs uppercase tracking-wider group"
             >
               <span>{primaryButtonText}</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           ) : (
             <button
               key={`hero-button-${activeSlideIndex}`}
               onClick={handleExploreProperties}
-              className="animate-hero-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#C8A96A] hover:bg-[#B78A47] text-[#1C1C1C] font-semibold text-xs uppercase tracking-wider transition-all duration-200 shadow-md group"
+              className="realspace-cta animate-hero-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 font-semibold text-xs uppercase tracking-wider group"
             >
               <span>{primaryButtonText}</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           )}
 
         </div>
 
-        {/* Quiet Authority Footnote (only render when stats exist) */}
-        {(yearsExperience || propertiesClosed || happyFamilies) && (
-          <div className="mt-12 pt-8 border-t border-[#333333] flex flex-wrap items-center gap-6 text-xs text-[#A39E98]">
-            {yearsExperience && (
-              <>
-                <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-[#C8A96A]" />
-                  <span>{yearsExperience}+ Years in Real Estate Advisory</span>
-                </div>
-                <span className="text-[#444444] hidden sm:inline">|</span>
-              </>
-            )}
-            {propertiesClosed && (
-              <>
-                <div className="flex items-center gap-2">
-                  <Building className="w-4 h-4 text-[#C8A96A]" />
-                  <span>{propertiesClosed}+ Properties Delivered</span>
-                </div>
-                <span className="text-[#444444] hidden sm:inline">|</span>
-              </>
-            )}
-            {happyFamilies && (
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-[#C8A96A]" />
-                <span>{happyFamilies}+ Families Assisted</span>
-              </div>
-            )}
-          </div>
-        )}
       </div>
       {hasSlideshow && (
         <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2" aria-label="Hero slides">

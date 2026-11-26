@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, MapPin, Home, IndianRupee, RotateCcw } from 'lucide-react';
+import { Search, MapPin, Home, RotateCcw } from 'lucide-react';
 
 export interface QuickSearchFilterProps {
   transactionType: string;
@@ -10,18 +10,10 @@ export interface QuickSearchFilterProps {
   onLocalityChange: (loc: string) => void;
   bhk: string;
   onBhkChange: (bhk: string) => void;
-  budget: string;
-  onBudgetChange: (budget: string) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
   distinctLocalities: string[];
   distinctBhkLabels: string[];
-  distinctPossessions: string[];
-  distinctPropertyTypes: string[];
-  possession: string;
-  onPossessionChange: (value: string) => void;
-  propertyType: string;
-  onPropertyTypeChange: (value: string) => void;
   totalResultsCount: number;
   phone?: string | null;
   onReset?: () => void;
@@ -34,18 +26,10 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
   onLocalityChange,
   bhk,
   onBhkChange,
-  budget,
-  onBudgetChange,
   searchQuery,
   onSearchChange,
   distinctLocalities,
   distinctBhkLabels,
-  distinctPossessions,
-  distinctPropertyTypes,
-  possession,
-  onPossessionChange,
-  propertyType,
-  onPropertyTypeChange,
   totalResultsCount,
   phone,
   onReset,
@@ -103,7 +87,7 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
       </div>
 
       {/* 4/5-Column Filter Controls */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {/* Locality (from distinct localities of published properties) */}
         <div>
           <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66] mb-1.5 flex items-center gap-1.5">
@@ -128,41 +112,6 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
             </div>
           </div>
         </div>
-
-        {distinctPropertyTypes.length > 0 && (
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66] mb-1.5 flex items-center gap-1.5">
-              <Home className="w-3.5 h-3.5 text-[#C8A96A]" />
-              Property Type
-            </label>
-            <select
-              value={propertyType}
-              onChange={(event) => onPropertyTypeChange(event.target.value)}
-              className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs font-medium text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] cursor-pointer"
-            >
-              <option value="all">All Property Types</option>
-              {distinctPropertyTypes.map((type) => (
-                <option key={type} value={type}>{type.replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase())}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {distinctPossessions.length > 0 && (
-          <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66]">
-              Possession
-            </label>
-            <select
-              value={possession}
-              onChange={(event) => onPossessionChange(event.target.value)}
-              className="h-11 w-full cursor-pointer border border-[#E8E2DA] bg-[#F8F5F1] px-3.5 text-xs font-medium text-[#1C1C1C] focus:border-[#C8A96A] focus:outline-none"
-            >
-              <option value="all">Any possession</option>
-              {distinctPossessions.map((value) => <option key={value} value={value}>{value}</option>)}
-            </select>
-          </div>
-        )}
 
         {/* BHK (from bhkLabel) */}
         <div>
@@ -191,30 +140,6 @@ export const QuickSearchFilter: React.FC<QuickSearchFilterProps> = ({
                   <option value="4 BHK">4+ BHK / Penthouse</option>
                 </>
               )}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#6D6A66]">
-              ▼
-            </div>
-          </div>
-        </div>
-
-        {/* Budget Bracket */}
-        <div>
-          <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66] mb-1.5 flex items-center gap-1.5">
-            <IndianRupee className="w-3.5 h-3.5 text-[#C8A96A]" />
-            Budget Bracket
-          </label>
-          <div className="relative">
-            <select
-              value={budget}
-              onChange={(e) => onBudgetChange(e.target.value)}
-              className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs font-medium text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] appearance-none cursor-pointer"
-            >
-              <option value="all">All Budgets (Flexible)</option>
-              <option value="under_80L">Under ₹80 Lakhs</option>
-              <option value="80L_150L">₹80 Lakhs - ₹1.50 Crore</option>
-              <option value="150L_300L">₹1.50 Cr - ₹3.00 Crore</option>
-              <option value="above_300L">Above ₹3.00 Crore (Luxury)</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#6D6A66]">
               ▼

@@ -15,9 +15,6 @@ import { submitReraEnquiry } from '@/app/rera/actions';
 interface PropertyBookingCardProps {
   propertySlug: string;
   propertyTitle: string;
-  priceLabel: string;
-  priceAmount?: number | null;
-  carpetAreaSqFt?: number | null;
   phone?: string | null;
   whatsapp?: string | null;
 }
@@ -25,9 +22,6 @@ interface PropertyBookingCardProps {
 export function PropertyBookingCard({
   propertySlug,
   propertyTitle,
-  priceLabel,
-  priceAmount,
-  carpetAreaSqFt,
   phone = '',
   whatsapp = '',
 }: PropertyBookingCardProps) {
@@ -92,22 +86,6 @@ export function PropertyBookingCard({
 
   return (
     <div className="bg-white border border-[#E8E2DA] p-6 shadow-sm space-y-4">
-      <div className="border-b border-[#E8E2DA] pb-4">
-        <div className="text-[10px] uppercase tracking-wider text-[#A39E98] font-bold">
-          Quoted Pricing
-        </div>
-        <div className="font-heading text-3xl font-bold text-[#1C1C1C] mt-0.5">
-          {priceLabel}
-        </div>
-        {priceAmount && carpetAreaSqFt ? (
-          <div className="text-xs text-[#6D6A66] mt-1">
-            Carpet Rate: ~₹
-            {Math.round(priceAmount / carpetAreaSqFt).toLocaleString('en-IN')}{' '}
-            / sq.ft
-          </div>
-        ) : null}
-      </div>
-
       {isSubmitted ? (
         <div className="py-8 text-center">
           <div className="w-12 h-12 bg-[#EEE6DD] text-[#C8A96A] rounded-full flex items-center justify-center mx-auto mb-3">
@@ -306,7 +284,7 @@ export function PropertyBookingCard({
       <div className="space-y-2 pt-2 border-t border-[#E8E2DA]">
         {whatsapp && (
           <a
-            href={`https://wa.me/${whatsapp}?text=Hi%2C%20I%20am%20viewing%20the%20property%20listing%20for%20${encodeURIComponent(propertyTitle)}%20(${encodeURIComponent(priceLabel)}).%20Please%20send%20brochure%20and%20details.`}
+            href={`https://wa.me/${whatsapp}?text=Hi%2C%20I%20am%20viewing%20the%20property%20listing%20for%20${encodeURIComponent(propertyTitle)}.%20Please%20send%20brochure%20and%20details.`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full py-2.5 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"

@@ -23,21 +23,16 @@ export interface ReraPropertyDetailData {
   id: string;
   slug: string;
   title: string;
+  categoryName?: string | null;
+  categorySlug?: string | null;
   description: string;
-  priceLabel: string;
-  priceAmount: number | null;
   locality: string;
   city: string;
   projectName: string | null;
   builderName: string | null;
   projectReraNo: string | null;
-  possession: string | null;
-  carpetAreaSqFt: number | null;
-  builtUpAreaSqFt: number | null;
   bhkLabel: string | null;
-  furnishing: string | null;
   amenities: string[];
-  specifications: Array<{ label: string; value: string }> | Record<string, string> | null;
   coverImageUrl: string | null;
   images: Array<{
     id: string;
@@ -115,20 +110,6 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
   };
 
   const activeMedia = mediaList[activeImageIndex];
-
-  // Parse specifications into a uniform array of { label, value }
-  const specsList: Array<{ label: string; value: string }> = [];
-  if (Array.isArray(property.specifications)) {
-    for (const item of property.specifications) {
-      if (item && typeof item === 'object' && 'label' in item && 'value' in item) {
-        specsList.push({ label: String(item.label), value: String(item.value) });
-      }
-    }
-  } else if (property.specifications && typeof property.specifications === 'object') {
-    for (const [k, v] of Object.entries(property.specifications)) {
-      specsList.push({ label: k, value: String(v) });
-    }
-  }
 
   return createPortal((
     <div
@@ -230,7 +211,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
 
         {/* Content Body */}
         <div className="min-h-0 space-y-5 overflow-y-auto p-5 sm:p-6 md:flex md:flex-col md:gap-3 md:space-y-0 md:overflow-hidden md:p-4">
-          {/* Title & Pricing Block */}
+          {/* Title & Location Block */}
           <div className="flex shrink-0 flex-col justify-between gap-2 border-b border-[#E8E2DA] pb-3 sm:flex-row sm:items-start">
             <div>
               <div className="text-xs font-semibold text-[#C8A96A] uppercase tracking-wider mb-1">
@@ -248,63 +229,6 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="shrink-0 sm:text-right">
-              <div className="text-[10px] uppercase tracking-wider text-[#A39E98] font-semibold">
-                Pricing
-              </div>
-              <div className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
-                {property.priceLabel}
-              </div>
-              {property.carpetAreaSqFt && (
-                <div className="text-[11px] text-[#6D6A66] mt-0.5">
-                  Carpet Area: <strong className="text-[#1C1C1C]">{property.carpetAreaSqFt} Sq.Ft</strong>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Metrics Matrix */}
-          <div className="grid shrink-0 grid-cols-2 gap-x-3 gap-y-2 border border-[#E8E2DA] bg-[#F8F5F1] p-3 text-xs sm:grid-cols-4">
-            {property.bhkLabel && (
-              <div>
-                <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                  Configuration
-                </span>
-                <strong className="text-[#1C1C1C] text-sm">{property.bhkLabel}</strong>
-              </div>
-            )}
-            {property.carpetAreaSqFt && (
-              <div>
-                <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                  Carpet Area
-                </span>
-                <strong className="text-[#1C1C1C] text-sm">{property.carpetAreaSqFt} Sq.Ft</strong>
-              </div>
-            )}
-            {property.builtUpAreaSqFt && (
-              <div>
-                <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                  Built-Up Area
-                </span>
-                <strong className="text-[#1C1C1C] text-sm">{property.builtUpAreaSqFt} Sq.Ft</strong>
-              </div>
-            )}
-            {property.possession && (
-              <div>
-                <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                  Possession
-                </span>
-                <strong className="text-[#1C1C1C] text-sm">{property.possession}</strong>
-              </div>
-            )}
-            {property.furnishing && (
-              <div>
-                <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                  Furnishing
-                </span>
-                <strong className="text-[#1C1C1C] text-sm">{property.furnishing}</strong>
-              </div>
-            )}
           </div>
 
           {/* Description */}
@@ -316,23 +240,6 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
               <p className="text-xs sm:text-sm text-[#444444] leading-relaxed whitespace-pre-line md:min-h-0 md:flex-1 md:overflow-y-auto">
                 {property.description}
               </p>
-            </div>
-          )}
-
-          {/* Architectural Specifications Table */}
-          {specsList.length > 0 && (
-            <div className="shrink-0">
-              <h4 className="font-heading text-base font-bold text-[#1C1C1C] mb-2">
-                Architectural Specifications
-              </h4>
-              <div className="border border-[#E8E2DA] divide-y divide-[#E8E2DA] text-[11px]">
-                {specsList.map((spec, idx) => (
-                  <div key={idx} className="flex flex-col sm:flex-row py-1.5 px-3 bg-white">
-                    <span className="w-32 font-semibold text-[#1C1C1C] shrink-0">{spec.label}:</span>
-                    <span className="text-[#444444]">{spec.value}</span>
-                  </div>
-                ))}
-              </div>
             </div>
           )}
 
@@ -399,7 +306,7 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
 
             {whatsapp && (
               <a
-                href={`https://wa.me/${whatsapp}?text=Hello%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}%20(${encodeURIComponent(property.priceLabel)}).%20Please%20share%20details.`}
+                href={`https://wa.me/${whatsapp}?text=Hello%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}.%20Please%20share%20details.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-[#25D366] px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#20ba5a]"

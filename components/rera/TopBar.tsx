@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Menu,
   X,
-  ArrowRight,
 } from 'lucide-react';
 import { reraPath, navLinks } from '@/lib/rera/routes';
 import type { ReraShellProps } from '@/types/rera';
@@ -43,7 +42,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
       <div className="bg-[#1C1C1C] text-[#EEE6DD] text-xs py-2 px-4 sm:px-8 border-b border-[#333333]">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           {/* Left: MahaRERA Registration (only when reraRegistrationNo is non-empty) */}
-          <div className="flex items-center gap-3 text-xs tracking-wide">
+          <div className="ml-auto flex items-center gap-3 text-xs tracking-wide">
             {shellProps.reraRegistrationNo && (
               <span className="flex items-center gap-1.5 text-[#C8A96A] font-medium">
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -146,10 +145,9 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={handleOpenModal}
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] bg-[#C8A96A] hover:bg-[#B78A47] hover:text-white transition-all shadow-sm whitespace-nowrap shrink-0"
+              className="realspace-cta hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider whitespace-nowrap shrink-0"
             >
               <span>Schedule Visit</span>
-              <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
             {/* Mobile Hamburger Toggle */}

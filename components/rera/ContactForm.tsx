@@ -19,6 +19,12 @@ export function ContactForm({
   services = [],
   localities = [],
 }: ContactFormProps) {
+  const maharashtraLocations = [
+    'Thane', 'Ghatkopar', 'Kalyan', 'Dombivli', 'Mulund', 'Bhandup', 'Vikhroli',
+    'Powai', 'Vasai', 'Virar', 'Mira Road', 'Bhayandar', 'Navi Mumbai', 'Mumbai',
+    'Pune', 'Nashik', 'Nagpur', 'Chhatrapati Sambhajinagar', 'Kolhapur', 'Nanded',
+  ];
+  const localityOptions = Array.from(new Set([...maharashtraLocations, ...localities]));
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -234,10 +240,10 @@ export function ContactForm({
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
               Locality (optional)
             </label>
-            {localities.length > 0 ? (
+            {localityOptions.length > 0 ? (
               <select value={locality} onChange={(e) => setLocality(e.target.value)} className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]">
                 <option value="">Select a locality (optional)</option>
-                {localities.map((value) => <option key={value} value={value}>{value}</option>)}
+                {localityOptions.map((value) => <option key={value} value={value}>{value}</option>)}
               </select>
             ) : (
               <input type="text" value={locality} onChange={(e) => setLocality(e.target.value)} maxLength={100} placeholder="Enter a locality (optional)" className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]" />

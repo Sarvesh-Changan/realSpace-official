@@ -1,21 +1,16 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  MapPin,
-  Maximize2,
-  ArrowUpRight,
-  SlidersHorizontal,
-} from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ArrowRight, SlidersHorizontal } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
-import { PropertyDetailModal, type ReraPropertyDetailData } from './PropertyDetailModal';
+import type { ReraPropertyDetailData } from './PropertyDetailModal';
 import { QuickSearchFilter } from './QuickSearchFilter';
 
 type PropertyListingData = ReraPropertyDetailData & {
   listingType: string;
-  propertyType: string;
   isFeatured: boolean;
   sortOrder: number;
   createdAt: string;
@@ -25,51 +20,69 @@ const FALLBACK_BANNER_IMAGE = '/images/home/behind-project-exterior.png';
 
 export interface PropertiesExplorerProps {
   initialProperties: PropertyListingData[];
+  categories: Array<{ id: string; name: string; slug: string }>;
+  initialCategory: string;
   propertyFetchFailed?: boolean;
   bannerImageUrl?: string | null;
   distinctLocalities: string[];
   distinctBhkLabels: string[];
-  distinctPossessions: string[];
-  distinctPropertyTypes: string[];
   initialInterest?: string;
   initialLocality?: string;
-  initialBudget?: string;
   phone?: string | null;
   whatsapp?: string | null;
 }
 
 export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   initialProperties,
+  categories,
+  initialCategory,
   propertyFetchFailed = false,
   bannerImageUrl,
   distinctLocalities,
   distinctBhkLabels,
-  distinctPossessions,
-  distinctPropertyTypes,
   initialInterest = 'all',
   initialLocality = 'all',
-  initialBudget = 'all',
   phone,
   whatsapp,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   // Filter States
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [transactionType, setTransactionType] = useState<string>(initialInterest);
   const [selectedLocality, setSelectedLocality] = useState<string>(initialLocality);
   const [selectedBhk, setSelectedBhk] = useState<string>('all');
-  const [selectedBudget, setSelectedBudget] = useState<string>(initialBudget);
-  const [selectedPossession, setSelectedPossession] = useState<string>('all');
-  const [selectedPropertyType, setSelectedPropertyType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'featured' | 'price_asc' | 'price_desc' | 'area_desc'>('featured');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [activeBannerImage, setActiveBannerImage] = useState(bannerImageUrl || FALLBACK_BANNER_IMAGE);
+
+  useEffect(() => {
+    const queryCategory = searchParams.get('category') || '';
+    const matchingCategory = categories.find((category) => category.slug === queryCategory);
+    setSelectedCategory(matchingCategory?.slug ?? 'all');
+    if (queryCategory && !matchingCategory) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('category');
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    }
+  }, [categories, pathname, router, searchParams]);
+
+  const selectCategory = (categorySlug: string) => {
+    setSelectedCategory(categorySlug);
+    const params = new URLSearchParams(searchParams.toString());
+    if (categorySlug === 'all') params.delete('category');
+    else params.set('category', categorySlug);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
 
   useEffect(() => {
     setActiveBannerImage(bannerImageUrl || FALLBACK_BANNER_IMAGE);
   }, [bannerImageUrl]);
 
   // Modal State
-  const [selectedProperty, setSelectedProperty] = useState<PropertyListingData | null>(null);
 
   // Client-side Filtering & Sorting
   const filteredListings = useMemo(() => {
@@ -78,7 +91,8 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
         if (transactionType === 'buy' && item.listingType !== 'SALE') return false;
         if (transactionType === 'rent' && item.listingType !== 'RENT') return false;
 
-        if (selectedPropertyType !== 'all' && item.propertyType !== selectedPropertyType) return false;
+        if (selectedCategory !== 'all' && item.categorySlug !== selectedCategory) return false;
+
 
         // 2. Locality filter
         if (selectedLocality !== 'all') {
@@ -90,30 +104,6 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
         // 3. BHK filter
         if (selectedBhk !== 'all') {
           if (!item.bhkLabel || !item.bhkLabel.toLowerCase().includes(selectedBhk.toLowerCase())) {
-            return false;
-          }
-        }
-
-        // 4. Budget filter (properties without priceAmount are excluded from budget filters)
-        if (selectedBudget !== 'all') {
-          if (item.priceAmount == null) return false;
-          if (selectedBudget === 'under_80L' && item.priceAmount > 8000000) return false;
-          if (
-            selectedBudget === '80L_150L' &&
-            (item.priceAmount < 8000000 || item.priceAmount > 15000000)
-          )
-            return false;
-          if (
-            selectedBudget === '150L_300L' &&
-            (item.priceAmount < 15000000 || item.priceAmount > 30000000)
-          )
-            return false;
-          if (selectedBudget === 'above_300L' && item.priceAmount < 30000000) return false;
-        }
-
-        // 5. Possession filter
-        if (selectedPossession !== 'all') {
-          if (!item.possession || !item.possession.toLowerCase().includes(selectedPossession.toLowerCase())) {
             return false;
           }
         }
@@ -131,58 +121,36 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
         return true;
       })
       .sort((a, b) => {
-        // Price sorting: properties without priceAmount sort last
-        if (sortBy === 'price_asc') {
-          if (a.priceAmount == null && b.priceAmount == null) return 0;
-          if (a.priceAmount == null) return 1;
-          if (b.priceAmount == null) return -1;
-          return a.priceAmount - b.priceAmount;
-        }
-        if (sortBy === 'price_desc') {
-          if (a.priceAmount == null && b.priceAmount == null) return 0;
-          if (a.priceAmount == null) return 1;
-          if (b.priceAmount == null) return -1;
-          return b.priceAmount - a.priceAmount;
-        }
-        if (sortBy === 'area_desc') {
-          const areaA = a.carpetAreaSqFt ?? 0;
-          const areaB = b.carpetAreaSqFt ?? 0;
-          return areaB - areaA;
-        }
         return Number(b.isFeatured) - Number(a.isFeatured) ||
           a.sortOrder - b.sortOrder ||
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
   }, [
     initialProperties,
+    selectedCategory,
     transactionType,
     selectedLocality,
     selectedBhk,
-    selectedBudget,
-    selectedPossession,
-    selectedPropertyType,
     searchQuery,
-    sortBy,
   ]);
 
   const handleResetFilters = () => {
     setTransactionType('all');
     setSelectedLocality('all');
     setSelectedBhk('all');
-    setSelectedBudget('all');
-    setSelectedPossession('all');
-    setSelectedPropertyType('all');
+    setSelectedCategory('all');
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('category');
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     setSearchQuery('');
-    setSortBy('featured');
   };
 
   const activeFilterCount = [
     transactionType !== 'all',
+    selectedCategory !== 'all',
     selectedLocality !== 'all',
     selectedBhk !== 'all',
-    selectedBudget !== 'all',
-    selectedPossession !== 'all',
-    selectedPropertyType !== 'all',
     Boolean(searchQuery.trim()),
   ].filter(Boolean).length;
 
@@ -242,18 +210,10 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                 onLocalityChange={setSelectedLocality}
                 bhk={selectedBhk}
                 onBhkChange={setSelectedBhk}
-                budget={selectedBudget}
-                onBudgetChange={setSelectedBudget}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 distinctLocalities={distinctLocalities}
                 distinctBhkLabels={distinctBhkLabels}
-                distinctPossessions={distinctPossessions}
-                distinctPropertyTypes={distinctPropertyTypes}
-                possession={selectedPossession}
-                onPossessionChange={setSelectedPossession}
-                propertyType={selectedPropertyType}
-                onPropertyTypeChange={setSelectedPropertyType}
                 totalResultsCount={filteredListings.length}
                 phone={phone}
                 onReset={handleResetFilters}
@@ -262,6 +222,17 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
           )}
         </div>
       </section>
+
+      {categories.length > 0 && (
+        <nav aria-label="Filter properties by category" className="max-w-7xl mx-auto flex flex-wrap gap-2 px-4 pt-8 sm:px-8">
+          <button type="button" onClick={() => selectCategory('all')} aria-pressed={selectedCategory === 'all'} className={`min-h-10 border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${selectedCategory === 'all' ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white' : 'border-[#E8E2DA] bg-white text-[#6D6A66] hover:border-[#C8A96A]'}`}>All</button>
+          {categories.map((category) => (
+            <button key={category.id} type="button" onClick={() => selectCategory(category.slug)} aria-pressed={selectedCategory === category.slug} className={`min-h-10 border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${selectedCategory === category.slug ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white' : 'border-[#E8E2DA] bg-white text-[#6D6A66] hover:border-[#C8A96A]'}`}>
+              {category.name}
+            </button>
+          ))}
+        </nav>
+      )}
 
       {/* 03. Results Header & Sorting Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-4">
@@ -275,21 +246,6 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-[#6D6A66] uppercase tracking-wider font-semibold">
-              Sort By:
-            </span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="h-9 px-3 bg-white border border-[#E8E2DA] text-xs font-semibold text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
-            >
-              <option value="featured">Featured / Default</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="area_desc">Carpet Area: Largest First</option>
-            </select>
-          </div>
         </div>
       </section>
 
@@ -320,7 +276,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
             {filteredListings.map((property) => (
               <div
                 key={property.id}
-                className="rera-motion-card luxury-card flex flex-col group overflow-hidden bg-white border border-[#E8E2DA] shadow-sm hover:border-[#C8A96A] transition-all"
+                className="rera-motion-card luxury-card flex flex-col group overflow-hidden bg-white border border-[#D5E3F2] shadow-sm transition-all"
               >
                 {/* Card Media Header */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EEE6DD]">
@@ -349,73 +305,31 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                     </Link>
                   )}
 
-                  <button
-                    onClick={() => setSelectedProperty(property)}
-                    className="absolute bottom-3 right-3 z-10 p-2 bg-[#1C1C1C]/70 hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] transition-colors rounded-sm"
-                    aria-label={`Preview ${property.title}`}
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-[#C8A96A] uppercase tracking-wider mb-1">
-                      <span>
-                        {property.builderName ? `${property.builderName} · ` : ''}
-                        {property.bhkLabel ?? ''}
-                      </span>
-                      {property.carpetAreaSqFt && (
-                        <span>{property.carpetAreaSqFt} Sq.Ft</span>
-                      )}
-                    </div>
-
+                <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+                  <div className="flex flex-1 flex-col items-center">
                     <Link href={`${reraPath('/properties')}/${property.slug}`}>
-                      <h3 className="font-heading text-lg font-bold text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
+                      <h3 className="font-heading text-lg font-bold uppercase text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
                         {property.title}
                       </h3>
                     </Link>
 
-                    <div className="flex items-center gap-1 text-xs text-[#6D6A66] mt-1.5 mb-3">
-                      <MapPin className="w-3.5 h-3.5 text-[#C8A96A] shrink-0" />
-                      <span className="truncate">
-                        {property.locality}, {property.city}
-                      </span>
-                    </div>
-
                     {property.description && (
-                      <p className="text-xs text-[#6D6A66] line-clamp-2 leading-relaxed mb-4">
+                      <p className="mt-4 max-w-sm text-sm leading-6 text-[#6D6A66] line-clamp-3">
                         {property.description}
                       </p>
                     )}
                   </div>
 
-                  {/* Card Footer Actions */}
-                    <div className="pt-3 border-t border-[#E8E2DA] flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider text-[#A39E98] font-semibold">
-                        Pricing
-                      </div>
-                      <div className="text-sm font-bold text-[#1C1C1C]">
-                        {property.priceLabel}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`${reraPath('/contact')}?property=${encodeURIComponent(property.slug)}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#C8A96A] text-[#1C1C1C] hover:bg-[#F8F5F1] text-xs font-semibold uppercase tracking-wider transition-colors"
-                      >
-                        Enquire <ArrowUpRight className="h-3.5 w-3.5" />
-                      </Link>
-                      <Link
-                        href={`${reraPath('/properties')}/${property.slug}`}
-                        className="px-3 py-1.5 bg-[#1C1C1C] hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] text-xs font-semibold uppercase tracking-wider transition-colors"
-                      >
-                        View Details
-                      </Link>
-                    </div>
+                  <div className="pt-5">
+                    <Link
+                      href={`${reraPath('/properties')}/${property.slug}`}
+                      className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:text-[#1769AA]"
+                    >
+                      Know More <ArrowRight className="h-4 w-4 text-[#36A8D2]" />
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -424,13 +338,6 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
         )}
       </section>
 
-      {/* Property Preview Modal */}
-      <PropertyDetailModal
-        property={selectedProperty}
-        onClose={() => setSelectedProperty(null)}
-        phone={phone}
-        whatsapp={whatsapp}
-      />
     </div>
   );
 };

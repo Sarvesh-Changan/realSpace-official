@@ -2,14 +2,10 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ArrowRight,
   Briefcase,
   Building2,
-  Calculator,
   CheckCircle2,
   KeyRound,
-  MessageCircle,
-  Phone,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -36,7 +32,9 @@ async function getServicesData() {
       }),
     ]);
 
-    const services: SerializedService[] = servicesRaw.map((service) => ({
+    const services: SerializedService[] = servicesRaw
+      .filter((service) => !/loan/i.test(`${service.title} ${service.slug ?? ''}`))
+      .map((service) => ({
       id: service.id,
       slug: service.slug,
       title: service.title,
@@ -45,10 +43,19 @@ async function getServicesData() {
       highlights: service.highlights ?? [],
     }));
 
-    return { settings, services };
+    const loanPartnerLogos = servicesRaw
+      .filter((service) => /loan/i.test(`${service.title} ${service.slug ?? ''}`))
+      .flatMap((service) => Array.isArray(service.contentImages)
+        ? service.contentImages.flatMap((entry) => {
+            if (!entry || typeof entry !== 'object' || !('placement' in entry) || entry.placement !== 'loan-partner' || !('url' in entry) || typeof entry.url !== 'string' || !entry.url.startsWith('https://res.cloudinary.com/')) return [];
+            return [{ url: entry.url, alt: 'alt' in entry && typeof entry.alt === 'string' ? entry.alt : service.title }];
+          })
+        : []);
+
+    return { settings, services, loanPartnerLogos };
   } catch (error) {
     console.error('Could not load RERA services', error);
-    return { settings: null, services: [] as SerializedService[] };
+    return { settings: null, services: [] as SerializedService[], loanPartnerLogos: [] as { url: string; alt: string }[] };
   }
 }
 
@@ -64,8 +71,6 @@ function getServiceIcon(iconKey: string | null) {
     case 'shield':
     case 'shieldcheck':
       return ShieldCheck;
-    case 'calculator':
-      return Calculator;
     case 'key':
     case 'keyround':
       return KeyRound;
@@ -75,7 +80,7 @@ function getServiceIcon(iconKey: string | null) {
 }
 
 export default async function ServicesPage() {
-  const { settings, services } = await getServicesData();
+  const { settings, services, loanPartnerLogos } = await getServicesData();
   const phone = settings?.phone?.trim() ?? '';
   const whatsapp = settings?.whatsapp?.trim() ?? '';
   const phoneForLink = phone.replace(/[^\d+]/g, '');
@@ -166,16 +171,16 @@ export default async function ServicesPage() {
                       {detailHref && (
                         <Link
                           href={detailHref}
-                          className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 bg-[#1C1C1C] px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] text-white transition-colors hover:bg-[#990000] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000]"
+                          className="realspace-cta min-h-11 flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
                         >
-                          View Details <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                          View Details
                         </Link>
                       )}
                       <Link
                         href={enquiryHref}
-                        className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 border border-[#D7CFC4] px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] text-[#1C1C1C] transition-colors hover:border-[#990000] hover:text-[#990000] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000]"
+                        className="realspace-cta min-h-11 flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
                       >
-                        Enquire <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                        Enquire
                       </Link>
                     </div>
                   </div>
@@ -187,12 +192,29 @@ export default async function ServicesPage() {
           <div className="mx-auto mt-9 max-w-2xl border border-[#E6DED3] bg-white px-5 py-10 text-center sm:mt-12 sm:px-8">
             <p className="font-heading text-xl font-semibold">No published services are available yet.</p>
             <p className="mt-2 text-sm leading-6 text-[#625D57]">Please contact REALSPACE for enquiries.</p>
-            <Link href={reraPath('/contact')} className="mt-5 inline-flex min-h-11 items-center gap-2 bg-[#1C1C1C] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#990000]">
-              Contact Us <ArrowRight aria-hidden="true" className="h-4 w-4" />
+            <Link href={reraPath('/contact')} className="realspace-cta mt-5 min-h-11 px-5 py-3 text-xs font-bold uppercase tracking-wider">
+              Contact Us
             </Link>
           </div>
         )}
       </section>
+
+      {loanPartnerLogos.length > 0 && (
+        <section aria-label="Home loan partners" className="relative isolate left-1/2 mb-10 w-screen -translate-x-1/2 overflow-hidden bg-[#102A56] py-5 sm:mb-14 sm:py-6">
+          <Image src="/arnav/images/accommodation/accommodation-bg.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[#102A56]/85" />
+          <h2 className="relative mb-4 text-center font-heading text-sm font-semibold uppercase tracking-[0.18em] text-white sm:text-base">Home Loan Partners</h2>
+          <ul className="rera-loan-partner-track flex w-max items-center gap-10 sm:gap-14">
+            {loanPartnerLogos.map((logo, index) => (
+              <li key={`${logo.url}-${index}`} className="flex w-36 shrink-0 items-center justify-center sm:w-40">
+                <span className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white/90 bg-white p-2 shadow-lg sm:h-24 sm:w-24">
+                  <Image src={logo.url} alt={index < loanPartnerLogos.length ? logo.alt : ''} width={160} height={100} unoptimized className="max-h-full max-w-full object-contain" />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="services-contact-title" className="border-t border-[#E8E2DA] bg-[#EEE6DD] px-5 py-10 sm:px-8 sm:py-14">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
@@ -202,17 +224,17 @@ export default async function ServicesPage() {
           </div>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
             {phone && phoneForLink && (
-              <a href={`tel:${phoneForLink}`} className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#1C1C1C] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#990000]">
-                <Phone aria-hidden="true" className="h-4 w-4" /> Call {phone}
+              <a href={`tel:${phoneForLink}`} className="realspace-cta min-h-11 px-5 py-3 text-xs font-bold uppercase tracking-wider">
+                Call {phone}
               </a>
             )}
             {whatsapp && whatsappForLink && (
-              <a href={`https://wa.me/${whatsappForLink}?text=${encodeURIComponent('Hello, I would like to enquire about your services.')}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#25D366] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#20ba5a]">
-                <MessageCircle aria-hidden="true" className="h-4 w-4" /> WhatsApp
+              <a href={`https://wa.me/${whatsappForLink}?text=${encodeURIComponent('Hello, I would like to enquire about your services.')}`} target="_blank" rel="noopener noreferrer" className="realspace-cta min-h-11 px-5 py-3 text-xs font-bold uppercase tracking-wider">
+                WhatsApp
               </a>
             )}
-            <Link href={reraPath('/contact')} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#102A56] bg-[#102A56] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:border-[#1769AA] hover:bg-[#1769AA] hover:text-white">
-              Contact Us <ArrowRight aria-hidden="true" className="h-4 w-4" />
+            <Link href={reraPath('/contact')} className="realspace-cta min-h-11 px-5 py-3 text-xs font-bold uppercase tracking-wider">
+              Contact Us
             </Link>
           </div>
         </div>

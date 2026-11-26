@@ -5,10 +5,7 @@ import prisma from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { PropertyForm } from "../../_components/PropertyForm";
 import { updateProperty } from "../../actions";
-import type {
-  ReraPropertyInput,
-  PropertySpecificationInput,
-} from "../../schema";
+import type { ReraPropertyInput } from "../../schema";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +24,7 @@ export default async function EditReraPropertyPage({
   const property = await prisma.reraProperty.findUnique({
     where: { id },
     include: {
-      images: {
+      sections: {
         orderBy: { sortOrder: "asc" },
       },
     },
@@ -37,30 +34,31 @@ export default async function EditReraPropertyPage({
     notFound();
   }
 
-  const specifications: PropertySpecificationInput[] = Array.isArray(
-    property.specifications
-  )
-    ? (property.specifications as unknown as PropertySpecificationInput[])
-    : [];
+  const publishedCategories = await prisma.reraPropertyCategory.findMany({
+    where: { isPublished: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, isPublished: true },
+  });
+  const categories = property.categoryId && !publishedCategories.some((category) => category.id === property.categoryId)
+    ? [...publishedCategories, ...(await prisma.reraPropertyCategory.findMany({
+        where: { id: property.categoryId },
+        select: { id: true, name: true, isPublished: true },
+      }))]
+    : publishedCategories;
 
   const initialData: ReraPropertyInput = {
     id: property.id,
     title: property.title,
+    tagline: property.tagline ?? "",
     slug: property.slug,
+    categoryId: property.categoryId ?? "",
     listingType: property.listingType,
-    propertyType: property.propertyType,
     bhkLabel: property.bhkLabel ?? "",
-    priceLabel: property.priceLabel,
-    priceAmount: property.priceAmount ?? null,
-    carpetAreaSqFt: property.carpetAreaSqFt ?? null,
-    builtUpAreaSqFt: property.builtUpAreaSqFt ?? null,
-    furnishing: property.furnishing ?? "",
     locality: property.locality,
     city: property.city,
     projectName: property.projectName ?? "",
     builderName: property.builderName ?? "",
     projectReraNo: property.projectReraNo ?? "",
-    possession: property.possession ?? "",
     description: property.description ?? "",
     coverImageUrl: property.coverImageUrl ?? "",
     coverImagePublicId: property.coverImagePublicId ?? "",
@@ -69,15 +67,7 @@ export default async function EditReraPropertyPage({
     isPublished: property.isPublished,
     sortOrder: property.sortOrder,
     amenities: property.amenities,
-    specifications,
-    images: property.images.map((img) => ({
-      id: img.id,
-      url: img.url,
-      publicId: img.publicId,
-      mediaType: img.mediaType,
-      altText: img.altText,
-      sortOrder: img.sortOrder,
-    })),
+    images: [],
   };
 
   const handleUpdate = async (data: ReraPropertyInput) => {
@@ -98,11 +88,11 @@ export default async function EditReraPropertyPage({
           Edit Property: {property.title}
         </h1>
         <p className="text-sm text-neutral-500 mt-1">
-          Update property specifications, pricing, gallery media, and RERA registration.
+          Update property details, the cover image overview card, page sections, and RERA registration.
         </p>
       </div>
 
-      <PropertyForm initialData={initialData} onSubmitAction={handleUpdate} />
+      <PropertyForm categories={categories} initialData={initialData} initialSections={property.sections} onSubmitAction={handleUpdate} />
     </div>
   );
 }

@@ -1,16 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Josefin_Sans, Lato } from "next/font/google";
+import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const josefinSans = Josefin_Sans({
-  variable: "--font-serif",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   display: "swap",
+  weight: ["500", "600", "700", "800"],
 });
 
-const lato = Lato({
-  weight: ["100", "300", "400", "700", "900"],
-  variable: "--font-sans",
+const openSans = Open_Sans({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-open-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${josefinSans.variable} ${lato.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${openSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white">{children}</body>
     </html>

@@ -79,6 +79,10 @@ export const reraSettingsSchema = z.object({
   // About / founder
   aboutTitle: z.string().trim().max(300).optional().or(z.literal("")),
   aboutBody: z.string().trim().max(10000).optional().or(z.literal("")),
+  aboutImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),
+  aboutImagePublicId: z.string().trim().optional().or(z.literal("")).nullable(),
+  servicesCenterImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),
+  servicesCenterImagePublicId: z.string().trim().optional().or(z.literal("")).nullable(),
   founderName: z.string().trim().max(200).optional().or(z.literal("")),
   founderRole: z.string().trim().max(200).optional().or(z.literal("")),
   founderImageUrl: z.string().trim().optional().or(z.literal("")).nullable(),

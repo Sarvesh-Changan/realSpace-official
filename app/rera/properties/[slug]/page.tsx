@@ -5,18 +5,14 @@ import { notFound } from 'next/navigation';
 import {
   MapPin,
   ShieldCheck,
-  CheckCircle2,
-  Phone,
-  MessageCircle,
-  ArrowRight,
   ChevronLeft,
-  Sparkles,
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
-import { PropertyBookingCard } from '@/components/rera/PropertyBookingCard';
 import PropertyImageGallery from '@/components/rera/PropertyImageGallery';
 import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
+import { SectionRenderer } from '@/components/rera/property-sections/SectionRenderer';
+import { reraPropertySectionSchema } from '@/lib/rera/property-sections/schemas';
 
 interface PropertyPageProps {
   params: Promise<{
@@ -44,7 +40,6 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
       select: {
         title: true,
         description: true,
-        priceLabel: true,
         locality: true,
         city: true,
         coverImageUrl: true,
@@ -61,13 +56,13 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
     const title = `${property.title} | REALSPACE Property in ${property.locality}, ${property.city}`;
     const description = property.description
       ? property.description.slice(0, 160)
-      : `${property.title} in ${property.locality}, ${property.city}. Price: ${property.priceLabel}.`;
+      : `${property.title} in ${property.locality}, ${property.city}.`;
 
     return {
       title,
       description,
       openGraph: {
-        title: `${property.title} — ${property.priceLabel}`,
+        title: `${property.title} | REALSPACE`,
         description,
         ...(property.coverImageUrl
           ? {
@@ -94,20 +89,18 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
   const { slug } = await params;
 
   let property = null;
-  let settings = null;
 
   try {
-    [property, settings] = await Promise.all([
-      prisma.reraProperty.findUnique({
-        where: { slug },
-        include: {
-          images: {
-            orderBy: { sortOrder: 'asc' },
-          },
+    property = await prisma.reraProperty.findUnique({
+      where: { slug },
+      include: {
+        category: true,
+        sections: {
+          where: { isPublished: true },
+          orderBy: { sortOrder: 'asc' },
         },
-      }),
-      prisma.reraSettings.findUnique({ where: { id: 'singleton' } }),
-    ]);
+      },
+    });
   } catch {
     notFound();
   }
@@ -116,30 +109,14 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
     notFound();
   }
 
-  const phone = settings?.phone ?? '';
-  const whatsapp = settings?.whatsapp ?? '';
-  const phoneClean = phone.replace(/\s+/g, '');
+  const validSections = property.sections.flatMap((section) => {
+    const parsed = reraPropertySectionSchema.safeParse(section);
+    return parsed.success ? [parsed.data] : [];
+  });
 
-  const mediaList =
-    property.images.length > 0
-      ? property.images
-      : property.coverImageUrl
-      ? [{ id: 'cover', url: property.coverImageUrl, altText: property.title, mediaType: 'IMAGE' as const }]
-      : [];
-
-  // Parse specifications
-  const specsList: Array<{ label: string; value: string }> = [];
-  if (Array.isArray(property.specifications)) {
-    for (const item of property.specifications) {
-      if (item && typeof item === 'object' && 'label' in item && 'value' in item) {
-        specsList.push({ label: String(item.label), value: String(item.value) });
-      }
-    }
-  } else if (property.specifications && typeof property.specifications === 'object') {
-    for (const [k, v] of Object.entries(property.specifications)) {
-      specsList.push({ label: k, value: String(v) });
-    }
-  }
+  const mediaList = property.coverImageUrl
+    ? [{ id: 'cover', url: property.coverImageUrl, altText: property.title, mediaType: 'IMAGE' as const }]
+    : [];
 
   return (
     <ReraHomeMotion>
@@ -159,6 +136,11 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#1C1C1C] text-[#C8A96A]">
               {property.locality}
             </span>
+            {property.category?.isPublished && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#C8A96A] text-[#1C1C1C]">
+                {property.category.name}
+              </span>
+            )}
             {property.projectReraNo && (
               <span className="text-xs text-[#6D6A66] hidden sm:inline">
                 Project RERA No. {property.projectReraNo}
@@ -170,18 +152,48 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
 
       {/* Main Showcase Header */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Gallery & Details */}
-          <div className="lg:col-span-8 space-y-8">
-            <PropertyImageGallery
-              media={mediaList}
-              propertyTitle={property.title}
-              coverImageUrl={property.coverImageUrl}
-              bhkLabel={property.bhkLabel}
-            />
+        <div>
+          <header className="mb-5">
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
+              {property.title}
+            </h1>
+            {property.bhkLabel && (
+              <p className="mt-2 text-base sm:text-lg font-medium text-[#1C1C1C]">
+                {property.bhkLabel}
+              </p>
+            )}
+            {property.tagline && (
+              <p className="mt-2 whitespace-pre-line text-sm sm:text-base leading-relaxed text-[#6D6A66]">
+                {property.tagline}
+              </p>
+            )}
+          </header>
 
-            {/* Property Narrative & Details */}
-            <div className="bg-white border border-[#E8E2DA] p-6 sm:p-8 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className={property.description ? "lg:col-span-8" : "lg:col-span-12"}>
+              <PropertyImageGallery
+                media={mediaList}
+                propertyTitle={property.title}
+                coverImageUrl={property.coverImageUrl}
+              />
+            </div>
+            {property.description && (
+              <aside className="lg:col-span-4 flex items-center justify-center border border-[#E8E2DA] bg-white p-6 sm:p-8">
+                <div className="w-full text-center">
+                  <h2 className="font-heading text-lg sm:text-xl font-bold uppercase text-[#1C1C1C]">
+                    {property.title} Overview
+                  </h2>
+                  <p className="mt-5 bg-white px-4 py-4 text-sm leading-7 text-[#6D6A66] shadow-[0_12px_32px_rgba(28,28,28,0.10)] whitespace-pre-line">
+                    {property.description}
+                  </p>
+                </div>
+              </aside>
+            )}
+          </div>
+
+          {/* Property Details and Page Sections */}
+          <div className="mt-8 bg-white border border-[#E8E2DA] p-6 sm:p-8 space-y-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 {property.projectReraNo && (
                   <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C8A96A] uppercase tracking-wider mb-1">
@@ -189,89 +201,38 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
                     Project RERA No. {property.projectReraNo}
                   </div>
                 )}
-                <h1 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1C1C1C]">
-                  {property.title}
-                </h1>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-[#6D6A66] mt-2">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-[#6D6A66] mt-1">
                   <MapPin className="w-4 h-4 text-[#C8A96A] shrink-0" />
-                  <span>
-                    {property.locality}, {property.city}
-                  </span>
+                  <span>{property.locality}, {property.city}</span>
                 </div>
               </div>
-
-              {property.description && (
-                <p className="text-xs sm:text-sm text-[#444444] leading-relaxed whitespace-pre-line">
-                  {property.description}
-                </p>
+              {property.category?.isPublished && (
+                <span className="inline-flex bg-[#C8A96A] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#1C1C1C]">
+                  {property.category.name}
+                </span>
               )}
+            </div>
 
-              {/* Metric Matrix */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-[#F8F5F1] border border-[#E8E2DA] text-xs">
-                {property.carpetAreaSqFt && (
-                  <div>
-                    <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                      Carpet Area
-                    </span>
-                    <strong className="text-[#1C1C1C] text-sm">
-                      {property.carpetAreaSqFt} Sq.Ft
-                    </strong>
-                  </div>
-                )}
-                {property.builtUpAreaSqFt && (
-                  <div>
-                    <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                      Built-Up Area
-                    </span>
-                    <strong className="text-[#1C1C1C] text-sm">
-                      {property.builtUpAreaSqFt} Sq.Ft
-                    </strong>
-                  </div>
-                )}
-                {property.possession && (
-                  <div>
-                    <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                      Possession
-                    </span>
-                    <strong className="text-[#1C1C1C] text-sm">{property.possession}</strong>
-                  </div>
-                )}
-                {property.furnishing && (
-                  <div>
-                    <span className="text-[#6D6A66] block text-[10px] uppercase font-semibold">
-                      Furnishing
-                    </span>
-                    <strong className="text-[#1C1C1C] text-sm">{property.furnishing}</strong>
-                  </div>
-                )}
-              </div>
-
-              {/* Specifications */}
-              {specsList.length > 0 && (
-                <div className="space-y-3 pt-4 border-t border-[#E8E2DA]">
-                  <h3 className="font-heading text-lg font-bold text-[#1C1C1C]">
-                    Architectural Specifications
-                  </h3>
-                  <div className="border border-[#E8E2DA] divide-y divide-[#E8E2DA] text-xs">
-                    {specsList.map((spec, idx) => (
-                      <div key={idx} className="flex flex-col sm:flex-row py-2.5 px-4 bg-white">
-                        <span className="w-44 font-semibold text-[#1C1C1C] shrink-0">
-                          {spec.label}:
-                        </span>
-                        <span className="text-[#444444]">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
+              {validSections.map((section, index) => (
+                <div
+                  key={section.id ?? `${section.type}-${section.sortOrder ?? index}`}
+                  className={
+                    section.type === 'PHASE_CARDS' && validSections[index - 1]?.type === 'INFO_CARDS'
+                      ? 'border-t border-[#D5DDEB] pt-6'
+                      : undefined
+                  }
+                >
+                  <SectionRenderer section={section} />
                 </div>
-              )}
+              ))}
 
               {/* Amenities */}
               {property.amenities.length > 0 && (
                 <div className="space-y-3 pt-4 border-t border-[#E8E2DA]">
-                  <h3 className="font-heading text-lg font-bold text-[#1C1C1C]">
+                  <h3 className="font-heading text-lg font-bold text-center text-[#1C1C1C]">
                     Amenities &amp; Facilities
                   </h3>
-                  <div className="flex flex-wrap gap-2 text-xs">
+                  <div className="flex flex-wrap justify-center gap-2 text-xs">
                     {property.amenities.map((amenity, idx) => (
                       <span
                         key={idx}
@@ -284,40 +245,6 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Right Column: Pricing & Enquiry Booking Card */}
-          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
-            <PropertyBookingCard
-              propertySlug={property.slug}
-              propertyTitle={property.title}
-              priceLabel={property.priceLabel}
-              priceAmount={property.priceAmount}
-              carpetAreaSqFt={property.carpetAreaSqFt}
-              phone={phone}
-              whatsapp={whatsapp}
-            />
-
-            {/* Interior Sourcing Card */}
-            <div className="bg-[#1C1C1C] text-white p-6 border border-[#333333]">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#C8A96A] mb-2">
-                <Sparkles className="w-4 h-4" />
-                REALSPACE Interiors
-              </div>
-              <h4 className="font-heading text-lg font-bold mb-2">Turnkey Interior Design</h4>
-              <p className="text-xs text-[#EEE6DD]/90 leading-relaxed mb-4">
-                Looking to transform this bare shell into a bespoke luxury residence? Benefit from
-                architectural precision and modular execution.
-              </p>
-              <Link
-                href="/"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C8A96A] hover:underline"
-              >
-                <span>Explore REALSPACE Interiors</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
     </div>

@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { sendReraEnquiryNotification } from '@/lib/email';
+import { sendReraWhatsAppNotification } from '@/lib/whatsapp';
 import { ReraInterest, ReraEnquirySource, Prisma } from '@prisma/client';
 
 const reraEnquirySchema = z.object({
@@ -161,6 +162,21 @@ export async function submitReraEnquiry(
       // Intentionally omit personal data when logging
       console.error('Failed to dispatch RERA notification email');
     }
+
+    // The WhatsApp recipient is managed in RERA admin settings. A failed or
+    // unconfigured WhatsApp channel must not undo the saved enquiry/email.
+    await sendReraWhatsAppNotification({
+      name: enquiry.name,
+      phone: enquiry.phone,
+      email: enquiry.email,
+      interestedIn: enquiry.interestedIn,
+      budgetLabel: enquiry.budgetLabel,
+      locality: enquiry.locality,
+      message: enquiry.message,
+      source: enquiry.source,
+      propertyTitle: linkedPropertyTitle,
+      details: data.details,
+    });
 
     return { success: true };
   } catch (error) {

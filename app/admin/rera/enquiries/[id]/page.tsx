@@ -29,7 +29,6 @@ export default async function AdminReraEnquiryDetailPage({
           title: true,
           slug: true,
           locality: true,
-          priceLabel: true,
         },
       },
     },

@@ -306,6 +306,26 @@ async function main() {
     console.log(`ReraService rows already exist (${reraServicesCount} found).`);
   }
 
+  // 10. Seed RERA property categories.
+  const reraPropertyCategoryNames = [
+    "Apartment",
+    "Villa",
+    "Bungalow",
+    "Farmhouse",
+    "Commercial",
+    "Plot",
+  ];
+  for (let i = 0; i < reraPropertyCategoryNames.length; i++) {
+    const name = reraPropertyCategoryNames[i];
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const existingCategory = await prisma.reraPropertyCategory.findUnique({
+      where: { name },
+    });
+    if (!existingCategory) await prisma.reraPropertyCategory.create({
+      data: { name, slug, sortOrder: i, isPublished: true },
+    });
+  }
+
   console.log("Database seeding completed successfully.");
 }
 

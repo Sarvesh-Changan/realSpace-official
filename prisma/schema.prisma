@@ -122,29 +122,29 @@ model Service {
 }
 
 model Testimonial {
-  id                String   @id @default(cuid())
-  clientName        String
-  clientRole        String? // e.g. "Homeowner, Bhandup" — first name + locality only, per privacy norms
-  quote             String   @db.Text
-  imageUrl          String?
-  imagePublicId     String?
-  imageUrls         String[] @default([])
-  imagePublicIds    String[] @default([])
-  videoUrl          String?
-  videoPublicId     String?
-  videoUrls         String[] @default([])
-  videoPublicIds    String[] @default([])
-  thumbnailUrl      String?
-  thumbnailPublicId String?
-  thumbnailUrls     String[] @default([])
+  id                 String   @id @default(cuid())
+  clientName         String
+  clientRole         String? // e.g. "Homeowner, Bhandup" — first name + locality only, per privacy norms
+  quote              String   @db.Text
+  imageUrl           String?
+  imagePublicId      String?
+  imageUrls          String[] @default([])
+  imagePublicIds     String[] @default([])
+  videoUrl           String?
+  videoPublicId      String?
+  videoUrls          String[] @default([])
+  videoPublicIds     String[] @default([])
+  thumbnailUrl       String?
+  thumbnailPublicId  String?
+  thumbnailUrls      String[] @default([])
   thumbnailPublicIds String[] @default([])
-  slug              String?  @unique
-  location          String?
-  projectType       String?
-  rating            Int      @default(5)
-  isPublished       Boolean  @default(true)
-  sortOrder         Int      @default(0)
-  createdAt         DateTime @default(now())
+  slug               String?  @unique
+  location           String?
+  projectType        String?
+  rating             Int      @default(5)
+  isPublished        Boolean  @default(true)
+  sortOrder          Int      @default(0)
+  createdAt          DateTime @default(now())
 }
 
 model FAQ {
@@ -444,15 +444,15 @@ model EventMedia {
 }
 
 model HomeGalleryImage {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   title        String
   altText      String?
   url          String
   cloudinaryId String?
-  sortOrder    Int       @default(0)
-  isPublished  Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  sortOrder    Int      @default(0)
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([isPublished, sortOrder])
 }
@@ -466,12 +466,11 @@ enum ReraListingType {
   RENT
 }
 
-enum ReraPropertyType {
-  APARTMENT
-  VILLA
-  COMMERCIAL
-  PLOT
-  OTHER
+enum ReraSectionType {
+  INFO_CARDS
+  PHASE_CARDS
+  UNIT_TYPES
+  TEXT_BLOCK
 }
 
 enum ReraInterest {
@@ -502,7 +501,7 @@ model ReraSettings {
   id                   String   @id @default("singleton")
   brokerName           String   @default("")
   tagline              String?
-  reraRegistrationNo   String?  // shown publicly ONLY when non-empty
+  reraRegistrationNo   String? // shown publicly ONLY when non-empty
   reraRegisteredName   String?
   reraVerifyUrl        String?
   phone                String?
@@ -511,7 +510,7 @@ model ReraSettings {
   email                String?
   address              String?  @db.Text
   officeHours          String?
-  socialLinks          Json?    // { instagram, facebook, youtube, linkedin }
+  socialLinks          Json? // { instagram, facebook, youtube, linkedin }
   heroHeadline         String   @default("Find Your Dream Home in Thane")
   heroSubhead          String?  @db.Text
   heroImageUrl         String?
@@ -534,6 +533,10 @@ model ReraSettings {
   welcomeBody          String?  @db.Text
   aboutTitle           String?
   aboutBody            String?  @db.Text
+  aboutImageUrl        String?
+  aboutImagePublicId   String?
+  servicesCenterImageUrl      String?
+  servicesCenterImagePublicId String?
   founderName          String?
   founderRole          String?
   founderImageUrl      String?
@@ -546,33 +549,33 @@ model ReraSettings {
 }
 
 model ReraService {
-  id                   String   @id @default(cuid())
-  title                String
-  description          String   @db.Text
-  iconKey              String?  // maps to a predefined icon set
-  highlights           String[] @default([])
-  sortOrder            Int      @default(0)
-  isPublished          Boolean  @default(true)
-  slug                 String?  @unique
-  shortDescription     String?
-  pageHeading          String?
-  bannerImageUrl       String?
-  bannerImagePublicId  String?
-  bannerImageAlt       String?
-  contentImages        Json?
-  sections             Json?
-  ctaText              String?
-  ctaUrl               String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  title               String
+  description         String   @db.Text
+  iconKey             String? // maps to a predefined icon set
+  highlights          String[] @default([])
+  sortOrder           Int      @default(0)
+  isPublished         Boolean  @default(true)
+  slug                String?  @unique
+  shortDescription    String?
+  pageHeading         String?
+  bannerImageUrl      String?
+  bannerImagePublicId String?
+  bannerImageAlt      String?
+  contentImages       Json?
+  sections            Json?
+  ctaText             String?
+  ctaUrl              String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 // "Popular Configurations" cards, e.g. 2 BHK starting from ...
 model ReraConfiguration {
   id                 String   @id @default(cuid())
-  label              String   // "2 BHK"
-  startingPriceLabel String   // "Starting from 67 Lakh"
-  carpetAreaLabel    String?  // "Carpet 650 sq ft"
+  label              String // "2 BHK"
+  startingPriceLabel String // "Starting from 67 Lakh"
+  carpetAreaLabel    String? // "Carpet 650 sq ft"
   imageUrl           String?
   imagePublicId      String?
   sortOrder          Int      @default(0)
@@ -582,40 +585,62 @@ model ReraConfiguration {
 }
 
 model ReraProperty {
-  id                 String              @id @default(cuid())
+  id                 String                @id @default(cuid())
   title              String
-  slug               String              @unique
-  listingType        ReraListingType     @default(SALE)
-  propertyType       ReraPropertyType    @default(APARTMENT)
-  bhkLabel           String?             // "2 BHK"
-  priceAmount        Int?                // rupees, used only for sorting and budget filters; priceLabel stays the display text
-  carpetAreaSqFt     Int?
-  builtUpAreaSqFt    Int?
-  furnishing         String?             // e.g. "Semi-furnished"
-  amenities          String[]            @default([])
-  specifications     Json?               // [{ "label": "Flooring", "value": "Vitrified" }, ...]
-  isNewLaunch        Boolean             @default(false) // builder project launches (replaces the standalone projects.ts)
-  priceLabel         String              // display text, e.g. "67 Lakh" or "25,000 / month"
+  tagline            String?
+  slug               String                @unique
+  categoryId         String?
+  category           ReraPropertyCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  listingType        ReraListingType       @default(SALE)
+  bhkLabel           String? // "2 BHK"
+  amenities          String[]              @default([])
+  isNewLaunch        Boolean               @default(false) // builder project launches (replaces the standalone projects.ts)
   locality           String
-  city               String              @default("Thane")
+  city               String                @default("Thane")
   projectName        String?
   builderName        String?
-  projectReraNo      String?             // shown on the card when present
-  possession         String?
-  description        String?             @db.Text
+  projectReraNo      String? // shown on the card when present
+  description        String?               @db.Text
   coverImageUrl      String?
   coverImagePublicId String?
-  isFeatured         Boolean             @default(false)
-  isPublished        Boolean             @default(true)
-  sortOrder          Int                 @default(0)
+  isFeatured         Boolean               @default(false)
+  isPublished        Boolean               @default(true)
+  sortOrder          Int                   @default(0)
   images             ReraPropertyImage[]
   enquiries          ReraEnquiry[]
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  sections           ReraPropertySection[]
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
 
   @@index([isPublished, isFeatured])
-  @@index([listingType, propertyType])
   @@index([isNewLaunch, isPublished])
+  @@index([categoryId])
+}
+
+model ReraPropertyCategory {
+  id          String         @id @default(cuid())
+  name        String         @unique
+  slug        String         @unique
+  sortOrder   Int            @default(0)
+  isPublished Boolean        @default(true)
+  properties  ReraProperty[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ReraPropertySection {
+  id          String          @id @default(cuid())
+  property    ReraProperty    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId  String
+  type        ReraSectionType
+  title       String?
+  data        Json
+  sortOrder   Int             @default(0)
+  isPublished Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([propertyId, sortOrder])
 }
 
 model ReraPropertyImage {
@@ -651,10 +676,10 @@ model ReraGalleryItem {
   mediaType         MediaType           @default(IMAGE)
   url               String
   publicId          String?
-  thumbnailUrl      String?             // poster for videos
+  thumbnailUrl      String? // poster for videos
   thumbnailPublicId String?
   fileSizeBytes     Int?
-  cloudinaryEtag    String?             // duplicate detection, same idea as GalleryImage
+  cloudinaryEtag    String? // duplicate detection, same idea as GalleryImage
   sortOrder         Int                 @default(0)
   isPublished       Boolean             @default(true)
   createdAt         DateTime            @default(now())
@@ -676,7 +701,7 @@ model ReraEnquiry {
   propertyId   String?
   status       LeadStatus        @default(NEW)
   notes        String?           @db.Text
-  details      Json?             // form-specific fields: post-property type/BHK/area/expected price, preferred visit slot, etc.
+  details      Json? // form-specific fields: post-property type/BHK/area/expected price, preferred visit slot, etc.
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
@@ -717,5 +742,3 @@ model ReraBranch {
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
 }
-
-

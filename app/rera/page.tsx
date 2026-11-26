@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, ShieldCheck, ArrowRight, ArrowUpRight, Sparkles, Building2, Briefcase, KeyRound } from 'lucide-react';
+import { MapPin, ShieldCheck, ArrowRight, Sparkles, Building2, Briefcase, KeyRound, Calculator } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
 import { HeroSection } from '@/components/rera/HeroSection';
@@ -9,6 +9,27 @@ import { FAQSection } from '@/components/rera/FAQSection';
 import { TestimonialsSection } from '@/components/rera/TestimonialsSection';
 import { HomeContactSection } from '@/components/rera/HomeContactSection';
 import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
+
+function getServiceIcon(iconKey: string | null | undefined) {
+  switch (iconKey?.trim().toLowerCase()) {
+    case 'sparkles':
+      return Sparkles;
+    case 'briefcase':
+      return Briefcase;
+    case 'shield':
+    case 'shieldcheck':
+      return ShieldCheck;
+    case 'calculator':
+      return Calculator;
+    case 'key':
+    case 'keyround':
+      return KeyRound;
+    case 'building':
+    case 'building2':
+    default:
+      return Building2;
+  }
+}
 
 interface SerializedProperty {
   id: string;
@@ -19,8 +40,6 @@ interface SerializedProperty {
   city: string;
   builderName: string | null;
   projectName: string | null;
-  priceLabel: string;
-  carpetAreaSqFt: number | null;
   bhkLabel: string | null;
   projectReraNo: string | null;
   heroImage: string | null;
@@ -33,8 +52,6 @@ interface SerializedNewLaunch {
   locality: string;
   city: string;
   builderName: string;
-  priceLabel: string;
-  possession: string | null;
   projectReraNo: string | null;
   heroImage: string | null;
 }
@@ -99,8 +116,6 @@ async function getHomeData() {
       city: p.city,
       builderName: p.builderName ?? null,
       projectName: p.projectName ?? null,
-      priceLabel: p.priceLabel,
-      carpetAreaSqFt: p.carpetAreaSqFt ?? null,
       bhkLabel: p.bhkLabel ?? null,
       projectReraNo: p.projectReraNo ?? null,
       heroImage: p.coverImageUrl || p.images[0]?.url || null,
@@ -113,8 +128,6 @@ async function getHomeData() {
       locality: p.locality,
       city: p.city,
       builderName: p.builderName ?? p.projectName ?? 'Premier Builder',
-      priceLabel: p.priceLabel,
-      possession: p.possession ?? null,
       projectReraNo: p.projectReraNo ?? null,
       heroImage: p.coverImageUrl || p.images[0]?.url || null,
     }));
@@ -134,13 +147,26 @@ async function getHomeData() {
       answer: f.answer,
     }));
 
-    const services = servicesRaw.map((service) => ({
+    const services = servicesRaw
+      .filter((service) => !/loan/i.test(`${service.title} ${service.slug ?? ''}`))
+      .slice(0, 3)
+      .map((service) => ({
       id: service.id,
       slug: service.slug,
       title: service.title,
       description: service.description,
       iconKey: service.iconKey,
     }));
+    const loanServiceRaw = servicesRaw.find((service) => /loan/i.test(`${service.title} ${service.slug ?? ''}`));
+    const loanService = loanServiceRaw?.slug
+      ? {
+          id: loanServiceRaw.id,
+          slug: loanServiceRaw.slug,
+          title: loanServiceRaw.title,
+          description: loanServiceRaw.description,
+          iconKey: loanServiceRaw.iconKey,
+        }
+      : null;
 
     return {
       settings,
@@ -149,6 +175,7 @@ async function getHomeData() {
       testimonials,
       faqs,
       services,
+      loanService,
       branch: branchRaw,
       partners: partnersRaw.map((partner) => ({
         id: partner.id,
@@ -165,6 +192,7 @@ async function getHomeData() {
       testimonials: [],
       faqs: [],
       services: [],
+      loanService: null,
       branch: null,
       partners: [],
     };
@@ -236,6 +264,7 @@ export default async function HomePage() {
     testimonials,
     faqs,
     services,
+    loanService,
     branch,
     partners,
   } = await getHomeData();
@@ -270,9 +299,6 @@ export default async function HomePage() {
         heroImageUrl={settings?.heroImageUrl ?? null}
         heroSlides={heroSlides}
         heroSlideInterval={settings?.heroSlideInterval ?? 8}
-        yearsExperience={settings?.yearsExperience ?? null}
-        propertiesClosed={settings?.propertiesClosed ?? null}
-        happyFamilies={settings?.happyFamilies ?? null}
       />
 
       {/* Welcome Blurb */}
@@ -292,8 +318,8 @@ export default async function HomePage() {
               {settings?.welcomeBody?.split(/\n\s*\n/).map((para, idx) => <p key={`welcome-${idx}`}>{para.trim()}</p>)}
               <p>Owners of residential, commercial, or office space in Thane can contact REALSPACE about selling, renting, or leasing their property. We help owners explore suitable options and connect with prospective buyers or tenants based on the property details and their requirements.</p>
             </div>
-            <Link href={reraPath('/about')} className="group mt-8 inline-flex items-center gap-5 border-2 border-[#102B57] px-7 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#102B57] transition-colors hover:bg-[#102B57] hover:text-white">
-              More About Us <span className="inline-flex items-center"><ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" /></span>
+            <Link href={reraPath('/about')} className="realspace-cta mt-8 gap-5 px-7 py-3.5 text-xs font-semibold uppercase tracking-wider">
+              More About Us
             </Link>
           </div>
         </div>
@@ -312,19 +338,47 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-8">
           <div className="relative mb-10 flex flex-col items-center gap-5 text-center">
             <h2 id="rera-home-services-title" className="font-sans text-3xl font-semibold uppercase tracking-wide text-[#111827] sm:text-4xl">Our Services</h2>
+            <p className="max-w-3xl text-sm leading-6 text-[#5D6D80] sm:text-base">
+              REALSPACE is a reliable property dealer in Thane and Mumbai. We assist our clients in buying, selling, and renting residential and commercial properties across both cities.
+            </p>
             <div aria-hidden="true" className="relative h-px w-32 bg-[#D5DCE5]">
               <span className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D5DCE5] bg-white" />
             </div>
             <Link href={reraPath('/services')} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#1769AA] sm:absolute sm:right-0 sm:top-1">All services <ArrowRight className="h-4 w-4" /></Link>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{services.map((service) => {
-            const Icon = service.iconKey?.toLowerCase().includes('key') ? KeyRound : service.iconKey?.toLowerCase().includes('briefcase') ? Briefcase : Building2;
-            return <article key={service.id} className="group flex min-h-[240px] flex-col border border-[#E8E2DA] bg-[#F8F5F1] p-6 transition hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-lg sm:p-7">
-              <div className="mb-5 flex items-center justify-between"><span className="flex h-12 w-12 items-center justify-center bg-[#EEE6DD] text-[#9A7539] transition group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C]"><Icon className="h-6 w-6" /></span><Link href={reraPath(`/services/${service.slug}`)} aria-label={`Go to ${service.title}`} className="flex h-10 w-10 items-center justify-center border border-[#E4DDD3] text-[#9A7539] transition-all duration-300 hover:translate-x-1 hover:-translate-y-1 hover:border-[#C8A96A] hover:bg-[#C8A96A] hover:text-[#1C1C1C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9A7539]"><ArrowUpRight aria-hidden="true" strokeWidth={3} className="h-6 w-6" /></Link></div>
-              <h3 className="font-heading text-xl font-bold text-[#1C1C1C]">{service.title}</h3>
-              <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-[#6D6A66]">{service.description}</p>
-            </article>;
-          })}</div>
+          <div className="grid items-center gap-8 lg:grid-cols-[1fr_minmax(340px,1.15fr)_1fr] lg:items-stretch lg:gap-10">
+            <div className="order-2 grid gap-8 sm:grid-cols-2 lg:order-1 lg:grid-cols-1 lg:grid-rows-2">
+              {services.slice(0, 2).map((service) => {
+                const Icon = getServiceIcon(service.iconKey);
+                return <article key={service.id} className="flex items-start justify-between gap-5 text-left lg:flex-row-reverse lg:text-right">
+                  <Link href={reraPath(`/services/${service.slug}`)} aria-label={`Go to ${service.title}`} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2] transition-colors hover:bg-[#36A8D2] hover:text-white"><Icon className="h-6 w-6" /></Link>
+                  <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{service.title}</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">{service.description}</p></div>
+                </article>;
+              })}
+            </div>
+            <div className="relative order-1 mx-auto aspect-[3/4] min-h-[420px] w-full max-w-md overflow-hidden bg-white lg:order-2 lg:aspect-auto lg:min-h-[600px] lg:max-w-none">
+              <Image src={settings?.servicesCenterImageUrl || '/arnav/images/welcome/welcome-bg.jpg'} alt="REALSPACE featured residential building" fill sizes="(max-width: 1024px) 80vw, 36vw" className="object-cover object-center" unoptimized={Boolean(settings?.servicesCenterImageUrl && !settings.servicesCenterImageUrl.includes('res.cloudinary.com'))} />
+            </div>
+            <div className="order-3 grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2">
+              {services.slice(2, 3).map((service) => {
+                const Icon = getServiceIcon(service.iconKey);
+                return <article key={service.id} className="flex items-start gap-5 text-left">
+                  <Link href={reraPath(`/services/${service.slug}`)} aria-label={`Go to ${service.title}`} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2] transition-colors hover:bg-[#36A8D2] hover:text-white"><Icon className="h-6 w-6" /></Link>
+                  <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{service.title}</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">{service.description}</p></div>
+                </article>;
+              })}
+              {loanService ? (() => {
+                const Icon = getServiceIcon(loanService.iconKey);
+                return <article className="flex items-start gap-5 text-left">
+                  <Link href={reraPath(`/services/${loanService.slug}`)} aria-label={`Go to ${loanService.title}`} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2] transition-colors hover:bg-[#36A8D2] hover:text-white"><Icon className="h-6 w-6" /></Link>
+                  <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{loanService.title}</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">{loanService.description}</p></div>
+                </article>;
+              })() : <article className="flex items-start gap-5 text-left">
+                <span aria-hidden="true" className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2]"><ShieldCheck className="h-6 w-6" /></span>
+                <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">Our Commitment</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">We provide clear, attentive guidance at every step, with a focus on your requirements, transparent communication, and dependable support.</p></div>
+              </article>}
+            </div>
+          </div>
         </div>
       </section>}
 
@@ -378,59 +432,28 @@ export default async function HomePage() {
                       {property.locality}
                     </div>
                   )}
-                  <div className="absolute top-3 left-3 bg-[#1C1C1C]/85 backdrop-blur-sm text-[#C8A96A] text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1">
-                    {property.locality}
-                  </div>
-                  {property.projectReraNo && (
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-[#1C1C1C] text-[10px] font-semibold uppercase tracking-wider px-2 py-1">
-                      RERA: {property.projectReraNo}
-                    </div>
-                  )}
                 </div>
 
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    {property.bhkLabel && (
-                      <div className="text-[11px] font-semibold text-[#C8A96A] uppercase tracking-wider mb-1">
-                        {property.bhkLabel}
-                        {property.carpetAreaSqFt ? ` · ${property.carpetAreaSqFt} Sq.Ft` : ''}
-                      </div>
-                    )}
+                <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+                  <div className="flex flex-1 flex-col items-center">
                     <Link href={`${reraPath('/properties')}/${property.slug}`}>
-                      <h3 className="font-heading text-lg font-bold text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
+                      <h3 className="font-heading text-lg font-bold uppercase text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
                         {property.title}
                       </h3>
                     </Link>
-                    <div className="flex items-center gap-1 text-xs text-[#6D6A66] mt-1.5 mb-3">
-                      <MapPin className="w-3.5 h-3.5 text-[#C8A96A] shrink-0" />
-                      <span className="truncate">
-                        {property.locality}, {property.city}
-                      </span>
-                    </div>
-
                     {property.description && (
-                      <p className="text-xs text-[#6D6A66] line-clamp-2 leading-relaxed mb-4">
+                      <p className="mt-4 max-w-sm text-sm leading-6 text-[#6D6A66] line-clamp-3">
                         {property.description}
                       </p>
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-[#E8E2DA] flex items-center justify-between">
-                    <div>
-                      <div className="text-[10px] uppercase tracking-wider text-[#A39E98]">
-                        Pricing
-                      </div>
-                      <div className="text-sm font-bold text-[#1C1C1C]">
-                        {property.priceLabel}
-                      </div>
-                    </div>
-
+                  <div className="pt-5">
                     <Link
-                      href={reraPath(`/contact?property=${encodeURIComponent(property.slug)}`)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#F8F5F1] group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C] border border-[#E8E2DA] text-xs font-semibold uppercase tracking-wider transition-all"
+                      href={`${reraPath('/properties')}/${property.slug}`}
+                      className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:text-[#1769AA]"
                     >
-                      <span>Inquire</span>
-                      <ArrowRight className="w-3 h-3" />
+                      Know More <ArrowRight className="h-4 w-4 text-[#36A8D2]" />
                     </Link>
                   </div>
                 </div>
@@ -510,16 +533,6 @@ export default async function HomePage() {
                     </div>
 
                     <div className="space-y-1 text-xs text-[#444444] border-t border-[#E8E2DA] pt-2 mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-[#6D6A66]">Starts At:</span>
-                        <strong className="text-[#1C1C1C]">{project.priceLabel}</strong>
-                      </div>
-                      {project.possession && (
-                        <div className="flex justify-between">
-                          <span className="text-[#6D6A66]">Possession:</span>
-                          <span>{project.possession}</span>
-                        </div>
-                      )}
                       {project.projectReraNo && (
                         <div className="flex justify-between">
                           <span className="text-[#6D6A66]">RERA ID:</span>
@@ -585,7 +598,7 @@ export default async function HomePage() {
 
       {partners.length > 0 && (
         <section className="relative overflow-hidden bg-[#102A56] px-4 py-16 sm:px-8 sm:py-20">
-          {heroSlides[0]?.imageUrl && <Image src={heroSlides[0].imageUrl} alt="" fill sizes="100vw" className="object-cover" aria-hidden="true" />}
+          <Image src="/arnav/images/accommodation/accommodation-bg.jpg" alt="" fill sizes="100vw" className="object-cover" aria-hidden="true" />
           <div aria-hidden="true" className="absolute inset-0 bg-[#102A56]/90" />
           <div className="relative mx-auto max-w-7xl">
             <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">

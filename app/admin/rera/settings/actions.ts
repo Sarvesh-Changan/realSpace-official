@@ -65,6 +65,10 @@ export async function updateReraSettings(
     bhk3Price,
     founderImageUrl,
     founderImagePublicId,
+    aboutImageUrl,
+    aboutImagePublicId,
+    servicesCenterImageUrl,
+    servicesCenterImagePublicId,
     yearsExperience,
     happyFamilies,
     propertiesClosed,
@@ -118,6 +122,19 @@ export async function updateReraSettings(
       await deleteCloudinaryAsset(existing.founderImagePublicId);
     }
 
+    const cleanAboutPublicId = aboutImagePublicId?.trim() || null;
+    if (
+      existing?.aboutImagePublicId &&
+      existing.aboutImagePublicId !== cleanAboutPublicId
+    ) {
+      await deleteCloudinaryAsset(existing.aboutImagePublicId);
+    }
+
+    const cleanServicesCenterPublicId = servicesCenterImagePublicId?.trim() || null;
+    if (existing?.servicesCenterImagePublicId && existing.servicesCenterImagePublicId !== cleanServicesCenterPublicId) {
+      await deleteCloudinaryAsset(existing.servicesCenterImagePublicId);
+    }
+
     let previousHeroSlides: Array<{ imagePublicId?: string }> = [];
     if (existing?.heroSlidesJson) {
       try {
@@ -159,6 +176,10 @@ export async function updateReraSettings(
       heroSlideInterval,
       founderImageUrl: cleanFounderUrl,
       founderImagePublicId: cleanFounderPublicId,
+      aboutImageUrl: aboutImageUrl?.trim() || null,
+      aboutImagePublicId: cleanAboutPublicId,
+      servicesCenterImageUrl: servicesCenterImageUrl?.trim() || null,
+      servicesCenterImagePublicId: cleanServicesCenterPublicId,
       bhk1ImageUrl: bhk1ImageUrl?.trim() || null,
       bhk1ImagePublicId: bhk1ImagePublicId?.trim() || null,
       bhk1Type,

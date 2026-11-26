@@ -7,7 +7,7 @@ import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 export const metadata: Metadata = {
   title: 'Properties | REALSPACE',
-  description: 'Browse properties listed by REALSPACE and explore their details, locations and available specifications.',
+  description: 'Browse properties listed by REALSPACE and explore their details and locations.',
 };
 
 interface PropertiesPageProps {
@@ -16,7 +16,8 @@ interface PropertiesPageProps {
 
 export default async function PropertiesPage({ searchParams }: PropertiesPageProps) {
   const resolvedParams = await searchParams;
-  let propertiesRaw: Prisma.ReraPropertyGetPayload<{ include: { images: true } }>[] = [];
+  let propertiesRaw: Prisma.ReraPropertyGetPayload<{ include: { images: true; category: true } }>[] = [];
+  let categories: Array<{ id: string; name: string; slug: string }> = [];
   let settings = null;
   let propertyFetchFailed = false;
 
@@ -24,11 +25,21 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     propertiesRaw = await prisma.reraProperty.findMany({
       where: { isPublished: true },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-      include: { images: { orderBy: { sortOrder: 'asc' } } },
+      include: { images: { orderBy: { sortOrder: 'asc' } }, category: true },
     });
   } catch (error) {
     console.error('Failed to load published RERA properties:', error);
     propertyFetchFailed = true;
+  }
+
+  try {
+    categories = await prisma.reraPropertyCategory.findMany({
+      where: { isPublished: true, properties: { some: { isPublished: true } } },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      select: { id: true, name: true, slug: true },
+    });
+  } catch (error) {
+    console.error('Failed to load published RERA property categories:', error);
   }
 
   try {
@@ -39,7 +50,6 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
 
   const initialProperties = propertiesRaw.map((p): ReraPropertyDetailData & {
     listingType: string;
-    propertyType: string;
     isFeatured: boolean;
     sortOrder: number;
     createdAt: string;
@@ -47,21 +57,16 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     id: p.id,
     slug: p.slug,
     title: p.title,
+    categoryName: p.category?.isPublished ? p.category.name : null,
+    categorySlug: p.category?.isPublished ? p.category.slug : null,
     description: p.description ?? '',
-    priceLabel: p.priceLabel,
-    priceAmount: p.priceAmount ?? null,
     locality: p.locality,
     city: p.city,
     projectName: p.projectName ?? null,
     builderName: p.builderName ?? null,
     projectReraNo: p.projectReraNo ?? null,
-    possession: p.possession ?? null,
-    carpetAreaSqFt: p.carpetAreaSqFt ?? null,
-    builtUpAreaSqFt: p.builtUpAreaSqFt ?? null,
     bhkLabel: p.bhkLabel ?? null,
-    furnishing: p.furnishing ?? null,
     amenities: p.amenities ?? [],
-    specifications: p.specifications as ReraPropertyDetailData['specifications'],
     coverImageUrl: p.coverImageUrl || p.images[0]?.url || null,
     images: p.images.map((img) => ({
       id: img.id,
@@ -70,7 +75,6 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
       mediaType: img.mediaType === 'VIDEO' ? 'VIDEO' : 'IMAGE',
     })),
     listingType: p.listingType,
-    propertyType: p.propertyType,
     isFeatured: p.isFeatured,
     sortOrder: p.sortOrder,
     createdAt: p.createdAt.toISOString(),
@@ -78,32 +82,32 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
 
   const distinctLocalities = Array.from(new Set(propertiesRaw.map((p) => p.locality?.trim()).filter((value): value is string => Boolean(value)))).sort();
   const distinctBhkLabels = Array.from(new Set(propertiesRaw.map((p) => p.bhkLabel?.trim()).filter((value): value is string => Boolean(value)))).sort();
-  const distinctPossessions = Array.from(new Set(propertiesRaw.map((p) => p.possession?.trim()).filter((value): value is string => Boolean(value)))).sort();
-  const distinctPropertyTypes = Array.from(new Set(propertiesRaw.map((p) => p.propertyType).filter(Boolean))).sort();
 
-  const rawInterest = String(resolvedParams.interest || resolvedParams.transactionType || resolvedParams.category || '').toLowerCase();
+  const rawCategory = String(resolvedParams.category || '').toLowerCase();
+  const legacyCategoryInterest = ['buy', 'sale', 'rent'].includes(rawCategory) && !categories.some((category) => category.slug === rawCategory)
+    ? rawCategory
+    : '';
+  const rawInterest = String(resolvedParams.interest || resolvedParams.transactionType || legacyCategoryInterest).toLowerCase();
   let initialInterest = 'all';
   if (['buy', 'sale'].includes(rawInterest)) initialInterest = 'buy';
   else if (rawInterest === 'rent') initialInterest = 'rent';
 
   const rawLocality = String(resolvedParams.locality || resolvedParams.microMarket || '').toLowerCase();
   const initialLocality = distinctLocalities.find((locality) => locality.toLowerCase() === rawLocality) || 'all';
-  const rawBudget = String(resolvedParams.budget || '');
-  const validBudgets = ['under_80L', '80L_150L', '150L_300L', 'above_300L'];
+  const initialCategory = categories.find((category) => category.slug === rawCategory)?.slug ?? 'all';
 
   return (
     <ReraHomeMotion>
     <PropertiesExplorer
       initialProperties={initialProperties}
+      categories={categories}
+      initialCategory={initialCategory}
       propertyFetchFailed={propertyFetchFailed}
       bannerImageUrl={settings?.heroImageUrl || initialProperties.find((property) => property.coverImageUrl)?.coverImageUrl || null}
       distinctLocalities={distinctLocalities}
       distinctBhkLabels={distinctBhkLabels}
-      distinctPossessions={distinctPossessions}
-      distinctPropertyTypes={distinctPropertyTypes}
       initialInterest={initialInterest}
       initialLocality={initialLocality}
-      initialBudget={validBudgets.includes(rawBudget) ? rawBudget : 'all'}
       phone={settings?.phone ?? null}
       whatsapp={settings?.whatsapp ?? null}
     />

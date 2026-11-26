@@ -34,7 +34,6 @@ export interface EnquiryDetailData {
     title: string;
     slug: string;
     locality: string;
-    priceLabel: string;
   } | null;
   status: LeadStatus;
   notes?: string | null;
@@ -260,7 +259,6 @@ export function EnquiryDetailClient({ enquiry }: { enquiry: EnquiryDetailData })
                     </span>
                     <span>•</span>
                     <span className="font-semibold text-neutral-800">
-                      {enquiry.property.priceLabel}
                     </span>
                   </p>
                 </div>

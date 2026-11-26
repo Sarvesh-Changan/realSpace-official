@@ -9,17 +9,31 @@ import {
   PropertyActions,
 } from "./_components/PropertyTableClient";
 import { getVideoThumbnailUrl } from "@/lib/cloudinary";
+import { PropertyCategoriesManager } from "./_components/PropertyCategoriesManager";
+import { PropertyCategoryFilter } from "./_components/PropertyCategoryFilter";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminReraPropertiesPage() {
+export default async function AdminReraPropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string; category?: string }>;
+}) {
+  const params = await searchParams;
   const session = await auth();
   if (!session?.user) {
     redirect("/admin/login");
   }
 
-  const properties = await prisma.reraProperty.findMany({
+  const categories = await prisma.reraPropertyCategory.findMany({
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    include: { _count: { select: { properties: true } } },
+  });
+  const activeCategory = categories.find((category) => category.slug === params.category);
+  const properties = params.tab === "categories" ? [] : await prisma.reraProperty.findMany({
+    where: activeCategory ? { categoryId: activeCategory.id } : undefined,
     include: {
+      category: true,
       images: {
         orderBy: { sortOrder: "asc" },
       },
@@ -46,6 +60,16 @@ export default async function AdminReraPropertiesPage() {
         </Link>
       </div>
 
+      <div className="flex items-center gap-2 border-b border-neutral-200 pb-1">
+        <Link href="/admin/rera/properties?tab=categories" className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${params.tab === "categories" ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-500 hover:text-neutral-900"}`}>Categories</Link>
+        <Link href="/admin/rera/properties?tab=properties" className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${params.tab !== "categories" ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-500 hover:text-neutral-900"}`}>Properties</Link>
+      </div>
+
+      {params.tab === "categories" ? (
+        <PropertyCategoriesManager categories={categories} />
+      ) : <>
+      <PropertyCategoryFilter categories={categories} selectedCategory={activeCategory?.slug ?? "all"} />
+
       <div className="bg-white rounded-lg border border-neutral-200 shadow-sm overflow-hidden">
         {properties.length === 0 ? (
           <div className="text-center py-12 px-4">
@@ -69,19 +93,19 @@ export default async function AdminReraPropertiesPage() {
           <div className="w-full">
             <table className="w-full table-fixed text-left border-collapse">
               <colgroup>
-                <col className="w-[23%]" />
-                <col className="w-[17%]" />
-                <col className="w-[20%]" />
-                <col className="w-[14%]" />
-                <col className="w-[16%]" />
+                <col className="w-[24%]" />
+                <col className="w-[18%]" />
+                <col className="w-[18%]" />
+                <col className="w-[18%]" />
                 <col className="w-[10%]" />
+                <col className="w-[12%]" />
               </colgroup>
               <thead>
                 <tr className="bg-neutral-50 border-b border-neutral-200 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                   <th className="py-2.5 px-3">Property</th>
-                  <th className="py-2.5 px-3">Type & BHK</th>
+                  <th className="py-2.5 px-3">Listing & BHK</th>
+                  <th className="py-2.5 px-3">Category</th>
                   <th className="py-2.5 px-3">Locality</th>
-                  <th className="py-2.5 px-3">Price</th>
                   <th className="py-2.5 px-3">Visibility</th>
                   <th className="py-2.5 px-2 text-right">Actions</th>
                 </tr>
@@ -100,8 +124,6 @@ export default async function AdminReraPropertiesPage() {
                   const hasNoProjectRera =
                     prop.isPublished &&
                     (!prop.projectReraNo || prop.projectReraNo.trim() === "");
-                  const hasNoPriceAmount =
-                    prop.priceAmount == null || prop.priceAmount <= 0;
 
                   return (
                     <tr
@@ -153,15 +175,12 @@ export default async function AdminReraPropertiesPage() {
                         </div>
                       </td>
 
-                      {/* Listing Type & Property Type */}
+                      {/* Listing Type and configuration */}
                       <td className="py-2.5 px-3 min-w-0">
                         <div className="flex flex-col gap-1">
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-neutral-100 text-neutral-800 border border-neutral-200">
                               {prop.listingType}
-                            </span>
-                            <span className="text-xs text-neutral-600 font-medium">
-                              {prop.propertyType}
                             </span>
                           </div>
                           {prop.bhkLabel && (
@@ -172,6 +191,8 @@ export default async function AdminReraPropertiesPage() {
                         </div>
                       </td>
 
+                      <td className="py-2.5 px-3 text-neutral-700">{prop.category?.name ?? <span className="text-neutral-400">Uncategorized</span>}</td>
+
                       {/* Locality */}
                       <td className="py-2.5 px-3 min-w-0 text-neutral-700">
                         <div className="font-medium line-clamp-2 break-words">{prop.locality}</div>
@@ -181,21 +202,6 @@ export default async function AdminReraPropertiesPage() {
                           </div>
                         )}
                       </td>
-
-                      {/* Price Label & Price Amount warning */}
-                      <td className="py-2.5 px-3 min-w-0">
-                        <div className="space-y-1">
-                          <div className="font-semibold text-neutral-900 break-words">
-                            {prop.priceLabel}
-                          </div>
-                          {hasNoPriceAmount && (
-                            <div className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded leading-tight w-fit max-w-full">
-                              ⚠️ Won&apos;t appear in budget filters
-                            </div>
-                          )}
-                        </div>
-                      </td>
-
                       {/* Visibility Toggles */}
                       <td className="py-2.5 px-3">
                         <PropertyToggles
@@ -222,6 +228,7 @@ export default async function AdminReraPropertiesPage() {
           </div>
         )}
       </div>
+      </>}
     </div>
   );
 }

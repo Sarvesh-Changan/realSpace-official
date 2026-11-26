@@ -11,7 +11,7 @@
 
   background-color: #FFFFFF;
   color: #172B45;
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-open-sans), Roboto, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -23,11 +23,21 @@
 
 /* Custom Typography Utilities */
 .rera-root .font-heading {
-  font-family: var(--font-playfair), Georgia, Cambria, 'Times New Roman', serif;
+  font-family: var(--font-montserrat), Raleway, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .rera-root .font-body {
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-open-sans), Roboto, Arial, sans-serif;
+}
+
+.rera-root h1,
+.rera-root h2,
+.rera-root h3 {
+  font-family: var(--font-montserrat), Raleway, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* Luxury Accent Gradients & Borders */
@@ -87,6 +97,25 @@
 
 .rera-root .rera-motion-grid > .rera-motion-card:nth-child(4n + 4) {
   animation-delay: 270ms;
+}
+
+@keyframes rera-loan-partner-marquee {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(-100%); }
+}
+
+.rera-root .rera-loan-partner-track {
+  animation: rera-loan-partner-marquee 14s linear infinite;
+}
+
+.rera-root .rera-loan-partner-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rera-root .rera-loan-partner-track {
+    animation: none;
+  }
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {

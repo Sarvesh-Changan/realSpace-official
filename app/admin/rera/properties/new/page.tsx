@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { PropertyForm } from "../_components/PropertyForm";
 import { createProperty } from "../actions";
@@ -12,6 +13,11 @@ export default async function NewReraPropertyPage() {
   if (!session?.user) {
     redirect("/admin/login");
   }
+  const categories = await prisma.reraPropertyCategory.findMany({
+    where: { isPublished: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, isPublished: true },
+  });
 
   return (
     <div className="space-y-6">
@@ -30,7 +36,7 @@ export default async function NewReraPropertyPage() {
         </p>
       </div>
 
-      <PropertyForm onSubmitAction={createProperty} />
+      <PropertyForm categories={categories} onSubmitAction={createProperty} />
     </div>
   );
 }

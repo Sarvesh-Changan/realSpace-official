@@ -104,20 +104,16 @@ export default async function PropertyDetailPage({ params }: Props) {
                 ))}
               </div>
             )}
-            <p className="rs-eyebrow">{property.propertyType.replaceAll("_", " ")} · {property.listingType}</p>
+            <p className="rs-eyebrow">{property.listingType}</p>
             <h1>{property.title}</h1>
             <p className="rs-property-detail__location">{property.locality}, {property.city}</p>
-            <p className="rs-property-detail__price">{property.priceLabel}</p>
             <p className="rs-property-detail__description">{property.description || `Contact REALSPACE for more details about ${property.title}.`}</p>
-            {(property.bhkLabel || property.carpetAreaSqFt || property.builtUpAreaSqFt || property.projectReraNo || property.possession) && (
+            {(property.bhkLabel || property.projectReraNo) && (
               <>
                 <h2>Property Details</h2>
                 <dl className="rs-specifications">
                   {property.bhkLabel && <div><dt>Configuration</dt><dd>{property.bhkLabel}</dd></div>}
-                  {property.carpetAreaSqFt && <div><dt>Carpet Area</dt><dd>{property.carpetAreaSqFt} sq. ft.</dd></div>}
-                  {property.builtUpAreaSqFt && <div><dt>Built-up Area</dt><dd>{property.builtUpAreaSqFt} sq. ft.</dd></div>}
                   {property.projectReraNo && <div><dt>Project RERA No.</dt><dd>{property.projectReraNo}</dd></div>}
-                  {property.possession && <div><dt>Possession</dt><dd>{property.possession}</dd></div>}
                 </dl>
               </>
             )}

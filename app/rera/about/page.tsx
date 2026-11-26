@@ -44,11 +44,11 @@ function cleanText(value: string | null | undefined) {
 
 export default async function AboutPage() {
   const { settings, branches } = await getAboutData();
-  const aboutTitle = cleanText(settings?.aboutTitle) || cleanText(settings?.brokerName) || 'About REALSPACE';
-  const aboutParagraphs = cleanText(settings?.aboutBody)
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
+  const aboutTitle = 'Your Trusted Real Estate Partner in Thane & Mulund';
+  const aboutParagraphs = [
+    'With over 25 years of experience, REALSPACE is a MahaRERA-registered real estate consultancy (Reg. No. A51700012346) helping property owners sell, rent, or lease residential, commercial, and office spaces across Thane and Mulund.',
+    'Buyers and tenants can explore curated options matched to their preferred location, configuration, and budget, with transparent guidance from site visits through final documentation.',
+  ];
 
   const founderName = cleanText(settings?.founderName);
   const founderRole = cleanText(settings?.founderRole);
@@ -98,21 +98,22 @@ export default async function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
         <div className="grid items-center gap-9 lg:grid-cols-2 lg:gap-16">
-          <div className="relative mx-auto w-full max-w-[620px]">
+          <div className="relative mx-auto w-full max-w-[620px] lg:order-2">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#E6E0D8] shadow-[0_22px_60px_rgba(28,28,28,.14)] sm:aspect-[5/4]">
               <Image
-                src="/arnav/images/booking/waiter-right2.jpg"
+                src={cleanText(settings?.aboutImageUrl) || '/arnav/images/booking/waiter-right2.jpg'}
                 alt="Residential property exterior"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 hover:scale-[1.025]"
+                unoptimized={Boolean(settings?.aboutImageUrl && !settings.aboutImageUrl.includes('res.cloudinary.com'))}
               />
             </div>
             <div aria-hidden="true" className="absolute -bottom-3 -right-3 -z-10 h-2/3 w-2/3 border-b-2 border-r-2 border-[#FECC00] sm:-bottom-5 sm:-right-5" />
           </div>
 
-          <div className="min-w-0 pt-3 lg:py-4">
+          <div className="min-w-0 pt-3 lg:order-1 lg:py-4">
             <p className="mb-3 text-xs font-bold uppercase tracking-[.2em] text-[#990000]">About REALSPACE</p>
             <h2 className="font-heading text-3xl font-semibold leading-tight text-[#1C1C1C] sm:text-4xl lg:text-[2.7rem]">
               {aboutTitle}

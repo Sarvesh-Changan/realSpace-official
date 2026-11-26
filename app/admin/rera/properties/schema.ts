@@ -1,9 +1,13 @@
 import { z } from "zod";
 
-export const propertySpecificationSchema = z.object({
-  label: z.string().trim().min(1, "Label is required"),
-  value: z.string().trim().min(1, "Value is required"),
+export const reraPropertyCategorySchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(40, "Name must be 40 characters or fewer"),
+  slug: z.string().trim().min(1, "Slug is required").max(50).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens"),
+  sortOrder: z.number().int(),
+  isPublished: z.boolean(),
 });
+
+export type ReraPropertyCategoryInput = z.infer<typeof reraPropertyCategorySchema>;
 
 export const reraPropertyImageSchema = z.object({
   id: z.string().optional(),
@@ -17,21 +21,16 @@ export const reraPropertyImageSchema = z.object({
 export const reraPropertySchema = z.object({
   id: z.string().optional(),
   title: z.string().trim().min(1, "Title is required").max(250, "Title is too long"),
+  tagline: z.string().trim().max(160, "Tagline must be 160 characters or fewer").optional().or(z.literal("")),
   slug: z.string().trim().max(250).optional().or(z.literal("")),
+  categoryId: z.string().trim().min(1, "Category is required"),
   listingType: z.enum(["SALE", "RENT"]),
-  propertyType: z.enum(["APARTMENT", "VILLA", "COMMERCIAL", "PLOT", "OTHER"]),
   bhkLabel: z.string().trim().max(50).optional().or(z.literal("")),
-  priceLabel: z.string().trim().min(1, "Price display label is required"),
-  priceAmount: z.number().int().positive("Must be a positive whole number").nullable().optional(),
-  carpetAreaSqFt: z.number().int().nonnegative().nullable().optional(),
-  builtUpAreaSqFt: z.number().int().nonnegative().nullable().optional(),
-  furnishing: z.string().trim().max(100).optional().or(z.literal("")),
   locality: z.string().trim().min(1, "Locality is required").max(150),
   city: z.string().trim().max(100),
   projectName: z.string().trim().max(200).optional().or(z.literal("")),
   builderName: z.string().trim().max(200).optional().or(z.literal("")),
   projectReraNo: z.string().trim().max(100).optional().or(z.literal("")),
-  possession: z.string().trim().max(100).optional().or(z.literal("")),
   description: z.string().trim().max(10000).optional().or(z.literal("")),
   coverImageUrl: z.string().trim().nullable().optional().or(z.literal("")),
   coverImagePublicId: z.string().trim().nullable().optional().or(z.literal("")),
@@ -40,10 +39,10 @@ export const reraPropertySchema = z.object({
   isPublished: z.boolean(),
   sortOrder: z.number().int(),
   amenities: z.array(z.string().trim()),
-  specifications: z.array(propertySpecificationSchema),
-  images: z.array(reraPropertyImageSchema),
+  // Property detail pages use a single cover image. Legacy gallery records are
+  // cleaned up when a property is next saved.
+  images: z.array(reraPropertyImageSchema).max(0, "Only one cover image is supported"),
 });
 
 export type ReraPropertyInput = z.infer<typeof reraPropertySchema>;
 export type ReraPropertyImageInput = z.infer<typeof reraPropertyImageSchema>;
-export type PropertySpecificationInput = z.infer<typeof propertySpecificationSchema>;

@@ -22,8 +22,12 @@ export function ReraSettingsForm({
   initialData: ReraSettingsInput;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingAbout, setIsUploadingAbout] = useState(false);
+  const [isUploadingServicesImage, setIsUploadingServicesImage] = useState(false);
   const [isUploadingFounder, setIsUploadingFounder] = useState(false);
   const [uploadingBhk, setUploadingBhk] = useState<number | null>(null);
+  const aboutFileInputRef = useRef<HTMLInputElement>(null);
+  const servicesImageFileInputRef = useRef<HTMLInputElement>(null);
   const founderFileInputRef = useRef<HTMLInputElement>(null);
   const bhkFileInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [message, setMessage] = useState<{
@@ -51,6 +55,8 @@ export function ReraSettingsForm({
   const reraRegistrationNo = watch("reraRegistrationNo");
   const heroSlideInterval = watch("heroSlideInterval");
   const founderImageUrl = watch("founderImageUrl");
+  const aboutImageUrl = watch("aboutImageUrl");
+  const servicesCenterImageUrl = watch("servicesCenterImageUrl");
   const bhkImageUrls = [watch("bhk1ImageUrl"), watch("bhk2ImageUrl"), watch("bhk3ImageUrl")];
   const areasServedRaw = watch("areasServedRaw") || "";
 
@@ -777,6 +783,97 @@ export function ReraSettingsForm({
           )}
         </div>
 
+        <div className="sm:col-span-2 space-y-3">
+          <label className="block text-sm font-medium text-neutral-700">
+            About Section Image
+          </label>
+          <p className="text-xs text-neutral-500">
+            This image appears beside the About copy on the public About page. Recommended: landscape orientation, max 100MB.
+          </p>
+
+          {aboutImageUrl ? (
+            <div className="flex flex-col items-start gap-4 rounded-lg border border-neutral-200 bg-neutral-50 p-4 sm:flex-row sm:items-center">
+              <div className="relative h-32 w-48 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-200">
+                <Image
+                  src={aboutImageUrl}
+                  alt="About section image preview"
+                  fill
+                  sizes="192px"
+                  className="object-cover"
+                  unoptimized={!aboutImageUrl.includes("res.cloudinary.com")}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setValue("aboutImageUrl", "", { shouldDirty: true });
+                  setValue("aboutImagePublicId", "", { shouldDirty: true });
+                }}
+                disabled={isUploadingAbout || isSubmitting}
+                className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border border-red-200 bg-white px-3.5 py-2 text-sm font-medium text-red-600 shadow-sm transition-colors hover:bg-red-50 disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" /> Remove Image
+              </button>
+            </div>
+          ) : (
+            <div>
+              <button
+                type="button"
+                onClick={() => aboutFileInputRef.current?.click()}
+                disabled={isUploadingAbout || isSubmitting}
+                className="inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
+              >
+                {isUploadingAbout ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                {isUploadingAbout ? "Uploading About Image..." : "Upload About Image"}
+              </button>
+              <input
+                ref={aboutFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleFileUpload(file, "aboutImageUrl", "aboutImagePublicId", setIsUploadingAbout);
+                  }
+                  e.target.value = "";
+                }}
+                disabled={isUploadingAbout || isSubmitting}
+                className="sr-only"
+                aria-label="Choose About section image"
+              />
+            </div>
+          )}
+          <input type="hidden" {...register("aboutImageUrl")} />
+          <input type="hidden" {...register("aboutImagePublicId")} />
+        </div>
+
+        <div className="sm:col-span-2 space-y-3">
+          <label className="block text-sm font-medium text-neutral-700">Homepage Services Center Image</label>
+          <p className="text-xs text-neutral-500">This image appears between the service summaries on the homepage. Recommended: a portrait image of a building, up to 100MB.</p>
+          {servicesCenterImageUrl ? (
+            <div className="flex flex-col items-start gap-4 rounded-lg border border-neutral-200 bg-neutral-50 p-4 sm:flex-row sm:items-center">
+              <div className="relative h-40 w-32 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-200">
+                <Image src={servicesCenterImageUrl} alt="Homepage services center image preview" fill sizes="128px" className="object-contain" unoptimized={!servicesCenterImageUrl.includes("res.cloudinary.com")} />
+              </div>
+              <button type="button" onClick={() => { setValue("servicesCenterImageUrl", "", { shouldDirty: true }); setValue("servicesCenterImagePublicId", "", { shouldDirty: true }); }} disabled={isUploadingServicesImage || isSubmitting} className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border border-red-200 bg-white px-3.5 py-2 text-sm font-medium text-red-600 shadow-sm transition-colors hover:bg-red-50 disabled:opacity-50">
+                <Trash2 className="h-4 w-4" /> Remove Image
+              </button>
+              <button type="button" onClick={() => servicesImageFileInputRef.current?.click()} disabled={isUploadingServicesImage || isSubmitting} className="inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border border-neutral-300 bg-white px-3.5 py-2 text-sm font-medium text-neutral-700 shadow-sm transition-colors hover:bg-neutral-50 disabled:opacity-50">
+                {isUploadingServicesImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                Replace Image
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => servicesImageFileInputRef.current?.click()} disabled={isUploadingServicesImage || isSubmitting} className="inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:opacity-50">
+              {isUploadingServicesImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              {isUploadingServicesImage ? "Uploading Image..." : "Upload Services Image"}
+            </button>
+          )}
+          <input ref={servicesImageFileInputRef} type="file" accept="image/*" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFileUpload(file, "servicesCenterImageUrl", "servicesCenterImagePublicId", setIsUploadingServicesImage); e.target.value = ""; }} disabled={isUploadingServicesImage || isSubmitting} className="sr-only" aria-label="Choose homepage services center image" />
+          <input type="hidden" {...register("servicesCenterImageUrl")} />
+          <input type="hidden" {...register("servicesCenterImagePublicId")} />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-neutral-700">
             Founder Name
@@ -1019,7 +1116,7 @@ export function ReraSettingsForm({
       <div className="pt-6 border-t border-neutral-200 flex justify-end">
         <button
           type="submit"
-          disabled={isSubmitting || isUploadingFounder || uploadingBhk !== null}
+          disabled={isSubmitting || isUploadingAbout || isUploadingServicesImage || isUploadingFounder || uploadingBhk !== null}
           className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-neutral-900 text-white font-medium text-sm rounded-md hover:bg-neutral-800 transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? "Saving RERA Settings..." : "Save RERA Settings"}

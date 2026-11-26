@@ -4,10 +4,14 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { v2 as cloudinary } from "cloudinary";
+import { z } from "zod";
 import {
   reraPropertySchema,
+  reraPropertyCategorySchema,
   type ReraPropertyInput,
+  type ReraPropertyCategoryInput,
 } from "./schema";
+import { collectSectionAssetPublicIds } from "@/lib/rera/property-sections/assets";
 
 cloudinary.config({
   cloud_name:
@@ -52,6 +56,11 @@ export async function createProperty(data: ReraPropertyInput): Promise<{ success
   }
 
   const propertyData = parsed.data;
+  const selectedCategory = await prisma.reraPropertyCategory.findFirst({
+    where: { id: propertyData.categoryId, isPublished: true },
+    select: { id: true },
+  });
+  if (!selectedCategory) return { success: false, error: "Select a published property category." };
   let baseSlug = propertyData.slug ? generateSlug(propertyData.slug) : generateSlug(propertyData.title);
   if (!baseSlug) baseSlug = `property-${Date.now()}`;
   let slug = baseSlug;
@@ -79,21 +88,16 @@ export async function createProperty(data: ReraPropertyInput): Promise<{ success
         return tx.reraProperty.create({
           data: {
             title: propertyData.title,
+            tagline: propertyData.tagline || null,
             slug,
+            categoryId: propertyData.categoryId,
             listingType: propertyData.listingType,
-            propertyType: propertyData.propertyType,
             bhkLabel: propertyData.bhkLabel || null,
-            priceLabel: propertyData.priceLabel,
-            priceAmount: propertyData.priceAmount ?? null,
-            carpetAreaSqFt: propertyData.carpetAreaSqFt ?? null,
-            builtUpAreaSqFt: propertyData.builtUpAreaSqFt ?? null,
-            furnishing: propertyData.furnishing || null,
             locality: propertyData.locality,
             city: propertyData.city || "Thane",
             projectName: propertyData.projectName || null,
             builderName: propertyData.builderName || null,
             projectReraNo: propertyData.projectReraNo || null,
-            possession: propertyData.possession || null,
             description: propertyData.description || null,
             coverImageUrl,
             coverImagePublicId,
@@ -102,7 +106,6 @@ export async function createProperty(data: ReraPropertyInput): Promise<{ success
             isPublished: propertyData.isPublished,
             sortOrder: propertyData.sortOrder,
             amenities: propertyData.amenities,
-            specifications: propertyData.specifications,
             images: {
               create: propertyData.images.map((img, idx) => ({
                 url: img.url,
@@ -144,6 +147,15 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
   }
 
   const propertyData = parsed.data;
+  const selectedCategory = await prisma.reraPropertyCategory.findFirst({
+    where: { id: propertyData.categoryId, isPublished: true },
+    select: { id: true },
+  });
+  const existingCategoryAssignment = selectedCategory ? null : await prisma.reraProperty.findFirst({
+    where: { id, categoryId: propertyData.categoryId },
+    select: { id: true },
+  });
+  if (!selectedCategory && !existingCategoryAssignment) return { success: false, error: "Select a published property category." };
   let baseSlug = propertyData.slug ? generateSlug(propertyData.slug) : generateSlug(propertyData.title);
   if (!baseSlug) baseSlug = `property-${Date.now()}`;
   let slug = baseSlug;
@@ -191,21 +203,16 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
           where: { id },
           data: {
             title: propertyData.title,
+            tagline: propertyData.tagline || null,
             slug,
+            categoryId: propertyData.categoryId,
             listingType: propertyData.listingType,
-            propertyType: propertyData.propertyType,
             bhkLabel: propertyData.bhkLabel || null,
-            priceLabel: propertyData.priceLabel,
-            priceAmount: propertyData.priceAmount ?? null,
-            carpetAreaSqFt: propertyData.carpetAreaSqFt ?? null,
-            builtUpAreaSqFt: propertyData.builtUpAreaSqFt ?? null,
-            furnishing: propertyData.furnishing || null,
             locality: propertyData.locality,
             city: propertyData.city || "Thane",
             projectName: propertyData.projectName || null,
             builderName: propertyData.builderName || null,
             projectReraNo: propertyData.projectReraNo || null,
-            possession: propertyData.possession || null,
             description: propertyData.description || null,
             coverImageUrl,
             coverImagePublicId,
@@ -214,7 +221,6 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
             isPublished: propertyData.isPublished,
             sortOrder: propertyData.sortOrder,
             amenities: propertyData.amenities,
-            specifications: propertyData.specifications,
             images: {
               create: propertyData.images.map((img, idx) => ({
                 url: img.url,
@@ -270,7 +276,7 @@ export async function deleteProperty(id: string): Promise<{ success: boolean; er
   try {
     const existing = await prisma.reraProperty.findUnique({
       where: { id },
-      include: { images: true },
+      include: { images: true, sections: { select: { data: true } } },
     });
 
     if (!existing) {
@@ -296,6 +302,10 @@ export async function deleteProperty(id: string): Promise<{ success: boolean; er
       if (img.publicId) {
         await destroyCloudinaryAsset(img.publicId, img.mediaType === "VIDEO" ? "video" : "image");
       }
+    }
+    const sectionAssetIds = new Set(existing.sections.flatMap((section) => collectSectionAssetPublicIds(section.data)));
+    for (const publicId of sectionAssetIds) {
+      await destroyCloudinaryAsset(publicId, "image");
     }
 
     revalidatePath("/rera", "layout");
@@ -371,6 +381,108 @@ export async function togglePropertyNewLaunch(id: string, isNewLaunch: boolean):
   } catch (error) {
     console.error("Failed to toggle new launch status:", error);
     return { success: false, error: "Failed to update new launch state." };
+  }
+}
+
+function revalidatePropertyCategories() {
+  revalidatePath("/rera/properties");
+  revalidatePath("/admin/rera/properties");
+}
+
+export async function createPropertyCategory(
+  input: ReraPropertyCategoryInput
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: "Unauthorized: Admin session required." };
+  const parsed = reraPropertyCategorySchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues.map((issue) => issue.message).join(", ") };
+
+  const duplicate = await prisma.reraPropertyCategory.findFirst({
+    where: { OR: [{ name: { equals: parsed.data.name, mode: "insensitive" } }, { slug: parsed.data.slug }] },
+    select: { id: true },
+  });
+  if (duplicate) return { success: false, error: "A category with this name or slug already exists." };
+
+  try {
+    const category = await prisma.reraPropertyCategory.create({ data: parsed.data });
+    revalidatePropertyCategories();
+    return { success: true, id: category.id };
+  } catch (error) {
+    console.error("Failed to create RERA property category:", error);
+    return { success: false, error: "Could not create category. Check that its name and slug are unique." };
+  }
+}
+
+export async function updatePropertyCategory(
+  id: string,
+  input: ReraPropertyCategoryInput
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: "Unauthorized: Admin session required." };
+  if (!z.string().min(1).safeParse(id).success) return { success: false, error: "Invalid category." };
+  const parsed = reraPropertyCategorySchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues.map((issue) => issue.message).join(", ") };
+
+  const existing = await prisma.reraPropertyCategory.findUnique({ where: { id }, select: { id: true } });
+  if (!existing) return { success: false, error: "Category not found." };
+  const duplicate = await prisma.reraPropertyCategory.findFirst({
+    where: {
+      id: { not: id },
+      OR: [{ name: { equals: parsed.data.name, mode: "insensitive" } }, { slug: parsed.data.slug }],
+    },
+    select: { id: true },
+  });
+  if (duplicate) return { success: false, error: "A category with this name or slug already exists." };
+
+  try {
+    await prisma.reraPropertyCategory.update({ where: { id }, data: parsed.data });
+    revalidatePropertyCategories();
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update RERA property category:", error);
+    return { success: false, error: "Could not update category. Check that its name and slug are unique." };
+  }
+}
+
+export async function togglePropertyCategoryPublished(
+  id: string,
+  isPublished: boolean
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: "Unauthorized: Admin session required." };
+  const parsed = z.object({ id: z.string().min(1), isPublished: z.boolean() }).safeParse({ id, isPublished });
+  if (!parsed.success) {
+    return { success: false, error: "Invalid category update." };
+  }
+  try {
+    await prisma.reraPropertyCategory.update({ where: { id: parsed.data.id }, data: { isPublished: parsed.data.isPublished } });
+    revalidatePropertyCategories();
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to publish RERA property category:", error);
+    return { success: false, error: "Could not update category publication." };
+  }
+}
+
+export async function deletePropertyCategory(id: string): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: "Unauthorized: Admin session required." };
+  if (!z.string().min(1).safeParse(id).success) return { success: false, error: "Invalid category." };
+  const category = await prisma.reraPropertyCategory.findUnique({
+    where: { id },
+    select: { id: true, _count: { select: { properties: true } } },
+  });
+  if (!category) return { success: false, error: "Category not found." };
+  if (category._count.properties > 0) {
+    return { success: false, error: `This category is assigned to ${category._count.properties} propert${category._count.properties === 1 ? "y" : "ies"}. Reassign them before deleting it.` };
+  }
+  try {
+    await prisma.reraPropertyCategory.delete({ where: { id } });
+    revalidatePropertyCategories();
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete RERA property category:", error);
+    return { success: false, error: "Could not delete category." };
   }
 }
 

@@ -1,23 +1,8 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Inter } from 'next/font/google';
 import { AppShell } from '@/components/rera/AppShell';
 import type { ReraShellProps, ReraBranchProps } from '@/types/rera';
 import prisma from '@/lib/prisma';
 import './rera.css';
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-  weight: ['400', '600', '700'],
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
 
 // ---------------------------------------------------------------------------
 // DB helpers — never throw; fall back to nulls so the layout never crashes.
@@ -135,7 +120,7 @@ export default async function ReraLayout({
 
   return (
     <div
-      className={`rera-root rera-blue-theme ${playfair.variable} ${inter.variable} min-h-screen flex flex-col bg-[#F8F5F1] text-[#1C1C1C]`}
+      className="rera-root rera-blue-theme min-h-screen flex flex-col bg-[#F8F5F1] text-[#1C1C1C]"
     >
       <AppShell shellProps={shellProps}>{children}</AppShell>
     </div>

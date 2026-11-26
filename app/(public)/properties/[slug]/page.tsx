@@ -6,7 +6,6 @@ import { PropertyEnquiryForm } from "../../_components/PropertyEnquiryForm";
 import { ReferencePageBanner } from "../../_components/ReferencePageBanner";
 
 type Props = { params: Promise<{ slug: string }> };
-type PropertySpecification = { label: string; value: string };
 
 export const revalidate = 60;
 
@@ -63,22 +62,6 @@ export default async function PropertyDetailPage({ params }: Props) {
     : property.coverImageUrl
       ? [{ id: "cover", url: property.coverImageUrl, altText: property.title }]
       : [];
-  const rawSpecs: unknown = property.specifications;
-  const specifications: PropertySpecification[] = Array.isArray(rawSpecs)
-    ? rawSpecs.flatMap((item): PropertySpecification[] => {
-        if (!item || typeof item !== "object") return [];
-        const record = item as Record<string, unknown>;
-        return typeof record.label === "string" && typeof record.value === "string"
-          ? [{ label: record.label, value: record.value }]
-          : [];
-      })
-    : rawSpecs && typeof rawSpecs === "object"
-      ? Object.entries(rawSpecs as Record<string, unknown>).flatMap(([label, value]) =>
-          typeof value === "string" || typeof value === "number"
-            ? [{ label, value: String(value) }]
-            : [],
-        )
-      : [];
 
   return (
     <>
@@ -121,12 +104,6 @@ export default async function PropertyDetailPage({ params }: Props) {
               <>
                 <h2>Features &amp; Amenities</h2>
                 <ul className="rs-amenities">{property.amenities.map((amenity) => <li key={amenity}>{amenity}</li>)}</ul>
-              </>
-            )}
-            {specifications.length > 0 && (
-              <>
-                <h2>Configurations &amp; Specifications</h2>
-                <dl className="rs-specifications">{specifications.map((spec, index) => <div key={`${spec.label}-${index}`}><dt>{spec.label}</dt><dd>{spec.value}</dd></div>)}</dl>
               </>
             )}
           </div>

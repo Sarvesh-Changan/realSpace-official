@@ -23,6 +23,12 @@
   color: #FFFFFF;
 }
 
+.rera-root nav[aria-label="Breadcrumb"] a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
 .rera-root .rera-partner-flip {
   perspective: 1000px;
 }

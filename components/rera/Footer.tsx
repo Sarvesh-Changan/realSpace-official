@@ -173,9 +173,9 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
                   {kind === 'address' ? (
                     <span className="whitespace-pre-line pt-0.5 leading-[1.65] text-white/70">{value}</span>
                   ) : kind === 'phone' ? (
-                    <a href={`tel:${value.replace(/[^+\d]/g, '')}`} className="pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
+                    <a href={`tel:${value.replace(/[^+\d]/g, '')}`} className="inline-flex min-h-11 items-center pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
                   ) : kind === 'email' ? (
-                    <a href={`mailto:${value}`} className="pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
+                    <a href={`mailto:${value}`} className="inline-flex min-h-11 items-center pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
                   ) : (
                     <span className="pt-2 text-white/85">{value}</span>
                   )}
@@ -192,7 +192,7 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
             © {new Date().getFullYear()} {brokerName}. All rights reserved.
           </span>
           {socials.length > 0 && <div className="flex flex-wrap items-center justify-center gap-3">
-            {socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="inline-flex rounded-full transition-transform duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C8A96A]">{social.icon}</a>)}
+            {socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C8A96A]">{social.icon}</a>)}
           </div>}
         </div>
 

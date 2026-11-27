@@ -112,7 +112,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
                 <React.Fragment key={link.label}>
                   <Link
                     href={link.href}
-                    className={`px-4 xl:px-5 py-2 text-xs font-semibold tracking-wider uppercase transition-colors whitespace-nowrap ${
+                    className={`inline-flex min-h-11 items-center px-4 xl:px-5 py-2 text-xs font-semibold tracking-wider uppercase transition-colors whitespace-nowrap ${
                       isActive
                         ? 'text-[#0088CC] font-bold'
                         : 'text-[#4A4A4A] hover:text-[#0088CC]'
@@ -185,7 +185,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
                     key={link.label}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`text-sm font-semibold tracking-wider uppercase py-2 border-b border-[#E8E2DA]/50 transition-colors ${
+                    className={`inline-flex min-h-11 items-center text-sm font-semibold tracking-wider uppercase py-2 border-b border-[#E8E2DA]/50 transition-colors ${
                       isActive ? 'text-[#0088CC]' : 'text-[#1C1C1C] hover:text-[#0088CC]'
                     }`}
                   >
@@ -208,7 +208,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
                   {phone && (
                     <a
                       href={`tel:${phoneClean}`}
-                      className="flex items-center gap-1.5 text-[#1C1C1C]"
+                      className="inline-flex min-h-11 items-center gap-1.5 text-[#1C1C1C]"
                     >
                       <Phone className="w-3.5 h-3.5 text-[#C8A96A]" />
                       Call Us
@@ -220,7 +220,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
                       href={`https://wa.me/${whatsapp}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-[#25D366] font-medium"
+                      className="inline-flex min-h-11 items-center gap-1.5 text-[#25D366] font-medium"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
                       WhatsApp Chat

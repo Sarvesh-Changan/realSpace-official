@@ -39,7 +39,7 @@ function LocationSelect({
 
   return (
     <div className="min-w-0">
-      <label htmlFor={id} className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66]">
+      <label htmlFor={id} className="mb-1.5 flex min-h-8 items-end text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66]">
         {label}{required ? ' *' : ''}
       </label>
       {customMode ? (
@@ -151,7 +151,7 @@ export function LocationCascade({
     : 'mt-1 block min-h-[44px] w-full rounded-md border border-neutral-300 px-3.5 py-2.5 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500';
 
   return (
-    <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-3">
       <LocationSelect
         key={`region-${region}`}
         id={`${variant}-region-${instanceId}`}

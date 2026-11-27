@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   X,
   Phone,
@@ -11,6 +11,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { submitReraEnquiry } from '@/app/rera/actions';
+import { DualOtpContactFields } from './DualOtpContactFields';
 import { LocationCascade } from './LocationCascade';
 import {
   ALL_CITIES_VALUE,
@@ -35,7 +36,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   onClose,
   defaultInterest = 'Property Site Visit & Valuation',
   propertySlug = '',
-  source = 'SITE_VISIT',
   phone = '',
   whatsapp = '',
   reraRegistrationNo,
@@ -43,6 +43,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
+  const [verificationChallengeId, setVerificationChallengeId] = useState('');
+  const [verification, setVerification] = useState({ phone: false, email: false });
   const [serviceInterest, setServiceInterest] = useState(defaultInterest);
   const [preferredRegion, setPreferredRegion] = useState('Mumbai Metropolitan Region (MMR)');
   const [preferredCity, setPreferredCity] = useState('Thane');
@@ -51,16 +53,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [customNotes, setCustomNotes] = useState('');
   const [honeypot, setHoneypot] = useState('');
 
-  useEffect(() => {
-    if (defaultInterest) {
-      setServiceInterest(defaultInterest);
-    }
-  }, [defaultInterest]);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -82,7 +87,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         locality: preferredLocationLabel,
         message: customNotes,
         propertySlug: propertySlug || undefined,
-        source: source || 'SITE_VISIT',
+        source: 'SITE_VISIT',
+        verificationChallengeId,
         details: {
           serviceInterest,
           preferredSlot,
@@ -121,9 +127,15 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={handleResetAndClose}
+    >
       <div
-        className="relative w-full max-w-lg bg-[#FFFFFF] border border-[#E8E2DA] shadow-2xl p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="consultation-modal-title"
+        className="relative max-h-dvh w-full max-w-lg overflow-y-auto border border-[#E8E2DA] bg-[#FFFFFF] px-6 py-3 shadow-2xl sm:px-8 sm:py-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -145,8 +157,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
             </h3>
             <p className="text-sm text-[#6D6A66] max-w-sm mx-auto mb-6 leading-relaxed">
               Thank you, <span className="font-semibold text-[#1C1C1C]">{fullName}</span>. Our
-              senior advisory desk has logged your site visit request and will reach out to you within
-              2 hours.
+              team has received your appointment request and will contact you to confirm a time. This
+              request is not a confirmed site visit.
             </p>
 
             <div className="p-4 bg-[#F8F5F1] border border-[#E8E2DA] mb-6 text-xs text-left text-[#6D6A66] space-y-1">
@@ -187,14 +199,14 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         ) : (
           <div>
             {/* Modal Header */}
-            <div className="mb-6">
+            <div className="mb-3">
               {reraRegistrationNo && (
                 <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#C8A96A] mb-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   MahaRERA Registered Broker — Reg. No. {reraRegistrationNo}
                 </div>
               )}
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
+              <h2 id="consultation-modal-title" className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
                 Schedule VIP Consultation
               </h2>
               <p className="text-xs text-[#6D6A66] mt-1">
@@ -204,7 +216,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
             {/* Quick Contact Bar */}
             {phone && (
-              <div className="flex items-center justify-between p-3 bg-[#F8F5F1] border border-[#E8E2DA] mb-6 text-xs">
+              <div className="flex items-center justify-between p-3 bg-[#F8F5F1] border border-[#E8E2DA] mb-3 text-xs">
                 <span className="text-[#6D6A66]">Immediate assistance?</span>
                 <div className="flex items-center gap-3">
                   <a
@@ -219,7 +231,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
             )}
 
             {/* Consultation Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {/* Honeypot field */}
               <div style={{ display: 'none' }} aria-hidden="true">
                 <label htmlFor="consult_hp_field">Do not fill this</label>
@@ -254,41 +266,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="+91 98XXX XXXXX"
-                    className={`w-full h-11 px-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
-                      fieldErrors.phone ? 'border-red-500' : 'border-[#E8E2DA]'
-                    }`}
-                  />
-                  {fieldErrors.phone && (
-                    <p className="text-[11px] text-red-600 mt-1">{fieldErrors.phone[0]}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={emailAddress}
-                    onChange={(e) => setEmailAddress(e.target.value)}
-                    placeholder="name@domain.com"
-                    className={`w-full h-11 px-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
-                      fieldErrors.email ? 'border-red-500' : 'border-[#E8E2DA]'
-                    }`}
-                  />
-                  {fieldErrors.email && (
-                    <p className="text-[11px] text-red-600 mt-1">{fieldErrors.email[0]}</p>
-                  )}
+                <div className="sm:col-span-2">
+                  <DualOtpContactFields formType="consultation" phone={phoneNumber} email={emailAddress} onPhoneChange={setPhoneNumber} onEmailChange={setEmailAddress} onChallengeIdChange={setVerificationChallengeId} onVerificationChange={setVerification} />
+                  {fieldErrors.phone && <p className="text-[11px] text-red-600 mt-1">{fieldErrors.phone[0]}</p>}
+                  {fieldErrors.email && <p className="text-[11px] text-red-600 mt-1">{fieldErrors.email[0]}</p>}
                 </div>
               </div>
 
@@ -385,7 +366,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               <div className="pt-2">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !verification.phone || !verification.email}
                   className="w-full py-3.5 bg-[#C8A96A] hover:bg-[#B78A47] disabled:opacity-60 text-[#1C1C1C] hover:text-white font-semibold text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (

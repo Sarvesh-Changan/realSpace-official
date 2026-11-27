@@ -31,6 +31,7 @@ export interface ReraPropertyDetailData {
   projectName: string | null;
   builderName: string | null;
   projectReraNo: string | null;
+  brochureUrl?: string | null;
   bhkLabel: string | null;
   amenities: string[];
   amenityImages: Array<{ amenity: string; url: string }>;
@@ -275,6 +276,17 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
 
           {/* Action CTAs */}
           <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-[#E8E2DA] pt-3">
+            {property.brochureUrl && (
+              <a
+                href={property.brochureUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="col-span-2 inline-flex items-center justify-center gap-2 border border-[#1C1C1C] px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:bg-[#1C1C1C] hover:text-white"
+              >
+                Download Brochure (PDF)
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            )}
             <button
               onClick={() => {
                 onClose();

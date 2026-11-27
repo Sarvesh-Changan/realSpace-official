@@ -63,7 +63,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const primaryButtonSlug = activeSlide?.slug?.trim();
 
   return (
-    <section className="relative h-[calc(100vh-7rem)] min-h-[580px] w-full overflow-hidden bg-[#1C1C1C] text-white supports-[height:100svh]:h-[calc(100svh-7rem)]">
+    <section className="relative h-[calc(100dvh-7rem)] min-h-[calc(100svh-7rem)] w-full overflow-hidden bg-[#1C1C1C] text-white">
       {/* Background image (neutral fallback when missing) */}
       <div className="absolute inset-0 z-0">
         {backgroundImage ? (

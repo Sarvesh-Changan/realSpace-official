@@ -62,6 +62,8 @@ export default async function EditReraPropertyPage({
     description: property.description ?? "",
     coverImageUrl: property.coverImageUrl ?? "",
     coverImagePublicId: property.coverImagePublicId ?? "",
+    brochureUrl: property.brochureUrl ?? "",
+    brochurePublicId: property.brochurePublicId ?? "",
     isFeatured: property.isFeatured,
     isNewLaunch: property.isNewLaunch,
     isPublished: property.isPublished,

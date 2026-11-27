@@ -83,7 +83,11 @@ export async function POST(request: Request) {
 
     let resourceType = "image";
     if (isVideoSupportedFolder) {
-      resourceType = body.resourceType === "video" ? "video" : "image";
+      resourceType = body.resourceType === "video"
+        ? "video"
+        : isReraPropertiesUpload && body.resourceType === "raw"
+          ? "raw"
+          : "image";
     }
 
     const signature = cloudinary.utils.api_sign_request(
@@ -101,7 +105,9 @@ export async function POST(request: Request) {
       allowedFormats: isVideoSupportedFolder
         ? resourceType === "video"
           ? ["mp4", "webm", "mov"]
-          : ["jpg", "jpeg", "png", "webp", "avif"]
+          : resourceType === "raw"
+            ? ["pdf"]
+            : ["jpg", "jpeg", "png", "webp", "avif"]
         : undefined,
       maxFileSize: isVideoSupportedFolder ? MAX_FILE_SIZE : undefined,
       cloudName:

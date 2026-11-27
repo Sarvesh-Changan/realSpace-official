@@ -55,9 +55,12 @@ export function PropertyForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingBrochure, setIsUploadingBrochure] = useState(false);
+  const brochureFileInputRef = useRef<HTMLInputElement>(null);
 
   const [amenityInput, setAmenityInput] = useState("");
   const [uploadingAmenity, setUploadingAmenity] = useState<string | null>(null);
+  const amenityFileInputRefs = useRef(new Map<string, HTMLInputElement>());
   const [locationRegion, setLocationRegion] = useState(() => getInitialReraRegion(initialData?.city ?? "Thane"));
   const [userEditedSlug, setUserEditedSlug] = useState(Boolean(initialData?.slug));
 
@@ -84,6 +87,8 @@ export function PropertyForm({
       description: "",
       coverImageUrl: "",
       coverImagePublicId: "",
+      brochureUrl: "",
+      brochurePublicId: "",
       isFeatured: false,
       isNewLaunch: false,
       isPublished: true,
@@ -95,6 +100,7 @@ export function PropertyForm({
   });
 
   const watchedCoverUrl = watch("coverImageUrl");
+  const watchedBrochureUrl = watch("brochureUrl");
   const watchedCity = watch("city") || "";
   const watchedLocality = watch("locality") || "";
   const watchedAmenities = watch("amenities") || [];
@@ -171,7 +177,11 @@ export function PropertyForm({
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok) throw new Error(uploadData.error?.message || "Amenity image upload failed.");
 
-      setAmenityImage(amenity, uploadData.secure_url || uploadData.url, uploadData.public_id || null);
+      const imageUrl = uploadData.secure_url || uploadData.url;
+      if (typeof imageUrl !== "string" || !imageUrl) {
+        throw new Error("The image service did not return an image URL.");
+      }
+      setAmenityImage(amenity, imageUrl, uploadData.public_id || null);
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "Failed to upload amenity image.");
     } finally {
@@ -236,6 +246,57 @@ export function PropertyForm({
     } finally {
       setIsUploadingCover(false);
       e.target.value = "";
+    }
+  };
+
+  const handleBrochureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      setServerError("Please choose a PDF brochure.");
+      event.target.value = "";
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      setServerError("Brochures must be 25MB or smaller.");
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploadingBrochure(true);
+    setServerError(null);
+    try {
+      const signResponse = await fetch("/api/cloudinary/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Cloudinary handles ordinary PDFs as image assets. Raw PDF delivery
+        // is restricted by default on free product environments.
+        body: JSON.stringify({ folder: "rera-properties", resourceType: "image" }),
+      });
+      const signData = await signResponse.json().catch(() => ({}));
+      if (!signResponse.ok) throw new Error(signData.error || "Failed to prepare brochure upload.");
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", signData.apiKey || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "");
+      formData.append("timestamp", String(signData.timestamp));
+      formData.append("signature", signData.signature);
+      formData.append("folder", signData.folder || "rera-properties");
+      const cloudName = signData.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
+      const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      const uploaded = await uploadResponse.json().catch(() => ({}));
+      if (!uploadResponse.ok) throw new Error(uploaded.error?.message || "Brochure upload failed.");
+
+      setValue("brochureUrl", uploaded.secure_url || uploaded.url, { shouldDirty: true });
+      setValue("brochurePublicId", uploaded.public_id || "", { shouldDirty: true });
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : "Brochure upload failed.");
+    } finally {
+      setIsUploadingBrochure(false);
+      event.target.value = "";
     }
   };
 
@@ -512,7 +573,11 @@ export function PropertyForm({
                   <div key={amenity} className="flex min-w-0 items-center gap-3 rounded border border-neutral-200 p-2.5">
                     <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded border border-neutral-200 bg-neutral-50">
                       {amenityImage?.url ? (
-                        <Image src={amenityImage.url} alt={`${amenity} illustration`} fill sizes="56px" className="object-contain p-1" unoptimized={!amenityImage.url.includes("res.cloudinary.com")} />
+                        // These URLs come from a user-selected custom upload or
+                        // a preset. Render the small admin preview directly so
+                        // an image optimizer failure cannot take down the form.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={amenityImage.url} alt={`${amenity} illustration`} className="h-full w-full object-contain p-1" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-[10px] text-neutral-400">No image</div>
                       )}
@@ -532,20 +597,31 @@ export function PropertyForm({
                             <option key={preset.url} value={preset.url}>{preset.label}</option>
                           ))}
                         </select>
-                        <label className={`inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-neutral-700 hover:text-neutral-950 ${isSubmitting || isUploading ? "pointer-events-none opacity-50" : ""}`}>
+                        <button
+                          type="button"
+                          onClick={() => amenityFileInputRefs.current.get(amenity)?.click()}
+                          disabled={isSubmitting || Boolean(uploadingAmenity)}
+                          className="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-neutral-700 hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
                           {isUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
                           {isUploading ? "Uploading…" : "Upload custom"}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            disabled={isSubmitting || Boolean(uploadingAmenity)}
-                            className="sr-only"
-                            onChange={(event) => {
-                              const file = event.target.files?.[0];
-                              if (file) void handleAmenityImageUpload(amenity, file, event.currentTarget);
-                            }}
-                          />
-                        </label>
+                        </button>
+                        <input
+                          ref={(node) => {
+                            if (node) amenityFileInputRefs.current.set(amenity, node);
+                            else amenityFileInputRefs.current.delete(amenity);
+                          }}
+                          type="file"
+                          accept="image/*"
+                          disabled={isSubmitting || Boolean(uploadingAmenity)}
+                          className="hidden"
+                          aria-label={`Upload custom image for ${amenity}`}
+                          onChange={(event) => {
+                            const input = event.currentTarget;
+                            const file = input.files?.[0];
+                            if (file) void handleAmenityImageUpload(amenity, file, input);
+                          }}
+                        />
                         {amenityImage && (
                           <button type="button" disabled={isSubmitting || isUploading} onClick={() => setAmenityImage(amenity, "")} className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50">
                             Remove
@@ -624,6 +700,30 @@ export function PropertyForm({
         )}
         <input type="hidden" {...register("coverImageUrl")} />
         <input type="hidden" {...register("coverImagePublicId")} />
+      </div>
+
+      {/* Optional property brochure PDF */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-neutral-900 border-b border-neutral-200 pb-2">Property Brochure (PDF)</h2>
+        <p className="text-xs text-neutral-500">Upload an optional PDF brochure. It will appear on the public property detail page.</p>
+        {watchedBrochureUrl ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3">
+            <a href={watchedBrochureUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-blue-700 underline">Preview current brochure</a>
+            <button type="button" disabled={isSubmitting || isUploadingBrochure} onClick={() => { setValue("brochureUrl", "", { shouldDirty: true }); setValue("brochurePublicId", "", { shouldDirty: true }); }} className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-700 disabled:opacity-50">
+              <Trash2 className="h-3.5 w-3.5" /> Remove brochure
+            </button>
+            <button type="button" disabled={isSubmitting || isUploadingBrochure} onClick={() => brochureFileInputRef.current?.click()} className="inline-flex items-center gap-1.5 rounded border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-neutral-700 disabled:opacity-50">
+              {isUploadingBrochure ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}{isUploadingBrochure ? "Uploading..." : "Replace PDF"}
+            </button>
+          </div>
+        ) : (
+          <button type="button" disabled={isSubmitting || isUploadingBrochure} onClick={() => brochureFileInputRef.current?.click()} className="inline-flex min-h-[42px] items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50">
+            {isUploadingBrochure ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}{isUploadingBrochure ? "Uploading PDF..." : "Upload brochure PDF"}
+          </button>
+        )}
+        <input ref={brochureFileInputRef} type="file" accept="application/pdf,.pdf" onChange={handleBrochureUpload} disabled={isUploadingBrochure || isSubmitting} className="sr-only" aria-label="Choose property brochure PDF" />
+        <input type="hidden" {...register("brochureUrl")} />
+        <input type="hidden" {...register("brochurePublicId")} />
       </div>
 
       <section className="space-y-3 rounded-lg border border-neutral-200 p-4">

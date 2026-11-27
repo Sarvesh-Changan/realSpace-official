@@ -37,6 +37,8 @@ export const reraPropertySchema = z.object({
   description: z.string().trim().max(10000).optional().or(z.literal("")),
   coverImageUrl: z.string().trim().nullable().optional().or(z.literal("")),
   coverImagePublicId: z.string().trim().nullable().optional().or(z.literal("")),
+  brochureUrl: z.string().trim().nullable().optional().or(z.literal("")),
+  brochurePublicId: z.string().trim().nullable().optional().or(z.literal("")),
   isFeatured: z.boolean(),
   isNewLaunch: z.boolean(),
   isPublished: z.boolean(),

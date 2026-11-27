@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { sendReraEnquiryNotification } from '@/lib/email';
+import { sendReraEnquiryAcknowledgement, sendReraEnquiryNotification } from '@/lib/email';
 import { sendReraWhatsAppNotification } from '@/lib/whatsapp';
 import { ReraInterest, ReraEnquirySource, Prisma } from '@prisma/client';
 
@@ -55,6 +55,7 @@ const reraEnquirySchema = z.object({
     .default('CONTACT_FORM'),
   details: z.record(z.string(), z.string().max(500)).optional(),
   honeypot: z.string().optional(),
+  verificationChallengeId: z.string().uuid().optional(),
 });
 
 export type SubmitReraEnquiryInput = z.infer<typeof reraEnquirySchema>;
@@ -110,6 +111,32 @@ export async function submitReraEnquiry(
       return { success: true };
     }
 
+    const requiresDualVerification = data.source === 'CONTACT_FORM' || data.source === 'SITE_VISIT';
+    if (requiresDualVerification) {
+      const email = data.email?.trim().toLowerCase() || '';
+      const phoneDigits = data.phone.replace(/\D/g, '');
+      const normalizedPhone = phoneDigits.length === 10 ? `91${phoneDigits}` : phoneDigits;
+      if (!email || !data.verificationChallengeId) {
+        return { success: false, error: 'Verify your phone number and email before submitting.' };
+      }
+      const now = new Date();
+      const challenge = await prisma.reraVerificationChallenge.findUnique({ where: { id: data.verificationChallengeId } });
+      const expectedForm = data.source === 'CONTACT_FORM' ? 'contact' : 'consultation';
+      if (!challenge || challenge.formType !== expectedForm || challenge.phone !== normalizedPhone || challenge.email !== email ||
+        !challenge.phoneVerifiedAt || !challenge.emailVerifiedAt || challenge.expiresAt <= now || challenge.consumedAt) {
+        return { success: false, error: 'Phone and email verification is required for the current contact details.' };
+      }
+      const consumed = await prisma.reraVerificationChallenge.updateMany({
+        where: {
+          id: challenge.id, formType: expectedForm, phone: normalizedPhone, email,
+          phoneVerifiedAt: { not: null }, emailVerifiedAt: { not: null },
+          expiresAt: { gt: now }, consumedAt: null,
+        },
+        data: { consumedAt: now },
+      });
+      if (consumed.count !== 1) return { success: false, error: 'This verification session has already been used or expired. Please verify again.' };
+    }
+
     // 4. Link property by slug if valid and published (ignore unknown slugs)
     let propertyId: string | null = null;
     let linkedPropertyTitle: string | null = null;
@@ -161,6 +188,14 @@ export async function submitReraEnquiry(
     } catch {
       // Intentionally omit personal data when logging
       console.error('Failed to dispatch RERA notification email');
+    }
+
+    if (requiresDualVerification && data.email) {
+      try {
+        await sendReraEnquiryAcknowledgement(data.email.trim().toLowerCase(), enquiry.name, data.source === 'SITE_VISIT');
+      } catch {
+        console.error('Failed to dispatch RERA customer acknowledgement email');
+      }
     }
 
     // The WhatsApp recipient is managed in RERA admin settings. A failed or

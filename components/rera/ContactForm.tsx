@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, MessageCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { submitReraEnquiry } from '@/app/rera/actions';
+import { DualOtpContactFields } from './DualOtpContactFields';
 import { LocationCascade } from './LocationCascade';
 import { cityMatchesLocation, formatReraEnquiryLocation } from '@/lib/rera/locations';
 
@@ -24,6 +25,8 @@ export function ContactForm({
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [verificationChallengeId, setVerificationChallengeId] = useState('');
+  const [verification, setVerification] = useState({ phone: false, email: false });
   const [service, setService] = useState(initialService);
   const [region, setRegion] = useState('');
   const [city, setCity] = useState('');
@@ -60,7 +63,8 @@ export function ContactForm({
         budgetLabel: budget,
         message,
         propertySlug: initialPropertySlug || undefined,
-        source: initialPropertySlug ? 'PROPERTY_ENQUIRY' : 'CONTACT_FORM',
+        source: 'CONTACT_FORM',
+        verificationChallengeId,
         details: {
           serviceRequired: service,
           preferredRegion: region,
@@ -162,7 +166,7 @@ export function ContactForm({
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
               Full Name *
@@ -182,46 +186,16 @@ export function ContactForm({
             )}
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-              Mobile Phone Number *
-            </label>
-            <input
-              type="tel"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+91 98XXX XXXXX"
-              className={`w-full h-11 px-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
-                fieldErrors.phone ? 'border-red-500' : 'border-[#E8E2DA]'
-              }`}
-            />
-            {fieldErrors.phone && (
-              <p className="text-[11px] text-red-600 mt-1">{fieldErrors.phone[0]}</p>
-            )}
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@domain.com"
-              className={`w-full h-11 px-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
-                fieldErrors.email ? 'border-red-500' : 'border-[#E8E2DA]'
-              }`}
-            />
-            {fieldErrors.email && (
-              <p className="text-[11px] text-red-600 mt-1">{fieldErrors.email[0]}</p>
-            )}
-          </div>
+        <div>
+            <DualOtpContactFields formType="contact" phone={phone} email={email} onPhoneChange={setPhone} onEmailChange={setEmail} onChallengeIdChange={setVerificationChallengeId} onVerificationChange={setVerification} />
+            {fieldErrors.phone && <p className="text-[11px] text-red-600 mt-1">{fieldErrors.phone[0]}</p>}
+            {fieldErrors.email && <p className="text-[11px] text-red-600 mt-1">{fieldErrors.email[0]}</p>}
+        </div>
 
-          <div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="min-w-0">
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
               Service (optional)
             </label>
@@ -234,33 +208,7 @@ export function ContactForm({
               {services.map((title) => <option key={title} value={title}>{title}</option>)}
             </select>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="sm:col-span-2">
-            <LocationCascade
-              variant="filter"
-              region={region}
-              city={city}
-              locality={locality}
-              onRegionChange={(nextRegion) => {
-                setRegion(nextRegion);
-                setCity('');
-                setLocality('');
-              }}
-              onCityChange={(nextCity) => {
-                setCity(nextCity);
-                setLocality('');
-              }}
-              onLocalityChange={setLocality}
-              additionalLocalities={propertyLocations
-                .filter((propertyLocation) => cityMatchesLocation(propertyLocation.city, city))
-                .map((propertyLocation) => propertyLocation.locality)}
-              localityLabel="Locality (optional)"
-            />
-          </div>
-
-          <div>
+          <div className="min-w-0">
             <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
               Budget (optional)
             </label>
@@ -274,6 +222,27 @@ export function ContactForm({
             />
           </div>
         </div>
+
+        <LocationCascade
+          variant="filter"
+          region={region}
+          city={city}
+          locality={locality}
+          onRegionChange={(nextRegion) => {
+            setRegion(nextRegion);
+            setCity('');
+            setLocality('');
+          }}
+          onCityChange={(nextCity) => {
+            setCity(nextCity);
+            setLocality('');
+          }}
+          onLocalityChange={setLocality}
+          additionalLocalities={propertyLocations
+            .filter((propertyLocation) => cityMatchesLocation(propertyLocation.city, city))
+            .map((propertyLocation) => propertyLocation.locality)}
+          localityLabel="Locality (optional)"
+        />
 
         <div>
           <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
@@ -304,7 +273,7 @@ export function ContactForm({
         <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !verification.phone || !verification.email}
             style={{ backgroundColor: '#1769AA', color: '#FFFFFF' }}
             className="w-full sm:flex-1 py-4 disabled:opacity-60 disabled:cursor-not-allowed font-semibold text-xs uppercase tracking-wider transition-[filter,opacity,scale] hover:brightness-90 flex items-center justify-center gap-2 shadow-sm"
           >

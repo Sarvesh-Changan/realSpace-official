@@ -26,7 +26,7 @@ cloudinary.config({
 
 async function destroyCloudinaryAsset(
   publicId: string | null | undefined,
-  resourceType: "image" | "video" = "image"
+  resourceType: "image" | "video" | "raw" = "image"
 ) {
   if (!publicId || publicId.startsWith("temp-") || publicId.startsWith("img-")) return;
   try {
@@ -102,6 +102,8 @@ export async function createProperty(data: ReraPropertyInput): Promise<{ success
             description: propertyData.description || null,
             coverImageUrl,
             coverImagePublicId,
+            brochureUrl: propertyData.brochureUrl || null,
+            brochurePublicId: propertyData.brochurePublicId || null,
             isFeatured: propertyData.isFeatured,
             isNewLaunch: propertyData.isNewLaunch,
             isPublished: propertyData.isPublished,
@@ -218,6 +220,8 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
             description: propertyData.description || null,
             coverImageUrl,
             coverImagePublicId,
+            brochureUrl: propertyData.brochureUrl || null,
+            brochurePublicId: propertyData.brochurePublicId || null,
             isFeatured: propertyData.isFeatured,
             isNewLaunch: propertyData.isNewLaunch,
             isPublished: propertyData.isPublished,
@@ -245,6 +249,7 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
     // 3. Clean up removed Cloudinary assets asynchronously
     const newPublicIds = new Set<string>();
     if (coverImagePublicId) newPublicIds.add(coverImagePublicId);
+    if (propertyData.brochurePublicId) newPublicIds.add(propertyData.brochurePublicId);
     propertyData.images.forEach((img) => {
       if (img.publicId) newPublicIds.add(img.publicId);
     });
@@ -254,6 +259,9 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
 
     if (existingProperty.coverImagePublicId && !newPublicIds.has(existingProperty.coverImagePublicId)) {
       await destroyCloudinaryAsset(existingProperty.coverImagePublicId, "image");
+    }
+    if (existingProperty.brochurePublicId && !newPublicIds.has(existingProperty.brochurePublicId)) {
+      await destroyCloudinaryAsset(existingProperty.brochurePublicId, "raw");
     }
 
     for (const oldImg of existingProperty.images) {
@@ -308,6 +316,9 @@ export async function deleteProperty(id: string): Promise<{ success: boolean; er
     // Clean up all Cloudinary assets
     if (existing.coverImagePublicId) {
       await destroyCloudinaryAsset(existing.coverImagePublicId, "image");
+    }
+    if (existing.brochurePublicId) {
+      await destroyCloudinaryAsset(existing.brochurePublicId, "raw");
     }
     for (const img of existing.images) {
       if (img.publicId) {

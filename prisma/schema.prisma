@@ -604,6 +604,8 @@ model ReraProperty {
   description        String?               @db.Text
   coverImageUrl      String?
   coverImagePublicId String?
+  brochureUrl        String?
+  brochurePublicId   String?
   isFeatured         Boolean               @default(false)
   isPublished        Boolean               @default(true)
   sortOrder          Int                   @default(0)
@@ -708,6 +710,39 @@ model ReraEnquiry {
 
   @@index([status])
   @@index([createdAt])
+}
+
+// Short-lived challenge state for dual-verified RERA form submissions.
+model ReraVerificationChallenge {
+  id                String   @id
+  formType          String
+  phone             String   @default("")
+  email             String   @default("")
+  phoneAttemptId    String?
+  phoneVerifiedAt   DateTime?
+  emailOtpHash      String?
+  emailOtpExpiresAt DateTime?
+  emailAttempts     Int      @default(0)
+  emailLastSentAt   DateTime?
+  emailVerifiedAt   DateTime?
+  expiresAt         DateTime
+  consumedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([phone, email])
+}
+
+// Stores only HMACed IP/destination identifiers for durable OTP rate limiting.
+model ReraVerificationRateLimit {
+  keyHash         String
+  channel         String
+  count           Int      @default(0)
+  windowStartedAt DateTime
+
+  @@id([keyHash, channel])
+  @@index([windowStartedAt])
 }
 
 model ReraTestimonial {

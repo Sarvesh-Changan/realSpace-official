@@ -74,6 +74,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     projectName: p.projectName ?? null,
     builderName: p.builderName ?? null,
     projectReraNo: p.projectReraNo ?? null,
+    brochureUrl: p.brochureUrl ?? null,
     bhkLabel: p.bhkLabel ?? null,
     amenities: p.amenities ?? [],
     amenityImages: parseReraPropertyAmenityImages(p.amenityImages),

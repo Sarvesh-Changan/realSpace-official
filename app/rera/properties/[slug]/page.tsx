@@ -7,6 +7,7 @@ import {
   MapPin,
   ShieldCheck,
   ChevronLeft,
+  Download,
 } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import prisma from '@/lib/prisma';
@@ -215,6 +216,17 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
                 </span>
               )}
             </div>
+
+            {property.brochureUrl && (
+              <a
+                href={property.brochureUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 bg-[#1C1C1C] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-[#C8A96A] hover:text-[#1C1C1C]"
+              >
+                <Download className="h-4 w-4" /> Download Brochure (PDF)
+              </a>
+            )}
 
               {validSections.map((section, index) => (
                 <div

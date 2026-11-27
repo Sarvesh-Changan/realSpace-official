@@ -12,6 +12,36 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
+function getReraTransporter() {
+  const host = process.env.REALSPACE_SMTP_HOST || 'smtp.gmail.com';
+  const port = Number(process.env.REALSPACE_SMTP_PORT || 465);
+  const user = process.env.REALSPACE_SMTP_USER || process.env.GMAIL_USER;
+  const pass = process.env.REALSPACE_SMTP_APP_PASSWORD || process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass || !Number.isFinite(port)) throw new Error('REALSPACE RERA SMTP is not configured');
+  return nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } });
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] || char);
+}
+
+export async function sendReraVerificationOtp(email: string, code: string) {
+  const transport = getReraTransporter();
+  const user = process.env.REALSPACE_SMTP_USER!;
+  const html = `<!doctype html><html><body style="margin:0;background:#f4f6f9;font-family:Arial,sans-serif;color:#172b4d"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 12px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-top:5px solid #142a50"><tr><td style="padding:30px"><div style="font-size:22px;font-weight:700;letter-spacing:2px;color:#142a50">REALSPACE</div><p style="font-size:15px;line-height:1.6">Use this code to verify your email address for your REALSPACE RERA enquiry.</p><div style="margin:24px 0;padding:16px;text-align:center;background:#f4f6f9;font-size:32px;font-weight:700;letter-spacing:8px;color:#142a50">${code}</div><p style="font-size:13px;line-height:1.6">This code expires in 5 minutes. For your security, never share it with anyone. If you did not request this code, you can ignore this email.</p></td></tr></table></td></tr></table></body></html>`;
+  await transport.sendMail({ from: `REALSPACE RERA <${user}>`, to: email, subject: 'Verify your REALSPACE email address', text: `Your REALSPACE verification code is ${code}. It expires in 5 minutes. Never share this code.`, html });
+  return { success: true as const };
+}
+
+export async function sendReraEnquiryAcknowledgement(email: string, name: string, appointment = false) {
+  const transport = getReraTransporter();
+  const user = process.env.REALSPACE_SMTP_USER!;
+  const title = appointment ? 'Appointment request received' : 'Enquiry received';
+  const html = `<!doctype html><html><body style="margin:0;background:#f4f6f9;font-family:Arial,sans-serif;color:#172b4d"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 12px"><tr><td align="center"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#fff;border-top:5px solid #142a50"><tr><td style="padding:30px"><div style="font-size:22px;font-weight:700;letter-spacing:2px;color:#142a50">REALSPACE</div><h1 style="font-size:22px">${title}</h1><p style="font-size:15px;line-height:1.6">Hello ${escapeHtml(name)},<br>Thank you for contacting REALSPACE. Our team has received your ${appointment ? 'appointment' : 'enquiry'} request and will contact you to follow up. ${appointment ? 'This request is not a confirmed site visit; our team will confirm a time with you.' : ''}</p><p style="font-size:13px;color:#667085">REALSPACE RERA Advisory</p></td></tr></table></td></tr></table></body></html>`;
+  await transport.sendMail({ from: `REALSPACE RERA <${user}>`, to: email, subject: `REALSPACE: ${title}`, text: `Hello ${name}, thank you for contacting REALSPACE. We received your ${appointment ? 'appointment request' : 'enquiry'} and our team will follow up.${appointment ? ' This is a request, not a confirmed site visit.' : ''}`, html });
+  return { success: true as const };
+}
+
 /**
  * Sends a notification email to admins when a new lead is submitted.
  * Fetches the admin recipient email from SiteSettings, with RESEND_TO_EMAIL override option.
@@ -34,7 +64,7 @@ export async function sendLeadNotification(
       };
     }
 
-    const selections = (lead.selections as Record<string, any>) || {};
+    const selections = (lead.selections as Record<string, unknown>) || {};
 
     const roomType = selections.bhkType || "Not specified";
 
@@ -191,11 +221,10 @@ Budget: ${enquiry.budgetLabel || "Not specified"}
 ${enquiry.message ? `\nMessage:\n${enquiry.message}\n` : ""}${detailsText}
 `;
 
-    const fromAddress = process.env.GMAIL_USER
-      ? `REALSPACE RERA <${process.env.GMAIL_USER}>`
-      : "REALSPACE RERA <noreply@gmail.com>";
+    const reraTransporter = getReraTransporter();
+    const fromAddress = `REALSPACE RERA <${process.env.REALSPACE_SMTP_USER}>`;
 
-    await transporter.sendMail({
+    await reraTransporter.sendMail({
       from: fromAddress,
       to: adminEmail,
       subject: `New RERA Enquiry [${enquiry.source}]: ${enquiry.name}`,

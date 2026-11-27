@@ -3,10 +3,10 @@
 import { useEffect, type ReactNode } from 'react';
 
 const entranceOffsets = [
-  'translate3d(0, 76px, 0) scale(0.96)',
-  'translate3d(0, -76px, 0) scale(0.96)',
-  'translate3d(-48px, 0, 0) scale(0.96)',
-  'translate3d(48px, 0, 0) scale(0.96)',
+  'translate3d(0, 32px, 0)',
+  'translate3d(0, -32px, 0)',
+  'translate3d(0, 32px, 0)',
+  'translate3d(0, -32px, 0)',
 ];
 
 /** Adds one-time, directional reveal motion to the RERA page sections. */
@@ -23,8 +23,8 @@ export default function ReraHomeMotion({ children }: { children: ReactNode }) {
       section.style.visibility = 'hidden';
       Array.from(section.children).forEach((child, index) => {
         if (!(child instanceof HTMLElement)) return;
-        child.style.opacity = '0.35';
-        child.style.transform = `translate3d(${index === 0 ? '-60px' : '60px'}, 0, 0) scale(0.97)`;
+        child.style.opacity = '1';
+        child.style.transform = 'translate3d(0, 16px, 0)';
         child.style.transition = 'opacity 950ms cubic-bezier(0.22, 1, 0.36, 1), transform 950ms cubic-bezier(0.22, 1, 0.36, 1)';
         child.style.transitionDelay = `${index * 140}ms`;
         child.style.willChange = 'opacity, transform';
@@ -32,7 +32,7 @@ export default function ReraHomeMotion({ children }: { children: ReactNode }) {
     });
 
     sections.forEach((section, index) => {
-      section.style.opacity = '0.4';
+      section.style.opacity = '1';
       section.style.transform = entranceOffsets[index % entranceOffsets.length];
       section.style.transition = 'opacity 850ms cubic-bezier(0.22, 1, 0.36, 1), transform 850ms cubic-bezier(0.22, 1, 0.36, 1)';
       section.style.transitionDelay = `${(index % 3) * 80}ms`;
@@ -79,15 +79,15 @@ export default function ReraHomeMotion({ children }: { children: ReactNode }) {
       previousScrollY = currentScrollY;
     };
     const hide = (section: HTMLElement) => {
-      section.style.opacity = section.hasAttribute('data-rera-home-motion-panels') ? '0' : '0.4';
+      section.style.opacity = section.hasAttribute('data-rera-home-motion-panels') ? '0' : '1';
       section.style.transform = entranceOffsets[sections.indexOf(section) % entranceOffsets.length];
       section.style.willChange = 'opacity, transform';
       if (section.hasAttribute('data-rera-home-motion-panels')) {
         section.style.visibility = 'hidden';
         Array.from(section.children).forEach((child, index) => {
           if (!(child instanceof HTMLElement)) return;
-          child.style.opacity = '0.35';
-          child.style.transform = `translate3d(${index === 0 ? '-60px' : '60px'}, 0, 0) scale(0.97)`;
+          child.style.opacity = '1';
+          child.style.transform = 'translate3d(0, 16px, 0)';
           child.style.willChange = 'opacity, transform';
         });
       }

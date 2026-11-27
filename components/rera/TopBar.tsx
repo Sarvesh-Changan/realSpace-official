@@ -42,22 +42,12 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
       {/* Upper Trust & Compliance Ribbon */}
       <div className="bg-[#1C1C1C] text-[#EEE6DD] text-xs py-2 px-4 sm:px-8 border-b border-[#333333]">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          {/* Left: MahaRERA Registration (only when reraRegistrationNo is non-empty) */}
-          <div className="ml-auto flex items-center gap-3 text-xs tracking-wide">
-            {shellProps.reraRegistrationNo && (
-              <span className="flex items-center gap-1.5 text-[#C8A96A] font-medium">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                MahaRERA Reg. No. {shellProps.reraRegistrationNo}
-              </span>
-            )}
-          </div>
-
           {/* Right: Instant Phone & WhatsApp Direct Contacts */}
           <div className="flex items-center gap-4 text-xs">
             {phone && (
               <a
                 href={`tel:${phoneClean}`}
-                className="flex items-center gap-1 text-[#EEE6DD] hover:text-[#C8A96A] transition-colors whitespace-nowrap"
+                className="flex min-w-0 items-center gap-1 break-words text-[#EEE6DD] hover:text-[#C8A96A] transition-colors"
               >
                 <Phone className="w-3 h-3 text-[#C8A96A]" />
                 <span className="hidden md:inline">Call us:</span> {phone}
@@ -69,7 +59,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
                 href={`https://wa.me/${whatsapp}?text=Hello%2C%20I%20would%20like%20to%20inquire%20about%20properties%20in%20Thane.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[#25D366] hover:text-[#20ba5a] transition-colors whitespace-nowrap font-medium"
+                className="flex min-w-0 items-center gap-1 break-words text-[#25D366] hover:text-[#20ba5a] transition-colors font-medium"
               >
                 <MessageCircle className="w-3 h-3" />
                 <span>WhatsApp</span>
@@ -93,19 +83,19 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
 
       {/* Main Top Navigation Header */}
       <header className="sticky top-0 z-40 bg-[#FFFFFF]/98 backdrop-blur-md border-b border-[#E8E2DA] transition-all shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto min-w-0 px-4 sm:px-8 py-2 flex items-center justify-between gap-2 sm:gap-4">
           {/* Zone 1: Brand Wordmark */}
           <Link
             href={reraPath('/')}
             aria-label="REALSPACE RERA home"
-            className="flex items-center whitespace-nowrap shrink-0 focus:outline-none"
+            className="flex min-w-0 items-center whitespace-nowrap shrink-0 focus:outline-none"
           >
             <Image
               src="/arnav/images/logo/rera-logo.png"
               alt="REALSPACE logo"
               width={220}
               height={36}
-              className="h-auto w-[160px] sm:w-[200px] object-contain"
+              className="h-10 w-[132px] object-contain sm:w-[172px] lg:w-[184px]"
             />
           </Link>
 
@@ -142,18 +132,33 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
           </nav>
 
           {/* Zone 3: Primary Action & Mobile Hamburger */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="ml-auto flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
             <button
               onClick={handleOpenModal}
-              className="realspace-cta hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider whitespace-nowrap shrink-0"
+              className="realspace-cta rera-visit-full shrink-0 px-4 text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
             >
               <span>Schedule Visit</span>
             </button>
 
+            <button
+              onClick={handleOpenModal}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center bg-[#0D2253] px-2 text-[10px] font-semibold uppercase tracking-wide text-white min-[480px]:hidden"
+              aria-label="Schedule Visit"
+            >
+              Visit
+            </button>
+
+            {shellProps.reraRegistrationNo && (
+              <span className="hidden xl:flex items-center gap-1.5 text-xs tracking-wide text-[#1C1C1C] whitespace-nowrap">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0088CC]" />
+                MahaRERA Reg. No. {shellProps.reraRegistrationNo}
+              </span>
+            )}
+
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-[#1C1C1C] hover:text-[#0088CC] focus:outline-none"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[#1C1C1C] hover:text-[#0088CC] focus:outline-none lg:hidden"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -163,7 +168,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-[#E8E2DA] px-6 py-6 animate-in slide-in-from-top duration-200 shadow-xl">
+          <div className="max-h-[calc(100dvh-4rem)] w-full overflow-y-auto overscroll-contain bg-white border-b border-[#E8E2DA] px-6 py-6 animate-in slide-in-from-top duration-200 shadow-xl lg:hidden">
             <div className="flex flex-col gap-4">
               <div className="text-xs font-semibold text-[#6D6A66] uppercase tracking-wider mb-1">
                 Navigation
@@ -195,7 +200,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
                     setMobileMenuOpen(false);
                     handleOpenModal();
                   }}
-                  className="w-full py-3 text-center text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] bg-[#C8A96A] hover:bg-[#B78A47] hover:text-white transition-colors"
+                  className="min-h-11 w-full py-3 text-center text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] bg-[#C8A96A] hover:bg-[#B78A47] hover:text-white transition-colors"
                 >
                   Schedule Site Visit &amp; Consultation
                 </button>

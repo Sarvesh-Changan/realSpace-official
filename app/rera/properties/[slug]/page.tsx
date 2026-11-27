@@ -127,16 +127,16 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
     <div className="w-full bg-[#F8F5F1]">
       {/* Top Breadcrumb Navigation */}
       <div className="bg-white border-b border-[#E8E2DA] py-3.5 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
+        <div className="mx-auto flex max-w-7xl min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
           <Link
             href={reraPath('/properties')}
-            className="inline-flex items-center gap-1.5 text-[#6D6A66] hover:text-[#0088CC] font-semibold transition-colors uppercase tracking-wider"
+            className="inline-flex min-w-0 items-center gap-1.5 text-[#6D6A66] hover:text-[#0088CC] font-semibold transition-colors uppercase tracking-wider"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Back to All Properties</span>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#1C1C1C] text-[#C8A96A]">
               {property.locality}
             </span>
@@ -174,7 +174,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className={property.description ? "lg:col-span-8" : "lg:col-span-12"}>
+            <div className={`min-w-0 ${property.description ? "lg:col-span-8" : "lg:col-span-12"}`}>
               <PropertyImageGallery
                 media={mediaList}
                 propertyTitle={property.title}
@@ -182,7 +182,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
               />
             </div>
             {property.description && (
-              <aside className="lg:col-span-4 flex items-center justify-center border border-[#E8E2DA] bg-white p-6 sm:p-8">
+              <aside className="min-w-0 lg:col-span-4 flex items-center justify-center border border-[#E8E2DA] bg-white p-6 sm:p-8">
                 <div className="w-full text-center">
                   <h2 className="font-heading text-lg sm:text-xl font-bold uppercase text-[#1C1C1C]">
                     {property.title} Overview

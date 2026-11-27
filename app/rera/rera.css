@@ -12,6 +12,8 @@
   background-color: #FFFFFF;
   color: #172B45;
   font-family: var(--font-open-sans), Roboto, Arial, sans-serif;
+  overflow-x: clip;
+  overflow-wrap: anywhere;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -54,12 +56,16 @@
 .rera-root .realspace-cta {
   display: inline-flex;
   align-items: center;
-  gap: 0 !important;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  min-width: 44px;
   min-height: 44px;
   padding-block: 0 !important;
   padding-left: 24px !important;
   padding-right: 0 !important;
   overflow: hidden;
+  overflow-wrap: anywhere;
   border: 2px solid #0d2253;
   background: #ffffff;
   color: #0d2253 !important;
@@ -73,13 +79,23 @@
   align-self: stretch;
   flex: 0 0 40px;
   place-items: center;
-  margin-left: 8px;
+  margin-left: 0;
   background: #0d2253;
   color: #ffffff;
   font-size: 18px;
   line-height: 1;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%);
   transition: background-color 180ms ease;
+}
+
+.rera-root .rera-visit-full {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .rera-root .rera-visit-full {
+    display: inline-flex;
+  }
 }
 
 .rera-root .realspace-cta:hover {
@@ -178,7 +194,7 @@
 }
 
 @keyframes rera-loan-partner-marquee {
-  from { transform: translateX(100vw); }
+  from { transform: translateX(100%); }
   to { transform: translateX(-100%); }
 }
 

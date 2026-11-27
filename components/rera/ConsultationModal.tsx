@@ -128,20 +128,20 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/75 px-2 py-[5dvh] backdrop-blur-sm animate-in fade-in duration-200 sm:items-center sm:px-4"
       onClick={handleResetAndClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="consultation-modal-title"
-        className="relative max-h-dvh w-full max-w-lg overflow-y-auto border border-[#E8E2DA] bg-[#FFFFFF] px-6 py-3 shadow-2xl sm:px-8 sm:py-4"
+        className="relative max-h-[90dvh] w-full max-w-lg overflow-y-auto overscroll-contain border border-[#E8E2DA] bg-[#FFFFFF] px-4 py-3 shadow-2xl sm:px-8 sm:py-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={handleResetAndClose}
-          className="absolute top-4 right-4 p-2 text-[#6D6A66] hover:text-[#1C1C1C] transition-colors"
+          className="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center text-[#6D6A66] transition-colors hover:text-[#1C1C1C] sm:right-4 sm:top-4"
           aria-label="Close Modal"
         >
           <X className="w-5 h-5" />
@@ -199,14 +199,14 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         ) : (
           <div>
             {/* Modal Header */}
-            <div className="mb-3">
+            <div className="mb-3 pr-12 sm:pr-14">
               {reraRegistrationNo && (
                 <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#C8A96A] mb-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   MahaRERA Registered Broker — Reg. No. {reraRegistrationNo}
                 </div>
               )}
-              <h2 id="consultation-modal-title" className="font-heading text-2xl sm:text-3xl font-bold text-[#1C1C1C]">
+              <h2 id="consultation-modal-title" className="break-words font-heading text-lg font-bold leading-snug text-[#1C1C1C] sm:text-3xl">
                 Schedule VIP Consultation
               </h2>
               <p className="text-xs text-[#6D6A66] mt-1">
@@ -363,11 +363,11 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 </div>
               )}
 
-              <div className="pt-2">
+              <div className="sticky bottom-0 -mx-4 border-t border-[#E8E2DA] bg-white px-4 pb-1 pt-3 sm:-mx-8 sm:px-8">
                 <button
                   type="submit"
                   disabled={isSubmitting || !verification.phone || !verification.email}
-                  className="w-full py-3.5 bg-[#C8A96A] hover:bg-[#B78A47] disabled:opacity-60 text-[#1C1C1C] hover:text-white font-semibold text-xs uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2"
+                  className="flex min-h-11 w-full items-center justify-center gap-2 bg-[#C8A96A] py-3.5 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] shadow-md transition-colors hover:bg-[#B78A47] hover:text-white disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <>

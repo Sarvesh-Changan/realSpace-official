@@ -167,7 +167,7 @@ export default async function ServicesPage() {
                   )}
 
                   <div className="mt-6 border-t border-[#EEE9E2] pt-4">
-                    <div className="flex flex-col gap-2 sm:flex-row">
+                    <div className="flex flex-col gap-3 sm:flex-row">
                       {detailHref && (
                         <Link
                           href={detailHref}
@@ -200,7 +200,7 @@ export default async function ServicesPage() {
       </section>
 
       {loanPartnerLogos.length > 0 && (
-        <section aria-label="Home loan partners" className="relative isolate left-1/2 mb-10 w-screen -translate-x-1/2 overflow-hidden bg-[#102A56] py-5 sm:mb-14 sm:py-6">
+        <section aria-label="Home loan partners" className="relative isolate mb-10 w-full overflow-hidden bg-[#102A56] py-5 sm:mb-14 sm:py-6">
           <Image src="/arnav/images/accommodation/accommodation-bg.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover" />
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[#102A56]/85" />
           <h2 className="relative mb-4 text-center font-heading text-sm font-semibold uppercase tracking-[0.18em] text-white sm:text-base">Home Loan Partners</h2>

@@ -315,7 +315,7 @@ export default async function HomePage() {
               {settings?.welcomeTitle?.trim() || 'Welcome to REALSPACE'}
             </h2>
             <div aria-hidden="true" className="mx-auto mb-8 h-[2px] w-36 bg-[#D8D4CE]" />
-            <div className="space-y-4 text-justify text-sm leading-7 text-[#555B63] sm:text-base">
+            <div className="mx-auto max-w-prose space-y-4 text-left text-sm leading-7 text-[#555B63] sm:text-base md:text-justify">
               {settings?.welcomeBody?.split(/\n\s*\n/).map((para, idx) => <p key={`welcome-${idx}`}>{para.trim()}</p>)}
               <p>Owners of residential, commercial, or office space in Thane can contact REALSPACE about selling, renting, or leasing their property. We help owners explore suitable options and connect with prospective buyers or tenants based on the property details and their requirements.</p>
             </div>
@@ -353,7 +353,7 @@ export default async function HomePage() {
                 const Icon = getServiceIcon(service.iconKey);
                 return <article key={service.id} className="flex items-start justify-between gap-5 text-left lg:flex-row-reverse lg:text-right">
                   <Link href={reraPath(`/services/${service.slug}`)} aria-label={`Go to ${service.title}`} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2] transition-colors hover:bg-[#36A8D2] hover:text-white"><Icon className="h-6 w-6" /></Link>
-                  <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{service.title}</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">{service.description}</p></div>
+                  <div className="min-w-0"><h3 className="break-words font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{service.title}</h3><p className="mt-3 max-w-prose text-left text-sm leading-6 text-[#625D57] md:text-justify">{service.description}</p></div>
                 </article>;
               })}
             </div>
@@ -365,18 +365,18 @@ export default async function HomePage() {
                 const Icon = getServiceIcon(service.iconKey);
                 return <article key={service.id} className="flex items-start gap-5 text-left">
                   <Link href={reraPath(`/services/${service.slug}`)} aria-label={`Go to ${service.title}`} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2] transition-colors hover:bg-[#36A8D2] hover:text-white"><Icon className="h-6 w-6" /></Link>
-                  <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{service.title}</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">{service.description}</p></div>
+                  <div className="min-w-0"><h3 className="break-words font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{service.title}</h3><p className="mt-3 max-w-prose text-left text-sm leading-6 text-[#625D57] md:text-justify">{service.description}</p></div>
                 </article>;
               })}
               {loanService ? (() => {
                 const Icon = getServiceIcon(loanService.iconKey);
                 return <article className="flex items-start gap-5 text-left">
                   <Link href={reraPath(`/services/${loanService.slug}`)} aria-label={`Go to ${loanService.title}`} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2] transition-colors hover:bg-[#36A8D2] hover:text-white"><Icon className="h-6 w-6" /></Link>
-                  <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{loanService.title}</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">{loanService.description}</p></div>
+                  <div className="min-w-0"><h3 className="break-words font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">{loanService.title}</h3><p className="mt-3 max-w-prose text-left text-sm leading-6 text-[#625D57] md:text-justify">{loanService.description}</p></div>
                 </article>;
               })() : <article className="flex items-start gap-5 text-left">
                 <span aria-hidden="true" className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-[#36A8D2] text-[#36A8D2]"><ShieldCheck className="h-6 w-6" /></span>
-                <div><h3 className="font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">Our Commitment</h3><p className="mt-3 text-justify text-sm leading-6 text-[#625D57]">We provide clear, attentive guidance at every step, with a focus on your requirements, transparent communication, and dependable support.</p></div>
+                <div className="min-w-0"><h3 className="break-words font-heading text-base font-semibold uppercase tracking-wide text-[#1C1C1C]">Our Commitment</h3><p className="mt-3 max-w-prose text-left text-sm leading-6 text-[#625D57] md:text-justify">We provide clear, attentive guidance at every step, with a focus on your requirements, transparent communication, and dependable support.</p></div>
               </article>}
             </div>
           </div>

@@ -242,7 +242,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
       </section>
 
       {/* 02. Interactive Search & Filter Console (Ported QuickSearchFilter) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-6 relative z-20">
+      <section className="relative z-20 mx-auto mt-4 max-w-7xl px-4 sm:-mt-6 sm:px-8">
         <div className="inline-flex max-w-full flex-col items-start gap-3">
           <button
             type="button"

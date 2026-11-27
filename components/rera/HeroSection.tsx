@@ -86,12 +86,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/65 via-black/35 to-black/5"
       />
       {hasSlideshow && (
-        <div className="absolute inset-x-3 top-1/2 z-20 flex -translate-y-1/2 justify-between sm:inset-x-6">
+        <div className="absolute right-4 top-4 z-20 flex items-center gap-2 sm:right-6 sm:top-6">
           <button
             type="button"
             onClick={showPreviousSlide}
             aria-label="Previous hero image"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-black/35 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-12 sm:w-12"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-black/35 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-12 sm:w-12"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -99,7 +99,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             type="button"
             onClick={showNextSlide}
             aria-label="Next hero image"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-black/35 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-12 sm:w-12"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-black/35 text-white backdrop-blur-sm transition hover:scale-105 hover:bg-black/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:h-12 sm:w-12"
           >
             <ChevronRight className="h-6 w-6" />
           </button>

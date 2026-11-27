@@ -89,7 +89,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
           style={{ width: `${sliderPosition}%` }}
           className="absolute inset-y-0 left-0 overflow-hidden z-20"
         >
-          <div className="relative w-full h-full" style={{ width: '100vw', maxWidth: '896px' }}>
+          <div className="relative h-full w-full max-w-[896px]">
             <Image
               src={beforeImage}
               alt="Raw Bare Shell Handover"

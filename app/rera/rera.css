@@ -201,21 +201,28 @@
 }
 
 @keyframes rera-loan-partner-marquee {
-  from { transform: translateX(100%); }
-  to { transform: translateX(-100%); }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 .rera-root .rera-loan-partner-track {
-  animation: rera-loan-partner-marquee 14s linear infinite;
-}
-
-.rera-root .rera-loan-partner-track:hover {
-  animation-play-state: paused;
+  animation: rera-loan-partner-marquee 24s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rera-root .rera-loan-partner-track {
     animation: none;
+    width: 100%;
+  }
+
+  .rera-root .rera-loan-partner-track > ul:first-child {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .rera-root .rera-loan-partner-track > ul:last-child {
+    display: none;
   }
 }
 

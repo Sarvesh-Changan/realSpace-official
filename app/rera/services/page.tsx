@@ -204,15 +204,21 @@ export default async function ServicesPage() {
           <Image src="/arnav/images/accommodation/accommodation-bg.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover" />
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[#102A56]/85" />
           <h2 className="relative mb-4 text-center font-heading text-sm font-semibold uppercase tracking-[0.18em] text-white sm:text-base">Home Loan Partners</h2>
-          <ul className="relative mx-auto grid w-full max-w-5xl grid-cols-2 items-center justify-items-center gap-4 px-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4">
-            {loanPartnerLogos.map((logo, index) => (
-              <li key={`${logo.url}-${index}`} className="flex w-full items-center justify-center">
-                <span className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white/90 bg-white p-2 shadow-lg sm:h-24 sm:w-24">
-                  <Image src={logo.url} alt={index < loanPartnerLogos.length ? logo.alt : ''} width={160} height={100} unoptimized className="max-h-full max-w-full object-contain" />
-                </span>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-hidden">
+            <div className="rera-loan-partner-track relative z-10 flex w-max items-center">
+              {[false, true].map((isDuplicate) => (
+                <ul key={String(isDuplicate)} aria-hidden={isDuplicate || undefined} className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3">
+                  {loanPartnerLogos.map((logo, index) => (
+                    <li key={`${logo.url}-${index}`} className="flex w-28 shrink-0 items-center justify-center sm:w-32">
+                      <span className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white/90 bg-white p-2 shadow-lg sm:h-24 sm:w-24">
+                        <Image src={logo.url} alt={isDuplicate ? '' : logo.alt} width={160} height={100} unoptimized className="max-h-full max-w-full object-contain" />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ))}
+            </div>
+          </div>
         </section>
       )}
 

@@ -3,6 +3,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { createPortal } from 'react-dom';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, SlidersHorizontal, X } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
@@ -66,7 +67,16 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   const [selectedBhk, setSelectedBhk] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [activeBannerImage, setActiveBannerImage] = useState(bannerImageUrl || FALLBACK_BANNER_IMAGE);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const updateViewport = () => setIsMobileViewport(media.matches);
+    updateViewport();
+    media.addEventListener('change', updateViewport);
+    return () => media.removeEventListener('change', updateViewport);
+  }, []);
 
   useEffect(() => {
     if (!filtersOpen) return;
@@ -209,6 +219,37 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
     setSearchQuery('');
   };
 
+  const filterControls = (
+    <>
+      <div className="mb-3 flex items-center justify-between md:hidden">
+        <h2 className="font-heading text-lg font-semibold text-[#1C1C1C]">Filters</h2>
+        <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E2DA] text-[#1C1C1C]"><X className="h-5 w-5" /></button>
+      </div>
+      <QuickSearchFilter
+        transactionType={transactionType}
+        onTransactionChange={setTransactionType}
+        region={selectedRegion}
+        onRegionChange={selectRegion}
+        city={selectedCity}
+        onCityChange={selectCity}
+        locality={selectedLocality}
+        onLocalityChange={selectLocality}
+        bhk={selectedBhk}
+        onBhkChange={setSelectedBhk}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        distinctLocalities={selectedCity === ALL_CITIES_VALUE
+          ? []
+          : Array.from(new Set(initialProperties.filter((property) => cityMatchesLocation(property.city, selectedCity)).map((property) => property.locality).filter(Boolean)))}
+        distinctBhkLabels={distinctBhkLabels}
+        totalResultsCount={filteredListings.length}
+        phone={phone}
+        onReset={handleResetFilters}
+      />
+      <button type="button" onClick={() => setFiltersOpen(false)} className="mt-4 min-h-11 w-full bg-[#1C1C1C] px-5 py-3 text-sm font-semibold text-white md:hidden">Apply Filters ({filteredListings.length})</button>
+    </>
+  );
+
   const activeFilterCount = [
     transactionType !== 'all',
     selectedCategory !== 'all',
@@ -266,41 +307,23 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
               </span>
             )}
           </button>
-          {filtersOpen && (
-            <>
-            <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="fixed inset-0 z-40 bg-black/45 md:hidden" />
-            <div id="rera-property-filters" className="fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] min-w-0 overflow-y-auto rounded-t-2xl bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl md:static md:max-h-none md:w-full md:min-w-[min(100%,720px)] md:overflow-visible md:rounded-none md:bg-transparent md:p-0 md:shadow-none">
-              <div className="mb-3 flex items-center justify-between md:hidden">
-                <h2 className="font-heading text-lg font-semibold text-[#1C1C1C]">Filters</h2>
-                <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E2DA] text-[#1C1C1C]"><X className="h-5 w-5" /></button>
-              </div>
-              <QuickSearchFilter
-                transactionType={transactionType}
-                onTransactionChange={setTransactionType}
-                region={selectedRegion}
-                onRegionChange={selectRegion}
-                city={selectedCity}
-                onCityChange={selectCity}
-                locality={selectedLocality}
-                onLocalityChange={selectLocality}
-                bhk={selectedBhk}
-                onBhkChange={setSelectedBhk}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                distinctLocalities={selectedCity === ALL_CITIES_VALUE
-                  ? []
-                  : Array.from(new Set(initialProperties.filter((property) => cityMatchesLocation(property.city, selectedCity)).map((property) => property.locality).filter(Boolean)))}
-                distinctBhkLabels={distinctBhkLabels}
-                totalResultsCount={filteredListings.length}
-                phone={phone}
-                onReset={handleResetFilters}
-              />
-              <button type="button" onClick={() => setFiltersOpen(false)} className="mt-4 min-h-11 w-full bg-[#1C1C1C] px-5 py-3 text-sm font-semibold text-white md:hidden">Apply Filters ({filteredListings.length})</button>
+          {filtersOpen && !isMobileViewport && (
+            <div id="rera-property-filters" className="w-full min-w-0 md:min-w-[min(100%,720px)]">
+              {filterControls}
             </div>
-            </>
           )}
         </div>
       </section>
+
+      {filtersOpen && isMobileViewport && typeof document !== 'undefined' && createPortal(
+        <>
+          <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="fixed inset-0 z-40 bg-black/45" />
+          <div id="rera-property-filters" className="fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] min-w-0 overflow-y-auto rounded-t-2xl bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl">
+            {filterControls}
+          </div>
+        </>,
+        document.body
+      )}
 
       {categories.length > 0 && (
         <nav aria-label="Filter properties by category" className="max-w-7xl mx-auto flex gap-2 overflow-x-auto px-4 pt-8 sm:px-8">

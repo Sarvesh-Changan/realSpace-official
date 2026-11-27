@@ -9,13 +9,13 @@ export function InfoCardsSection({ data, title }: { data: InfoCardsData; title?:
         {data.cards.map((card, index) => (
           <article key={`${card.title}-${index}`} className="flex flex-col overflow-hidden border border-[#E8E2DA] bg-white">
             <div className="flex-1 p-5 text-center">
-              <h3 className="whitespace-pre-line font-heading text-center text-lg font-bold text-[#1C1C1C]">{card.title}</h3>
+              <h3 className="break-words whitespace-pre-line font-heading text-center text-lg font-bold text-[#1C1C1C]">{card.title}</h3>
               {card.lines.length > 0 && (
                 <ul className="mt-4 list-none space-y-2 text-center text-sm leading-relaxed text-[#444444]">
-                  {card.lines.map((line, lineIndex) => <li key={lineIndex} className="whitespace-pre-line">{line}</li>)}
+                  {card.lines.map((line, lineIndex) => <li key={lineIndex} className="break-words whitespace-pre-line">{line}</li>)}
                 </ul>
               )}
-              {card.body && <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-[#6D6A66]">{card.body}</p>}
+              {card.body && <p className="mt-4 break-words whitespace-pre-line text-sm leading-relaxed text-[#6D6A66]">{card.body}</p>}
             </div>
             {card.image && (
               <div className="relative aspect-[16/9] w-full bg-[#EEE6DD]">

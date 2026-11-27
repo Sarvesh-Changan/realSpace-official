@@ -16,6 +16,8 @@ import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 import { SectionRenderer } from '@/components/rera/property-sections/SectionRenderer';
 import { reraPropertySectionSchema } from '@/lib/rera/property-sections/schemas';
 import { parseReraPropertyAmenityImages } from '@/lib/rera/property-amenity-images';
+import { PropertyBookingCard } from '@/components/rera/PropertyBookingCard';
+import { PropertyMobileActions } from '@/components/rera/PropertyMobileActions';
 
 interface PropertyPageProps {
   params: Promise<{
@@ -124,7 +126,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
 
   return (
     <ReraHomeMotion>
-    <div className="w-full bg-[#F8F5F1]">
+    <div className="w-full bg-[#F8F5F1] pb-20 md:pb-0">
       {/* Top Breadcrumb Navigation */}
       <div className="bg-white border-b border-[#E8E2DA] py-3.5 px-4 sm:px-8">
         <div className="mx-auto flex max-w-7xl min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
@@ -277,9 +279,14 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
                 </div>
               )}
             </div>
+          <section id="rera-property-enquiry" aria-labelledby="rera-property-enquiry-title" className="mt-8 scroll-mt-24">
+            <h2 id="rera-property-enquiry-title" className="mb-4 font-heading text-xl font-bold text-[#1C1C1C]">Schedule a Visit or Enquire</h2>
+            <PropertyBookingCard propertySlug={property.slug} propertyTitle={property.title} />
+          </section>
         </div>
       </section>
     </div>
+    <PropertyMobileActions />
     </ReraHomeMotion>
   );
 }

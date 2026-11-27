@@ -4,7 +4,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowRight, SlidersHorizontal } from 'lucide-react';
+import { ArrowRight, SlidersHorizontal, X } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
 import {
   ALL_CITIES_VALUE,
@@ -67,6 +67,13 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [activeBannerImage, setActiveBannerImage] = useState(bannerImageUrl || FALLBACK_BANNER_IMAGE);
+
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [filtersOpen]);
 
   useEffect(() => {
     const queryCategory = searchParams.get('category') || '';
@@ -260,7 +267,13 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
             )}
           </button>
           {filtersOpen && (
-            <div id="rera-property-filters" className="w-full min-w-0 sm:min-w-[min(100%,720px)]">
+            <>
+            <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="fixed inset-0 z-40 bg-black/45 md:hidden" />
+            <div id="rera-property-filters" className="fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] min-w-0 overflow-y-auto rounded-t-2xl bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl md:static md:max-h-none md:w-full md:min-w-[min(100%,720px)] md:overflow-visible md:rounded-none md:bg-transparent md:p-0 md:shadow-none">
+              <div className="mb-3 flex items-center justify-between md:hidden">
+                <h2 className="font-heading text-lg font-semibold text-[#1C1C1C]">Filters</h2>
+                <button type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E2DA] text-[#1C1C1C]"><X className="h-5 w-5" /></button>
+              </div>
               <QuickSearchFilter
                 transactionType={transactionType}
                 onTransactionChange={setTransactionType}
@@ -282,16 +295,18 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                 phone={phone}
                 onReset={handleResetFilters}
               />
+              <button type="button" onClick={() => setFiltersOpen(false)} className="mt-4 min-h-11 w-full bg-[#1C1C1C] px-5 py-3 text-sm font-semibold text-white md:hidden">Apply Filters ({filteredListings.length})</button>
             </div>
+            </>
           )}
         </div>
       </section>
 
       {categories.length > 0 && (
-        <nav aria-label="Filter properties by category" className="max-w-7xl mx-auto flex flex-wrap gap-2 px-4 pt-8 sm:px-8">
-          <button type="button" onClick={() => selectCategory('all')} aria-pressed={selectedCategory === 'all'} className={`min-h-10 border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${selectedCategory === 'all' ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white' : 'border-[#E8E2DA] bg-white text-[#6D6A66] hover:border-[#C8A96A]'}`}>All</button>
+        <nav aria-label="Filter properties by category" className="max-w-7xl mx-auto flex gap-2 overflow-x-auto px-4 pt-8 sm:px-8">
+          <button type="button" onClick={() => selectCategory('all')} aria-pressed={selectedCategory === 'all'} className={`min-h-11 shrink-0 border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${selectedCategory === 'all' ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white' : 'border-[#E8E2DA] bg-white text-[#6D6A66] hover:border-[#C8A96A]'}`}>All</button>
           {categories.map((category) => (
-            <button key={category.id} type="button" onClick={() => selectCategory(category.slug)} aria-pressed={selectedCategory === category.slug} className={`min-h-10 border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${selectedCategory === category.slug ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white' : 'border-[#E8E2DA] bg-white text-[#6D6A66] hover:border-[#C8A96A]'}`}>
+            <button key={category.id} type="button" onClick={() => selectCategory(category.slug)} aria-pressed={selectedCategory === category.slug} className={`min-h-11 shrink-0 border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${selectedCategory === category.slug ? 'border-[#1C1C1C] bg-[#1C1C1C] text-white' : 'border-[#E8E2DA] bg-white text-[#6D6A66] hover:border-[#C8A96A]'}`}>
               {category.name}
             </button>
           ))}
@@ -375,7 +390,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                 <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
                   <div className="flex flex-1 flex-col items-center">
                     <Link href={`${reraPath('/properties')}/${property.slug}`}>
-                      <h3 className="font-heading text-lg font-bold uppercase text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
+                      <h3 className="line-clamp-3 break-words font-heading text-lg font-bold uppercase text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
                         {property.title}
                       </h3>
                     </Link>

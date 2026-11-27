@@ -16,9 +16,9 @@ export function UnitTypesSection({ data, title }: { data: UnitTypesData; title?:
             <div className="border border-[#E8E2DA] bg-white p-5 text-center">
               <h3 className="whitespace-pre-line font-heading text-lg font-bold text-[#1C1C1C]">{unit.title}</h3>
               {unit.fields.length > 0 && <dl className="mt-4 divide-y divide-[#E8E2DA]">
-                {unit.fields.map((field, fieldIndex) => <div key={`${field.label}-${fieldIndex}`} className="flex flex-col items-center gap-1 py-2 text-center text-sm sm:flex-row sm:justify-center sm:gap-3">
-                  <dt className="whitespace-pre-line font-semibold text-[#6D6A66]">{field.label}</dt>
-                  <dd className="whitespace-pre-line text-[#1C1C1C]">{field.value}</dd>
+                {unit.fields.map((field, fieldIndex) => <div key={`${field.label}-${fieldIndex}`} className="flex min-w-0 flex-col items-start gap-1 py-2 text-left text-sm sm:flex-row sm:justify-between sm:gap-3">
+                  <dt className="min-w-0 break-words whitespace-pre-line font-semibold text-[#6D6A66]">{field.label}</dt>
+                  <dd className="min-w-0 break-words whitespace-pre-line text-[#1C1C1C]">{field.value}</dd>
                 </div>)}
               </dl>}
             </div>

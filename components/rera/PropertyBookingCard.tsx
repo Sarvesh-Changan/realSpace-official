@@ -166,7 +166,7 @@ export function PropertyBookingCard({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sunil Mehta"
-                className={`w-full h-10 px-3 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
+                className={`w-full h-11 px-3 bg-[#F8F5F1] border text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
                   fieldErrors.name ? 'border-red-500' : 'border-[#E8E2DA]'
                 }`}
               />
@@ -185,7 +185,7 @@ export function PropertyBookingCard({
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="+91 98XXX XXXXX"
-                className={`w-full h-10 px-3 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
+                className={`w-full h-11 px-3 bg-[#F8F5F1] border text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
                   fieldErrors.phone ? 'border-red-500' : 'border-[#E8E2DA]'
                 }`}
               />
@@ -203,7 +203,7 @@ export function PropertyBookingCard({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@domain.com"
-                className={`w-full h-10 px-3 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
+                className={`w-full h-11 px-3 bg-[#F8F5F1] border text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
                   fieldErrors.email ? 'border-red-500' : 'border-[#E8E2DA]'
                 }`}
               />
@@ -220,7 +220,7 @@ export function PropertyBookingCard({
                 <select
                   value={preferredSlot}
                   onChange={(e) => setPreferredSlot(e.target.value)}
-                  className="w-full h-10 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
+                  className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
                 >
                   <option value="Morning (10:00 AM - 01:00 PM)">
                     Morning (10:00 AM - 01:00 PM)

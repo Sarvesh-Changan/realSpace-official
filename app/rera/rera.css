@@ -26,6 +26,7 @@
 .rera-root nav[aria-label="Breadcrumb"] a {
   display: inline-flex;
   min-height: 44px;
+  min-width: 44px;
   align-items: center;
 }
 

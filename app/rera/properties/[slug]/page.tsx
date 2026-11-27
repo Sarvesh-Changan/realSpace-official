@@ -132,7 +132,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
         <div className="mx-auto flex max-w-7xl min-w-0 flex-wrap items-center justify-between gap-2 text-xs">
           <Link
             href={reraPath('/properties')}
-            className="inline-flex min-w-0 items-center gap-1.5 text-[#6D6A66] hover:text-[#0088CC] font-semibold transition-colors uppercase tracking-wider"
+            className="inline-flex min-h-11 min-w-0 items-center gap-1.5 text-[#6D6A66] hover:text-[#0088CC] font-semibold transition-colors uppercase tracking-wider"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Back to All Properties</span>

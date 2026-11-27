@@ -412,7 +412,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                 {/* Card Body */}
                 <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
                   <div className="flex flex-1 flex-col items-center">
-                    <Link href={`${reraPath('/properties')}/${property.slug}`}>
+                    <Link href={`${reraPath('/properties')}/${property.slug}`} className="inline-flex min-h-11 items-center justify-center">
                       <h3 className="line-clamp-3 break-words font-heading text-lg font-bold uppercase text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
                         {property.title}
                       </h3>
@@ -428,7 +428,7 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
                   <div className="pt-5">
                     <Link
                       href={`${reraPath('/properties')}/${property.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:text-[#1769AA]"
+                      className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:text-[#1769AA]"
                     >
                       Know More <ArrowRight className="h-4 w-4 text-[#36A8D2]" />
                     </Link>

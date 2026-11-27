@@ -146,7 +146,7 @@ export default async function ServicesPage() {
                   </div>
 
                   <h3 className="font-heading text-xl font-semibold leading-snug transition-colors group-hover:text-[#990000] sm:text-2xl">
-                    {detailHref ? <Link href={detailHref} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000]">{service.title}</Link> : service.title}
+                    {detailHref ? <Link href={detailHref} className="inline-flex min-h-11 items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#990000]">{service.title}</Link> : service.title}
                   </h3>
                   <p className="mt-3 flex-1 break-words text-sm leading-6 text-[#625D57]">
                     {service.description}

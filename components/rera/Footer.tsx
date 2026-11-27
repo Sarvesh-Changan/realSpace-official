@@ -107,7 +107,7 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
 
           {/* Col 1 — Logo */}
           <div className="flex flex-col items-start gap-4">
-            <Link href={reraPath('/')} aria-label={brokerName}>
+            <Link href={reraPath('/')} aria-label={brokerName} className="inline-flex min-h-11 items-center">
               <Image
                 src="/arnav/images/logo/rera-logo.png"
                 alt={`${brokerName} RERA logo`}
@@ -136,7 +136,7 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="text-sm text-white/75 hover:text-white transition-colors"
+                  className="inline-flex min-h-11 items-center text-sm text-white/75 hover:text-white transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -145,7 +145,7 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="text-sm text-white/75 hover:text-white transition-colors"
+                  className="inline-flex min-h-11 items-center text-sm text-white/75 hover:text-white transition-colors"
                 >
                   {link.label}
                 </Link>

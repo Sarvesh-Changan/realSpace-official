@@ -345,7 +345,7 @@ export default async function HomePage() {
             <div aria-hidden="true" className="relative h-px w-32 bg-[#D5DCE5]">
               <span className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D5DCE5] bg-white" />
             </div>
-            <Link href={reraPath('/services')} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#1769AA] sm:absolute sm:right-0 sm:top-1">All services <ArrowRight className="h-4 w-4" /></Link>
+            <Link href={reraPath('/services')} className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] hover:text-[#1769AA] sm:absolute sm:right-0 sm:top-1">All services <ArrowRight className="h-4 w-4" /></Link>
           </div>
           <div className="grid items-center gap-8 lg:grid-cols-[1fr_minmax(340px,1.15fr)_1fr] lg:items-stretch lg:gap-10">
             <div className="order-2 grid gap-8 sm:grid-cols-2 lg:order-1 lg:grid-cols-1 lg:grid-rows-2">
@@ -403,7 +403,7 @@ export default async function HomePage() {
             <div className="flex items-center gap-3">
               <Link
                 href={reraPath('/properties')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1C1C1C] hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] text-xs font-semibold uppercase tracking-wider transition-colors"
+                className="inline-flex min-h-11 items-center gap-1.5 px-4 py-2 bg-[#1C1C1C] hover:bg-[#C8A96A] text-white hover:text-[#1C1C1C] text-xs font-semibold uppercase tracking-wider transition-colors"
               >
                 <span>View All Properties</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -437,7 +437,7 @@ export default async function HomePage() {
 
                 <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
                   <div className="flex flex-1 flex-col items-center">
-                    <Link href={`${reraPath('/properties')}/${property.slug}`}>
+                    <Link href={`${reraPath('/properties')}/${property.slug}`} className="inline-flex min-h-11 items-center justify-center">
                       <h3 className="font-heading text-lg font-bold uppercase text-[#1C1C1C] leading-snug group-hover:text-[#B78A47] transition-colors">
                         {property.title}
                       </h3>
@@ -452,7 +452,7 @@ export default async function HomePage() {
                   <div className="pt-5">
                     <Link
                       href={`${reraPath('/properties')}/${property.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:text-[#1769AA]"
+                      className="inline-flex min-h-11 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1C1C1C] transition-colors hover:text-[#1769AA]"
                     >
                       Know More <ArrowRight className="h-4 w-4 text-[#36A8D2]" />
                     </Link>
@@ -484,7 +484,7 @@ export default async function HomePage() {
 
               <Link
                 href={reraPath('/properties')}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-[#1C1C1C] hover:text-[#C8A96A] uppercase tracking-wider"
+                className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-[#1C1C1C] hover:text-[#C8A96A] uppercase tracking-wider"
               >
                 <span>Explore All Projects</span>
                 <ArrowRight className="w-4 h-4" />
@@ -521,7 +521,7 @@ export default async function HomePage() {
                     <div className="text-[10px] uppercase font-bold text-[#6D6A66] tracking-wider">
                       {project.builderName}
                     </div>
-                    <Link href={`${reraPath('/properties')}/${project.slug}`}>
+                    <Link href={`${reraPath('/properties')}/${project.slug}`} className="inline-flex min-h-11 items-center">
                       <h3 className="font-heading text-lg font-bold text-[#1C1C1C] mb-1 group-hover:text-[#B78A47] transition-colors">
                         {project.title}
                       </h3>
@@ -547,7 +547,7 @@ export default async function HomePage() {
 
                   <Link
                     href={reraPath(`/contact?property=${encodeURIComponent(project.slug)}`)}
-                    className="w-full py-2 bg-[#F8F5F1] group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C] border border-[#E8E2DA] text-xs font-semibold uppercase tracking-wider transition-colors text-center inline-block"
+                    className="inline-flex min-h-11 w-full items-center justify-center bg-[#F8F5F1] py-2 text-center text-xs font-semibold uppercase tracking-wider transition-colors border border-[#E8E2DA] group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C]"
                   >
                     Request Details
                   </Link>

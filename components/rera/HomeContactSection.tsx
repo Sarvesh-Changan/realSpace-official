@@ -29,7 +29,7 @@ export function HomeContactSection({ settings, branch }: { settings: ContactSett
             {settings.email && <a className="flex gap-3 hover:text-[#9A7539]" href={`mailto:${settings.email}`}><Mail className="h-4 w-4 text-[#9A7539]" />{settings.email}</a>}
             {!hasContact && <p>Contact details will be available here when configured.</p>}
           </div>
-          <Link href={reraPath('/contact')} className="mt-8 inline-flex w-fit items-center gap-2 bg-[#1C1C1C] px-6 py-3 font-sans text-xs font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#C8A96A] hover:text-[#1C1C1C]">Make an enquiry <ArrowRight className="h-4 w-4" /></Link>
+          <Link href={reraPath('/contact')} className="mt-8 inline-flex min-h-11 w-fit items-center gap-2 bg-[#1C1C1C] px-6 py-3 font-sans text-xs font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#C8A96A] hover:text-[#1C1C1C]">Make an enquiry <ArrowRight className="h-4 w-4" /></Link>
         </div>
         <div className="relative min-h-[280px] overflow-hidden border border-[#D6CEC3] bg-[#E5DED5] sm:min-h-[360px]">
           <iframe

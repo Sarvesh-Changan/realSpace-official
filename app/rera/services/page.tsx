@@ -167,18 +167,18 @@ export default async function ServicesPage() {
                   )}
 
                   <div className="mt-6 border-t border-[#EEE9E2] pt-4">
-                    <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex flex-col items-start gap-3 sm:flex-row">
                       {detailHref && (
                         <Link
                           href={detailHref}
-                          className="realspace-cta min-h-11 w-full flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
+                          className="realspace-cta min-h-11 w-fit max-w-full px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
                         >
                           View Details
                         </Link>
                       )}
                       <Link
                         href={enquiryHref}
-                        className="realspace-cta min-h-11 w-full flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
+                        className="realspace-cta min-h-11 w-fit max-w-full px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
                       >
                         Enquire
                       </Link>

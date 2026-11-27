@@ -16,6 +16,7 @@ export function BuilderPartnersCarousel({ partners }: { partners: BuilderPartner
   const [trackIndex, setTrackIndex] = useState(0);
   const [animateTrack, setAnimateTrack] = useState(true);
   const [flippedPartnerId, setFlippedPartnerId] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
   const pageCount = Math.ceil(partners.length / PARTNERS_PER_PAGE);
   const pages = Array.from({ length: pageCount }, (_, page) =>
     partners.slice(page * PARTNERS_PER_PAGE, (page + 1) * PARTNERS_PER_PAGE),
@@ -24,14 +25,14 @@ export function BuilderPartnersCarousel({ partners }: { partners: BuilderPartner
   const activePage = pageCount ? trackIndex % pageCount : 0;
 
   useEffect(() => {
-    if (pageCount < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (pageCount < 2 || isHovered || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = window.setInterval(() => {
       setFlippedPartnerId(null);
       setAnimateTrack(true);
       setTrackIndex((current) => current + 1);
     }, 3000);
     return () => window.clearInterval(timer);
-  }, [pageCount]);
+  }, [isHovered, pageCount]);
 
   const handleTrackTransitionEnd = () => {
     if (trackIndex === pageCount) {
@@ -48,7 +49,7 @@ export function BuilderPartnersCarousel({ partners }: { partners: BuilderPartner
 
   return (
     <>
-      <div className="overflow-hidden">
+      <div className="overflow-hidden" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
         <div
           className={`flex ${animateTrack ? 'transition-transform duration-700 ease-in-out' : ''}`}
           style={{ transform: `translateX(-${trackIndex * 100}%)` }}

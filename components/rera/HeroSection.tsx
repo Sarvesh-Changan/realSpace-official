@@ -150,12 +150,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         )}
 
         {/* Action Controls */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-5">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
           {primaryButtonSlug ? (
             <Link
               key={`hero-button-${activeSlideIndex}`}
               href={reraPath(primaryButtonSlug)}
-              className="realspace-cta animate-hero-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 font-semibold text-xs uppercase tracking-wider group"
+              className="realspace-cta animate-hero-button inline-flex w-fit max-w-full items-center justify-center gap-2.5 whitespace-nowrap px-7 py-3.5 font-semibold text-xs uppercase tracking-wider group"
             >
               <span>{primaryButtonText}</span>
             </Link>
@@ -163,7 +163,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <button
               key={`hero-button-${activeSlideIndex}`}
               onClick={handleExploreProperties}
-              className="realspace-cta animate-hero-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 font-semibold text-xs uppercase tracking-wider group"
+              className="realspace-cta animate-hero-button inline-flex w-fit max-w-full items-center justify-center gap-2.5 whitespace-nowrap px-7 py-3.5 font-semibold text-xs uppercase tracking-wider group"
             >
               <span>{primaryButtonText}</span>
             </button>

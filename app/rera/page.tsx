@@ -218,7 +218,7 @@ function BhkShowcaseTile({
   const contactHref = reraPath(`/contact?configuration=${encodeURIComponent(item.label)}`);
 
   return (
-    <div className={`group relative min-h-[240px] overflow-hidden ${className}`}>
+    <div className={`group relative aspect-[16/10] min-h-0 overflow-hidden ${className}`}>
       <Link href={reraPath('/properties')} aria-label={`Browse ${item.label} properties`} className="absolute inset-0 z-0">
         <Image
           src={item.image}
@@ -574,10 +574,10 @@ export default async function HomePage() {
               Explore available residential property options and configurations. View the details below and contact REALSPACE about a property that suits your requirements.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:grid-rows-2 sm:aspect-[2/1]">
-            <BhkShowcaseTile item={oneBhk} className="sm:row-span-2 sm:min-h-0" sizes="(max-width: 640px) 100vw, 33vw" />
-            <BhkShowcaseTile item={twoBhk} className="sm:col-span-2 sm:min-h-0" sizes="(max-width: 640px) 100vw, 67vw" />
-            <BhkShowcaseTile item={threeBhk} className="sm:col-span-2 sm:min-h-0" sizes="(max-width: 640px) 100vw, 67vw" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:grid-rows-2 sm:gap-2 sm:aspect-[2/1]">
+            <BhkShowcaseTile item={oneBhk} className="sm:row-span-2 sm:aspect-auto" sizes="(max-width: 640px) 100vw, 33vw" />
+            <BhkShowcaseTile item={twoBhk} className="sm:col-span-2 sm:aspect-auto" sizes="(max-width: 640px) 100vw, 67vw" />
+            <BhkShowcaseTile item={threeBhk} className="sm:col-span-2 sm:aspect-auto" sizes="(max-width: 640px) 100vw, 67vw" />
           </div>
         </section>
       )}

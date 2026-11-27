@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -31,16 +31,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   heroSlideInterval = 8,
 }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [touchPaused, setTouchPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchResumeTimer = useRef<number | null>(null);
   const hasSlideshow = heroSlides.length > 1;
 
   useEffect(() => {
-    if (!hasSlideshow || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!hasSlideshow || touchPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const interval = Math.max(5, Math.min(15, heroSlideInterval)) * 1000;
     const timer = window.setInterval(() => {
       setActiveSlideIndex((current) => (current + 1) % heroSlides.length);
     }, interval);
     return () => window.clearInterval(timer);
-  }, [hasSlideshow, heroSlideInterval, heroSlides.length]);
+  }, [hasSlideshow, heroSlideInterval, heroSlides.length, touchPaused]);
+
+  useEffect(() => () => {
+    if (touchResumeTimer.current !== null) window.clearTimeout(touchResumeTimer.current);
+  }, []);
 
   const activeSlide = hasSlideshow ? heroSlides[activeSlideIndex] : null;
   const showPreviousSlide = () => setActiveSlideIndex((current) => (current - 1 + heroSlides.length) % heroSlides.length);
@@ -63,7 +70,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const primaryButtonSlug = activeSlide?.slug?.trim();
 
   return (
-    <section className="relative h-[calc(100dvh-7rem)] min-h-[calc(100svh-7rem)] w-full overflow-hidden bg-[#1C1C1C] text-white">
+    <section
+      onTouchStart={(event) => {
+        touchStartX.current = event.touches[0]?.clientX ?? null;
+        setTouchPaused(true);
+        if (touchResumeTimer.current !== null) window.clearTimeout(touchResumeTimer.current);
+      }}
+      onTouchEnd={(event) => {
+        const startX = touchStartX.current;
+        const endX = event.changedTouches[0]?.clientX;
+        if (startX !== null && endX !== undefined && Math.abs(endX - startX) > 40) {
+          if (endX < startX) showNextSlide();
+          else showPreviousSlide();
+        }
+        touchStartX.current = null;
+        touchResumeTimer.current = window.setTimeout(() => setTouchPaused(false), 4000);
+      }}
+      className="relative min-h-[calc(100svh-7rem)] w-full overflow-hidden bg-[#1C1C1C] text-white md:h-[calc(100svh-7rem)]"
+    >
       {/* Background image (neutral fallback when missing) */}
       <div className="absolute inset-0 z-0">
         {backgroundImage ? (
@@ -86,7 +110,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/65 via-black/35 to-black/5"
       />
       {hasSlideshow && (
-        <div className="absolute right-4 top-4 z-20 flex items-center gap-2 sm:right-6 sm:top-6">
+        <div className="absolute right-4 top-4 z-20 hidden items-center gap-2 md:flex sm:right-6 sm:top-6">
           <button
             type="button"
             onClick={showPreviousSlide}
@@ -106,7 +130,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
       )}
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-col justify-center px-4 py-20 [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:px-8 md:py-28 lg:py-32">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-7rem)] w-full max-w-7xl flex-col justify-center px-5 py-24 [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:px-8 md:min-h-0 md:h-full md:py-28 lg:py-32">
         {/* Hero Headline */}
         <h1
           key={`hero-heading-${activeSlideIndex}`}

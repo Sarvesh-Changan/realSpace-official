@@ -101,7 +101,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               <ChevronRight className="h-3.5 w-3.5 text-white/75" aria-hidden="true" />
               <span className="text-white" aria-current="page">Contact</span>
             </nav>
-            <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#C8A96A] mb-3 font-semibold">
+            <div className="rera-contact-registration inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#C8A96A] mb-3 font-semibold">
               {reraRegNo ? (
                 <>
                   <ShieldCheck className="w-4 h-4" />

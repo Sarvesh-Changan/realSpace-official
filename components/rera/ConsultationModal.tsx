@@ -398,10 +398,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   )}
                 </button>
               </div>
-
-              <p className="text-[11px] text-[#A39E98] text-center pt-1">
-                Zero spam policy. Your details are solely used for direct consultation.
-              </p>
             </form>
           </div>
         )}

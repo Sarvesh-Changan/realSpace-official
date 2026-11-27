@@ -193,6 +193,8 @@ h1, h2, h3, h4, h5, h6 {
 .rera-blue-theme [class*="hover:text-[#990000]"]:hover { color: #071738 !important; }
 .rera-blue-theme .rera-properties-breadcrumb a { color: #ffffff !important; }
 .rera-blue-theme .rera-properties-breadcrumb a:hover { color: #a9cef5 !important; }
+.rera-root.rera-blue-theme .rera-contact-registration,
+.rera-root.rera-blue-theme .rera-contact-registration svg { color: #ffffff !important; }
 .rera-blue-theme [class*="accent-[#C8A96A]"] { accent-color: #0d2253 !important; }
 .rera-blue-theme .gold-gradient-text {
   background-image: linear-gradient(135deg, #0d2253 0%, #1c3b73 60%, #071738 100%);

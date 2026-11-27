@@ -10,7 +10,9 @@ import {
   RERA_LOCATIONS,
 } from '@/lib/rera/locations';
 
-interface SearchableLocationInputProps {
+const CUSTOM_LOCALITY_VALUE = '__rera_custom_locality__';
+
+interface LocationSelectProps {
   id: string;
   label: string;
   value: string;
@@ -19,9 +21,10 @@ interface SearchableLocationInputProps {
   allowCustom?: boolean;
   required?: boolean;
   className: string;
+  placeholder: string;
 }
 
-function SearchableLocationInput({
+function LocationSelect({
   id,
   label,
   value,
@@ -30,45 +33,57 @@ function SearchableLocationInput({
   allowCustom = false,
   required = false,
   className,
-}: SearchableLocationInputProps) {
-  const listId = useId();
-  const [draft, setDraft] = useState(value);
+  placeholder,
+}: LocationSelectProps) {
+  const [customMode, setCustomMode] = useState(false);
 
   return (
     <div className="min-w-0">
       <label htmlFor={id} className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#6D6A66]">
         {label}{required ? ' *' : ''}
       </label>
-      <input
-        id={id}
-        list={listId}
-        value={draft}
-        required={required}
-        autoComplete="off"
-        onChange={(event) => {
-          const nextValue = event.target.value;
-          setDraft(nextValue);
-          if (allowCustom) {
-            onChange(nextValue);
-            return;
-          }
-          const exactOption = options.find((option) => option.toLocaleLowerCase() === nextValue.trim().toLocaleLowerCase());
-          if (exactOption) onChange(exactOption);
-        }}
-        onBlur={() => {
-          if (allowCustom) {
-            onChange(draft.trim());
-            return;
-          }
-          const exactOption = options.find((option) => option.toLocaleLowerCase() === draft.trim().toLocaleLowerCase());
-          setDraft(exactOption ?? value);
-        }}
-        placeholder={`Search ${label.toLowerCase()}...`}
-        className={className}
-      />
-      <datalist id={listId}>
-        {options.map((option) => <option key={option} value={option} />)}
-      </datalist>
+      {customMode ? (
+        <>
+          <input
+            id={id}
+            value={value}
+            required={required}
+            maxLength={150}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={`Enter ${label.toLowerCase()}`}
+            className={className}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setCustomMode(false);
+              onChange('');
+            }}
+            className="mt-1 text-xs font-medium text-[#6D6A66] underline underline-offset-2 hover:text-[#1C1C1C]"
+          >
+            Choose a listed locality
+          </button>
+        </>
+      ) : (
+        <select
+          id={id}
+          value={value}
+          required={required}
+          onChange={(event) => {
+            if (allowCustom && event.target.value === CUSTOM_LOCALITY_VALUE) {
+              setCustomMode(true);
+              onChange('');
+              return;
+            }
+            onChange(event.target.value);
+          }}
+          className={`${className} cursor-pointer`}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((option) => <option key={option} value={option}>{option}</option>)}
+          {allowCustom && <option value={CUSTOM_LOCALITY_VALUE}>Other locality…</option>}
+        </select>
+      )}
     </div>
   );
 }
@@ -137,36 +152,39 @@ export function LocationCascade({
 
   return (
     <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <SearchableLocationInput
+      <LocationSelect
         key={`region-${region}`}
         id={`${variant}-region-${instanceId}`}
         label={regionLabel}
         value={region}
         options={regionOptions}
         onChange={onRegionChange}
+        placeholder="Select a region"
         className={inputClass}
       />
       {showCity && (
-        <SearchableLocationInput
-          key={`city-${city}`}
+        <LocationSelect
+          key={`city-${region}-${city}`}
           id={`${variant}-city-${instanceId}`}
           label={cityLabel}
           value={city}
           options={cityOptions}
           onChange={onCityChange}
+          placeholder="Select a city"
           required={cityRequired}
           className={inputClass}
         />
       )}
       {isCityChosen && (
-        <SearchableLocationInput
-          key={`locality-${locality}`}
+        <LocationSelect
+          key={`locality-${city}`}
           id={`${variant}-locality-${instanceId}`}
           label={localityLabel}
           value={locality}
           options={localityOptions}
           onChange={onLocalityChange}
           allowCustom={variant === 'form'}
+          placeholder="Select a locality (optional)"
           required={localityRequired}
           className={inputClass}
         />

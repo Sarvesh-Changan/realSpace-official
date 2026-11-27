@@ -205,19 +205,15 @@ export default async function ServicesPage() {
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[#102A56]/85" />
           <h2 className="relative mb-4 text-center font-heading text-sm font-semibold uppercase tracking-[0.18em] text-white sm:text-base">Home Loan Partners</h2>
           <div className="overflow-hidden">
-            <div className="rera-loan-partner-track relative z-10 flex w-max items-center">
-              {[false, true].map((isDuplicate) => (
-                <ul key={String(isDuplicate)} aria-hidden={isDuplicate || undefined} className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3">
-                  {loanPartnerLogos.map((logo, index) => (
-                    <li key={`${logo.url}-${index}`} className="flex w-28 shrink-0 items-center justify-center sm:w-32">
-                      <span className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white/90 bg-white p-2 shadow-lg sm:h-24 sm:w-24">
-                        <Image src={logo.url} alt={isDuplicate ? '' : logo.alt} width={160} height={100} unoptimized className="max-h-full max-w-full object-contain" />
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+            <ul className="rera-loan-partner-track relative z-10 flex w-max items-center gap-4 px-2 sm:gap-6 sm:px-3">
+              {loanPartnerLogos.map((logo, index) => (
+                <li key={`${logo.url}-${index}`} className="flex w-28 shrink-0 items-center justify-center sm:w-32">
+                  <span className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white/90 bg-white p-2 shadow-lg sm:h-24 sm:w-24">
+                    <Image src={logo.url} alt={logo.alt} width={160} height={100} unoptimized className="max-h-full max-w-full object-contain" />
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
       )}

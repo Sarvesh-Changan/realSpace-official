@@ -109,8 +109,8 @@ export default async function AboutPage() {
                 className="object-cover transition-transform duration-700 hover:scale-[1.025]"
                 unoptimized={Boolean(settings?.aboutImageUrl && !settings.aboutImageUrl.includes('res.cloudinary.com'))}
               />
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 border-b-2 border-r-2 border-[#FECC00]" />
             </div>
-            <div aria-hidden="true" className="absolute -bottom-3 -right-3 -z-10 h-2/3 w-2/3 border-b-2 border-r-2 border-[#FECC00] sm:-bottom-5 sm:-right-5" />
           </div>
 
           <div className="min-w-0 pt-3 lg:order-1 lg:py-4">

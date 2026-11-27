@@ -191,7 +191,7 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
           <span suppressHydrationWarning>
             © {new Date().getFullYear()} {brokerName}. All rights reserved.
           </span>
-          {socials.length > 0 && <div className="flex items-center gap-3">
+          {socials.length > 0 && <div className="flex flex-wrap items-center justify-center gap-3">
             {socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="inline-flex rounded-full transition-transform duration-200 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#C8A96A]">{social.icon}</a>)}
           </div>}
         </div>

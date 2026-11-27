@@ -16,7 +16,6 @@ import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 import { SectionRenderer } from '@/components/rera/property-sections/SectionRenderer';
 import { reraPropertySectionSchema } from '@/lib/rera/property-sections/schemas';
 import { parseReraPropertyAmenityImages } from '@/lib/rera/property-amenity-images';
-import { PropertyBookingCard } from '@/components/rera/PropertyBookingCard';
 import { PropertyMobileActions } from '@/components/rera/PropertyMobileActions';
 
 interface PropertyPageProps {
@@ -279,10 +278,6 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
                 </div>
               )}
             </div>
-          <section id="rera-property-enquiry" aria-labelledby="rera-property-enquiry-title" className="mt-8 scroll-mt-24">
-            <h2 id="rera-property-enquiry-title" className="mb-4 font-heading text-xl font-bold text-[#1C1C1C]">Schedule a Visit or Enquire</h2>
-            <PropertyBookingCard propertySlug={property.slug} propertyTitle={property.title} />
-          </section>
         </div>
       </section>
     </div>

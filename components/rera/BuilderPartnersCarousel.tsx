@@ -110,10 +110,10 @@ export function BuilderPartnersCarousel({ partners }: { partners: BuilderPartner
               aria-label={`Show partner page ${page + 1}`}
               aria-current={activePage === page ? 'page' : undefined}
               onClick={() => goToPage(page)}
-              className={`h-2 w-2 rounded-[1px] border border-white/80 transition-colors ${
-                activePage === page ? 'bg-[#79b9ed]' : 'bg-transparent hover:bg-white/50'
-              }`}
-            />
+              className="flex h-11 w-11 items-center justify-center rounded-full"
+            >
+              <span aria-hidden="true" className={`h-2 w-2 rounded-[1px] border border-white/80 ${activePage === page ? 'bg-[#79b9ed]' : 'bg-transparent'}`} />
+            </button>
           ))}
         </nav>
       )}

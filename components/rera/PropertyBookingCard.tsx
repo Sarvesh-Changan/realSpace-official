@@ -120,7 +120,7 @@ export function PropertyBookingCard({
             <button
               type="button"
               onClick={() => setActiveTab('site_visit')}
-              className={`flex-1 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
+              className={`min-h-11 flex-1 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
                 activeTab === 'site_visit'
                   ? 'bg-[#1C1C1C] text-[#C8A96A]'
                   : 'bg-[#F8F5F1] text-[#6D6A66] hover:text-[#1C1C1C]'
@@ -131,7 +131,7 @@ export function PropertyBookingCard({
             <button
               type="button"
               onClick={() => setActiveTab('enquire')}
-              className={`flex-1 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
+              className={`min-h-11 flex-1 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
                 activeTab === 'enquire'
                   ? 'bg-[#1C1C1C] text-[#C8A96A]'
                   : 'bg-[#F8F5F1] text-[#6D6A66] hover:text-[#1C1C1C]'

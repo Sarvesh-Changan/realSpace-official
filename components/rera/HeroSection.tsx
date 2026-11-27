@@ -175,7 +175,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {hasSlideshow && (
         <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2" aria-label="Hero slides">
           {heroSlides.map((slide, index) => (
-            <button key={`${slide.imageUrl}-${index}`} type="button" onClick={() => setActiveSlideIndex(index)} aria-label={`Show slide ${index + 1}`} aria-current={index === activeSlideIndex} className={`h-1.5 rounded-full transition-all ${index === activeSlideIndex ? 'w-8 bg-[#C8A96A]' : 'w-3 bg-white/60 hover:bg-white'}`} />
+            <button key={`${slide.imageUrl}-${index}`} type="button" onClick={() => setActiveSlideIndex(index)} aria-label={`Show slide ${index + 1}`} aria-current={index === activeSlideIndex} className="flex h-11 w-11 items-center justify-center rounded-full">
+              <span aria-hidden="true" className={`block h-1.5 rounded-full transition-all ${index === activeSlideIndex ? 'w-8 bg-[#C8A96A]' : 'w-3 bg-white/60 hover:bg-white'}`} />
+            </button>
           ))}
         </div>
       )}

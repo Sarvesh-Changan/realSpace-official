@@ -88,7 +88,7 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
           <Link
             href={reraPath('/')}
             aria-label="REALSPACE RERA home"
-            className="flex min-w-0 items-center whitespace-nowrap shrink-0 focus:outline-none"
+            className="flex min-h-11 min-w-0 items-center whitespace-nowrap shrink-0 focus:outline-none"
           >
             <Image
               src="/arnav/images/logo/rera-logo.png"

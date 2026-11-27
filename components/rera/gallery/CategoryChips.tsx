@@ -43,8 +43,8 @@ export default function CategoryChips({ active, onChange }: CategoryChipsProps) 
           onClick={() => onChange(chip.value)}
           className={
             active === chip.value
-              ? 'px-4 py-2 rounded-full text-sm font-medium transition-colors bg-[#1C1C1C] text-[#C8A96A]'
-              : 'px-4 py-2 rounded-full text-sm font-medium transition-colors border border-[#E8E2DA] text-[#6D6A66] hover:border-[#C8A96A] hover:text-[#1C1C1C]'
+              ? 'min-h-11 px-4 py-2 rounded-full text-sm font-medium transition-colors bg-[#1C1C1C] text-[#C8A96A]'
+              : 'min-h-11 px-4 py-2 rounded-full text-sm font-medium transition-colors border border-[#E8E2DA] text-[#6D6A66] hover:border-[#C8A96A] hover:text-[#1C1C1C]'
           }
         >
           {chip.label}

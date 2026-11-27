@@ -77,7 +77,7 @@ function validId(id: unknown): id is string { return typeof id === 'string' && /
 function validFormType(value: unknown): value is FormType { return value === 'contact' || value === 'consultation'; }
 
 export async function startReraPhoneVerification(input: {
-  challengeId: string; formType: FormType; phone: string; email: string;
+  challengeId: string; formType: FormType; phone: string; email: string; returnTo?: string;
 }) {
   try {
     const phone = normalizePhone(input.phone);
@@ -103,8 +103,19 @@ export async function startReraPhoneVerification(input: {
     const base = process.env.NEXTAUTH_URL || `${protocol}://${host}`;
     // Phone.Email appends `?access_token=...` to redirect_url. Keep our state
     // in the path so its query parameter remains parseable by the callback.
+    const requestedReturnTo = input.returnTo || '/rera/contact';
+    let returnTo = '/rera/contact';
+    try {
+      const returnUrl = new URL(requestedReturnTo, base);
+      if (returnUrl.origin === new URL(base).origin && (returnUrl.pathname === '/rera' || returnUrl.pathname.startsWith('/rera/'))) {
+        returnTo = returnUrl.pathname;
+      }
+    } catch {
+      // Keep the contact page as the safe fallback for malformed paths.
+    }
+    const returnContext = Buffer.from(JSON.stringify({ returnTo, returnForm: input.formType })).toString('base64url');
     const callback = new URL(
-      `/api/rera/verification/phone/callback/${encodeURIComponent(challenge.id)}/${encodeURIComponent(attemptId)}`,
+      `/api/rera/verification/phone/callback/${encodeURIComponent(challenge.id)}~${returnContext}/${encodeURIComponent(attemptId)}`,
       base,
     );
     const auth = new URL('https://www.phone.email/auth/log-in');

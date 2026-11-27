@@ -38,7 +38,7 @@ export function DualOtpContactFields({ formType, phone, email, onPhoneChange, on
   }, [cooldown]);
 
   // If the provider/browser does not let the verification window close, the
-  // callback returns this tab to /rera/contact with the verified challenge.
+  // callback returns this tab to the page where verification started.
   useEffect(() => {
     const url = new URL(window.location.href);
     const phoneVerification = url.searchParams.get('phoneVerification');
@@ -75,6 +75,7 @@ export function DualOtpContactFields({ formType, phone, email, onPhoneChange, on
     url.searchParams.delete('emailVerification');
     url.searchParams.delete('challengeId');
     url.searchParams.delete('attemptId');
+    url.searchParams.delete('openConsultation');
     window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
   }, [onChallengeIdChange, onEmailChange, onPhoneChange]);
 
@@ -156,7 +157,13 @@ export function DualOtpContactFields({ formType, phone, email, onPhoneChange, on
     if (!popup) { setError('Allow pop-ups to verify your phone number.'); return; }
     popupRef.current = popup;
     setPhoneBusy(true);
-    const result = await startReraPhoneVerification({ challengeId: id, formType, phone, email }).catch(() => null);
+    const result = await startReraPhoneVerification({
+      challengeId: id,
+      formType,
+      phone,
+      email,
+      returnTo: window.location.pathname,
+    }).catch(() => null);
     if (!result) {
       setPhoneBusy(false); popup.close(); popupRef.current = null; setError('Unable to start phone verification. Please try again.'); return;
     }

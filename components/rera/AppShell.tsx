@@ -19,6 +19,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, shellProps }) => {
   const [modalSource, setModalSource] = useState<'SITE_VISIT' | 'PROPERTY_ENQUIRY'>('SITE_VISIT');
 
   useEffect(() => {
+    const callbackParams = new URLSearchParams(window.location.search);
+    if (callbackParams.get('openConsultation') === '1' && callbackParams.has('phoneVerification')) {
+      setIsModalOpen(true);
+    }
+
     const handleOpenModal = (e: Event) => {
       const customEvent = e as CustomEvent<{
         interest?: string;

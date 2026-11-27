@@ -179,6 +179,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
                   >
                     <option value="Residential Property Site Visit">Residential Property Site Visit</option>
+                    <option value="Home Loan">Home Loan</option>
                     <option value="Commercial Office / Retail Lease">Commercial Office / Retail Lease</option>
                     <option value="REALSPACE Turnkey Luxury Interiors">REALSPACE Turnkey Luxury Interiors</option>
                     <option value="MahaRERA Legal Due Diligence">MahaRERA Legal Due Diligence</option>

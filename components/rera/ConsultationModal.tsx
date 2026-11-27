@@ -20,6 +20,22 @@ import {
   formatReraEnquiryLocation,
 } from '@/lib/rera/locations';
 
+const CONSULTATION_DRAFT_KEY = 'rera-consultation-modal-draft';
+
+type ConsultationDraft = {
+  fullName: string;
+  phoneNumber: string;
+  emailAddress: string;
+  verificationChallengeId: string;
+  verification: { phone: boolean; email: boolean };
+  serviceInterest: string;
+  preferredRegion: string;
+  preferredCity: string;
+  preferredLocality: string;
+  preferredSlot: string;
+  customNotes: string;
+};
+
 interface ConsultationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -57,6 +73,58 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedDraft = sessionStorage.getItem(CONSULTATION_DRAFT_KEY);
+      if (storedDraft) {
+        const draft = JSON.parse(storedDraft) as Partial<ConsultationDraft>;
+        if (typeof draft.fullName === 'string') setFullName(draft.fullName);
+        if (typeof draft.phoneNumber === 'string') setPhoneNumber(draft.phoneNumber);
+        if (typeof draft.emailAddress === 'string') setEmailAddress(draft.emailAddress);
+        if (typeof draft.verificationChallengeId === 'string') setVerificationChallengeId(draft.verificationChallengeId);
+        if (draft.verification && typeof draft.verification.phone === 'boolean' && typeof draft.verification.email === 'boolean') {
+          setVerification(draft.verification);
+        }
+        if (typeof draft.serviceInterest === 'string') setServiceInterest(draft.serviceInterest);
+        if (typeof draft.preferredRegion === 'string') setPreferredRegion(draft.preferredRegion);
+        if (typeof draft.preferredCity === 'string') setPreferredCity(draft.preferredCity);
+        if (typeof draft.preferredLocality === 'string') setPreferredLocality(draft.preferredLocality);
+        if (typeof draft.preferredSlot === 'string') setPreferredSlot(draft.preferredSlot);
+        if (typeof draft.customNotes === 'string') setCustomNotes(draft.customNotes);
+      }
+    } catch {
+      try {
+        sessionStorage.removeItem(CONSULTATION_DRAFT_KEY);
+      } catch {
+        // Ignore storage cleanup failures.
+      }
+    }
+    setHasRestoredDraft(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || !hasRestoredDraft) return;
+    const draft: ConsultationDraft = {
+      fullName,
+      phoneNumber,
+      emailAddress,
+      verificationChallengeId,
+      verification,
+      serviceInterest,
+      preferredRegion,
+      preferredCity,
+      preferredLocality,
+      preferredSlot,
+      customNotes,
+    };
+    try {
+      sessionStorage.setItem(CONSULTATION_DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // Form completion should still work if session storage is unavailable.
+    }
+  }, [isOpen, hasRestoredDraft, fullName, phoneNumber, emailAddress, verificationChallengeId, verification, serviceInterest, preferredRegion, preferredCity, preferredLocality, preferredSlot, customNotes]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -106,6 +174,11 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         }
       } else {
         setSubmitted(true);
+        try {
+          sessionStorage.removeItem(CONSULTATION_DRAFT_KEY);
+        } catch {
+          // Submission should not be marked as failed if draft cleanup is unavailable.
+        }
       }
     } catch {
       setErrorMessage('A network error occurred. Please try again.');
@@ -119,10 +192,22 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     setFullName('');
     setPhoneNumber('');
     setEmailAddress('');
+    setVerificationChallengeId('');
+    setVerification({ phone: false, email: false });
+    setServiceInterest(defaultInterest);
+    setPreferredRegion('Mumbai Metropolitan Region (MMR)');
+    setPreferredCity('Thane');
+    setPreferredLocality('Ghodbunder Road');
+    setPreferredSlot('Morning (10:00 AM - 01:00 PM)');
     setCustomNotes('');
     setHoneypot('');
     setErrorMessage(null);
     setFieldErrors({});
+    try {
+      sessionStorage.removeItem(CONSULTATION_DRAFT_KEY);
+    } catch {
+      // Ignore storage cleanup failures when closing the modal.
+    }
     onClose();
   };
 
@@ -285,6 +370,9 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   >
                     <option value="Residential Property Site Visit">
                       Residential Property Site Visit
+                    </option>
+                    <option value="Home Loan">
+                      Home Loan
                     </option>
                     <option value="Commercial Office / Retail Lease">
                       Commercial Office / Retail Lease

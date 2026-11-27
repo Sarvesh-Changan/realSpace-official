@@ -109,16 +109,16 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
           <div className="flex flex-col items-start gap-4">
             <Link href={reraPath('/')} aria-label={brokerName} className="inline-flex min-h-11 items-center">
               <Image
-                src="/arnav/images/logo/rera-logo.png"
+                src="/arnav/images/logo/rera-footer-logo.jpeg"
                 alt={`${brokerName} RERA logo`}
                 width={240}
                 height={40}
-                className="h-auto w-56 max-w-full rounded-sm bg-white px-2 py-1.5 object-contain"
+                className="h-auto w-[280px] max-w-full object-contain"
                 priority={false}
               />
             </Link>
             {shellProps.reraRegistrationNo && (
-              <p className="text-[11px] text-white/50 leading-relaxed max-w-[220px]">
+              <p className="w-full max-w-[280px] text-center text-[11px] text-white/50 leading-relaxed">
                 MahaRERA Reg. No.{' '}
                 <span className="text-white/70">{shellProps.reraRegistrationNo}</span>
               </p>
@@ -171,7 +171,7 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
                   {kind === 'address' ? (
-                    <span className="whitespace-pre-line pt-0.5 leading-[1.65] text-white/70">{value}</span>
+                    <span className="min-w-0 break-words whitespace-pre-line pt-0.5 leading-[1.65] text-white/70">{value}</span>
                   ) : kind === 'phone' ? (
                     <a href={`tel:${value.replace(/[^+\d]/g, '')}`} className="inline-flex min-h-11 items-center pt-2 text-white/85 transition-colors hover:text-white">{value}</a>
                   ) : kind === 'email' ? (

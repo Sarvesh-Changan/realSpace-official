@@ -186,12 +186,12 @@ export default async function AboutPage() {
 
       {areasServed.length > 0 && (
         <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-          <div className="mx-auto mb-7 max-w-2xl text-center">
-            <MapPin aria-hidden="true" className="mx-auto mb-2 h-5 w-5 text-[#990000]" />
-            <h2 className="font-heading text-2xl font-semibold sm:text-3xl">Areas Served</h2>
+          <div className="mx-auto mb-8 max-w-2xl text-center">
+            <MapPin aria-hidden="true" className="mx-auto mb-3 h-6 w-6 text-[#990000]" />
+            <h2 className="font-heading text-3xl font-semibold sm:text-4xl">Areas Served</h2>
           </div>
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {areasServed.map((area) => <span key={area} className="border border-[#E4DDD3] bg-white px-4 py-2 text-xs font-semibold tracking-wide text-[#44403B]">{area}</span>)}
+          <div className="flex flex-wrap justify-center gap-3">
+            {areasServed.map((area) => <span key={area} className="border border-[#E4DDD3] bg-white px-5 py-2.5 text-sm font-semibold tracking-wide text-[#44403B]">{area}</span>)}
           </div>
         </section>
       )}
@@ -231,8 +231,8 @@ export default async function AboutPage() {
             <p className="mt-3 text-sm leading-6 text-white/75">Get in touch with our team or browse the available properties.</p>
           </div>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <Link href={reraPath('/contact')} className="inline-flex min-h-12 items-center justify-center bg-[#FECC00] px-5 py-3 text-xs font-bold uppercase tracking-[.1em] text-[#1C1C1C] transition-colors hover:bg-white">Contact Us</Link>
-            <Link href={reraPath('/properties')} className="inline-flex min-h-12 items-center justify-center border border-white/50 px-5 py-3 text-xs font-bold uppercase tracking-[.1em] text-white transition-colors hover:border-[#FECC00] hover:text-[#FECC00]">Browse Properties</Link>
+            <Link href={reraPath('/contact')} className="inline-flex min-h-12 w-full flex-1 items-center justify-center border border-[#A9CEF5] bg-[#A9CEF5] px-6 py-3 text-xs font-bold uppercase tracking-[.1em] text-[#0d2253] shadow-sm transition-colors hover:border-white hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Contact Us</Link>
+            <Link href={reraPath('/properties')} className="inline-flex min-h-12 w-full flex-1 items-center justify-center border border-white/70 bg-transparent px-6 py-3 text-xs font-bold uppercase tracking-[.1em] text-white transition-colors hover:border-[#A9CEF5] hover:bg-[#1c3b73] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Browse Properties</Link>
           </div>
         </div>
       </section>

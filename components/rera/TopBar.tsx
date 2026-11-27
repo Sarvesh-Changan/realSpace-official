@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   Phone,
@@ -96,17 +97,16 @@ export const TopBar: React.FC<TopBarProps> = ({ shellProps, onOpenConsultation }
           {/* Zone 1: Brand Wordmark */}
           <Link
             href={reraPath('/')}
-            className="flex items-center gap-2.5 whitespace-nowrap shrink-0 group focus:outline-none"
+            aria-label="REALSPACE RERA home"
+            className="flex items-center whitespace-nowrap shrink-0 focus:outline-none"
           >
-            <div className="w-9 h-9 rounded-sm bg-[#1C1C1C] flex items-center justify-center text-[#C8A96A] font-heading font-bold text-lg shadow-sm group-hover:bg-[#C8A96A] group-hover:text-[#1C1C1C] transition-colors">
-              R
-            </div>
-            <div className="flex flex-col">
-              <span className="font-heading font-bold text-lg tracking-wide text-[#1C1C1C] leading-none">
-                REALSPACE
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.24em] text-[#6D6A66] font-medium leading-tight">Real Estate</span>
-            </div>
+            <Image
+              src="/arnav/images/logo/rera-logo.png"
+              alt="REALSPACE logo"
+              width={220}
+              height={36}
+              className="h-auto w-[160px] sm:w-[200px] object-contain"
+            />
           </Link>
 
           {/* Zone 2: Navigation Links */}

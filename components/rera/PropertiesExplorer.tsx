@@ -6,6 +6,13 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, SlidersHorizontal } from 'lucide-react';
 import { reraPath } from '@/lib/rera/routes';
+import {
+  ALL_CITIES_VALUE,
+  ALL_LOCALITIES_VALUE,
+  ALL_REGIONS_VALUE,
+  cityMatchesLocation,
+  getRegionForCity,
+} from '@/lib/rera/locations';
 import type { ReraPropertyDetailData } from './PropertyDetailModal';
 import { QuickSearchFilter } from './QuickSearchFilter';
 
@@ -24,9 +31,10 @@ export interface PropertiesExplorerProps {
   initialCategory: string;
   propertyFetchFailed?: boolean;
   bannerImageUrl?: string | null;
-  distinctLocalities: string[];
   distinctBhkLabels: string[];
   initialInterest?: string;
+  initialRegion?: string;
+  initialCity?: string;
   initialLocality?: string;
   phone?: string | null;
   whatsapp?: string | null;
@@ -38,10 +46,11 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   initialCategory,
   propertyFetchFailed = false,
   bannerImageUrl,
-  distinctLocalities,
   distinctBhkLabels,
   initialInterest = 'all',
-  initialLocality = 'all',
+  initialRegion = ALL_REGIONS_VALUE,
+  initialCity = ALL_CITIES_VALUE,
+  initialLocality = ALL_LOCALITIES_VALUE,
   phone,
   whatsapp,
 }) => {
@@ -51,6 +60,8 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [transactionType, setTransactionType] = useState<string>(initialInterest);
+  const [selectedRegion, setSelectedRegion] = useState<string>(initialRegion);
+  const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [selectedLocality, setSelectedLocality] = useState<string>(initialLocality);
   const [selectedBhk, setSelectedBhk] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -78,6 +89,41 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
+  const updateLocationParams = (next: { region: string; city: string; locality: string }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next.region === ALL_REGIONS_VALUE) params.delete('region');
+    else params.set('region', next.region);
+    if (next.city === ALL_CITIES_VALUE) params.delete('city');
+    else params.set('city', next.city);
+    if (next.locality === ALL_LOCALITIES_VALUE) params.delete('locality');
+    else params.set('locality', next.locality);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
+
+  const selectRegion = (region: string) => {
+    const nextRegion = region || ALL_REGIONS_VALUE;
+    const next = { region: nextRegion, city: ALL_CITIES_VALUE, locality: ALL_LOCALITIES_VALUE };
+    setSelectedRegion(next.region);
+    setSelectedCity(next.city);
+    setSelectedLocality(next.locality);
+    updateLocationParams(next);
+  };
+
+  const selectCity = (city: string) => {
+    const nextCity = city || ALL_CITIES_VALUE;
+    const next = { region: selectedRegion, city: nextCity, locality: ALL_LOCALITIES_VALUE };
+    setSelectedCity(next.city);
+    setSelectedLocality(next.locality);
+    updateLocationParams(next);
+  };
+
+  const selectLocality = (locality: string) => {
+    const nextLocality = locality || ALL_LOCALITIES_VALUE;
+    setSelectedLocality(nextLocality);
+    updateLocationParams({ region: selectedRegion, city: selectedCity, locality: nextLocality });
+  };
+
   useEffect(() => {
     setActiveBannerImage(bannerImageUrl || FALLBACK_BANNER_IMAGE);
   }, [bannerImageUrl]);
@@ -93,9 +139,12 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
 
         if (selectedCategory !== 'all' && item.categorySlug !== selectedCategory) return false;
 
+        if (selectedRegion !== ALL_REGIONS_VALUE && getRegionForCity(item.city) !== selectedRegion) return false;
+
+        if (selectedCity !== ALL_CITIES_VALUE && !cityMatchesLocation(item.city, selectedCity)) return false;
 
         // 2. Locality filter
-        if (selectedLocality !== 'all') {
+        if (selectedLocality !== ALL_LOCALITIES_VALUE && selectedLocality !== 'all') {
           if (item.locality.toLowerCase() !== selectedLocality.toLowerCase()) {
             return false;
           }
@@ -128,6 +177,8 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   }, [
     initialProperties,
     selectedCategory,
+    selectedRegion,
+    selectedCity,
     transactionType,
     selectedLocality,
     selectedBhk,
@@ -136,11 +187,16 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
 
   const handleResetFilters = () => {
     setTransactionType('all');
-    setSelectedLocality('all');
+    setSelectedRegion(ALL_REGIONS_VALUE);
+    setSelectedCity(ALL_CITIES_VALUE);
+    setSelectedLocality(ALL_LOCALITIES_VALUE);
     setSelectedBhk('all');
     setSelectedCategory('all');
     const params = new URLSearchParams(searchParams.toString());
     params.delete('category');
+    params.delete('region');
+    params.delete('city');
+    params.delete('locality');
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     setSearchQuery('');
@@ -149,7 +205,9 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
   const activeFilterCount = [
     transactionType !== 'all',
     selectedCategory !== 'all',
-    selectedLocality !== 'all',
+    selectedRegion !== ALL_REGIONS_VALUE,
+    selectedCity !== ALL_CITIES_VALUE,
+    selectedLocality !== ALL_LOCALITIES_VALUE && selectedLocality !== 'all',
     selectedBhk !== 'all',
     Boolean(searchQuery.trim()),
   ].filter(Boolean).length;
@@ -206,13 +264,19 @@ export const PropertiesExplorer: React.FC<PropertiesExplorerProps> = ({
               <QuickSearchFilter
                 transactionType={transactionType}
                 onTransactionChange={setTransactionType}
+                region={selectedRegion}
+                onRegionChange={selectRegion}
+                city={selectedCity}
+                onCityChange={selectCity}
                 locality={selectedLocality}
-                onLocalityChange={setSelectedLocality}
+                onLocalityChange={selectLocality}
                 bhk={selectedBhk}
                 onBhkChange={setSelectedBhk}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                distinctLocalities={distinctLocalities}
+                distinctLocalities={selectedCity === ALL_CITIES_VALUE
+                  ? []
+                  : Array.from(new Set(initialProperties.filter((property) => cityMatchesLocation(property.city, selectedCity)).map((property) => property.locality).filter(Boolean)))}
                 distinctBhkLabels={distinctBhkLabels}
                 totalResultsCount={filteredListings.length}
                 phone={phone}

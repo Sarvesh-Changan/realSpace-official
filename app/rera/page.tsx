@@ -8,6 +8,7 @@ import { HeroSection } from '@/components/rera/HeroSection';
 import { FAQSection } from '@/components/rera/FAQSection';
 import { TestimonialsSection } from '@/components/rera/TestimonialsSection';
 import { HomeContactSection } from '@/components/rera/HomeContactSection';
+import { BuilderPartnersCarousel } from '@/components/rera/BuilderPartnersCarousel';
 import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 
 function getServiceIcon(iconKey: string | null | undefined) {
@@ -597,40 +598,19 @@ export default async function HomePage() {
       <FAQSection items={faqs} />
 
       {partners.length > 0 && (
-        <section className="relative overflow-hidden bg-[#102A56] px-4 py-16 sm:px-8 sm:py-20">
+        <section className="relative overflow-hidden bg-[#102A56] px-4 py-5 sm:px-8 sm:py-6">
           <Image src="/arnav/images/accommodation/accommodation-bg.jpg" alt="" fill sizes="100vw" className="object-cover" aria-hidden="true" />
           <div aria-hidden="true" className="absolute inset-0 bg-[#102A56]/90" />
-          <div className="relative mx-auto max-w-7xl">
-            <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
-              <h2 className="font-heading text-2xl font-semibold uppercase tracking-[0.08em] text-white sm:text-3xl">Partners</h2>
-              <div aria-hidden="true" className="mx-auto mt-6 flex w-36 items-center justify-center">
+          <div className="relative mx-auto w-full max-w-[1184px]">
+            <div className="mx-auto mb-12 max-w-3xl text-center">
+              <h2 className="font-heading text-2xl font-bold uppercase tracking-[0.04em] text-white">Partners</h2>
+              <div aria-hidden="true" className="mx-auto mt-6 flex w-28 items-center justify-center">
                 <span className="h-px flex-1 bg-white/70" />
                 <span className="mx-2 h-5 w-5 rounded-full border-2 border-white/70" />
                 <span className="h-px flex-1 bg-white/70" />
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {partners.map((partner) => (
-                <div key={partner.id} className="[perspective:1000px]">
-                  <article
-                    tabIndex={0}
-                    aria-label={`${partner.name}. Hover or focus to view the description.`}
-                    className="group relative min-h-[300px] cursor-pointer outline-none [transform-style:preserve-3d] transition-transform duration-700 ease-in-out hover:[transform:rotateY(180deg)] focus:[transform:rotateY(180deg)] focus-visible:ring-2 focus-visible:ring-[#C8A96A] focus-visible:ring-offset-4 focus-visible:ring-offset-[#102A56] sm:min-h-[370px]"
-                  >
-                    <div className="absolute inset-0 flex flex-col bg-white p-5 text-center [backface-visibility:hidden] sm:p-6">
-                      <div className="relative mb-5 flex h-44 items-center justify-center overflow-hidden bg-white sm:h-56">
-                        <Image src={partner.logoUrl} alt={`${partner.name} logo`} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-contain p-3" />
-                      </div>
-                      <h3 className="mt-auto text-lg font-semibold uppercase leading-tight text-neutral-950">{partner.name}</h3>
-                    </div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white p-6 text-center [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
-                      <h3 className="text-lg font-semibold uppercase leading-tight text-neutral-950">{partner.name}</h3>
-                      {partner.description && <p className="mt-4 text-sm leading-6 text-neutral-600">{partner.description}</p>}
-                    </div>
-                  </article>
-                </div>
-              ))}
-            </div>
+            <BuilderPartnersCarousel partners={partners} />
           </div>
         </section>
       )}

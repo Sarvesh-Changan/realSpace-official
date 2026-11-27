@@ -594,6 +594,7 @@ model ReraProperty {
   listingType        ReraListingType       @default(SALE)
   bhkLabel           String? // "2 BHK"
   amenities          String[]              @default([])
+  amenityImages      Json?
   isNewLaunch        Boolean               @default(false) // builder project launches (replaces the standalone projects.ts)
   locality           String
   city               String                @default("Thane")

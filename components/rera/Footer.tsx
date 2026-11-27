@@ -109,12 +109,11 @@ export const Footer: React.FC<FooterProps> = ({ shellProps }) => {
           <div className="flex flex-col items-start gap-4">
             <Link href={reraPath('/')} aria-label={brokerName}>
               <Image
-                src="/images/realspace_logo.png"
-                alt={`${brokerName} logo`}
-                width={160}
-                height={72}
-                style={{ width: 160, height: 'auto' }}
-                className="object-contain"
+                src="/arnav/images/logo/rera-logo.png"
+                alt={`${brokerName} RERA logo`}
+                width={240}
+                height={40}
+                className="h-auto w-56 max-w-full rounded-sm bg-white px-2 py-1.5 object-contain"
                 priority={false}
               />
             </Link>

@@ -4,6 +4,15 @@ import prisma from '@/lib/prisma';
 import { PropertiesExplorer } from '@/components/rera/PropertiesExplorer';
 import type { ReraPropertyDetailData } from '@/components/rera/PropertyDetailModal';
 import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
+import { parseReraPropertyAmenityImages } from '@/lib/rera/property-amenity-images';
+import {
+  ALL_CITIES_VALUE,
+  ALL_LOCALITIES_VALUE,
+  ALL_REGIONS_VALUE,
+  getCityLocation,
+  getRegionForCity,
+  RERA_LOCATIONS,
+} from '@/lib/rera/locations';
 
 export const metadata: Metadata = {
   title: 'Properties | REALSPACE',
@@ -67,6 +76,7 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
     projectReraNo: p.projectReraNo ?? null,
     bhkLabel: p.bhkLabel ?? null,
     amenities: p.amenities ?? [],
+    amenityImages: parseReraPropertyAmenityImages(p.amenityImages),
     coverImageUrl: p.coverImageUrl || p.images[0]?.url || null,
     images: p.images.map((img) => ({
       id: img.id,
@@ -92,8 +102,18 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
   if (['buy', 'sale'].includes(rawInterest)) initialInterest = 'buy';
   else if (rawInterest === 'rent') initialInterest = 'rent';
 
-  const rawLocality = String(resolvedParams.locality || resolvedParams.microMarket || '').toLowerCase();
-  const initialLocality = distinctLocalities.find((locality) => locality.toLowerCase() === rawLocality) || 'all';
+  const rawLocality = String(resolvedParams.locality || resolvedParams.microMarket || '').trim();
+  const matchedLocality = propertiesRaw.find((property) => property.locality.trim().toLowerCase() === rawLocality.toLowerCase());
+  const rawCity = String(resolvedParams.city || '').trim();
+  const cityForInitialLocation = rawCity || matchedLocality?.city || '';
+  const requestedRegion = RERA_LOCATIONS.find((region) => region.name.toLowerCase() === String(resolvedParams.region || '').trim().toLowerCase())?.name;
+  const inferredRegion = getRegionForCity(cityForInitialLocation);
+  const initialRegion = requestedRegion || inferredRegion || ALL_REGIONS_VALUE;
+  const cityLocation = getCityLocation(cityForInitialLocation);
+  const initialCity = cityLocation && getRegionForCity(cityLocation.name) === initialRegion
+    ? cityLocation.name
+    : ALL_CITIES_VALUE;
+  const initialLocality = distinctLocalities.find((locality) => locality.toLowerCase() === rawLocality.toLowerCase()) || ALL_LOCALITIES_VALUE;
   const initialCategory = categories.find((category) => category.slug === rawCategory)?.slug ?? 'all';
 
   return (
@@ -104,9 +124,10 @@ export default async function PropertiesPage({ searchParams }: PropertiesPagePro
       initialCategory={initialCategory}
       propertyFetchFailed={propertyFetchFailed}
       bannerImageUrl={settings?.heroImageUrl || initialProperties.find((property) => property.coverImageUrl)?.coverImageUrl || null}
-      distinctLocalities={distinctLocalities}
       distinctBhkLabels={distinctBhkLabels}
       initialInterest={initialInterest}
+      initialRegion={initialRegion}
+      initialCity={initialCity}
       initialLocality={initialLocality}
       phone={settings?.phone ?? null}
       whatsapp={settings?.whatsapp ?? null}

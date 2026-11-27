@@ -11,6 +11,13 @@ import {
   Loader2,
 } from 'lucide-react';
 import { submitReraEnquiry } from '@/app/rera/actions';
+import { LocationCascade } from './LocationCascade';
+import {
+  ALL_CITIES_VALUE,
+  ALL_LOCALITIES_VALUE,
+  ALL_REGIONS_VALUE,
+  formatReraEnquiryLocation,
+} from '@/lib/rera/locations';
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -37,6 +44,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [phoneNumber, setPhoneNumber] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [serviceInterest, setServiceInterest] = useState(defaultInterest);
+  const [preferredRegion, setPreferredRegion] = useState('Mumbai Metropolitan Region (MMR)');
+  const [preferredCity, setPreferredCity] = useState('Thane');
   const [preferredLocality, setPreferredLocality] = useState('Ghodbunder Road');
   const [preferredSlot, setPreferredSlot] = useState('Morning (10:00 AM - 01:00 PM)');
   const [customNotes, setCustomNotes] = useState('');
@@ -56,6 +65,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   if (!isOpen) return null;
 
   const phoneClean = phone.replace(/\s+/g, '');
+  const preferredLocationLabel = formatReraEnquiryLocation(preferredRegion, preferredCity, preferredLocality);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,13 +79,16 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         phone: phoneNumber,
         email: emailAddress,
         interestedIn: 'BUY',
-        locality: preferredLocality,
+        locality: preferredLocationLabel,
         message: customNotes,
         propertySlug: propertySlug || undefined,
         source: source || 'SITE_VISIT',
         details: {
           serviceInterest,
           preferredSlot,
+          preferredRegion,
+          preferredCity,
+          preferredLocality,
         },
         honeypot,
       });
@@ -144,7 +157,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 <strong className="text-[#1C1C1C]">Preferred Slot:</strong> {preferredSlot}
               </div>
               <div>
-                <strong className="text-[#1C1C1C]">Preferred Locality:</strong> {preferredLocality}
+                <strong className="text-[#1C1C1C]">Preferred Location:</strong> {preferredLocationLabel}
               </div>
               <div>
                 <strong className="text-[#1C1C1C]">Contact Phone:</strong> {phoneNumber}
@@ -154,7 +167,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               {whatsapp && (
                 <a
-                  href={`https://wa.me/${whatsapp}?text=Hi%2C%20I%20just%20submitted%20a%20site%20visit%20request%20for%20${encodeURIComponent(serviceInterest)}%20at%20${encodeURIComponent(preferredLocality)}.`}
+                  href={`https://wa.me/${whatsapp}?text=Hi%2C%20I%20just%20submitted%20a%20site%20visit%20request%20for%20${encodeURIComponent(serviceInterest)}%20at%20${encodeURIComponent(preferredLocationLabel)}.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold uppercase tracking-wider transition-colors"
@@ -328,26 +341,25 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-                  Preferred Thane Locality
-                </label>
-                <select
-                  value={preferredLocality}
-                  onChange={(e) => setPreferredLocality(e.target.value)}
-                  className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
-                >
-                  <option value="Ghodbunder Road">Ghodbunder Road</option>
-                  <option value="Majiwada / Viviana Junction">
-                    Majiwada / Viviana Junction
-                  </option>
-                  <option value="Teen Hath Naka / LBS Marg">Teen Hath Naka / LBS Marg</option>
-                  <option value="Pokhran Road 1 & 2">Pokhran Road 1 &amp; 2</option>
-                  <option value="Kolshet Road">Kolshet Road</option>
-                  <option value="Wagle Estate IT Hub">Wagle Estate IT Hub</option>
-                  <option value="Kasarvadavli Lake">Kasarvadavli Lake</option>
-                </select>
-              </div>
+              <LocationCascade
+                variant="filter"
+                region={preferredRegion}
+                city={preferredCity}
+                locality={preferredLocality}
+                onRegionChange={(nextRegion) => {
+                  setPreferredRegion(nextRegion || ALL_REGIONS_VALUE);
+                  setPreferredCity(ALL_CITIES_VALUE);
+                  setPreferredLocality(ALL_LOCALITIES_VALUE);
+                }}
+                onCityChange={(nextCity) => {
+                  setPreferredCity(nextCity || ALL_CITIES_VALUE);
+                  setPreferredLocality(ALL_LOCALITIES_VALUE);
+                }}
+                onLocalityChange={setPreferredLocality}
+                localityLabel="Preferred Locality (optional)"
+                includeAllCities
+                includeAllLocalities
+              />
 
               <div>
                 <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">

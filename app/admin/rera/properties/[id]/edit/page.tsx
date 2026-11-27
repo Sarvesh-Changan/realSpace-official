@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { PropertyForm } from "../../_components/PropertyForm";
 import { updateProperty } from "../../actions";
-import type { ReraPropertyInput } from "../../schema";
+import { parseReraPropertyAmenityImages, type ReraPropertyInput } from "../../schema";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +67,7 @@ export default async function EditReraPropertyPage({
     isPublished: property.isPublished,
     sortOrder: property.sortOrder,
     amenities: property.amenities,
+    amenityImages: parseReraPropertyAmenityImages(property.amenityImages),
     images: [],
   };
 

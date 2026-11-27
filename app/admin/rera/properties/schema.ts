@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { reraPropertyAmenityImagesSchema } from "@/lib/rera/property-amenity-images";
+export { parseReraPropertyAmenityImages } from "@/lib/rera/property-amenity-images";
+export type { ReraPropertyAmenityImageInput } from "@/lib/rera/property-amenity-images";
 
 export const reraPropertyCategorySchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(40, "Name must be 40 characters or fewer"),
@@ -39,6 +42,7 @@ export const reraPropertySchema = z.object({
   isPublished: z.boolean(),
   sortOrder: z.number().int(),
   amenities: z.array(z.string().trim()),
+  amenityImages: reraPropertyAmenityImagesSchema,
   // Property detail pages use a single cover image. Legacy gallery records are
   // cleaned up when a property is next saved.
   images: z.array(reraPropertyImageSchema).max(0, "Only one cover image is supported"),

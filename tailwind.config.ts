@@ -9,9 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["var(--font-montserrat)", "Raleway", "sans-serif"],
-        heading: ["var(--font-montserrat)", "Raleway", "sans-serif"],
-        sans: ["var(--font-open-sans)", "Roboto", "Arial", "sans-serif"],
+        serif: ["var(--font-serif)", "Josefin Sans", "sans-serif"],
+        sans: ["var(--font-sans)", "Lato", "sans-serif"],
       },
       colors: {
         brand: {

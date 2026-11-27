@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import {
   MapPin,
@@ -13,6 +14,7 @@ import PropertyImageGallery from '@/components/rera/PropertyImageGallery';
 import ReraHomeMotion from '@/components/rera/ReraHomeMotion';
 import { SectionRenderer } from '@/components/rera/property-sections/SectionRenderer';
 import { reraPropertySectionSchema } from '@/lib/rera/property-sections/schemas';
+import { parseReraPropertyAmenityImages } from '@/lib/rera/property-amenity-images';
 
 interface PropertyPageProps {
   params: Promise<{
@@ -113,6 +115,7 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
     const parsed = reraPropertySectionSchema.safeParse(section);
     return parsed.success ? [parsed.data] : [];
   });
+  const amenityImages = parseReraPropertyAmenityImages(property.amenityImages);
 
   const mediaList = property.coverImageUrl
     ? [{ id: 'cover', url: property.coverImageUrl, altText: property.title, mediaType: 'IMAGE' as const }]
@@ -233,14 +236,31 @@ export default async function PropertyDetailPage({ params }: PropertyPageProps) 
                     Amenities &amp; Facilities
                   </h3>
                   <div className="flex flex-wrap justify-center gap-2 text-xs">
-                    {property.amenities.map((amenity, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1.5 bg-[#F8F5F1] border border-[#E8E2DA] text-[#1C1C1C]"
-                      >
-                        {amenity}
-                      </span>
-                    ))}
+                    {property.amenities.map((amenity, idx) => {
+                      const amenityImage = amenityImages.find(
+                        (item) => item.amenity.toLowerCase() === amenity.toLowerCase()
+                      );
+                      return (
+                        <div
+                          key={idx}
+                          className="flex min-w-24 flex-col items-center gap-2 border border-[#E8E2DA] bg-[#F8F5F1] px-3 py-3 text-center text-[#1C1C1C]"
+                        >
+                          {amenityImage ? (
+                            <div className="relative h-16 w-16">
+                              <Image
+                                src={amenityImage.url}
+                                alt={`${amenity} illustration`}
+                                fill
+                                sizes="64px"
+                                className="object-contain"
+                                unoptimized={!amenityImage.url.includes('res.cloudinary.com')}
+                              />
+                            </div>
+                          ) : null}
+                          <span>{amenity}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

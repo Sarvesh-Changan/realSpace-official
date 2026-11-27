@@ -8,6 +8,7 @@ import { z } from "zod";
 import {
   reraPropertySchema,
   reraPropertyCategorySchema,
+  parseReraPropertyAmenityImages,
   type ReraPropertyInput,
   type ReraPropertyCategoryInput,
 } from "./schema";
@@ -106,6 +107,7 @@ export async function createProperty(data: ReraPropertyInput): Promise<{ success
             isPublished: propertyData.isPublished,
             sortOrder: propertyData.sortOrder,
             amenities: propertyData.amenities,
+            amenityImages: propertyData.amenityImages,
             images: {
               create: propertyData.images.map((img, idx) => ({
                 url: img.url,
@@ -221,6 +223,7 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
             isPublished: propertyData.isPublished,
             sortOrder: propertyData.sortOrder,
             amenities: propertyData.amenities,
+            amenityImages: propertyData.amenityImages,
             images: {
               create: propertyData.images.map((img, idx) => ({
                 url: img.url,
@@ -245,6 +248,9 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
     propertyData.images.forEach((img) => {
       if (img.publicId) newPublicIds.add(img.publicId);
     });
+    propertyData.amenityImages.forEach((image) => {
+      if (image.publicId) newPublicIds.add(image.publicId);
+    });
 
     if (existingProperty.coverImagePublicId && !newPublicIds.has(existingProperty.coverImagePublicId)) {
       await destroyCloudinaryAsset(existingProperty.coverImagePublicId, "image");
@@ -253,6 +259,11 @@ export async function updateProperty(id: string, data: ReraPropertyInput): Promi
     for (const oldImg of existingProperty.images) {
       if (oldImg.publicId && !newPublicIds.has(oldImg.publicId)) {
         await destroyCloudinaryAsset(oldImg.publicId, oldImg.mediaType === "VIDEO" ? "video" : "image");
+      }
+    }
+    for (const oldAmenityImage of parseReraPropertyAmenityImages(existingProperty.amenityImages)) {
+      if (oldAmenityImage.publicId && !newPublicIds.has(oldAmenityImage.publicId)) {
+        await destroyCloudinaryAsset(oldAmenityImage.publicId, "image");
       }
     }
 
@@ -301,6 +312,11 @@ export async function deleteProperty(id: string): Promise<{ success: boolean; er
     for (const img of existing.images) {
       if (img.publicId) {
         await destroyCloudinaryAsset(img.publicId, img.mediaType === "VIDEO" ? "video" : "image");
+      }
+    }
+    for (const amenityImage of parseReraPropertyAmenityImages(existing.amenityImages)) {
+      if (amenityImage.publicId) {
+        await destroyCloudinaryAsset(amenityImage.publicId, "image");
       }
     }
     const sectionAssetIds = new Set(existing.sections.flatMap((section) => collectSectionAssetPublicIds(section.data)));

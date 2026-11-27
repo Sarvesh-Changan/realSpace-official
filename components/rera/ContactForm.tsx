@@ -3,13 +3,15 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, MessageCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { submitReraEnquiry } from '@/app/rera/actions';
+import { LocationCascade } from './LocationCascade';
+import { cityMatchesLocation, formatReraEnquiryLocation } from '@/lib/rera/locations';
 
 interface ContactFormProps {
   initialPropertySlug?: string;
   initialService?: string;
   whatsapp?: string | null;
   services?: string[];
-  localities?: string[];
+  propertyLocations?: Array<{ city: string; locality: string }>;
 }
 
 export function ContactForm({
@@ -17,18 +19,14 @@ export function ContactForm({
   initialService = '',
   whatsapp = '',
   services = [],
-  localities = [],
+  propertyLocations = [],
 }: ContactFormProps) {
-  const maharashtraLocations = [
-    'Thane', 'Ghatkopar', 'Kalyan', 'Dombivli', 'Mulund', 'Bhandup', 'Vikhroli',
-    'Powai', 'Vasai', 'Virar', 'Mira Road', 'Bhayandar', 'Navi Mumbai', 'Mumbai',
-    'Pune', 'Nashik', 'Nagpur', 'Chhatrapati Sambhajinagar', 'Kolhapur', 'Nanded',
-  ];
-  const localityOptions = Array.from(new Set([...maharashtraLocations, ...localities]));
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [service, setService] = useState(initialService);
+  const [region, setRegion] = useState('');
+  const [city, setCity] = useState('');
   const [locality, setLocality] = useState('');
   const [budget, setBudget] = useState('');
   const [message, setMessage] = useState('');
@@ -58,13 +56,16 @@ export function ContactForm({
         phone,
         email,
         interestedIn,
-        locality,
+        locality: formatReraEnquiryLocation(region, city, locality),
         budgetLabel: budget,
         message,
         propertySlug: initialPropertySlug || undefined,
         source: initialPropertySlug ? 'PROPERTY_ENQUIRY' : 'CONTACT_FORM',
         details: {
           serviceRequired: service,
+          preferredRegion: region,
+          preferredCity: city,
+          preferredLocality: locality,
         },
         honeypot,
       });
@@ -236,18 +237,27 @@ export function ContactForm({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">
-              Locality (optional)
-            </label>
-            {localityOptions.length > 0 ? (
-              <select value={locality} onChange={(e) => setLocality(e.target.value)} className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]">
-                <option value="">Select a locality (optional)</option>
-                {localityOptions.map((value) => <option key={value} value={value}>{value}</option>)}
-              </select>
-            ) : (
-              <input type="text" value={locality} onChange={(e) => setLocality(e.target.value)} maxLength={100} placeholder="Enter a locality (optional)" className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]" />
-            )}
+          <div className="sm:col-span-2">
+            <LocationCascade
+              variant="filter"
+              region={region}
+              city={city}
+              locality={locality}
+              onRegionChange={(nextRegion) => {
+                setRegion(nextRegion);
+                setCity('');
+                setLocality('');
+              }}
+              onCityChange={(nextCity) => {
+                setCity(nextCity);
+                setLocality('');
+              }}
+              onLocalityChange={setLocality}
+              additionalLocalities={propertyLocations
+                .filter((propertyLocation) => cityMatchesLocation(propertyLocation.city, city))
+                .map((propertyLocation) => propertyLocation.locality)}
+              localityLabel="Locality (optional)"
+            />
           </div>
 
           <div>

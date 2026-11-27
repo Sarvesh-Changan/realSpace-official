@@ -21,6 +21,84 @@
   color: #FFFFFF;
 }
 
+.rera-root .rera-partner-flip {
+  perspective: 1000px;
+}
+
+.rera-root .rera-partner-flip-inner {
+  transform-style: preserve-3d;
+}
+
+.rera-root .rera-partner-flip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rera-root .rera-partner-flip-back {
+  transform: rotateY(180deg);
+}
+
+.rera-root .rera-partner-flip:hover .rera-partner-flip-inner,
+.rera-root .rera-partner-flip:focus-visible .rera-partner-flip-inner,
+.rera-root .rera-partner-flip[data-flipped="true"] .rera-partner-flip-inner {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rera-root .rera-partner-flip-inner {
+    transition-duration: 0ms;
+  }
+}
+
+/* RERA calls to action use the sub-site's outlined navy arrow treatment. */
+.rera-root .realspace-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0 !important;
+  min-height: 44px;
+  padding-block: 0 !important;
+  padding-left: 24px !important;
+  padding-right: 0 !important;
+  overflow: hidden;
+  border: 2px solid #0d2253;
+  background: #ffffff;
+  color: #0d2253 !important;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.rera-root .realspace-cta::after {
+  content: "→";
+  display: grid;
+  align-self: stretch;
+  flex: 0 0 40px;
+  place-items: center;
+  margin-left: 8px;
+  background: #0d2253;
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%);
+  transition: background-color 180ms ease;
+}
+
+.rera-root .realspace-cta:hover {
+  background: #0d2253;
+  color: #ffffff !important;
+}
+
+.rera-root .realspace-cta:hover::after {
+  background: #ffffff;
+  color: #0d2253;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rera-root .realspace-cta,
+  .rera-root .realspace-cta::after {
+    transition: none;
+  }
+}
+
 /* Custom Typography Utilities */
 .rera-root .font-heading {
   font-family: var(--font-montserrat), Raleway, sans-serif;

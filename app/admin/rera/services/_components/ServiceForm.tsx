@@ -32,7 +32,28 @@ export function ServiceForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [highlightInput, setHighlightInput] = useState("");
   const [uploading, setUploading] = useState(false);
-  const uploadScrollY = useRef<number | null>(null);
+  const uploadScrollContainer = useRef<HTMLElement | null>(null);
+  const uploadScrollTop = useRef<number | null>(null);
+
+  const captureUploadScroll = (input: HTMLInputElement) => {
+    const scrollContainer = input.closest<HTMLElement>("main");
+    uploadScrollContainer.current = scrollContainer;
+    uploadScrollTop.current = scrollContainer?.scrollTop ?? null;
+  };
+
+  const restoreUploadScroll = () => {
+    const scrollContainer = uploadScrollContainer.current;
+    const scrollTop = uploadScrollTop.current;
+    if (!scrollContainer || scrollTop === null) return;
+
+    scrollContainer.scrollTop = scrollTop;
+    requestAnimationFrame(() => {
+      scrollContainer.scrollTop = scrollTop;
+      requestAnimationFrame(() => {
+        scrollContainer.scrollTop = scrollTop;
+      });
+    });
+  };
 
   const {
     register,
@@ -119,21 +140,19 @@ export function ServiceForm({
       }
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "Image upload failed.");
-    } finally { setUploading(false); }
+    } finally {
+      setUploading(false);
+      restoreUploadScroll();
+    }
   };
 
   const handleUploadSelection = (input: HTMLInputElement, mode: "banner" | "gallery" | "loan-partner") => {
     const files = input.files ? Array.from(input.files) : [];
     input.value = "";
-    // Browsers can scroll a visually-hidden file input into view when the
-    // native picker closes. Blur it and restore the position captured before
-    // the picker opened so the upload does not move the admin page.
+    // The admin form scrolls inside its main element, not the window. Blur the
+    // visually hidden input and restore that container after the picker closes.
     input.blur();
-      const previousScrollY = uploadScrollY.current;
-      if (previousScrollY !== null) {
-        window.scrollTo(0, previousScrollY);
-        requestAnimationFrame(() => window.scrollTo(0, previousScrollY));
-    }
+    restoreUploadScroll();
     void uploadImages(files, mode);
   };
 
@@ -224,7 +243,7 @@ export function ServiceForm({
           </div>
           <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm">
             <ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Upload bank logos"}
-            <input type="file" accept="image/*" multiple className="sr-only" disabled={uploading} onClick={() => { uploadScrollY.current = window.scrollY; }} onChange={(event) => handleUploadSelection(event.currentTarget, "loan-partner")} />
+            <input type="file" accept="image/*" multiple className="sr-only" disabled={uploading} onClick={(event) => captureUploadScroll(event.currentTarget)} onChange={(event) => handleUploadSelection(event.currentTarget, "loan-partner")} />
           </label>
           {loanPartnerLogos.length > 0 ? (
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -253,8 +272,8 @@ export function ServiceForm({
           <section id="service-banner-image" className="scroll-mt-24 space-y-2" aria-label="Banner image">
           <label className="block text-sm font-medium text-neutral-700">Banner image URL<input aria-invalid={Boolean(errors.bannerImageUrl)} {...register("bannerImageUrl")} placeholder="Upload or paste an image URL" className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
           {errors.bannerImageUrl && <p className="text-xs text-red-600">{errors.bannerImageUrl.message}</p>}
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm"><ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Upload banner"}<input type="file" accept="image/*" className="sr-only" disabled={uploading} onClick={() => { uploadScrollY.current = window.scrollY; }} onChange={(event) => handleUploadSelection(event.currentTarget, "banner")} /></label>
+          <div className="flex min-h-16 flex-wrap items-center gap-3">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm"><ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Upload banner"}<input type="file" accept="image/*" className="sr-only" disabled={uploading} onClick={(event) => captureUploadScroll(event.currentTarget)} onChange={(event) => handleUploadSelection(event.currentTarget, "banner")} /></label>
             {watch("bannerImageUrl") && <Image src={watch("bannerImageUrl") || ""} alt={watch("bannerImageAlt") || "Banner preview"} width={112} height={64} unoptimized className="h-16 w-28 rounded object-cover" />}
           </div>
           <label className="block text-sm font-medium text-neutral-700">Banner alt text<input aria-invalid={Boolean(errors.bannerImageAlt)} {...register("bannerImageAlt")} className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2.5" /></label>
@@ -268,7 +287,7 @@ export function ServiceForm({
           <div>
             <label className="block text-sm font-medium text-neutral-700">Main content images</label>
             <p className="mt-1 text-xs text-neutral-500">Upload images to add them to this service page.</p>
-            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm"><ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Upload gallery images"}<input type="file" accept="image/*" multiple className="sr-only" disabled={uploading} onClick={() => { uploadScrollY.current = window.scrollY; }} onChange={(event) => handleUploadSelection(event.currentTarget, "gallery")} /></label>
+            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded border border-neutral-300 px-3 py-2 text-sm"><ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Upload gallery images"}<input type="file" accept="image/*" multiple className="sr-only" disabled={uploading} onClick={(event) => captureUploadScroll(event.currentTarget)} onChange={(event) => handleUploadSelection(event.currentTarget, "gallery")} /></label>
             {contentImages.length > 0 && (
               <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {contentImages.map((image, index) => (

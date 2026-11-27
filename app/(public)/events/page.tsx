@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { connection } from "next/server";
 import prisma from "@/lib/prisma";
 import { getSiteSettings, constructMetadata } from "@/lib/seo";
 import { EventsClient, type PublicEvent } from "./_components/EventsClient";
+
+export const revalidate = 60; // Revalidate static cache every 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -16,8 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PublicEventsPage() {
-  await connection();
-
   const dbEvents = await prisma.event.findMany({
     where: { isPublished: true },
     include: {

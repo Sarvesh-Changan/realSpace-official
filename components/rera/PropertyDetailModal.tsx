@@ -33,6 +33,7 @@ export interface ReraPropertyDetailData {
   projectReraNo: string | null;
   bhkLabel: string | null;
   amenities: string[];
+  amenityImages: Array<{ amenity: string; url: string }>;
   coverImageUrl: string | null;
   images: Array<{
     id: string;
@@ -250,14 +251,24 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
                 Curated Amenities &amp; Facilities
               </h4>
               <div className="flex flex-wrap gap-1.5 text-[11px]">
-                {property.amenities.map((amenity, idx) => (
-                  <span
-                    key={idx}
-                    className="px-2.5 py-1 bg-[#F8F5F1] border border-[#E8E2DA] text-[#1C1C1C]"
-                  >
-                    {amenity}
-                  </span>
-                ))}
+                {property.amenities.map((amenity, idx) => {
+                  const amenityImage = property.amenityImages?.find(
+                    (item) => item.amenity.toLowerCase() === amenity.toLowerCase()
+                  );
+                  return (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1.5 border border-[#E8E2DA] bg-[#F8F5F1] px-2.5 py-1 text-[#1C1C1C]"
+                    >
+                      {amenityImage && (
+                        <span className="relative h-6 w-6 shrink-0">
+                          <Image src={amenityImage.url} alt="" fill sizes="24px" className="object-contain" unoptimized={!amenityImage.url.includes("res.cloudinary.com")} />
+                        </span>
+                      )}
+                      {amenity}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           )}

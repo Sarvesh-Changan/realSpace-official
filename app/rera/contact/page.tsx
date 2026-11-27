@@ -36,10 +36,10 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     mapUrl: string | null;
   }> = [];
   let services: Array<{ title: string }> = [];
-  let localities: string[] = [];
+  let propertyLocations: Array<{ city: string; locality: string }> = [];
 
   try {
-    [settings, branches, services, localities] = await Promise.all([
+    [settings, branches, services, propertyLocations] = await Promise.all([
       prisma.reraSettings.findUnique({ where: { id: 'singleton' } }),
       prisma.reraBranch.findMany({
         where: { isPublished: true },
@@ -53,16 +53,18 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
       }),
       prisma.reraProperty.findMany({
         where: { isPublished: true },
-        distinct: ['locality'],
-        orderBy: { locality: 'asc' },
-        select: { locality: true },
-      }).then((rows) => rows.map((row) => row.locality.trim()).filter(Boolean)),
+        distinct: ['city', 'locality'],
+        orderBy: [{ city: 'asc' }, { locality: 'asc' }],
+        select: { city: true, locality: true },
+      }).then((rows) => rows
+        .map((row) => ({ city: row.city.trim(), locality: row.locality.trim() }))
+        .filter((row) => row.city && row.locality)),
     ]);
   } catch {
     settings = null;
     branches = [];
     services = [];
-    localities = [];
+    propertyLocations = [];
   }
 
   const phone = settings?.phone?.trim() ?? '';
@@ -123,7 +125,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               initialPropertySlug={initialPropertySlug}
               initialService={initialService}
               services={services.map((service) => service.title)}
-              localities={localities}
+              propertyLocations={propertyLocations}
               whatsapp={whatsapp}
             />
           </div>

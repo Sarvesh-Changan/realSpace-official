@@ -19,8 +19,15 @@ import {
   type ReraPropertyInput,
 } from "../schema";
 import { PageSectionsPanel, type PageSectionRow } from "./PageSectionsPanel";
+import { LocationCascade, getInitialReraRegion } from "@/components/rera/LocationCascade";
 
 const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB
+const AMENITY_IMAGE_PRESETS = [
+  { label: "Security", url: "/arnav/images/price/price1.jpg" },
+  { label: "Parking", url: "/arnav/images/price/price2.jpg" },
+  { label: "Garden", url: "/arnav/images/price/price3.jpg" },
+  { label: "Swimming pool", url: "/arnav/images/price/price4.jpg" },
+];
 
 function slugify(text: string): string {
   return text
@@ -50,6 +57,8 @@ export function PropertyForm({
   const coverFileInputRef = useRef<HTMLInputElement>(null);
 
   const [amenityInput, setAmenityInput] = useState("");
+  const [uploadingAmenity, setUploadingAmenity] = useState<string | null>(null);
+  const [locationRegion, setLocationRegion] = useState(() => getInitialReraRegion(initialData?.city ?? "Thane"));
   const [userEditedSlug, setUserEditedSlug] = useState(Boolean(initialData?.slug));
 
   const {
@@ -80,12 +89,16 @@ export function PropertyForm({
       isPublished: true,
       sortOrder: 0,
       amenities: [],
+      amenityImages: [],
       images: [],
     },
   });
 
   const watchedCoverUrl = watch("coverImageUrl");
+  const watchedCity = watch("city") || "";
+  const watchedLocality = watch("locality") || "";
   const watchedAmenities = watch("amenities") || [];
+  const watchedAmenityImages = watch("amenityImages") || [];
 
   // Auto-generate slug from title unless manually edited
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +126,58 @@ export function PropertyForm({
       watchedAmenities.filter((a) => a !== tag),
       { shouldDirty: true, shouldValidate: true }
     );
+    setValue(
+      "amenityImages",
+      watchedAmenityImages.filter((item) => item.amenity !== tag),
+      { shouldDirty: true, shouldValidate: true }
+    );
+  };
+
+  const setAmenityImage = (amenity: string, url: string, publicId: string | null = null) => {
+    const nextImages = watchedAmenityImages.filter((item) => item.amenity !== amenity);
+    if (url) nextImages.push({ amenity, url, publicId });
+    setValue("amenityImages", nextImages, { shouldDirty: true, shouldValidate: true });
+  };
+
+  const handleAmenityImageUpload = async (amenity: string, file: File, input: HTMLInputElement) => {
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setServerError(`Amenity image "${file.name}" exceeds the 100MB limit.`);
+      input.value = "";
+      return;
+    }
+
+    setUploadingAmenity(amenity);
+    setServerError(null);
+    try {
+      const signRes = await fetch("/api/cloudinary/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder: "rera-properties", resourceType: "image" }),
+      });
+      if (!signRes.ok) throw new Error("Failed to prepare the amenity image upload.");
+
+      const signData = await signRes.json();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", signData.apiKey || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "");
+      formData.append("timestamp", String(signData.timestamp));
+      formData.append("signature", signData.signature);
+      formData.append("folder", signData.folder || "rera-properties");
+      const cloudName = signData.cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dipeupebc";
+      const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadData.error?.message || "Amenity image upload failed.");
+
+      setAmenityImage(amenity, uploadData.secure_url || uploadData.url, uploadData.public_id || null);
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : "Failed to upload amenity image.");
+    } finally {
+      setUploadingAmenity(null);
+      input.value = "";
+    }
   };
 
   // Single Cover Image Upload handler
@@ -306,34 +371,35 @@ export function PropertyForm({
           Location & Developer Details
         </h2>
 
-        <div className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-3">
-          <div>
-            <label className="block text-sm font-medium text-neutral-700">
-              Locality <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              {...register("locality")}
-              placeholder="e.g. Majiwada, Ghodbunder Road"
-              className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-            />
-            {errors.locality && (
-              <p className="mt-1 text-xs text-red-500">{errors.locality.message}</p>
-            )}
-          </div>
+        <div className="space-y-4">
+          <LocationCascade
+            variant="form"
+            region={locationRegion}
+            city={watchedCity}
+            locality={watchedLocality}
+            onRegionChange={(region) => {
+              setLocationRegion(region);
+              setValue("city", "", { shouldDirty: true, shouldValidate: true });
+              setValue("locality", "", { shouldDirty: true, shouldValidate: true });
+            }}
+            onCityChange={(city) => {
+              setValue("city", city, { shouldDirty: true, shouldValidate: true });
+              setValue("locality", "", { shouldDirty: true, shouldValidate: true });
+            }}
+            onLocalityChange={(locality) => setValue("locality", locality, { shouldDirty: true, shouldValidate: true })}
+            additionalLocalities={watchedLocality ? [watchedLocality] : []}
+            cityRequired
+            localityRequired
+            regionLabel="Region"
+            cityLabel="City"
+            localityLabel="Locality"
+          />
+          {errors.locality && (
+            <p className="text-xs text-red-500">{errors.locality.message}</p>
+          )}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-neutral-700">
-              City
-            </label>
-            <input
-              type="text"
-              {...register("city")}
-              placeholder="Thane"
-              className="mt-1 block w-full rounded-md border border-neutral-300 px-3.5 py-2.5 min-h-[44px] text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-            />
-          </div>
-
+        <div className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2">
           <div>
             <label className="block text-sm font-medium text-neutral-700">
               Project Name
@@ -428,6 +494,71 @@ export function PropertyForm({
             <Plus className="w-4 h-4" /> Add Amenity
           </button>
         </div>
+
+        {watchedAmenities.length > 0 && (
+          <div className="space-y-3 rounded-md border border-neutral-200 bg-white p-3">
+            <p className="text-xs text-neutral-500">
+              Add an illustration to each amenity. Choose one of the supplied icons or upload your own.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {watchedAmenities.map((amenity) => {
+                const amenityImage = watchedAmenityImages.find((item) => item.amenity === amenity);
+                const presetUrl = AMENITY_IMAGE_PRESETS.some((preset) => preset.url === amenityImage?.url)
+                  ? amenityImage?.url ?? ""
+                  : "";
+                const isUploading = uploadingAmenity === amenity;
+
+                return (
+                  <div key={amenity} className="flex min-w-0 items-center gap-3 rounded border border-neutral-200 p-2.5">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded border border-neutral-200 bg-neutral-50">
+                      {amenityImage?.url ? (
+                        <Image src={amenityImage.url} alt={`${amenity} illustration`} fill sizes="56px" className="object-contain p-1" unoptimized={!amenityImage.url.includes("res.cloudinary.com")} />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-[10px] text-neutral-400">No image</div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <p className="truncate text-xs font-semibold text-neutral-800">{amenity}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <select
+                          aria-label={`Choose ${amenity} illustration`}
+                          value={presetUrl}
+                          disabled={isSubmitting || isUploading}
+                          onChange={(event) => setAmenityImage(amenity, event.target.value)}
+                          className="max-w-full rounded border border-neutral-300 bg-white px-2 py-1 text-xs"
+                        >
+                          <option value="">{amenityImage?.url ? "Custom image" : "Choose icon"}</option>
+                          {AMENITY_IMAGE_PRESETS.map((preset) => (
+                            <option key={preset.url} value={preset.url}>{preset.label}</option>
+                          ))}
+                        </select>
+                        <label className={`inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-neutral-700 hover:text-neutral-950 ${isSubmitting || isUploading ? "pointer-events-none opacity-50" : ""}`}>
+                          {isUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                          {isUploading ? "Uploading…" : "Upload custom"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={isSubmitting || Boolean(uploadingAmenity)}
+                            className="sr-only"
+                            onChange={(event) => {
+                              const file = event.target.files?.[0];
+                              if (file) void handleAmenityImageUpload(amenity, file, event.currentTarget);
+                            }}
+                          />
+                        </label>
+                        {amenityImage && (
+                          <button type="button" disabled={isSubmitting || isUploading} onClick={() => setAmenityImage(amenity, "")} className="text-xs text-red-600 hover:text-red-700 disabled:opacity-50">
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Cover Image Upload Section */}

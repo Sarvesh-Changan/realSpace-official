@@ -197,25 +197,25 @@ export function DualOtpContactFields({ formType, phone, email, onPhoneChange, on
   return <div className={`space-y-4 ${className}`}>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">Mobile Phone Number *</label>
+        <label className="block break-words text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">Mobile Phone Number *</label>
         <div className="flex h-11 w-full border border-[#E8E2DA] bg-[#F8F5F1] focus-within:border-[#C8A96A]">
           <span className="inline-flex shrink-0 items-center border-r border-[#E8E2DA] px-3.5 text-xs text-[#1C1C1C]" aria-hidden="true">+91</span>
-          <input type="tel" required inputMode="numeric" autoComplete="tel-national" pattern="[0-9]{10}" maxLength={10} value={phoneDigits} onChange={(e) => handlePhoneChange(e.target.value)} placeholder="98765 43210" aria-label="Mobile phone number without country code" className="min-w-0 flex-1 bg-transparent px-3.5 text-xs text-[#1C1C1C] focus:outline-none" />
+          <input type="tel" required inputMode="numeric" autoComplete="tel-national" pattern="[0-9]{10}" maxLength={10} value={phoneDigits} onChange={(e) => handlePhoneChange(e.target.value)} placeholder="98765 43210" aria-label="Mobile phone number without country code" className="min-w-0 flex-1 bg-transparent px-3.5 text-base text-[#1C1C1C] focus:outline-none" />
         </div>
-        <button type="button" onClick={verifyPhone} disabled={phoneBusy || phoneVerified || phoneDigits.length !== 10 || !email} className="mt-2 inline-flex h-9 items-center gap-2 border border-[#142A50] px-3 text-[11px] font-semibold uppercase tracking-wide text-[#142A50] disabled:opacity-50">
+        <button type="button" onClick={verifyPhone} disabled={phoneBusy || phoneVerified || phoneDigits.length !== 10 || !email} className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 border border-[#142A50] px-3 text-[11px] font-semibold uppercase tracking-wide text-[#142A50] disabled:opacity-50">
           {phoneBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : phoneVerified ? <CheckCircle2 className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
           {phoneBusy ? 'Verifying…' : phoneVerified ? 'Phone verified' : 'Verify phone'}
         </button>
       </div>
       <div>
-        <label className="block text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">Email Address *</label>
-        <input type="email" required value={email} onChange={(e) => handleEmailChange(e.target.value)} placeholder="name@domain.com" className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]" />
-        <div className="mt-2 flex gap-2">
-          {otpSent && !emailVerified && <input aria-label="Six digit email verification code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="6-digit code" className="min-w-0 flex-1 h-9 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs" />}
+        <label className="block break-words text-xs font-semibold text-[#1C1C1C] uppercase tracking-wider mb-1">Email Address *</label>
+        <input type="email" required value={email} onChange={(e) => handleEmailChange(e.target.value)} placeholder="name@domain.com" className="w-full h-11 px-3.5 bg-[#F8F5F1] border border-[#E8E2DA] text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]" />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {otpSent && !emailVerified && <input aria-label="Six digit email verification code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="6-digit code" className="min-w-0 flex-1 h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-base" />}
           {otpSent && !emailVerified ? <>
-            <button type="button" onClick={verifyCode} disabled={emailBusy || otp.length !== 6} className="h-9 px-3 bg-[#142A50] text-white text-[11px] font-semibold disabled:opacity-50">{emailBusy ? 'Checking…' : 'Verify code'}</button>
+            <button type="button" onClick={verifyCode} disabled={emailBusy || otp.length !== 6} className="min-h-11 px-3 bg-[#142A50] text-white text-[11px] font-semibold disabled:opacity-50">{emailBusy ? 'Checking…' : 'Verify code'}</button>
             <button type="button" onClick={sendCode} disabled={emailBusy || cooldown > 0 || phoneDigits.length !== 10 || !email} className="text-[10px] text-[#142A50] underline disabled:opacity-50">{cooldown ? `Resend in ${cooldown}s` : 'Resend'}</button>
-          </> : <button type="button" onClick={sendCode} disabled={emailBusy || emailVerified || cooldown > 0 || phoneDigits.length !== 10 || !email} className="h-9 px-3 border border-[#142A50] text-[#142A50] text-[11px] font-semibold uppercase tracking-wide disabled:opacity-50">{emailBusy ? 'Sending…' : emailVerified ? 'Email verified' : 'Send email OTP'}</button>}
+          </> : <button type="button" onClick={sendCode} disabled={emailBusy || emailVerified || cooldown > 0 || phoneDigits.length !== 10 || !email} className="min-h-11 w-full border border-[#142A50] px-3 text-[#142A50] text-[11px] font-semibold uppercase tracking-wide disabled:opacity-50">{emailBusy ? 'Sending…' : emailVerified ? 'Email verified' : 'Send email OTP'}</button>}
         </div>
       </div>
     </div>

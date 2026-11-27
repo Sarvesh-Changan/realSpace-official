@@ -177,7 +177,7 @@ export function ContactForm({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Ramesh Patel"
-              className={`w-full h-11 px-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
+              className={`w-full h-11 px-3.5 bg-[#F8F5F1] border text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
                 fieldErrors.name ? 'border-red-500' : 'border-[#E8E2DA]'
               }`}
             />
@@ -202,7 +202,7 @@ export function ContactForm({
             <select
               value={service}
               onChange={(e) => setService(e.target.value)}
-              className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
+              className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
             >
               <option value="">Select a service (optional)</option>
               {services.map((title) => <option key={title} value={title}>{title}</option>)}
@@ -218,7 +218,7 @@ export function ContactForm({
               onChange={(e) => setBudget(e.target.value)}
               maxLength={100}
               placeholder="Enter a budget (optional)"
-              className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
+              className="w-full h-11 px-3 bg-[#F8F5F1] border border-[#E8E2DA] text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A]"
             />
           </div>
         </div>
@@ -253,7 +253,7 @@ export function ContactForm({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Add any details or questions (optional)"
-            className={`w-full p-3.5 bg-[#F8F5F1] border text-xs text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
+              className={`w-full p-3.5 bg-[#F8F5F1] border text-base text-[#1C1C1C] focus:outline-none focus:border-[#C8A96A] ${
               fieldErrors.message ? 'border-red-500' : 'border-[#E8E2DA]'
             }`}
           />

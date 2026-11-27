@@ -134,13 +134,13 @@ export default async function ServicesPage() {
               return (
                 <article
                   key={service.id}
-                  className="rera-motion-card group flex min-w-0 flex-col border border-[#E6DED3] bg-white p-5 shadow-[0_7px_24px_rgba(28,28,28,.04)] transition duration-300 hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-[0_18px_42px_rgba(28,28,28,.12)] sm:p-7"
+                  className="rera-motion-card group flex min-w-0 flex-col border border-[#E6DED3] bg-white p-5 shadow-[0_7px_24px_rgba(28,28,28,.04)] transition duration-300 hover:-translate-y-1 hover:border-[#C8A96A] hover:shadow-[0_18px_42px_rgba(28,28,28,.12)]"
                 >
                   <div className="mb-5 flex items-start justify-between gap-4">
                     <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-[#F4EFE8] text-[#990000] transition duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-[#FECC00] group-hover:text-[#1C1C1C] sm:h-14 sm:w-14">
                       <Icon aria-hidden="true" className="h-6 w-6" />
                     </span>
-                    <span aria-hidden="true" className="font-heading text-2xl font-semibold text-[#D9D1C6]">
+                    <span aria-hidden="true" className="shrink-0 font-heading text-2xl font-semibold text-[#D9D1C6]">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                   </div>
@@ -171,14 +171,14 @@ export default async function ServicesPage() {
                       {detailHref && (
                         <Link
                           href={detailHref}
-                          className="realspace-cta min-h-11 flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
+                          className="realspace-cta min-h-11 w-full flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
                         >
                           View Details
                         </Link>
                       )}
                       <Link
                         href={enquiryHref}
-                        className="realspace-cta min-h-11 flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
+                        className="realspace-cta min-h-11 w-full flex-1 px-4 py-3 text-[11px] font-bold uppercase tracking-[.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0d2253]"
                       >
                         Enquire
                       </Link>
@@ -204,9 +204,9 @@ export default async function ServicesPage() {
           <Image src="/arnav/images/accommodation/accommodation-bg.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover" />
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[#102A56]/85" />
           <h2 className="relative mb-4 text-center font-heading text-sm font-semibold uppercase tracking-[0.18em] text-white sm:text-base">Home Loan Partners</h2>
-          <ul className="rera-loan-partner-track flex w-max items-center gap-10 sm:gap-14">
+          <ul className="relative mx-auto grid w-full max-w-5xl grid-cols-2 items-center justify-items-center gap-4 px-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4">
             {loanPartnerLogos.map((logo, index) => (
-              <li key={`${logo.url}-${index}`} className="flex w-36 shrink-0 items-center justify-center sm:w-40">
+              <li key={`${logo.url}-${index}`} className="flex w-full items-center justify-center">
                 <span className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white/90 bg-white p-2 shadow-lg sm:h-24 sm:w-24">
                   <Image src={logo.url} alt={index < loanPartnerLogos.length ? logo.alt : ''} width={160} height={100} unoptimized className="max-h-full max-w-full object-contain" />
                 </span>
